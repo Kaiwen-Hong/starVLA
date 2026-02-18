@@ -625,9 +625,17 @@ class LeRobotSingleDataset(Dataset):
                 channels = le_video_meta["shape"][le_video_meta["names"].index("channel")]
                 fps = le_video_meta["video_info"]["video.fps"]
             except (ValueError, KeyError):
-                # channels = le_video_meta["shape"][le_video_meta["names"].index("channels")]
-                channels = le_video_meta["info"]["video.channels"]
-                fps = le_video_meta["info"]["video.fps"]
+                try:
+                    channels = le_video_meta["info"]["video.channels"]
+                    fps = le_video_meta["info"]["video.fps"]
+                except KeyError:
+                    # image-based datasets (dtype: image) store "channels" (plural) in names, and fps in top-level info
+                    names = le_video_meta.get("names", [])
+                    if isinstance(names, list) and "channels" in names:
+                        channels = le_video_meta["shape"][names.index("channels")]
+                    else:
+                        channels = 3  # default RGB
+                    fps = le_info.get("fps", 30)
             simplified_modality_meta["video"][new_key] = {
                 "resolution": [width, height],
                 "channels": channels,

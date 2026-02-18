@@ -1,6 +1,34 @@
-# RoboTwin 2.0 Setup Guide for StarVLA
+# RoboTwin 2.0 Setup Guide for StarVLA (Kempner)
 
 > **CRITICAL:** All downloads/caches go under `/net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/`, **never `~`**.
+
+---
+
+## Current Status
+
+The **RoboTwin-Randomized** dataset has been downloaded and extracted. It is ready for training.
+
+| Item | Status | Location |
+|------|--------|----------|
+| Randomized tar.gz | Downloaded | `data/RoboTwin-Randomized-targz/` (50 `.tar.gz` files) |
+| Extracted dataset | Ready | `playground/Datasets/RoboTwin/` (50 task directories) |
+| Dataset version | **Randomized** | 500 episodes/task, fps=15, mp4 video (AV1), modality.json included |
+| Total data | 25,000 episodes | 50 tasks × 500 episodes each |
+| Compatibility | Verified | No config changes needed — works directly with `bash examples/Robotwin/train_files/run_robotwin_train.sh` |
+
+**Note on data sources:** There are two versions of the RoboTwin dataset (see [Section 4.1](#41-two-dataset-versions) for full comparison):
+
+| | Demo-Clean (`YaoMarkMu/robotwin_dataset`) | Randomized (`StarVLA/RoboTwin-Randomized-targz`) |
+|---|---|---|
+| Episodes/task | 50 | **500** |
+| FPS | 50 | 15 |
+| Image storage | Image-in-parquet (163 GB) | MP4 video, AV1 codec (smaller) |
+| Scene variation | Fixed | **Randomized** positions & appearances |
+| Recommended | Debugging only | **Training** |
+
+Both are LeRobot v2.1 format. The StarVLA dataloader auto-detects video vs image mode from `modality.json` — no config changes needed for either version.
+
+A previously processed merged version of the demo-clean data also exists at `$HF_LEROBOT_HOME/demo_clean_all_repo/` (all 50 tasks combined into one dataset, 2,500 episodes, image-in-parquet, fps=50). This is **not** used by the per-task training pipeline in `mixtures.py`.
 
 ---
 
@@ -43,18 +71,29 @@ huggingface-cli download StarVLA/Qwen3-VL-4B-Instruct-Action \
 
 ```bash
 # ── 3. Download RoboTwin dataset (login node) ──
+# Option A: Demo-clean (50 tasks × 50 episodes = 2,500 demos, image-in-parquet, fps=50)
 mkdir -p playground/Datasets/RoboTwin
 huggingface-cli download YaoMarkMu/robotwin_dataset \
   --repo-type dataset \
   --local-dir ./playground/Datasets/RoboTwin \
   --cache-dir $HF_HUB_CACHE
+
+# Option B: Randomized (50 tasks × 500 episodes = 25,000 demos, mp4 video, fps=15)
+bash scripts/download_robotwin_randomized.sh
+# Then extract into playground/Datasets/RoboTwin:
+mkdir -p playground/Datasets/RoboTwin
+for f in data/RoboTwin-Randomized-targz/*.tar.gz; do
+  tar -xzf "$f" -C playground/Datasets/RoboTwin/
+done
 ```
 
 ```bash
-# ── 4. Copy modality.json into every task folder ──
+# ── 4. Copy modality.json into every task folder (Option A only; Option B already includes it) ──
 for d in playground/Datasets/RoboTwin/*/; do
-  mkdir -p "$d/meta"
-  cp examples/Robotwin/train_files/modality.json "$d/meta/"
+  if [ ! -f "$d/meta/modality.json" ]; then
+    mkdir -p "$d/meta"
+    cp examples/Robotwin/train_files/modality.json "$d/meta/"
+  fi
 done
 ```
 
@@ -64,9 +103,58 @@ python starVLA/model/framework/QwenGR00T.py   # should print model and exit
 ```
 
 ```bash
-# ── 6. Train (edit script first: num_processes, run_id, etc.) ──
-bash examples/Robotwin/train_files/run_robotwin_train.sh
+# ── 6. Train (4×H100 ready-to-use command) ──
+#
+# Pre-conditions:
+#   - conda activate starVLA
+#   - module load cuda/12.2.0-fasrc01  (or equivalent CUDA module)
+#   - Pretrained VLM downloaded to playground/Pretrained_models/Qwen3-VL-4B-Instruct-Action/
+#   - Dataset extracted to playground/Datasets/RoboTwin/ (50 task directories)
+#   - For QwenFast: also need playground/Pretrained_models/fast/ (see Section 7.2)
+#
+# Framework choices:
+#   - QwenOFT:  recommended, no extra downloads needed
+#   - QwenFast: needs FAST tokenizer (huggingface: physical-intelligence/fast)
+#   - QwenGR00T / QwenPI: flow-matching variants
+#
+
+# before running, make sure to run:
+
+source ~/.bashrc-kaiwen                                                             
+conda activate starVLA
+module load cuda/12.2.0-fasrc01                                                     
+cd /net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/starVLA
+
+
+
+
+accelerate launch \
+  --config_file starVLA/config/deepseeds/deepspeed_zero2.yaml \
+  --num_processes 4 \
+  starVLA/training/train_starvla.py \
+  --config_yaml ./examples/Robotwin/train_files/starvla_cotrain_robotwin.yaml \
+  --framework.name QwenOFT \
+  --framework.qwenvl.base_vlm playground/Pretrained_models/Qwen3-VL-4B-Instruct-Action \
+  --framework.qwenvl.attn_implementation sdpa \
+  --datasets.vla_data.per_device_batch_size 8 \
+  --datasets.vla_data.data_mix robotwin \
+  --trainer.freeze_modules '' \
+  --trainer.max_train_steps 100000 \
+  --trainer.save_interval 10000 \
+  --trainer.logging_frequency 100 \
+  --trainer.eval_interval 1000 \
+  --trainer.gradient_accumulation_steps 2 \
+  --run_root_dir ./results/Checkpoints \
+  --run_id robotwin_qwenOFT_4xH100 \
+  --wandb_project starVLA_Robotwin \
+  --wandb_entity kaiwenh-17-uiuc
 ```
+
+> **4×H100 notes:**
+> - `--num_processes 4` — matches 4 GPUs
+> - `--trainer.gradient_accumulation_steps 2` — compensates for fewer GPUs (effective global batch = 4 × 8 × 2 = 64, same as 8 GPU with batch 8)
+> - `--framework.qwenvl.attn_implementation sdpa` — use this if flash_attn has GLIBC issues on your node (see [Troubleshooting](#kempner-glibc-and-flash-attention)); switch to `flash_attention_2` on nodes with GLIBC >= 2.32 for better performance
+> - For quick debugging, replace `--datasets.vla_data.data_mix robotwin` with `robotwin_task1` (loads only adjust_bottle)
 
 That's it. Scroll down for detailed explanations, config tuning, evaluation, and troubleshooting.
 
@@ -77,7 +165,7 @@ That's it. Scroll down for detailed explanations, config tuning, evaluation, and
 1. [Overview](#1-overview)
 2. [Environment Setup](#2-environment-setup)
 3. [Download Pretrained Models](#3-download-pretrained-models)
-4. [Download RoboTwin Dataset](#4-download-robotwin-dataset)
+4. [Download RoboTwin Dataset](#4-download-robotwin-dataset) (Demo-Clean vs Randomized)
 5. [Post-Download Setup (modality.json)](#5-post-download-setup)
 6. [Verify Installation](#6-verify-installation)
 7. [Training](#7-training)
@@ -289,13 +377,30 @@ The RoboTwin dataset must be in LeRobot format and placed at `playground/Dataset
 > **Storage note:** The dataset goes into the repo's `playground/Datasets/` directory which
 > is already under lab storage. The HF download cache (`--cache-dir`) also goes to lab storage.
 
-### 4.1 Where to Get the Data
+### 4.1 Two Dataset Versions
 
-The RoboTwin dataset in LeRobot format is available from:
-- HuggingFace: `YaoMarkMu/robotwin_dataset` (check for LeRobot-formatted version)
-- Official RoboTwin data generation: https://github.com/RoboTwin-Platform/RoboTwin
+There are two versions of the RoboTwin dataset, both in LeRobot v2.1 format:
 
-If downloading from HuggingFace (run on **login node**):
+| | Demo-Clean | Randomized |
+|---|---|---|
+| HuggingFace repo | `YaoMarkMu/robotwin_dataset` | `StarVLA/RoboTwin-Randomized-targz` |
+| Episodes per task | 50 | **500** |
+| Total episodes | 2,500 | **25,000** |
+| FPS | 50 | 15 |
+| Image storage | **Image-in-parquet** (dtype: `image`) | **MP4 video** (dtype: `video`, AV1 codec) |
+| Dataset size | ~163 GB (images embedded in parquet) | Smaller (compressed video) |
+| Task descriptions | ~48 unique per task | ~420 unique per task (more diverse) |
+| Scene variation | Fixed object positions/appearances | **Randomized** object positions & appearances |
+| Download format | Ready-to-use directories | `.tar.gz` archives (need extraction) |
+| modality.json | **Not included** (must copy manually) | **Included** in each tar.gz |
+
+**Which to use?**
+- **Randomized** is recommended for training — 10x more data, better generalization, and matches the StarVLA per-task data loading pipeline directly.
+- **Demo-clean** is useful for quick debugging or if you want to use the single merged dataset at `$HF_LEROBOT_HOME/demo_clean_all_repo/`.
+
+### 4.2 Option A: Download Demo-Clean Dataset
+
+Run on **login node**:
 ```bash
 cd /net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/starVLA
 
@@ -304,7 +409,7 @@ echo $HF_HUB_CACHE  # must NOT be under ~/
 
 mkdir -p playground/Datasets/RoboTwin
 
-# Download all task datasets - each task is a separate dataset folder
+# Download all task datasets — each task is a separate dataset folder
 huggingface-cli download YaoMarkMu/robotwin_dataset \
   --repo-type dataset \
   --local-dir ./playground/Datasets/RoboTwin \
@@ -313,9 +418,43 @@ huggingface-cli download YaoMarkMu/robotwin_dataset \
 
 If generating data from the RoboTwin simulator, follow their official documentation to collect demonstrations, then convert to LeRobot format.
 
-### 4.2 Expected Dataset Structure
+### 4.3 Option B: Download Randomized Dataset (Recommended)
 
-After download, each task should be its own folder under `playground/Datasets/RoboTwin/`:
+**Step 1: Download** the tar.gz archives (run on **login node**):
+```bash
+cd /net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/starVLA
+bash scripts/download_robotwin_randomized.sh
+```
+
+This downloads 50 `.tar.gz` files to `data/RoboTwin-Randomized-targz/`.
+
+**Step 2: Extract** all archives into `playground/Datasets/RoboTwin/`:
+```bash
+mkdir -p playground/Datasets/RoboTwin
+for f in data/RoboTwin-Randomized-targz/*.tar.gz; do
+  echo "Extracting $(basename $f) ..."
+  tar -xzf "$f" -C playground/Datasets/RoboTwin/
+done
+```
+
+**Step 3: Verify** extraction:
+```bash
+# Should list 50 task directories
+ls playground/Datasets/RoboTwin/ | wc -l
+
+# Check a sample task has all required files
+ls playground/Datasets/RoboTwin/adjust_bottle/meta/
+# Expected: episodes.jsonl  episodes_stats.jsonl  info.json  modality.json  tasks.jsonl
+
+ls playground/Datasets/RoboTwin/adjust_bottle/videos/chunk-000/ | head -3
+# Expected: observation.images.cam_high/  observation.images.cam_left_wrist/  observation.images.cam_right_wrist/
+```
+
+> **Note:** The randomized tar.gz archives already include `modality.json` in each task's `meta/` folder, so you can skip Section 5.1.
+
+### 4.4 Expected Dataset Structure
+
+After download/extraction, each task should be its own folder under `playground/Datasets/RoboTwin/`:
 
 ```
 playground/Datasets/RoboTwin/
@@ -323,13 +462,13 @@ playground/Datasets/RoboTwin/
 │   ├── meta/
 │   │   ├── modality.json          # Defines data modality mapping
 │   │   ├── episodes.jsonl         # Episode metadata
-│   │   ├── tasks.jsonl            # Task descriptions
-│   │   ├── info.json              # Dataset info (fps, num_episodes, etc.)
-│   │   └── stats_gr00t.json       # Normalization statistics (min/max/mean/std)
+│   │   ├── episodes_stats.jsonl   # Per-episode statistics
+│   │   ├── tasks.jsonl            # Task descriptions (420 for randomized, fewer for clean)
+│   │   └── info.json              # Dataset info (fps, num_episodes, etc.)
 │   ├── data/
 │   │   └── chunk-000/
 │   │       └── episode_*.parquet  # Parquet files with state/action data
-│   └── videos/
+│   └── videos/                    # Only present in Randomized version
 │       └── chunk-000/
 │           ├── observation.images.cam_high/
 │           │   └── episode_*.mp4
@@ -346,7 +485,7 @@ playground/Datasets/RoboTwin/
     └── (same structure)
 ```
 
-### 4.3 All 50 RoboTwin Tasks
+### 4.5 All 50 RoboTwin Tasks
 
 The `robotwin` data mix in `starVLA/dataloader/gr00t_lerobot/mixtures.py` (line 90) expects all these task folders:
 
@@ -382,13 +521,17 @@ You can also use smaller subsets for debugging:
 
 Each task's `meta/` folder **must** have a `modality.json` file. The RoboTwin-specific modality mapping is at `examples/Robotwin/train_files/modality.json`.
 
+> **Note:** If you used **Option B (Randomized)**, each tar.gz already includes `modality.json` — you can skip this step. The script below is safe to run regardless; it only copies when the file is missing.
+
 ```bash
 cd /net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/starVLA
 
-# Copy modality.json to ALL 50 task folders
+# Copy modality.json to task folders that don't already have it
 for task_dir in playground/Datasets/RoboTwin/*/; do
-  mkdir -p "$task_dir/meta"
-  cp examples/Robotwin/train_files/modality.json "$task_dir/meta/"
+  if [ ! -f "$task_dir/meta/modality.json" ]; then
+    mkdir -p "$task_dir/meta"
+    cp examples/Robotwin/train_files/modality.json "$task_dir/meta/"
+  fi
 done
 ```
 
@@ -444,12 +587,14 @@ Note: This requires a debugger to attach (the main block has `debugpy.wait_for_c
 
 ## 7. Training
 
-### 7.1 Quick Start
+### 7.1 Quick Start (4×H100, Verified)
 
+The ready-to-use training command is in the [TL;DR Quickstart (Step 6)](#tldr--copy-paste-quickstart). Copy it directly.
+
+Alternatively, you can use the provided shell script with edits:
 ```bash
 cd /net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/starVLA
-
-# Edit the training script first (see 7.2), then:
+# Edit the script first (see 7.2), then:
 bash examples/Robotwin/train_files/run_robotwin_train.sh
 ```
 
@@ -459,21 +604,49 @@ Edit `examples/Robotwin/train_files/run_robotwin_train.sh`:
 
 ```bash
 # === Key variables to edit ===
-Framework_name=QwenFast              # QwenFast | QwenOFT | QwenGR00T | QwenPI
+Framework_name=QwenOFT               # QwenOFT (recommended) | QwenFast | QwenGR00T | QwenPI
 base_vlm=playground/Pretrained_models/Qwen3-VL-4B-Instruct-Action
 config_yaml=./examples/Robotwin/train_files/starvla_cotrain_robotwin.yaml
 run_root_dir=./results/Checkpoints
 data_mix=robotwin                    # "robotwin" for all 50 tasks, "robotwin_task1" for debug
-run_id=0206_robotwin_qwen3Fast       # Unique experiment name
+run_id=robotwin_qwenOFT_4xH100      # Unique experiment name
 ```
 
-Also edit `--num_processes` to match your GPU count:
+Also edit `--num_processes` and add `gradient_accumulation_steps` to match your GPU count:
 ```bash
 accelerate launch \
   --config_file starVLA/config/deepseeds/deepspeed_zero2.yaml \
-  --num_processes 8 \        # <-- Set to your number of GPUs (e.g., 2 for 2x H100)
+  --num_processes 4 \                                  # <-- Set to your number of GPUs
+  starVLA/training/train_starvla.py \
+  ...
+  --framework.qwenvl.attn_implementation sdpa \        # <-- Use sdpa if flash_attn has GLIBC issues
+  --trainer.gradient_accumulation_steps 2 \            # <-- 2 for 4 GPUs (keeps global batch = 64)
   ...
 ```
+
+**Framework-specific requirements:**
+
+| Framework | Extra Downloads Needed | Notes |
+|-----------|----------------------|-------|
+| **QwenOFT** | None | Recommended. DiT-B action head, works out of the box |
+| **QwenFast** | `physical-intelligence/fast` tokenizer | Download to `playground/Pretrained_models/fast/` |
+| **QwenGR00T** | None | Flow-matching action head |
+| **QwenPI** | None | Layerwise flow-matching |
+
+To download the FAST tokenizer (only needed for QwenFast):
+```bash
+huggingface-cli download physical-intelligence/fast \
+  --local-dir ./playground/Pretrained_models/fast \
+  --cache-dir $HF_HUB_CACHE
+```
+
+**GPU scaling reference:**
+
+| GPUs | `--num_processes` | `per_device_batch_size` | `gradient_accumulation_steps` | Effective global batch |
+|------|-------------------|------------------------|-------------------------------|----------------------|
+| 8 | 8 | 8 | 1 | 64 |
+| **4** | **4** | **8** | **2** | **64** |
+| 2 | 2 | 8 | 4 | 64 |
 
 ### 7.3 Training Config YAML Deep Dive
 
@@ -793,27 +966,110 @@ This moves left_gripper from index 6 to after right_joints.
 
 ## 10. Troubleshooting
 
+### Kempner: GLIBC and Flash Attention
+
+**Symptom:**
+```
+ImportError: /lib64/libc.so.6: version `GLIBC_2.32' not found
+  (required by .../flash_attn_2_cuda.cpython-310-x86_64-linux-gnu.so)
+```
+
+**Root cause:** The Kempner login/GPU nodes run Rocky Linux 8 with GLIBC 2.28. The `flash-attn` pip wheel was compiled against GLIBC 2.32+. This affects both `import flash_attn` and any code using `attn_implementation: flash_attention_2`.
+
+**Solution:** Use PyTorch's built-in SDPA (Scaled Dot Product Attention) instead:
+```bash
+# In your training command, add:
+--framework.qwenvl.attn_implementation sdpa
+```
+
+SDPA provides similar functionality (fused attention kernels) without the GLIBC dependency. Performance difference is minimal on H100.
+
+**If you want to try flash_attn anyway:** Check your node's GLIBC version:
+```bash
+ldd --version | head -1
+# If it says 2.32 or higher, flash_attention_2 will work
+# If 2.28 (Rocky 8 default), use sdpa
+```
+
+### Kempner: QwenFast Missing FAST Tokenizer
+
+**Symptom:**
+```
+HFValidationError: Repo id must be in the form 'repo_name' or 'namespace/repo_name':
+  'playground/Pretrained_models/fast'
+```
+
+**Root cause:** The `QwenFast` framework requires the FAST tokenizer from `physical-intelligence/fast` at `playground/Pretrained_models/fast/`. This is not included in the base VLM download and must be downloaded separately.
+
+**Solution — Option A:** Download the FAST tokenizer:
+```bash
+huggingface-cli download physical-intelligence/fast \
+  --local-dir ./playground/Pretrained_models/fast \
+  --cache-dir $HF_HUB_CACHE
+```
+
+**Solution — Option B:** Use `QwenOFT` instead (recommended, no extra downloads):
+```bash
+--framework.name QwenOFT
+```
+
+### Kempner: DeepSpeed `nvcc` Not Found
+
+**Symptom:**
+```
+FileNotFoundError: [Errno 2] No such file or directory: '/usr/local/cuda/bin/nvcc'
+```
+
+**Root cause:** DeepSpeed tries to find `nvcc` at `/usr/local/cuda/bin/nvcc` but Kempner uses environment modules. If `module load cuda` wasn't run, or if `CUDA_HOME` is unset/wrong, DeepSpeed can't find the CUDA compiler.
+
+**Solution:**
+```bash
+module load cuda/12.2.0-fasrc01
+# Verify:
+which nvcc   # should print the module path, not /usr/local/cuda/bin/nvcc
+```
+
+If running from a script (not interactive), add `module load cuda/12.2.0-fasrc01` at the top.
+
+### Kempner: `is_debug True` Hangs on Launch
+
+**Symptom:** Training starts but rank 0 prints `Rank 0 waiting for debugger attach on port 10092...` and hangs forever, while other ranks crash from timeout.
+
+**Root cause:** The `--is_debug True` flag enables `debugpy.wait_for_client()` which blocks until a VSCode/PyCharm debugger attaches.
+
+**Solution:** Do **not** pass `--is_debug True` unless you have a debugger ready to attach:
+```bash
+# Remove from command, or explicitly set:
+--is_debug False
+```
+
+### Kempner: Verified Working Configuration (2025-02-17)
+
+The following configuration was tested end-to-end on Kempner 4×H100 80GB:
+
+```
+Framework:        QwenOFT (DiT-B action head)
+VLM:              Qwen3-VL-4B-Instruct-Action
+Attention:        sdpa (not flash_attention_2, due to GLIBC)
+Dataset:          RoboTwin-Randomized (500 eps/task, video mode, AV1, fps=15)
+GPUs:             4× H100 80GB
+Batch:            4 per GPU × 4 GPUs × 2 grad_accum = 32 effective
+DeepSpeed:        ZeRO Stage 2, BF16
+GPU Memory:       ~17 GB peak per GPU (plenty of headroom)
+Training speed:   ~0.33s per step after warmup
+Result:           10 steps completed, loss 0.87 → 0.84
+```
+
 ### `NotImplementedError: Framework QwenXXX is not implemented`
 The framework file wasn't imported. Run the standalone test first:
 ```bash
 python starVLA/model/framework/QwenGR00T.py
 ```
 
-### Flash Attention Issues
-```bash
-# Check versions match
-nvcc -V
-python -c "import torch; print(torch.version.cuda)"
-pip list | grep flash-attn
-
-# Fallback: use SDPA instead
---framework.qwenvl.attn_implementation sdpa
-```
-
 ### CUDA Out of Memory
 Reduce batch size:
 ```bash
---datasets.vla_data.per_device_batch_size 8  # Default is 16
+--datasets.vla_data.per_device_batch_size 4  # Default is 16, script uses 8
 ```
 
 ### Missing modality.json

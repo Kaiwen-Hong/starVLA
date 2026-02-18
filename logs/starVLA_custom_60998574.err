@@ -1,0 +1,171 @@
+/net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/miniforge3/envs/starVLA/lib/python3.10/site-packages/transformers/utils/hub.py:110: FutureWarning: Using `TRANSFORMERS_CACHE` is deprecated and will be removed in v5 of Transformers. Use `HF_HOME` instead.
+  warnings.warn(
+[W218 14:24:27.394770960 socket.cpp:759] [c10d] The client socket cannot be initialized to connect to [localhost]:29500 (errno: 97 - Address family not supported by protocol).
+/net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/miniforge3/envs/starVLA/lib/python3.10/site-packages/transformers/utils/hub.py:110: FutureWarning: Using `TRANSFORMERS_CACHE` is deprecated and will be removed in v5 of Transformers. Use `HF_HOME` instead.
+  warnings.warn(
+/net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/miniforge3/envs/starVLA/lib/python3.10/site-packages/transformers/utils/hub.py:110: FutureWarning: Using `TRANSFORMERS_CACHE` is deprecated and will be removed in v5 of Transformers. Use `HF_HOME` instead.
+  warnings.warn(
+/net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/miniforge3/envs/starVLA/lib/python3.10/site-packages/transformers/utils/hub.py:110: FutureWarning: Using `TRANSFORMERS_CACHE` is deprecated and will be removed in v5 of Transformers. Use `HF_HOME` instead.
+  warnings.warn(
+/net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/miniforge3/envs/starVLA/lib/python3.10/site-packages/transformers/utils/hub.py:110: FutureWarning: Using `TRANSFORMERS_CACHE` is deprecated and will be removed in v5 of Transformers. Use `HF_HOME` instead.
+  warnings.warn(
+[W218 14:24:40.259951556 socket.cpp:759] [c10d] The client socket cannot be initialized to connect to [localhost]:29500 (errno: 97 - Address family not supported by protocol).
+[W218 14:24:40.260441420 socket.cpp:759] [c10d] The client socket cannot be initialized to connect to [localhost]:29500 (errno: 97 - Address family not supported by protocol).
+[W218 14:24:40.260454930 socket.cpp:759] [c10d] The client socket cannot be initialized to connect to [localhost]:29500 (errno: 97 - Address family not supported by protocol).
+[W218 14:24:40.262610373 Utils.hpp:165] Warning: Environment variable NCCL_BLOCKING_WAIT is deprecated; use TORCH_NCCL_BLOCKING_WAIT instead (function operator())
+[W218 14:24:40.262615623 Utils.hpp:165] Warning: Environment variable NCCL_BLOCKING_WAIT is deprecated; use TORCH_NCCL_BLOCKING_WAIT instead (function operator())
+[W218 14:24:40.262619983 Utils.hpp:136] Warning: Environment variable NCCL_ASYNC_ERROR_HANDLING is deprecated; use TORCH_NCCL_ASYNC_ERROR_HANDLING instead (function operator())
+[W218 14:24:40.262628303 Utils.hpp:136] Warning: Environment variable NCCL_ASYNC_ERROR_HANDLING is deprecated; use TORCH_NCCL_ASYNC_ERROR_HANDLING instead (function operator())
+[W218 14:24:40.262841900 Utils.hpp:165] Warning: Environment variable NCCL_BLOCKING_WAIT is deprecated; use TORCH_NCCL_BLOCKING_WAIT instead (function operator())
+[W218 14:24:40.262852070 Utils.hpp:136] Warning: Environment variable NCCL_ASYNC_ERROR_HANDLING is deprecated; use TORCH_NCCL_ASYNC_ERROR_HANDLING instead (function operator())
+[W218 14:24:40.334754696 socket.cpp:759] [c10d] The client socket cannot be initialized to connect to [localhost]:29500 (errno: 97 - Address family not supported by protocol).
+[W218 14:24:40.335161171 Utils.hpp:165] Warning: Environment variable NCCL_BLOCKING_WAIT is deprecated; use TORCH_NCCL_BLOCKING_WAIT instead (function operator())
+[W218 14:24:40.335174621 Utils.hpp:136] Warning: Environment variable NCCL_ASYNC_ERROR_HANDLING is deprecated; use TORCH_NCCL_ASYNC_ERROR_HANDLING instead (function operator())
+Loading checkpoint shards:   0%|          | 0/2 [00:00<?, ?it/s]Loading checkpoint shards:   0%|          | 0/2 [00:00<?, ?it/s]Loading checkpoint shards:   0%|          | 0/2 [00:00<?, ?it/s]Loading checkpoint shards:   0%|          | 0/2 [00:00<?, ?it/s]Loading checkpoint shards:  50%|█████     | 1/2 [00:00<00:00,  1.51it/s]Loading checkpoint shards:  50%|█████     | 1/2 [00:00<00:00,  1.50it/s]Loading checkpoint shards:  50%|█████     | 1/2 [00:00<00:00,  1.51it/s]Loading checkpoint shards:  50%|█████     | 1/2 [00:00<00:00,  1.51it/s]Loading checkpoint shards: 100%|██████████| 2/2 [00:01<00:00,  2.06it/s]Loading checkpoint shards: 100%|██████████| 2/2 [00:01<00:00,  2.06it/s]Loading checkpoint shards: 100%|██████████| 2/2 [00:01<00:00,  2.06it/s]Loading checkpoint shards: 100%|██████████| 2/2 [00:01<00:00,  2.06it/s]Loading checkpoint shards: 100%|██████████| 2/2 [00:01<00:00,  1.95it/s]
+Loading checkpoint shards: 100%|██████████| 2/2 [00:01<00:00,  1.95it/s]
+Loading checkpoint shards: 100%|██████████| 2/2 [00:01<00:00,  1.95it/s]
+Loading checkpoint shards: 100%|██████████| 2/2 [00:01<00:00,  1.96it/s]
+/net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/miniforge3/envs/starVLA/lib/python3.10/site-packages/albumentations/__init__.py:13: UserWarning: A new version of Albumentations is available: 2.0.8 (you have 1.4.18). Upgrade using: pip install -U albumentations. To disable automatic update checks, set the environment variable NO_ALBUMENTATIONS_UPDATE to 1.
+  check_for_updates()
+/net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/miniforge3/envs/starVLA/lib/python3.10/site-packages/albumentations/__init__.py:13: UserWarning: A new version of Albumentations is available: 2.0.8 (you have 1.4.18). Upgrade using: pip install -U albumentations. To disable automatic update checks, set the environment variable NO_ALBUMENTATIONS_UPDATE to 1.
+  check_for_updates()
+/net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/miniforge3/envs/starVLA/lib/python3.10/site-packages/albumentations/__init__.py:13: UserWarning: A new version of Albumentations is available: 2.0.8 (you have 1.4.18). Upgrade using: pip install -U albumentations. To disable automatic update checks, set the environment variable NO_ALBUMENTATIONS_UPDATE to 1.
+  check_for_updates()
+/net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/miniforge3/envs/starVLA/lib/python3.10/site-packages/albumentations/__init__.py:13: UserWarning: A new version of Albumentations is available: 2.0.8 (you have 1.4.18). Upgrade using: pip install -U albumentations. To disable automatic update checks, set the environment variable NO_ALBUMENTATIONS_UPDATE to 1.
+  check_for_updates()
+[rank0]: Traceback (most recent call last):
+[rank0]:   File "/net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/starVLA/starVLA/dataloader/gr00t_lerobot/datasets.py", line 625, in _get_metadata
+[rank0]:     channels = le_video_meta["shape"][le_video_meta["names"].index("channel")]
+[rank0]: ValueError: 'channel' is not in list
+
+[rank0]: During handling of the above exception, another exception occurred:
+
+[rank0]: Traceback (most recent call last):
+[rank0]:   File "/net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/starVLA/starVLA/training/train_starvla.py", line 397, in <module>
+[rank0]:     main(cfg)
+[rank0]:   File "/net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/starVLA/starVLA/training/train_starvla.py", line 355, in main
+[rank0]:     vla_train_dataloader = prepare_data(cfg=cfg, accelerator=accelerator, output_dir=output_dir)
+[rank0]:   File "/net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/starVLA/starVLA/training/train_starvla.py", line 80, in prepare_data
+[rank0]:     vla_train_dataloader = build_dataloader(cfg=cfg, dataset_py=cfg.datasets.vla_data.dataset_py)
+[rank0]:   File "/net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/starVLA/starVLA/dataloader/__init__.py", line 44, in build_dataloader
+[rank0]:     vla_dataset = get_vla_dataset(data_cfg=vla_dataset_cfg)
+[rank0]:   File "/net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/starVLA/starVLA/dataloader/lerobot_datasets.py", line 85, in get_vla_dataset
+[rank0]:     dataset_mixture.append((make_LeRobotSingleDataset(Path(data_root_dir), d_name, robot_type, delete_pause_frame=delete_pause_frame, data_cfg=data_cfg), d_weight))
+[rank0]:   File "/net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/starVLA/starVLA/dataloader/lerobot_datasets.py", line 48, in make_LeRobotSingleDataset
+[rank0]:     return LeRobotSingleDataset(
+[rank0]:   File "/net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/starVLA/starVLA/dataloader/gr00t_lerobot/datasets.py", line 427, in __init__
+[rank0]:     self._metadata = self._get_metadata(EmbodimentTag(self.tag))
+[rank0]:   File "/net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/starVLA/starVLA/dataloader/gr00t_lerobot/datasets.py", line 629, in _get_metadata
+[rank0]:     channels = le_video_meta["info"]["video.channels"]
+[rank0]: KeyError: 'info'
+[rank2]: Traceback (most recent call last):
+[rank2]:   File "/net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/starVLA/starVLA/dataloader/gr00t_lerobot/datasets.py", line 625, in _get_metadata
+[rank2]:     channels = le_video_meta["shape"][le_video_meta["names"].index("channel")]
+[rank2]: ValueError: 'channel' is not in list
+
+[rank2]: During handling of the above exception, another exception occurred:
+
+[rank2]: Traceback (most recent call last):
+[rank2]:   File "/net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/starVLA/starVLA/training/train_starvla.py", line 397, in <module>
+[rank2]:     main(cfg)
+[rank2]:   File "/net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/starVLA/starVLA/training/train_starvla.py", line 355, in main
+[rank2]:     vla_train_dataloader = prepare_data(cfg=cfg, accelerator=accelerator, output_dir=output_dir)
+[rank2]:   File "/net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/starVLA/starVLA/training/train_starvla.py", line 80, in prepare_data
+[rank2]:     vla_train_dataloader = build_dataloader(cfg=cfg, dataset_py=cfg.datasets.vla_data.dataset_py)
+[rank2]:   File "/net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/starVLA/starVLA/dataloader/__init__.py", line 44, in build_dataloader
+[rank2]:     vla_dataset = get_vla_dataset(data_cfg=vla_dataset_cfg)
+[rank2]:   File "/net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/starVLA/starVLA/dataloader/lerobot_datasets.py", line 85, in get_vla_dataset
+[rank2]:     dataset_mixture.append((make_LeRobotSingleDataset(Path(data_root_dir), d_name, robot_type, delete_pause_frame=delete_pause_frame, data_cfg=data_cfg), d_weight))
+[rank2]:   File "/net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/starVLA/starVLA/dataloader/lerobot_datasets.py", line 48, in make_LeRobotSingleDataset
+[rank2]:     return LeRobotSingleDataset(
+[rank2]:   File "/net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/starVLA/starVLA/dataloader/gr00t_lerobot/datasets.py", line 427, in __init__
+[rank2]:     self._metadata = self._get_metadata(EmbodimentTag(self.tag))
+[rank2]:   File "/net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/starVLA/starVLA/dataloader/gr00t_lerobot/datasets.py", line 629, in _get_metadata
+[rank2]:     channels = le_video_meta["info"]["video.channels"]
+[rank2]: KeyError: 'info'
+[rank3]: Traceback (most recent call last):
+[rank3]:   File "/net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/starVLA/starVLA/dataloader/gr00t_lerobot/datasets.py", line 625, in _get_metadata
+[rank3]:     channels = le_video_meta["shape"][le_video_meta["names"].index("channel")]
+[rank3]: ValueError: 'channel' is not in list
+
+[rank3]: During handling of the above exception, another exception occurred:
+
+[rank3]: Traceback (most recent call last):
+[rank3]:   File "/net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/starVLA/starVLA/training/train_starvla.py", line 397, in <module>
+[rank3]:     main(cfg)
+[rank3]:   File "/net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/starVLA/starVLA/training/train_starvla.py", line 355, in main
+[rank3]:     vla_train_dataloader = prepare_data(cfg=cfg, accelerator=accelerator, output_dir=output_dir)
+[rank3]:   File "/net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/starVLA/starVLA/training/train_starvla.py", line 80, in prepare_data
+[rank3]:     vla_train_dataloader = build_dataloader(cfg=cfg, dataset_py=cfg.datasets.vla_data.dataset_py)
+[rank3]:   File "/net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/starVLA/starVLA/dataloader/__init__.py", line 44, in build_dataloader
+[rank3]:     vla_dataset = get_vla_dataset(data_cfg=vla_dataset_cfg)
+[rank3]:   File "/net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/starVLA/starVLA/dataloader/lerobot_datasets.py", line 85, in get_vla_dataset
+[rank3]:     dataset_mixture.append((make_LeRobotSingleDataset(Path(data_root_dir), d_name, robot_type, delete_pause_frame=delete_pause_frame, data_cfg=data_cfg), d_weight))
+[rank3]:   File "/net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/starVLA/starVLA/dataloader/lerobot_datasets.py", line 48, in make_LeRobotSingleDataset
+[rank3]:     return LeRobotSingleDataset(
+[rank3]:   File "/net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/starVLA/starVLA/dataloader/gr00t_lerobot/datasets.py", line 427, in __init__
+[rank3]:     self._metadata = self._get_metadata(EmbodimentTag(self.tag))
+[rank3]:   File "/net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/starVLA/starVLA/dataloader/gr00t_lerobot/datasets.py", line 629, in _get_metadata
+[rank3]:     channels = le_video_meta["info"]["video.channels"]
+[rank3]: KeyError: 'info'
+[rank1]: Traceback (most recent call last):
+[rank1]:   File "/net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/starVLA/starVLA/dataloader/gr00t_lerobot/datasets.py", line 625, in _get_metadata
+[rank1]:     channels = le_video_meta["shape"][le_video_meta["names"].index("channel")]
+[rank1]: ValueError: 'channel' is not in list
+
+[rank1]: During handling of the above exception, another exception occurred:
+
+[rank1]: Traceback (most recent call last):
+[rank1]:   File "/net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/starVLA/starVLA/training/train_starvla.py", line 397, in <module>
+[rank1]:     main(cfg)
+[rank1]:   File "/net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/starVLA/starVLA/training/train_starvla.py", line 355, in main
+[rank1]:     vla_train_dataloader = prepare_data(cfg=cfg, accelerator=accelerator, output_dir=output_dir)
+[rank1]:   File "/net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/starVLA/starVLA/training/train_starvla.py", line 80, in prepare_data
+[rank1]:     vla_train_dataloader = build_dataloader(cfg=cfg, dataset_py=cfg.datasets.vla_data.dataset_py)
+[rank1]:   File "/net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/starVLA/starVLA/dataloader/__init__.py", line 44, in build_dataloader
+[rank1]:     vla_dataset = get_vla_dataset(data_cfg=vla_dataset_cfg)
+[rank1]:   File "/net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/starVLA/starVLA/dataloader/lerobot_datasets.py", line 85, in get_vla_dataset
+[rank1]:     dataset_mixture.append((make_LeRobotSingleDataset(Path(data_root_dir), d_name, robot_type, delete_pause_frame=delete_pause_frame, data_cfg=data_cfg), d_weight))
+[rank1]:   File "/net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/starVLA/starVLA/dataloader/lerobot_datasets.py", line 48, in make_LeRobotSingleDataset
+[rank1]:     return LeRobotSingleDataset(
+[rank1]:   File "/net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/starVLA/starVLA/dataloader/gr00t_lerobot/datasets.py", line 427, in __init__
+[rank1]:     self._metadata = self._get_metadata(EmbodimentTag(self.tag))
+[rank1]:   File "/net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/starVLA/starVLA/dataloader/gr00t_lerobot/datasets.py", line 629, in _get_metadata
+[rank1]:     channels = le_video_meta["info"]["video.channels"]
+[rank1]: KeyError: 'info'
+[rank0]:[W218 14:24:47.412706380 ProcessGroupNCCL.cpp:1496] Warning: WARNING: destroy_process_group() was not called before program exit, which can leak resources. For more info, please see https://pytorch.org/docs/stable/distributed.html#shutdown (function operator())
+W0218 14:24:47.974000 266677 site-packages/torch/distributed/elastic/multiprocessing/api.py:897] Sending process 267489 closing signal SIGTERM
+W0218 14:24:47.975000 266677 site-packages/torch/distributed/elastic/multiprocessing/api.py:897] Sending process 267490 closing signal SIGTERM
+W0218 14:24:47.975000 266677 site-packages/torch/distributed/elastic/multiprocessing/api.py:897] Sending process 267491 closing signal SIGTERM
+E0218 14:24:48.240000 266677 site-packages/torch/distributed/elastic/multiprocessing/api.py:869] failed (exitcode: 1) local_rank: 0 (pid: 267488) of binary: /net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/miniforge3/envs/starVLA/bin/python3.10
+Traceback (most recent call last):
+  File "/net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/miniforge3/envs/starVLA/bin/accelerate", line 7, in <module>
+    sys.exit(main())
+  File "/net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/miniforge3/envs/starVLA/lib/python3.10/site-packages/accelerate/commands/accelerate_cli.py", line 48, in main
+    args.func(args)
+  File "/net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/miniforge3/envs/starVLA/lib/python3.10/site-packages/accelerate/commands/launch.py", line 1177, in launch_command
+    deepspeed_launcher(args)
+  File "/net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/miniforge3/envs/starVLA/lib/python3.10/site-packages/accelerate/commands/launch.py", line 863, in deepspeed_launcher
+    distrib_run.run(args)
+  File "/net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/miniforge3/envs/starVLA/lib/python3.10/site-packages/torch/distributed/run.py", line 909, in run
+    elastic_launch(
+  File "/net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/miniforge3/envs/starVLA/lib/python3.10/site-packages/torch/distributed/launcher/api.py", line 138, in __call__
+    return launch_agent(self._config, self._entrypoint, list(args))
+  File "/net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/miniforge3/envs/starVLA/lib/python3.10/site-packages/torch/distributed/launcher/api.py", line 269, in launch_agent
+    raise ChildFailedError(
+torch.distributed.elastic.multiprocessing.errors.ChildFailedError: 
+============================================================
+starVLA/training/train_starvla.py FAILED
+------------------------------------------------------------
+Failures:
+  <NO_OTHER_FAILURES>
+------------------------------------------------------------
+Root Cause (first observed failure):
+[0]:
+  time      : 2026-02-18_14:24:47
+  host      : holygpu8a10401.rc.fas.harvard.edu
+  rank      : 0 (local_rank: 0)
+  exitcode  : 1 (pid: 267488)
+  error_file: <N/A>
+  traceback : To enable traceback see: https://pytorch.org/docs/stable/elastic/errors.html
+============================================================

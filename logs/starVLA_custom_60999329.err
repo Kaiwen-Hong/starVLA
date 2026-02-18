@@ -1,0 +1,54 @@
+/net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/miniforge3/envs/starVLA/lib/python3.10/site-packages/transformers/utils/hub.py:110: FutureWarning: Using `TRANSFORMERS_CACHE` is deprecated and will be removed in v5 of Transformers. Use `HF_HOME` instead.
+  warnings.warn(
+[W218 15:34:29.427857198 socket.cpp:759] [c10d] The client socket cannot be initialized to connect to [localhost]:29500 (errno: 97 - Address family not supported by protocol).
+/net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/miniforge3/envs/starVLA/lib/python3.10/site-packages/transformers/utils/hub.py:110: FutureWarning: Using `TRANSFORMERS_CACHE` is deprecated and will be removed in v5 of Transformers. Use `HF_HOME` instead.
+  warnings.warn(
+/net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/miniforge3/envs/starVLA/lib/python3.10/site-packages/transformers/utils/hub.py:110: FutureWarning: Using `TRANSFORMERS_CACHE` is deprecated and will be removed in v5 of Transformers. Use `HF_HOME` instead.
+  warnings.warn(
+/net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/miniforge3/envs/starVLA/lib/python3.10/site-packages/transformers/utils/hub.py:110: FutureWarning: Using `TRANSFORMERS_CACHE` is deprecated and will be removed in v5 of Transformers. Use `HF_HOME` instead.
+  warnings.warn(
+/net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/miniforge3/envs/starVLA/lib/python3.10/site-packages/transformers/utils/hub.py:110: FutureWarning: Using `TRANSFORMERS_CACHE` is deprecated and will be removed in v5 of Transformers. Use `HF_HOME` instead.
+  warnings.warn(
+[W218 15:34:37.493172672 socket.cpp:759] [c10d] The client socket cannot be initialized to connect to [localhost]:29500 (errno: 97 - Address family not supported by protocol).
+[W218 15:34:37.493635916 Utils.hpp:165] Warning: Environment variable NCCL_BLOCKING_WAIT is deprecated; use TORCH_NCCL_BLOCKING_WAIT instead (function operator())
+[W218 15:34:37.493647946 Utils.hpp:136] Warning: Environment variable NCCL_ASYNC_ERROR_HANDLING is deprecated; use TORCH_NCCL_ASYNC_ERROR_HANDLING instead (function operator())
+[W218 15:34:38.112186130 socket.cpp:759] [c10d] The client socket cannot be initialized to connect to [localhost]:29500 (errno: 97 - Address family not supported by protocol).
+[W218 15:34:38.112652814 Utils.hpp:165] Warning: Environment variable NCCL_BLOCKING_WAIT is deprecated; use TORCH_NCCL_BLOCKING_WAIT instead (function operator())
+[W218 15:34:38.112661274 Utils.hpp:136] Warning: Environment variable NCCL_ASYNC_ERROR_HANDLING is deprecated; use TORCH_NCCL_ASYNC_ERROR_HANDLING instead (function operator())
+[W218 15:34:38.388266072 socket.cpp:759] [c10d] The client socket cannot be initialized to connect to [localhost]:29500 (errno: 97 - Address family not supported by protocol).
+[W218 15:34:38.388746266 Utils.hpp:165] Warning: Environment variable NCCL_BLOCKING_WAIT is deprecated; use TORCH_NCCL_BLOCKING_WAIT instead (function operator())
+[W218 15:34:38.388756496 Utils.hpp:136] Warning: Environment variable NCCL_ASYNC_ERROR_HANDLING is deprecated; use TORCH_NCCL_ASYNC_ERROR_HANDLING instead (function operator())
+Loading checkpoint shards:   0%|          | 0/2 [00:00<?, ?it/s][W218 15:34:38.498413151 socket.cpp:759] [c10d] The client socket cannot be initialized to connect to [localhost]:29500 (errno: 97 - Address family not supported by protocol).
+[W218 15:34:38.498796506 Utils.hpp:165] Warning: Environment variable NCCL_BLOCKING_WAIT is deprecated; use TORCH_NCCL_BLOCKING_WAIT instead (function operator())
+[W218 15:34:38.498804695 Utils.hpp:136] Warning: Environment variable NCCL_ASYNC_ERROR_HANDLING is deprecated; use TORCH_NCCL_ASYNC_ERROR_HANDLING instead (function operator())
+Loading checkpoint shards: 100%|██████████| 2/2 [00:00<00:00, 34.23it/s]
+Loading checkpoint shards:   0%|          | 0/2 [00:00<?, ?it/s]Loading checkpoint shards: 100%|██████████| 2/2 [00:00<00:00, 33.65it/s]
+Loading checkpoint shards:   0%|          | 0/2 [00:00<?, ?it/s]Loading checkpoint shards: 100%|██████████| 2/2 [00:00<00:00, 38.84it/s]
+Loading checkpoint shards:   0%|          | 0/2 [00:00<?, ?it/s]Loading checkpoint shards: 100%|██████████| 2/2 [00:00<00:00, 36.79it/s]
+/net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/miniforge3/envs/starVLA/lib/python3.10/site-packages/albumentations/__init__.py:13: UserWarning: A new version of Albumentations is available: 2.0.8 (you have 1.4.18). Upgrade using: pip install -U albumentations. To disable automatic update checks, set the environment variable NO_ALBUMENTATIONS_UPDATE to 1.
+  check_for_updates()
+/net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/miniforge3/envs/starVLA/lib/python3.10/site-packages/albumentations/__init__.py:13: UserWarning: A new version of Albumentations is available: 2.0.8 (you have 1.4.18). Upgrade using: pip install -U albumentations. To disable automatic update checks, set the environment variable NO_ALBUMENTATIONS_UPDATE to 1.
+  check_for_updates()
+/net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/miniforge3/envs/starVLA/lib/python3.10/site-packages/albumentations/__init__.py:13: UserWarning: A new version of Albumentations is available: 2.0.8 (you have 1.4.18). Upgrade using: pip install -U albumentations. To disable automatic update checks, set the environment variable NO_ALBUMENTATIONS_UPDATE to 1.
+  check_for_updates()
+[rank1]:[W218 15:34:40.634036293 ProcessGroupNCCL.cpp:4561] [PG ID 0 PG GUID 0 Rank 1]  using GPU 1 to perform barrier as devices used by this process are currently unknown. This can potentially cause a hang if this rank to GPU mapping is incorrect. Specify device_ids in barrier() to force use of a particular device, or call init_process_group() with a device_id.
+[rank3]:[W218 15:34:40.634322109 ProcessGroupNCCL.cpp:4561] [PG ID 0 PG GUID 0 Rank 3]  using GPU 3 to perform barrier as devices used by this process are currently unknown. This can potentially cause a hang if this rank to GPU mapping is incorrect. Specify device_ids in barrier() to force use of a particular device, or call init_process_group() with a device_id.
+/net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/miniforge3/envs/starVLA/lib/python3.10/site-packages/albumentations/__init__.py:13: UserWarning: A new version of Albumentations is available: 2.0.8 (you have 1.4.18). Upgrade using: pip install -U albumentations. To disable automatic update checks, set the environment variable NO_ALBUMENTATIONS_UPDATE to 1.
+  check_for_updates()
+[rank2]:[W218 15:34:40.845180677 ProcessGroupNCCL.cpp:4561] [PG ID 0 PG GUID 0 Rank 2]  using GPU 2 to perform barrier as devices used by this process are currently unknown. This can potentially cause a hang if this rank to GPU mapping is incorrect. Specify device_ids in barrier() to force use of a particular device, or call init_process_group() with a device_id.
+[rank0]:[W218 15:34:40.038344662 ProcessGroupNCCL.cpp:4561] [PG ID 0 PG GUID 0 Rank 0]  using GPU 0 to perform barrier as devices used by this process are currently unknown. This can potentially cause a hang if this rank to GPU mapping is incorrect. Specify device_ids in barrier() to force use of a particular device, or call init_process_group() with a device_id.
+wandb: [wandb.login()] Loaded credentials for https://api.wandb.ai from /n/home01/haonan/.netrc.
+wandb: Currently logged in as: kaiwenh-17 (kaiwenh-17-uiuc) to https://api.wandb.ai. Use `wandb login --relogin` to force relogin
+wandb: setting up run io20avml
+wandb: Tracking run with wandb version 0.24.1
+wandb: Run data is saved locally in results/Checkpoints/custom_qwenOFT_requeue/wandb/wandb/run-20260218_153451-io20avml
+wandb: Run `wandb offline` to turn off syncing.
+wandb: Syncing run custom_qwenOFT_requeue
+wandb: ⭐️ View project at https://wandb.ai/kaiwenh-17-uiuc/starVLA_Custom
+wandb: 🚀 View run at https://wandb.ai/kaiwenh-17-uiuc/starVLA_Custom/runs/io20avml
+  0%|          | 0/500000 [00:00<?, ?it/s][2026-02-18T16:13:48.492] error: *** JOB 60999329 ON holygpu8a10401 CANCELLED AT 2026-02-18T16:13:48 DUE TO PREEMPTION ***
+W0218 16:13:48.498000 285213 site-packages/torch/distributed/elastic/agent/server/api.py:719] Received Signals.SIGTERM death signal, shutting down workers
+W0218 16:13:48.543000 285213 site-packages/torch/distributed/elastic/multiprocessing/api.py:897] Sending process 285258 closing signal SIGTERM
+W0218 16:13:48.558000 285213 site-packages/torch/distributed/elastic/multiprocessing/api.py:897] Sending process 285259 closing signal SIGTERM
+W0218 16:13:48.564000 285213 site-packages/torch/distributed/elastic/multiprocessing/api.py:897] Sending process 285260 closing signal SIGTERM
+W0218 16:13:48.565000 285213 site-packages/torch/distributed/elastic/multiprocessing/api.py:897] Sending process 285261 closing signal SIGTERM
