@@ -189,6 +189,42 @@ DATASET_NAMED_MIXTURES = {
         ("adjust_bottle", 1.0, "robotwin"),
     ],
 
+    # ── Custom v0218: 27 variants (removed wp1/wp2 for 3 tasks with obstacle issues) ──
+    "custom_v0218": [
+        ("adjust_bottle", 1.0, "robotwin"),
+        ("adjust_bottle_wp1", 1.0, "robotwin"),
+        ("adjust_bottle_wp2", 1.0, "robotwin"),
+        ("beat_block_hammer", 1.0, "robotwin"),
+        ("beat_block_hammer_wp1", 1.0, "robotwin"),
+        ("beat_block_hammer_wp2", 1.0, "robotwin"),
+        ("blocks_ranking_rgb", 1.0, "robotwin"),
+        ("blocks_ranking_rgb_wp1", 1.0, "robotwin"),
+        ("blocks_ranking_rgb_wp2", 1.0, "robotwin"),
+        ("blocks_ranking_size", 1.0, "robotwin"),           # clean only
+        ("click_alarmclock", 1.0, "robotwin"),
+        ("click_alarmclock_wp1", 1.0, "robotwin"),
+        ("click_alarmclock_wp2", 1.0, "robotwin"),
+        ("handover_block", 1.0, "robotwin"),
+        ("handover_block_wp1", 1.0, "robotwin"),
+        ("handover_block_wp2", 1.0, "robotwin"),
+        ("handover_mic", 1.0, "robotwin"),                  # clean only
+        ("move_can_pot", 1.0, "robotwin"),
+        ("move_can_pot_wp1", 1.0, "robotwin"),
+        ("move_can_pot_wp2", 1.0, "robotwin"),
+        ("move_pillbottle_pad", 1.0, "robotwin"),           # clean only
+        ("move_stapler_pad", 1.0, "robotwin"),
+        ("move_stapler_pad_wp1", 1.0, "robotwin"),
+        ("move_stapler_pad_wp2", 1.0, "robotwin"),
+        ("place_empty_cup", 1.0, "robotwin"),
+        ("place_empty_cup_wp1", 1.0, "robotwin"),
+        ("place_empty_cup_wp2", 1.0, "robotwin"),
+    ],
+
+    # Debug subset: just 1 v0218 task
+    "custom_v0218_task1": [
+        ("adjust_bottle", 1.0, "robotwin"),
+    ],
+
     "multi_robot": [
         ("LEROBOT_LIBERO_DATA/libero_10_no_noops_1.0.0_lerobot", 1.0, "libero_franka"),
         # ("OXE_LEROBOT_DATASET/bridge_orig_1.0.0_lerobot", 1.0, "oxe_bridge"),

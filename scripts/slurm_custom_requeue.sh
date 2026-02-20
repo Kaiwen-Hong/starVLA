@@ -15,7 +15,8 @@
 
 # ============================================================
 # StarVLA Custom Dataset Training on Kempner kempner_requeue
-# 1 node × 4 H100 80GB, DeepSpeed ZeRO-2, QwenOFT
+# 1 node × 4 H200 80GB, DeepSpeed ZeRO-2, QwenOFT
+# (change --constraint to h100 and --cpus-per-task to 96 for H100)
 # ============================================================
 
 # ── Environment setup ──

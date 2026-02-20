@@ -55,7 +55,7 @@ accelerate launch \
 Key differences from the RoboTwin training command:
 - `--datasets.vla_data.data_root_dir playground/Datasets/Custom` (not `RoboTwin`)
 - `--datasets.vla_data.data_mix custom_all` (not `robotwin`)
-- `--trainer.max_train_steps 525000` — ~5 epochs (custom dataset is ~5x smaller than RoboTwin, 1 epoch ≈ 105K steps)
+- `--trainer.max_train_steps 500000` — ~5 epochs (custom dataset is ~5x smaller than RoboTwin, 1 epoch ≈ 105K steps)
 - `--trainer.save_interval 50000` — ~2 checkpoints per epoch, ~10 total
 - `--trainer.eval_interval 5000` — eval more frequently since dataset is smaller
 
@@ -158,7 +158,49 @@ Two mixtures have been added to `starVLA/dataloader/gr00t_lerobot/mixtures.py`:
 | `data_root_dir` | `playground/Datasets/RoboTwin` | `playground/Datasets/Custom` |
 | `data_mix` | `robotwin` | `custom_all` |
 
-The StarVLA dataloader handles both image-in-parquet and video mode transparently. The `video_backend: torchvision_av` config still works -- for image-in-parquet data, the video backend is simply not used (images are read directly from parquet).
+**Important:** The StarVLA dataloader originally only supported video-mode datasets (external `.mp4` files). Image-in-parquet datasets required three patches to `starVLA/dataloader/gr00t_lerobot/datasets.py` before training would work. See the "Required Code Patches" section below.
+
+---
+
+## Required Code Patches for Image-in-Parquet Datasets
+
+The Custom dataset uses `dtype: image` with `total_videos: 0` (images stored as PNG bytes inside parquet cells). The original starVLA code assumed all datasets with a "video" modality have external `.mp4` files. Three patches were applied to `datasets.py`:
+
+### Patch 1: `_get_metadata()` — image metadata parsing (line ~624)
+
+Image datasets store `"channels"` (plural, not `"channel"`) in the names array, and `fps` at the info.json top level (not inside `info` or `video_info` dicts). Added a third fallback:
+
+```python
+except KeyError:
+    names = le_video_meta.get("names", [])
+    if isinstance(names, list) and "channels" in names:
+        channels = le_video_meta["shape"][names.index("channels")]
+    else:
+        channels = 3
+    fps = le_info.get("fps", 30)
+```
+
+Without this: `ValueError: 'channel' is not in list` or `KeyError: 'info'` during dataset init.
+
+### Patch 2: `get_video()` — read images from parquet (line ~1187)
+
+Added `is_image_dataset` property (checks `total_videos == 0`) and `_get_images_from_parquet()` method. For image datasets, frames are decoded from parquet `{'bytes': <PNG>, 'path': ...}` dicts via PIL, returning the same `(T, H, W, C)` uint8 ndarray as the video path.
+
+Without this: `FileNotFoundError` on non-existent `.mp4` files.
+
+### Patch 3: `LeRobotMixtureDataset.__getitem__()` — skip video existence check (line ~2094)
+
+The `while True` loop that validates video file existence now checks `dataset.is_image_dataset` first and skips the `os.path.exists()` call for image datasets.
+
+Without this: **Training hangs silently at step 0** (progress bar stuck at `0%`, infinite loop).
+
+### Verification
+
+```bash
+python test_image_dataset.py   # Tests 0-4 should all PASS
+```
+
+This test also confirms RoboTwin video datasets are not affected by the patches.
 
 ---
 
@@ -169,3 +211,5 @@ The StarVLA dataloader handles both image-in-parquet and video mode transparentl
 | `scripts/split_custom_lerobot.py` | Python script: splits merged LeRobot dataset into per-task dirs (multiprocessing, `--workers N`) |
 | `scripts/split_custom_all.sh` | Shell wrapper: runs the split with correct paths and task list (`bash split_custom_all.sh [workers]`) |
 | `starVLA/dataloader/gr00t_lerobot/mixtures.py` | `custom_all` and `custom_task1` mixtures (already registered) |
+| `starVLA/dataloader/gr00t_lerobot/datasets.py` | Core dataset classes (patched for image-in-parquet support) |
+| `test_image_dataset.py` | Unit test verifying image dataset loading and regression for video datasets |

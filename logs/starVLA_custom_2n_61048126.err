@@ -1,0 +1,505 @@
+/net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/miniforge3/envs/starVLA/lib/python3.10/site-packages/transformers/utils/hub.py:110: FutureWarning: Using `TRANSFORMERS_CACHE` is deprecated and will be removed in v5 of Transformers. Use `HF_HOME` instead.
+  warnings.warn(
+/net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/miniforge3/envs/starVLA/lib/python3.10/site-packages/transformers/utils/hub.py:110: FutureWarning: Using `TRANSFORMERS_CACHE` is deprecated and will be removed in v5 of Transformers. Use `HF_HOME` instead.
+  warnings.warn(
+[W218 21:09:56.850137511 socket.cpp:759] [c10d] The client socket cannot be initialized to connect to [holygpu8a10302]:29500 (errno: 97 - Address family not supported by protocol).
+[W218 21:09:56.037730970 socket.cpp:759] [c10d] The client socket cannot be initialized to connect to [holygpu8a10302]:29500 (errno: 97 - Address family not supported by protocol).
+/net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/miniforge3/envs/starVLA/lib/python3.10/site-packages/transformers/utils/hub.py:110: FutureWarning: Using `TRANSFORMERS_CACHE` is deprecated and will be removed in v5 of Transformers. Use `HF_HOME` instead.
+  warnings.warn(
+/net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/miniforge3/envs/starVLA/lib/python3.10/site-packages/transformers/utils/hub.py:110: FutureWarning: Using `TRANSFORMERS_CACHE` is deprecated and will be removed in v5 of Transformers. Use `HF_HOME` instead.
+  warnings.warn(
+/net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/miniforge3/envs/starVLA/lib/python3.10/site-packages/transformers/utils/hub.py:110: FutureWarning: Using `TRANSFORMERS_CACHE` is deprecated and will be removed in v5 of Transformers. Use `HF_HOME` instead.
+  warnings.warn(
+/net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/miniforge3/envs/starVLA/lib/python3.10/site-packages/transformers/utils/hub.py:110: FutureWarning: Using `TRANSFORMERS_CACHE` is deprecated and will be removed in v5 of Transformers. Use `HF_HOME` instead.
+  warnings.warn(
+/net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/miniforge3/envs/starVLA/lib/python3.10/site-packages/transformers/utils/hub.py:110: FutureWarning: Using `TRANSFORMERS_CACHE` is deprecated and will be removed in v5 of Transformers. Use `HF_HOME` instead.
+  warnings.warn(
+/net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/miniforge3/envs/starVLA/lib/python3.10/site-packages/transformers/utils/hub.py:110: FutureWarning: Using `TRANSFORMERS_CACHE` is deprecated and will be removed in v5 of Transformers. Use `HF_HOME` instead.
+  warnings.warn(
+/net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/miniforge3/envs/starVLA/lib/python3.10/site-packages/transformers/utils/hub.py:110: FutureWarning: Using `TRANSFORMERS_CACHE` is deprecated and will be removed in v5 of Transformers. Use `HF_HOME` instead.
+  warnings.warn(
+/net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/miniforge3/envs/starVLA/lib/python3.10/site-packages/transformers/utils/hub.py:110: FutureWarning: Using `TRANSFORMERS_CACHE` is deprecated and will be removed in v5 of Transformers. Use `HF_HOME` instead.
+  warnings.warn(
+[W218 21:10:09.425836988 socket.cpp:759] [c10d] The client socket cannot be initialized to connect to [holygpu8a10302]:29500 (errno: 97 - Address family not supported by protocol).
+[W218 21:10:09.425902227 socket.cpp:759] [c10d] The client socket cannot be initialized to connect to [holygpu8a10302]:29500 (errno: 97 - Address family not supported by protocol).
+[W218 21:10:09.430645326 Utils.hpp:165] Warning: Environment variable NCCL_BLOCKING_WAIT is deprecated; use TORCH_NCCL_BLOCKING_WAIT instead (function operator())
+[W218 21:10:09.430649236 Utils.hpp:165] Warning: Environment variable NCCL_BLOCKING_WAIT is deprecated; use TORCH_NCCL_BLOCKING_WAIT instead (function operator())
+[W218 21:10:09.430658356 Utils.hpp:136] Warning: Environment variable NCCL_ASYNC_ERROR_HANDLING is deprecated; use TORCH_NCCL_ASYNC_ERROR_HANDLING instead (function operator())
+[W218 21:10:09.430662116 Utils.hpp:136] Warning: Environment variable NCCL_ASYNC_ERROR_HANDLING is deprecated; use TORCH_NCCL_ASYNC_ERROR_HANDLING instead (function operator())
+[W218 21:10:09.450796719 socket.cpp:759] [c10d] The client socket cannot be initialized to connect to [holygpu8a10302]:29500 (errno: 97 - Address family not supported by protocol).
+[W218 21:10:09.451266244 Utils.hpp:165] Warning: Environment variable NCCL_BLOCKING_WAIT is deprecated; use TORCH_NCCL_BLOCKING_WAIT instead (function operator())
+[W218 21:10:09.451273974 Utils.hpp:136] Warning: Environment variable NCCL_ASYNC_ERROR_HANDLING is deprecated; use TORCH_NCCL_ASYNC_ERROR_HANDLING instead (function operator())
+[W218 21:10:09.455553598 socket.cpp:759] [c10d] The client socket cannot be initialized to connect to [holygpu8a10302]:29500 (errno: 97 - Address family not supported by protocol).
+[W218 21:10:09.501406255 Utils.hpp:165] Warning: Environment variable NCCL_BLOCKING_WAIT is deprecated; use TORCH_NCCL_BLOCKING_WAIT instead (function operator())
+[W218 21:10:09.501426805 Utils.hpp:136] Warning: Environment variable NCCL_ASYNC_ERROR_HANDLING is deprecated; use TORCH_NCCL_ASYNC_ERROR_HANDLING instead (function operator())
+[W218 21:10:09.018321504 socket.cpp:759] [c10d] The client socket cannot be initialized to connect to [holygpu8a10302]:29500 (errno: 97 - Address family not supported by protocol).
+[W218 21:10:09.018499442 socket.cpp:759] [c10d] The client socket cannot be initialized to connect to [holygpu8a10302]:29500 (errno: 97 - Address family not supported by protocol).
+[W218 21:10:09.018527992 socket.cpp:759] [c10d] The client socket cannot be initialized to connect to [holygpu8a10302]:29500 (errno: 97 - Address family not supported by protocol).
+[W218 21:10:09.018535252 socket.cpp:759] [c10d] The client socket cannot be initialized to connect to [holygpu8a10302]:29500 (errno: 97 - Address family not supported by protocol).
+[W218 21:10:09.022800096 Utils.hpp:165] Warning: Environment variable NCCL_BLOCKING_WAIT is deprecated; use TORCH_NCCL_BLOCKING_WAIT instead (function operator())
+[W218 21:10:09.022803866 Utils.hpp:165] Warning: Environment variable NCCL_BLOCKING_WAIT is deprecated; use TORCH_NCCL_BLOCKING_WAIT instead (function operator())
+[W218 21:10:09.022803676 Utils.hpp:165] Warning: Environment variable NCCL_BLOCKING_WAIT is deprecated; use TORCH_NCCL_BLOCKING_WAIT instead (function operator())
+[W218 21:10:09.022809766 Utils.hpp:136] Warning: Environment variable NCCL_ASYNC_ERROR_HANDLING is deprecated; use TORCH_NCCL_ASYNC_ERROR_HANDLING instead (function operator())
+[W218 21:10:09.022808556 Utils.hpp:165] Warning: Environment variable NCCL_BLOCKING_WAIT is deprecated; use TORCH_NCCL_BLOCKING_WAIT instead (function operator())
+[W218 21:10:09.022819486 Utils.hpp:136] Warning: Environment variable NCCL_ASYNC_ERROR_HANDLING is deprecated; use TORCH_NCCL_ASYNC_ERROR_HANDLING instead (function operator())
+[W218 21:10:09.022820636 Utils.hpp:136] Warning: Environment variable NCCL_ASYNC_ERROR_HANDLING is deprecated; use TORCH_NCCL_ASYNC_ERROR_HANDLING instead (function operator())
+[W218 21:10:09.022821996 Utils.hpp:136] Warning: Environment variable NCCL_ASYNC_ERROR_HANDLING is deprecated; use TORCH_NCCL_ASYNC_ERROR_HANDLING instead (function operator())
+Loading checkpoint shards:   0%|          | 0/2 [00:00<?, ?it/s]Loading checkpoint shards:   0%|          | 0/2 [00:00<?, ?it/s]Loading checkpoint shards:   0%|          | 0/2 [00:00<?, ?it/s]Loading checkpoint shards:   0%|          | 0/2 [00:00<?, ?it/s]Loading checkpoint shards:  50%|█████     | 1/2 [00:00<00:00,  1.55it/s]Loading checkpoint shards:  50%|█████     | 1/2 [00:00<00:00,  1.56it/s]Loading checkpoint shards:  50%|█████     | 1/2 [00:00<00:00,  1.55it/s]Loading checkpoint shards:  50%|█████     | 1/2 [00:00<00:00,  1.52it/s]Loading checkpoint shards: 100%|██████████| 2/2 [00:01<00:00,  2.02it/s]Loading checkpoint shards: 100%|██████████| 2/2 [00:01<00:00,  2.04it/s]Loading checkpoint shards: 100%|██████████| 2/2 [00:01<00:00,  2.04it/s]Loading checkpoint shards: 100%|██████████| 2/2 [00:01<00:00,  2.04it/s]Loading checkpoint shards: 100%|██████████| 2/2 [00:01<00:00,  1.95it/s]Loading checkpoint shards: 100%|██████████| 2/2 [00:01<00:00,  1.95it/s]Loading checkpoint shards: 100%|██████████| 2/2 [00:01<00:00,  1.94it/s]
+
+Loading checkpoint shards: 100%|██████████| 2/2 [00:01<00:00,  1.92it/s]
+
+Loading checkpoint shards:   0%|          | 0/2 [00:00<?, ?it/s]Loading checkpoint shards:   0%|          | 0/2 [00:00<?, ?it/s]Loading checkpoint shards:   0%|          | 0/2 [00:00<?, ?it/s]Loading checkpoint shards:   0%|          | 0/2 [00:00<?, ?it/s]Loading checkpoint shards:  50%|█████     | 1/2 [00:00<00:00,  1.72it/s]Loading checkpoint shards:  50%|█████     | 1/2 [00:00<00:00,  1.76it/s]Loading checkpoint shards:  50%|█████     | 1/2 [00:00<00:00,  1.71it/s]Loading checkpoint shards:  50%|█████     | 1/2 [00:00<00:00,  1.76it/s]Loading checkpoint shards: 100%|██████████| 2/2 [00:00<00:00,  2.27it/s]Loading checkpoint shards: 100%|██████████| 2/2 [00:00<00:00,  2.30it/s]Loading checkpoint shards: 100%|██████████| 2/2 [00:00<00:00,  2.27it/s]Loading checkpoint shards: 100%|██████████| 2/2 [00:00<00:00,  2.30it/s]Loading checkpoint shards: 100%|██████████| 2/2 [00:00<00:00,  2.16it/s]Loading checkpoint shards: 100%|██████████| 2/2 [00:00<00:00,  2.16it/s]
+
+Loading checkpoint shards: 100%|██████████| 2/2 [00:00<00:00,  2.20it/s]Loading checkpoint shards: 100%|██████████| 2/2 [00:00<00:00,  2.19it/s]
+
+/net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/miniforge3/envs/starVLA/lib/python3.10/site-packages/albumentations/__init__.py:13: UserWarning: A new version of Albumentations is available: 2.0.8 (you have 1.4.18). Upgrade using: pip install -U albumentations. To disable automatic update checks, set the environment variable NO_ALBUMENTATIONS_UPDATE to 1.
+  check_for_updates()
+/net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/miniforge3/envs/starVLA/lib/python3.10/site-packages/albumentations/__init__.py:13: UserWarning: A new version of Albumentations is available: 2.0.8 (you have 1.4.18). Upgrade using: pip install -U albumentations. To disable automatic update checks, set the environment variable NO_ALBUMENTATIONS_UPDATE to 1.
+  check_for_updates()
+/net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/miniforge3/envs/starVLA/lib/python3.10/site-packages/albumentations/__init__.py:13: UserWarning: A new version of Albumentations is available: 2.0.8 (you have 1.4.18). Upgrade using: pip install -U albumentations. To disable automatic update checks, set the environment variable NO_ALBUMENTATIONS_UPDATE to 1.
+  check_for_updates()
+/net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/miniforge3/envs/starVLA/lib/python3.10/site-packages/albumentations/__init__.py:13: UserWarning: A new version of Albumentations is available: 2.0.8 (you have 1.4.18). Upgrade using: pip install -U albumentations. To disable automatic update checks, set the environment variable NO_ALBUMENTATIONS_UPDATE to 1.
+  check_for_updates()
+[rank1]:[W218 21:10:15.380985199 ProcessGroupNCCL.cpp:4561] [PG ID 0 PG GUID 0 Rank 1]  using GPU 1 to perform barrier as devices used by this process are currently unknown. This can potentially cause a hang if this rank to GPU mapping is incorrect. Specify device_ids in barrier() to force use of a particular device, or call init_process_group() with a device_id.
+[rank3]:[W218 21:10:15.380990990 ProcessGroupNCCL.cpp:4561] [PG ID 0 PG GUID 0 Rank 3]  using GPU 3 to perform barrier as devices used by this process are currently unknown. This can potentially cause a hang if this rank to GPU mapping is incorrect. Specify device_ids in barrier() to force use of a particular device, or call init_process_group() with a device_id.
+[rank2]:[W218 21:10:15.380996129 ProcessGroupNCCL.cpp:4561] [PG ID 0 PG GUID 0 Rank 2]  using GPU 2 to perform barrier as devices used by this process are currently unknown. This can potentially cause a hang if this rank to GPU mapping is incorrect. Specify device_ids in barrier() to force use of a particular device, or call init_process_group() with a device_id.
+[rank0]:[W218 21:10:15.554906788 ProcessGroupNCCL.cpp:4561] [PG ID 0 PG GUID 0 Rank 0]  using GPU 0 to perform barrier as devices used by this process are currently unknown. This can potentially cause a hang if this rank to GPU mapping is incorrect. Specify device_ids in barrier() to force use of a particular device, or call init_process_group() with a device_id.
+[rank0]: Traceback (most recent call last):
+[rank0]:   File "/net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/starVLA/starVLA/training/train_starvla.py", line 397, in <module>
+[rank0]:     main(cfg)
+[rank0]:   File "/net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/starVLA/starVLA/training/train_starvla.py", line 355, in main
+[rank0]:     vla_train_dataloader = prepare_data(cfg=cfg, accelerator=accelerator, output_dir=output_dir)
+[rank0]:   File "/net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/starVLA/starVLA/training/train_starvla.py", line 80, in prepare_data
+[rank0]:     vla_train_dataloader = build_dataloader(cfg=cfg, dataset_py=cfg.datasets.vla_data.dataset_py)
+[rank0]:   File "/net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/starVLA/starVLA/dataloader/__init__.py", line 44, in build_dataloader
+[rank0]:     vla_dataset = get_vla_dataset(data_cfg=vla_dataset_cfg)
+[rank0]:   File "/net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/starVLA/starVLA/dataloader/lerobot_datasets.py", line 85, in get_vla_dataset
+[rank0]:     dataset_mixture.append((make_LeRobotSingleDataset(Path(data_root_dir), d_name, robot_type, delete_pause_frame=delete_pause_frame, data_cfg=data_cfg), d_weight))
+[rank0]:   File "/net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/starVLA/starVLA/dataloader/lerobot_datasets.py", line 48, in make_LeRobotSingleDataset
+[rank0]:     return LeRobotSingleDataset(
+[rank0]:   File "/net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/starVLA/starVLA/dataloader/gr00t_lerobot/datasets.py", line 427, in __init__
+[rank0]:     self._metadata = self._get_metadata(EmbodimentTag(self.tag))
+[rank0]:   File "/net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/starVLA/starVLA/dataloader/gr00t_lerobot/datasets.py", line 763, in _get_metadata
+[rank0]:     dist.barrier()
+[rank0]:   File "/net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/miniforge3/envs/starVLA/lib/python3.10/site-packages/torch/distributed/c10d_logger.py", line 81, in wrapper
+[rank0]:     return func(*args, **kwargs)
+[rank0]:   File "/net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/miniforge3/envs/starVLA/lib/python3.10/site-packages/torch/distributed/distributed_c10d.py", line 4551, in barrier
+[rank0]:     work = group.barrier(opts=opts)
+[rank0]: torch.distributed.DistBackendError: NCCL error in: /pytorch/torch/csrc/distributed/c10d/ProcessGroupNCCL.cpp:2588, internal error - please report this issue to the NCCL developers, NCCL version 2.21.5
+[rank0]: ncclInternalError: Internal check failed.
+[rank0]: Last error:
+[rank0]: Bootstrap : no socket interface found
+/net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/miniforge3/envs/starVLA/lib/python3.10/site-packages/albumentations/__init__.py:13: UserWarning: A new version of Albumentations is available: 2.0.8 (you have 1.4.18). Upgrade using: pip install -U albumentations. To disable automatic update checks, set the environment variable NO_ALBUMENTATIONS_UPDATE to 1.
+  check_for_updates()
+/net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/miniforge3/envs/starVLA/lib/python3.10/site-packages/albumentations/__init__.py:13: UserWarning: A new version of Albumentations is available: 2.0.8 (you have 1.4.18). Upgrade using: pip install -U albumentations. To disable automatic update checks, set the environment variable NO_ALBUMENTATIONS_UPDATE to 1.
+  check_for_updates()
+/net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/miniforge3/envs/starVLA/lib/python3.10/site-packages/albumentations/__init__.py:13: UserWarning: A new version of Albumentations is available: 2.0.8 (you have 1.4.18). Upgrade using: pip install -U albumentations. To disable automatic update checks, set the environment variable NO_ALBUMENTATIONS_UPDATE to 1.
+  check_for_updates()
+/net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/miniforge3/envs/starVLA/lib/python3.10/site-packages/albumentations/__init__.py:13: UserWarning: A new version of Albumentations is available: 2.0.8 (you have 1.4.18). Upgrade using: pip install -U albumentations. To disable automatic update checks, set the environment variable NO_ALBUMENTATIONS_UPDATE to 1.
+  check_for_updates()
+[rank7]:[W218 21:10:15.018189168 ProcessGroupNCCL.cpp:4561] [PG ID 0 PG GUID 0 Rank 7]  using GPU 3 to perform barrier as devices used by this process are currently unknown. This can potentially cause a hang if this rank to GPU mapping is incorrect. Specify device_ids in barrier() to force use of a particular device, or call init_process_group() with a device_id.
+[rank5]:[W218 21:10:15.018189188 ProcessGroupNCCL.cpp:4561] [PG ID 0 PG GUID 0 Rank 5]  using GPU 1 to perform barrier as devices used by this process are currently unknown. This can potentially cause a hang if this rank to GPU mapping is incorrect. Specify device_ids in barrier() to force use of a particular device, or call init_process_group() with a device_id.
+[rank6]:[W218 21:10:15.018196038 ProcessGroupNCCL.cpp:4561] [PG ID 0 PG GUID 0 Rank 6]  using GPU 2 to perform barrier as devices used by this process are currently unknown. This can potentially cause a hang if this rank to GPU mapping is incorrect. Specify device_ids in barrier() to force use of a particular device, or call init_process_group() with a device_id.
+[rank0]:[W218 21:10:15.051644885 ProcessGroupNCCL.cpp:1496] Warning: WARNING: destroy_process_group() was not called before program exit, which can leak resources. For more info, please see https://pytorch.org/docs/stable/distributed.html#shutdown (function operator())
+[rank4]:[W218 21:10:16.163741883 ProcessGroupNCCL.cpp:4561] [PG ID 0 PG GUID 0 Rank 4]  using GPU 0 to perform barrier as devices used by this process are currently unknown. This can potentially cause a hang if this rank to GPU mapping is incorrect. Specify device_ids in barrier() to force use of a particular device, or call init_process_group() with a device_id.
+W0218 21:10:17.623000 2400972 site-packages/torch/distributed/elastic/multiprocessing/api.py:897] Sending process 2401036 closing signal SIGTERM
+W0218 21:10:17.627000 2400972 site-packages/torch/distributed/elastic/multiprocessing/api.py:897] Sending process 2401037 closing signal SIGTERM
+W0218 21:10:17.629000 2400972 site-packages/torch/distributed/elastic/multiprocessing/api.py:897] Sending process 2401038 closing signal SIGTERM
+E0218 21:10:18.071000 2400972 site-packages/torch/distributed/elastic/multiprocessing/api.py:869] failed (exitcode: 1) local_rank: 0 (pid: 2401035) of binary: /net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/miniforge3/envs/starVLA/bin/python3.10
+Traceback (most recent call last):
+  File "/net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/miniforge3/envs/starVLA/bin/accelerate", line 7, in <module>
+    sys.exit(main())
+  File "/net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/miniforge3/envs/starVLA/lib/python3.10/site-packages/accelerate/commands/accelerate_cli.py", line 48, in main
+    args.func(args)
+  File "/net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/miniforge3/envs/starVLA/lib/python3.10/site-packages/accelerate/commands/launch.py", line 1177, in launch_command
+    deepspeed_launcher(args)
+  File "/net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/miniforge3/envs/starVLA/lib/python3.10/site-packages/accelerate/commands/launch.py", line 863, in deepspeed_launcher
+    distrib_run.run(args)
+  File "/net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/miniforge3/envs/starVLA/lib/python3.10/site-packages/torch/distributed/run.py", line 909, in run
+    elastic_launch(
+  File "/net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/miniforge3/envs/starVLA/lib/python3.10/site-packages/torch/distributed/launcher/api.py", line 138, in __call__
+    return launch_agent(self._config, self._entrypoint, list(args))
+  File "/net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/miniforge3/envs/starVLA/lib/python3.10/site-packages/torch/distributed/launcher/api.py", line 269, in launch_agent
+    raise ChildFailedError(
+torch.distributed.elastic.multiprocessing.errors.ChildFailedError: 
+============================================================
+starVLA/training/train_starvla.py FAILED
+------------------------------------------------------------
+Failures:
+  <NO_OTHER_FAILURES>
+------------------------------------------------------------
+Root Cause (first observed failure):
+[0]:
+  time      : 2026-02-18_21:10:17
+  host      : holygpu8a10302.rc.fas.harvard.edu
+  rank      : 0 (local_rank: 0)
+  exitcode  : 1 (pid: 2401035)
+  error_file: <N/A>
+  traceback : To enable traceback see: https://pytorch.org/docs/stable/elastic/errors.html
+============================================================
+[rank6]: Traceback (most recent call last):
+[rank6]:   File "/net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/starVLA/starVLA/training/train_starvla.py", line 397, in <module>
+[rank6]:     main(cfg)
+[rank6]:   File "/net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/starVLA/starVLA/training/train_starvla.py", line 355, in main
+[rank6]:     vla_train_dataloader = prepare_data(cfg=cfg, accelerator=accelerator, output_dir=output_dir)
+[rank6]:   File "/net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/starVLA/starVLA/training/train_starvla.py", line 80, in prepare_data
+[rank6]:     vla_train_dataloader = build_dataloader(cfg=cfg, dataset_py=cfg.datasets.vla_data.dataset_py)
+[rank6]:   File "/net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/starVLA/starVLA/dataloader/__init__.py", line 44, in build_dataloader
+[rank6]:     vla_dataset = get_vla_dataset(data_cfg=vla_dataset_cfg)
+[rank6]:   File "/net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/starVLA/starVLA/dataloader/lerobot_datasets.py", line 85, in get_vla_dataset
+[rank6]:     dataset_mixture.append((make_LeRobotSingleDataset(Path(data_root_dir), d_name, robot_type, delete_pause_frame=delete_pause_frame, data_cfg=data_cfg), d_weight))
+[rank6]:   File "/net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/starVLA/starVLA/dataloader/lerobot_datasets.py", line 48, in make_LeRobotSingleDataset
+[rank6]:     return LeRobotSingleDataset(
+[rank6]:   File "/net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/starVLA/starVLA/dataloader/gr00t_lerobot/datasets.py", line 427, in __init__
+[rank6]:     self._metadata = self._get_metadata(EmbodimentTag(self.tag))
+[rank6]:   File "/net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/starVLA/starVLA/dataloader/gr00t_lerobot/datasets.py", line 763, in _get_metadata
+[rank6]:     dist.barrier()
+[rank6]:   File "/net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/miniforge3/envs/starVLA/lib/python3.10/site-packages/torch/distributed/c10d_logger.py", line 81, in wrapper
+[rank6]:     return func(*args, **kwargs)
+[rank6]:   File "/net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/miniforge3/envs/starVLA/lib/python3.10/site-packages/torch/distributed/distributed_c10d.py", line 4551, in barrier
+[rank6]:     work = group.barrier(opts=opts)
+[rank6]: torch.distributed.DistBackendError: [6] is setting up NCCL communicator and retrieving ncclUniqueId from [0] via c10d key-value store by key '0', but store->get('0') got error: failed to recv, got 0 bytes
+[rank6]: Exception raised from recvBytes at /pytorch/torch/csrc/distributed/c10d/Utils.hpp:671 (most recent call first):
+[rank6]: frame #0: c10::Error::Error(c10::SourceLocation, std::string) + 0x96 (0x14c5ca0a01b6 in /net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/miniforge3/envs/starVLA/lib/python3.10/site-packages/torch/lib/libc10.so)
+[rank6]: frame #1: <unknown function> + 0x6312a88 (0x14c6056a5a88 in /net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/miniforge3/envs/starVLA/lib/python3.10/site-packages/torch/lib/libtorch_cpu.so)
+[rank6]: frame #2: c10d::TCPStore::doWait(c10::ArrayRef<std::string>, std::chrono::duration<long, std::ratio<1l, 1000l> >) + 0x367 (0x14c6056a2817 in /net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/miniforge3/envs/starVLA/lib/python3.10/site-packages/torch/lib/libtorch_cpu.so)
+[rank6]: frame #3: c10d::TCPStore::doGet(std::string const&) + 0x2a (0x14c6056a2b9a in /net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/miniforge3/envs/starVLA/lib/python3.10/site-packages/torch/lib/libtorch_cpu.so)
+[rank6]: frame #4: c10d::TCPStore::get(std::string const&) + 0x7a (0x14c6056a393a in /net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/miniforge3/envs/starVLA/lib/python3.10/site-packages/torch/lib/libtorch_cpu.so)
+[rank6]: frame #5: c10d::PrefixStore::get(std::string const&) + 0x31 (0x14c6056505d1 in /net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/miniforge3/envs/starVLA/lib/python3.10/site-packages/torch/lib/libtorch_cpu.so)
+[rank6]: frame #6: c10d::PrefixStore::get(std::string const&) + 0x31 (0x14c6056505d1 in /net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/miniforge3/envs/starVLA/lib/python3.10/site-packages/torch/lib/libtorch_cpu.so)
+[rank6]: frame #7: c10d::PrefixStore::get(std::string const&) + 0x31 (0x14c6056505d1 in /net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/miniforge3/envs/starVLA/lib/python3.10/site-packages/torch/lib/libtorch_cpu.so)
+[rank6]: frame #8: c10d::ProcessGroupNCCL::broadcastUniqueNCCLID(ncclUniqueId*, bool, std::string const&, int) + 0xaf (0x14c5cb3e0a9f in /net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/miniforge3/envs/starVLA/lib/python3.10/site-packages/torch/lib/libtorch_cuda.so)
+[rank6]: frame #9: c10d::ProcessGroupNCCL::initNCCLComm(std::string const&, c10::Device&, c10d::OpType, int, bool) + 0x1176 (0x14c5cb3ee666 in /net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/miniforge3/envs/starVLA/lib/python3.10/site-packages/torch/lib/libtorch_cuda.so)
+[rank6]: frame #10: <unknown function> + 0x1209be1 (0x14c5cb3f4be1 in /net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/miniforge3/envs/starVLA/lib/python3.10/site-packages/torch/lib/libtorch_cuda.so)
+[rank6]: frame #11: c10d::ProcessGroupNCCL::allreduce_impl(at::Tensor&, char const*, c10d::AllreduceOptions const&) + 0x13e (0x14c5cb3f55de in /net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/miniforge3/envs/starVLA/lib/python3.10/site-packages/torch/lib/libtorch_cuda.so)
+[rank6]: frame #12: c10d::ProcessGroupNCCL::barrier(c10d::BarrierOptions const&) + 0x465 (0x14c5cb405995 in /net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/miniforge3/envs/starVLA/lib/python3.10/site-packages/torch/lib/libtorch_cuda.so)
+[rank6]: frame #13: <unknown function> + 0x62afec2 (0x14c605642ec2 in /net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/miniforge3/envs/starVLA/lib/python3.10/site-packages/torch/lib/libtorch_cpu.so)
+[rank6]: frame #14: <unknown function> + 0x62ba655 (0x14c60564d655 in /net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/miniforge3/envs/starVLA/lib/python3.10/site-packages/torch/lib/libtorch_cpu.so)
+[rank6]: frame #15: <unknown function> + 0x58bc27b (0x14c604c4f27b in /net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/miniforge3/envs/starVLA/lib/python3.10/site-packages/torch/lib/libtorch_cpu.so)
+[rank6]: frame #16: <unknown function> + 0x58b9af9 (0x14c604c4caf9 in /net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/miniforge3/envs/starVLA/lib/python3.10/site-packages/torch/lib/libtorch_cpu.so)
+[rank6]: frame #17: <unknown function> + 0x1aca9f8 (0x14c600e5d9f8 in /net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/miniforge3/envs/starVLA/lib/python3.10/site-packages/torch/lib/libtorch_cpu.so)
+[rank6]: frame #18: <unknown function> + 0x62c6464 (0x14c605659464 in /net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/miniforge3/envs/starVLA/lib/python3.10/site-packages/torch/lib/libtorch_cpu.so)
+[rank6]: frame #19: <unknown function> + 0x62c72d9 (0x14c60565a2d9 in /net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/miniforge3/envs/starVLA/lib/python3.10/site-packages/torch/lib/libtorch_cpu.so)
+[rank6]: frame #20: <unknown function> + 0xe9caf8 (0x14c615311af8 in /net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/miniforge3/envs/starVLA/lib/python3.10/site-packages/torch/lib/libtorch_python.so)
+[rank6]: frame #21: <unknown function> + 0x518d37 (0x14c61498dd37 in /net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/miniforge3/envs/starVLA/lib/python3.10/site-packages/torch/lib/libtorch_python.so)
+[rank6]: frame #22: /net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/miniforge3/envs/starVLA/bin/python3.10() [0x4fe087]
+[rank6]: frame #23: _PyObject_MakeTpCall + 0x25b (0x4f77db in /net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/miniforge3/envs/starVLA/bin/python3.10)
+[rank6]: frame #24: /net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/miniforge3/envs/starVLA/bin/python3.10() [0x50a0cf]
+[rank6]: frame #25: _PyEval_EvalFrameDefault + 0x13b3 (0x4ef863 in /net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/miniforge3/envs/starVLA/bin/python3.10)
+[rank6]: frame #26: _PyFunction_Vectorcall + 0x6f (0x4fe4cf in /net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/miniforge3/envs/starVLA/bin/python3.10)
+[rank6]: frame #27: _PyEval_EvalFrameDefault + 0x2b79 (0x4f1029 in /net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/miniforge3/envs/starVLA/bin/python3.10)
+[rank6]: frame #28: _PyFunction_Vectorcall + 0x6f (0x4fe4cf in /net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/miniforge3/envs/starVLA/bin/python3.10)
+[rank6]: frame #29: _PyEval_EvalFrameDefault + 0x4b26 (0x4f2fd6 in /net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/miniforge3/envs/starVLA/bin/python3.10)
+[rank6]: frame #30: _PyFunction_Vectorcall + 0x6f (0x4fe4cf in /net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/miniforge3/envs/starVLA/bin/python3.10)
+[rank6]: frame #31: _PyEval_EvalFrameDefault + 0x731 (0x4eebe1 in /net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/miniforge3/envs/starVLA/bin/python3.10)
+[rank6]: frame #32: _PyFunction_Vectorcall + 0x6f (0x4fe4cf in /net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/miniforge3/envs/starVLA/bin/python3.10)
+[rank6]: frame #33: _PyObject_FastCallDictTstate + 0x17d (0x4f6bdd in /net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/miniforge3/envs/starVLA/bin/python3.10)
+[rank6]: frame #34: /net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/miniforge3/envs/starVLA/bin/python3.10() [0x5079a8]
+[rank6]: frame #35: _PyObject_MakeTpCall + 0x2ab (0x4f782b in /net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/miniforge3/envs/starVLA/bin/python3.10)
+[rank6]: frame #36: _PyEval_EvalFrameDefault + 0x58eb (0x4f3d9b in /net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/miniforge3/envs/starVLA/bin/python3.10)
+[rank6]: frame #37: _PyFunction_Vectorcall + 0x6f (0x4fe4cf in /net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/miniforge3/envs/starVLA/bin/python3.10)
+[rank6]: frame #38: _PyEval_EvalFrameDefault + 0x13b3 (0x4ef863 in /net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/miniforge3/envs/starVLA/bin/python3.10)
+[rank6]: frame #39: _PyFunction_Vectorcall + 0x6f (0x4fe4cf in /net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/miniforge3/envs/starVLA/bin/python3.10)
+[rank6]: frame #40: _PyEval_EvalFrameDefault + 0x13b3 (0x4ef863 in /net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/miniforge3/envs/starVLA/bin/python3.10)
+[rank6]: frame #41: _PyFunction_Vectorcall + 0x6f (0x4fe4cf in /net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/miniforge3/envs/starVLA/bin/python3.10)
+[rank6]: frame #42: _PyEval_EvalFrameDefault + 0x13b3 (0x4ef863 in /net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/miniforge3/envs/starVLA/bin/python3.10)
+[rank6]: frame #43: _PyFunction_Vectorcall + 0x6f (0x4fe4cf in /net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/miniforge3/envs/starVLA/bin/python3.10)
+[rank6]: frame #44: _PyEval_EvalFrameDefault + 0x13b3 (0x4ef863 in /net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/miniforge3/envs/starVLA/bin/python3.10)
+[rank6]: frame #45: _PyFunction_Vectorcall + 0x6f (0x4fe4cf in /net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/miniforge3/envs/starVLA/bin/python3.10)
+[rank6]: frame #46: _PyEval_EvalFrameDefault + 0x31f (0x4ee7cf in /net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/miniforge3/envs/starVLA/bin/python3.10)
+[rank6]: frame #47: /net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/miniforge3/envs/starVLA/bin/python3.10() [0x596192]
+[rank6]: frame #48: PyEval_EvalCode + 0x87 (0x5960d7 in /net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/miniforge3/envs/starVLA/bin/python3.10)
+[rank6]: frame #49: /net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/miniforge3/envs/starVLA/bin/python3.10() [0x5c72d7]
+[rank6]: frame #50: /net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/miniforge3/envs/starVLA/bin/python3.10() [0x5c2420]
+[rank6]: frame #51: /net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/miniforge3/envs/starVLA/bin/python3.10() [0x4598b9]
+[rank6]: frame #52: _PyRun_SimpleFileObject + 0x19f (0x5bc9af in /net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/miniforge3/envs/starVLA/bin/python3.10)
+[rank6]: frame #53: _PyRun_AnyFileObject + 0x43 (0x5bc713 in /net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/miniforge3/envs/starVLA/bin/python3.10)
+[rank6]: frame #54: Py_RunMain + 0x38d (0x5b94cd in /net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/miniforge3/envs/starVLA/bin/python3.10)
+[rank6]: frame #55: Py_BytesMain + 0x39 (0x588fa9 in /net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/miniforge3/envs/starVLA/bin/python3.10)
+[rank6]: frame #56: __libc_start_main + 0xe5 (0x14c62149f865 in /lib64/libc.so.6)
+[rank6]: frame #57: /net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/miniforge3/envs/starVLA/bin/python3.10() [0x588e5e]
+[rank6]: . This may indicate a possible application crash on rank 0 or a network set up issue.
+[rank5]: Traceback (most recent call last):
+[rank5]:   File "/net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/starVLA/starVLA/training/train_starvla.py", line 397, in <module>
+[rank5]:     main(cfg)
+[rank5]:   File "/net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/starVLA/starVLA/training/train_starvla.py", line 355, in main
+[rank5]:     vla_train_dataloader = prepare_data(cfg=cfg, accelerator=accelerator, output_dir=output_dir)
+[rank5]:   File "/net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/starVLA/starVLA/training/train_starvla.py", line 80, in prepare_data
+[rank5]:     vla_train_dataloader = build_dataloader(cfg=cfg, dataset_py=cfg.datasets.vla_data.dataset_py)
+[rank5]:   File "/net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/starVLA/starVLA/dataloader/__init__.py", line 44, in build_dataloader
+[rank5]:     vla_dataset = get_vla_dataset(data_cfg=vla_dataset_cfg)
+[rank5]:   File "/net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/starVLA/starVLA/dataloader/lerobot_datasets.py", line 85, in get_vla_dataset
+[rank5]:     dataset_mixture.append((make_LeRobotSingleDataset(Path(data_root_dir), d_name, robot_type, delete_pause_frame=delete_pause_frame, data_cfg=data_cfg), d_weight))
+[rank5]:   File "/net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/starVLA/starVLA/dataloader/lerobot_datasets.py", line 48, in make_LeRobotSingleDataset
+[rank5]:     return LeRobotSingleDataset(
+[rank5]:   File "/net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/starVLA/starVLA/dataloader/gr00t_lerobot/datasets.py", line 427, in __init__
+[rank5]:     self._metadata = self._get_metadata(EmbodimentTag(self.tag))
+[rank5]:   File "/net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/starVLA/starVLA/dataloader/gr00t_lerobot/datasets.py", line 763, in _get_metadata
+[rank5]:     dist.barrier()
+[rank5]:   File "/net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/miniforge3/envs/starVLA/lib/python3.10/site-packages/torch/distributed/c10d_logger.py", line 81, in wrapper
+[rank5]:     return func(*args, **kwargs)
+[rank5]:   File "/net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/miniforge3/envs/starVLA/lib/python3.10/site-packages/torch/distributed/distributed_c10d.py", line 4551, in barrier
+[rank5]:     work = group.barrier(opts=opts)
+[rank5]: torch.distributed.DistBackendError: [5] is setting up NCCL communicator and retrieving ncclUniqueId from [0] via c10d key-value store by key '0', but store->get('0') got error: failed to recv, got 0 bytes
+[rank5]: Exception raised from recvBytes at /pytorch/torch/csrc/distributed/c10d/Utils.hpp:671 (most recent call first):
+[rank5]: frame #0: c10::Error::Error(c10::SourceLocation, std::string) + 0x96 (0x14d3e96811b6 in /net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/miniforge3/envs/starVLA/lib/python3.10/site-packages/torch/lib/libc10.so)
+[rank5]: frame #1: <unknown function> + 0x6312a88 (0x14d424c86a88 in /net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/miniforge3/envs/starVLA/lib/python3.10/site-packages/torch/lib/libtorch_cpu.so)
+[rank5]: frame #2: c10d::TCPStore::doWait(c10::ArrayRef<std::string>, std::chrono::duration<long, std::ratio<1l, 1000l> >) + 0x367 (0x14d424c83817 in /net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/miniforge3/envs/starVLA/lib/python3.10/site-packages/torch/lib/libtorch_cpu.so)
+[rank5]: frame #3: c10d::TCPStore::doGet(std::string const&) + 0x2a (0x14d424c83b9a in /net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/miniforge3/envs/starVLA/lib/python3.10/site-packages/torch/lib/libtorch_cpu.so)
+[rank5]: frame #4: c10d::TCPStore::get(std::string const&) + 0x7a (0x14d424c8493a in /net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/miniforge3/envs/starVLA/lib/python3.10/site-packages/torch/lib/libtorch_cpu.so)
+[rank5]: frame #5: c10d::PrefixStore::get(std::string const&) + 0x31 (0x14d424c315d1 in /net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/miniforge3/envs/starVLA/lib/python3.10/site-packages/torch/lib/libtorch_cpu.so)
+[rank5]: frame #6: c10d::PrefixStore::get(std::string const&) + 0x31 (0x14d424c315d1 in /net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/miniforge3/envs/starVLA/lib/python3.10/site-packages/torch/lib/libtorch_cpu.so)
+[rank5]: frame #7: c10d::PrefixStore::get(std::string const&) + 0x31 (0x14d424c315d1 in /net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/miniforge3/envs/starVLA/lib/python3.10/site-packages/torch/lib/libtorch_cpu.so)
+[rank5]: frame #8: c10d::ProcessGroupNCCL::broadcastUniqueNCCLID(ncclUniqueId*, bool, std::string const&, int) + 0xaf (0x14d3ea9c1a9f in /net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/miniforge3/envs/starVLA/lib/python3.10/site-packages/torch/lib/libtorch_cuda.so)
+[rank5]: frame #9: c10d::ProcessGroupNCCL::initNCCLComm(std::string const&, c10::Device&, c10d::OpType, int, bool) + 0x1176 (0x14d3ea9cf666 in /net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/miniforge3/envs/starVLA/lib/python3.10/site-packages/torch/lib/libtorch_cuda.so)
+[rank5]: frame #10: <unknown function> + 0x1209be1 (0x14d3ea9d5be1 in /net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/miniforge3/envs/starVLA/lib/python3.10/site-packages/torch/lib/libtorch_cuda.so)
+[rank5]: frame #11: c10d::ProcessGroupNCCL::allreduce_impl(at::Tensor&, char const*, c10d::AllreduceOptions const&) + 0x13e (0x14d3ea9d65de in /net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/miniforge3/envs/starVLA/lib/python3.10/site-packages/torch/lib/libtorch_cuda.so)
+[rank5]: frame #12: c10d::ProcessGroupNCCL::barrier(c10d::BarrierOptions const&) + 0x465 (0x14d3ea9e6995 in /net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/miniforge3/envs/starVLA/lib/python3.10/site-packages/torch/lib/libtorch_cuda.so)
+[rank5]: frame #13: <unknown function> + 0x62afec2 (0x14d424c23ec2 in /net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/miniforge3/envs/starVLA/lib/python3.10/site-packages/torch/lib/libtorch_cpu.so)
+[rank5]: frame #14: <unknown function> + 0x62ba655 (0x14d424c2e655 in /net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/miniforge3/envs/starVLA/lib/python3.10/site-packages/torch/lib/libtorch_cpu.so)
+[rank5]: frame #15: <unknown function> + 0x58bc27b (0x14d42423027b in /net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/miniforge3/envs/starVLA/lib/python3.10/site-packages/torch/lib/libtorch_cpu.so)
+[rank5]: frame #16: <unknown function> + 0x58b9af9 (0x14d42422daf9 in /net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/miniforge3/envs/starVLA/lib/python3.10/site-packages/torch/lib/libtorch_cpu.so)
+[rank5]: frame #17: <unknown function> + 0x1aca9f8 (0x14d42043e9f8 in /net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/miniforge3/envs/starVLA/lib/python3.10/site-packages/torch/lib/libtorch_cpu.so)
+[rank5]: frame #18: <unknown function> + 0x62c6464 (0x14d424c3a464 in /net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/miniforge3/envs/starVLA/lib/python3.10/site-packages/torch/lib/libtorch_cpu.so)
+[rank5]: frame #19: <unknown function> + 0x62c72d9 (0x14d424c3b2d9 in /net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/miniforge3/envs/starVLA/lib/python3.10/site-packages/torch/lib/libtorch_cpu.so)
+[rank5]: frame #20: <unknown function> + 0xe9caf8 (0x14d4348f2af8 in /net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/miniforge3/envs/starVLA/lib/python3.10/site-packages/torch/lib/libtorch_python.so)
+[rank5]: frame #21: <unknown function> + 0x518d37 (0x14d433f6ed37 in /net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/miniforge3/envs/starVLA/lib/python3.10/site-packages/torch/lib/libtorch_python.so)
+[rank5]: frame #22: /net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/miniforge3/envs/starVLA/bin/python3.10() [0x4fe087]
+[rank5]: frame #23: _PyObject_MakeTpCall + 0x25b (0x4f77db in /net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/miniforge3/envs/starVLA/bin/python3.10)
+[rank5]: frame #24: /net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/miniforge3/envs/starVLA/bin/python3.10() [0x50a0cf]
+[rank5]: frame #25: _PyEval_EvalFrameDefault + 0x13b3 (0x4ef863 in /net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/miniforge3/envs/starVLA/bin/python3.10)
+[rank5]: frame #26: _PyFunction_Vectorcall + 0x6f (0x4fe4cf in /net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/miniforge3/envs/starVLA/bin/python3.10)
+[rank5]: frame #27: _PyEval_EvalFrameDefault + 0x2b79 (0x4f1029 in /net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/miniforge3/envs/starVLA/bin/python3.10)
+[rank5]: frame #28: _PyFunction_Vectorcall + 0x6f (0x4fe4cf in /net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/miniforge3/envs/starVLA/bin/python3.10)
+[rank5]: frame #29: _PyEval_EvalFrameDefault + 0x4b26 (0x4f2fd6 in /net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/miniforge3/envs/starVLA/bin/python3.10)
+[rank5]: frame #30: _PyFunction_Vectorcall + 0x6f (0x4fe4cf in /net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/miniforge3/envs/starVLA/bin/python3.10)
+[rank5]: frame #31: _PyEval_EvalFrameDefault + 0x731 (0x4eebe1 in /net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/miniforge3/envs/starVLA/bin/python3.10)
+[rank5]: frame #32: _PyFunction_Vectorcall + 0x6f (0x4fe4cf in /net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/miniforge3/envs/starVLA/bin/python3.10)
+[rank5]: frame #33: _PyObject_FastCallDictTstate + 0x17d (0x4f6bdd in /net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/miniforge3/envs/starVLA/bin/python3.10)
+[rank5]: frame #34: /net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/miniforge3/envs/starVLA/bin/python3.10() [0x5079a8]
+[rank5]: frame #35: _PyObject_MakeTpCall + 0x2ab (0x4f782b in /net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/miniforge3/envs/starVLA/bin/python3.10)
+[rank5]: frame #36: _PyEval_EvalFrameDefault + 0x58eb (0x4f3d9b in /net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/miniforge3/envs/starVLA/bin/python3.10)
+[rank5]: frame #37: _PyFunction_Vectorcall + 0x6f (0x4fe4cf in /net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/miniforge3/envs/starVLA/bin/python3.10)
+[rank5]: frame #38: _PyEval_EvalFrameDefault + 0x13b3 (0x4ef863 in /net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/miniforge3/envs/starVLA/bin/python3.10)
+[rank5]: frame #39: _PyFunction_Vectorcall + 0x6f (0x4fe4cf in /net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/miniforge3/envs/starVLA/bin/python3.10)
+[rank5]: frame #40: _PyEval_EvalFrameDefault + 0x13b3 (0x4ef863 in /net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/miniforge3/envs/starVLA/bin/python3.10)
+[rank5]: frame #41: _PyFunction_Vectorcall + 0x6f (0x4fe4cf in /net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/miniforge3/envs/starVLA/bin/python3.10)
+[rank5]: frame #42: _PyEval_EvalFrameDefault + 0x13b3 (0x4ef863 in /net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/miniforge3/envs/starVLA/bin/python3.10)
+[rank5]: frame #43: _PyFunction_Vectorcall + 0x6f (0x4fe4cf in /net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/miniforge3/envs/starVLA/bin/python3.10)
+[rank5]: frame #44: _PyEval_EvalFrameDefault + 0x13b3 (0x4ef863 in /net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/miniforge3/envs/starVLA/bin/python3.10)
+[rank5]: frame #45: _PyFunction_Vectorcall + 0x6f (0x4fe4cf in /net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/miniforge3/envs/starVLA/bin/python3.10)
+[rank5]: frame #46: _PyEval_EvalFrameDefault + 0x31f (0x4ee7cf in /net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/miniforge3/envs/starVLA/bin/python3.10)
+[rank5]: frame #47: /net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/miniforge3/envs/starVLA/bin/python3.10() [0x596192]
+[rank5]: frame #48: PyEval_EvalCode + 0x87 (0x5960d7 in /net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/miniforge3/envs/starVLA/bin/python3.10)
+[rank5]: frame #49: /net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/miniforge3/envs/starVLA/bin/python3.10() [0x5c72d7]
+[rank5]: frame #50: /net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/miniforge3/envs/starVLA/bin/python3.10() [0x5c2420]
+[rank5]: frame #51: /net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/miniforge3/envs/starVLA/bin/python3.10() [0x4598b9]
+[rank5]: frame #52: _PyRun_SimpleFileObject + 0x19f (0x5bc9af in /net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/miniforge3/envs/starVLA/bin/python3.10)
+[rank5]: frame #53: _PyRun_AnyFileObject + 0x43 (0x5bc713 in /net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/miniforge3/envs/starVLA/bin/python3.10)
+[rank5]: frame #54: Py_RunMain + 0x38d (0x5b94cd in /net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/miniforge3/envs/starVLA/bin/python3.10)
+[rank5]: frame #55: Py_BytesMain + 0x39 (0x588fa9 in /net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/miniforge3/envs/starVLA/bin/python3.10)
+[rank5]: frame #56: __libc_start_main + 0xe5 (0x14d440a80865 in /lib64/libc.so.6)
+[rank5]: frame #57: /net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/miniforge3/envs/starVLA/bin/python3.10() [0x588e5e]
+[rank5]: . This may indicate a possible application crash on rank 0 or a network set up issue.
+[rank7]: Traceback (most recent call last):
+[rank7]:   File "/net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/starVLA/starVLA/training/train_starvla.py", line 397, in <module>
+[rank7]:     main(cfg)
+[rank7]:   File "/net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/starVLA/starVLA/training/train_starvla.py", line 355, in main
+[rank7]:     vla_train_dataloader = prepare_data(cfg=cfg, accelerator=accelerator, output_dir=output_dir)
+[rank7]:   File "/net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/starVLA/starVLA/training/train_starvla.py", line 80, in prepare_data
+[rank7]:     vla_train_dataloader = build_dataloader(cfg=cfg, dataset_py=cfg.datasets.vla_data.dataset_py)
+[rank7]:   File "/net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/starVLA/starVLA/dataloader/__init__.py", line 44, in build_dataloader
+[rank7]:     vla_dataset = get_vla_dataset(data_cfg=vla_dataset_cfg)
+[rank7]:   File "/net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/starVLA/starVLA/dataloader/lerobot_datasets.py", line 85, in get_vla_dataset
+[rank7]:     dataset_mixture.append((make_LeRobotSingleDataset(Path(data_root_dir), d_name, robot_type, delete_pause_frame=delete_pause_frame, data_cfg=data_cfg), d_weight))
+[rank7]:   File "/net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/starVLA/starVLA/dataloader/lerobot_datasets.py", line 48, in make_LeRobotSingleDataset
+[rank7]:     return LeRobotSingleDataset(
+[rank7]:   File "/net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/starVLA/starVLA/dataloader/gr00t_lerobot/datasets.py", line 427, in __init__
+[rank7]:     self._metadata = self._get_metadata(EmbodimentTag(self.tag))
+[rank7]:   File "/net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/starVLA/starVLA/dataloader/gr00t_lerobot/datasets.py", line 763, in _get_metadata
+[rank7]:     dist.barrier()
+[rank7]:   File "/net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/miniforge3/envs/starVLA/lib/python3.10/site-packages/torch/distributed/c10d_logger.py", line 81, in wrapper
+[rank7]:     return func(*args, **kwargs)
+[rank7]:   File "/net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/miniforge3/envs/starVLA/lib/python3.10/site-packages/torch/distributed/distributed_c10d.py", line 4551, in barrier
+[rank7]:     work = group.barrier(opts=opts)
+[rank7]: torch.distributed.DistBackendError: [7] is setting up NCCL communicator and retrieving ncclUniqueId from [0] via c10d key-value store by key '0', but store->get('0') got error: failed to recv, got 0 bytes
+[rank7]: Exception raised from recvBytes at /pytorch/torch/csrc/distributed/c10d/Utils.hpp:671 (most recent call first):
+[rank7]: frame #0: c10::Error::Error(c10::SourceLocation, std::string) + 0x96 (0x147d7c61c1b6 in /net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/miniforge3/envs/starVLA/lib/python3.10/site-packages/torch/lib/libc10.so)
+[rank7]: frame #1: <unknown function> + 0x6312a88 (0x147db7c21a88 in /net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/miniforge3/envs/starVLA/lib/python3.10/site-packages/torch/lib/libtorch_cpu.so)
+[rank7]: frame #2: c10d::TCPStore::doWait(c10::ArrayRef<std::string>, std::chrono::duration<long, std::ratio<1l, 1000l> >) + 0x367 (0x147db7c1e817 in /net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/miniforge3/envs/starVLA/lib/python3.10/site-packages/torch/lib/libtorch_cpu.so)
+[rank7]: frame #3: c10d::TCPStore::doGet(std::string const&) + 0x2a (0x147db7c1eb9a in /net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/miniforge3/envs/starVLA/lib/python3.10/site-packages/torch/lib/libtorch_cpu.so)
+[rank7]: frame #4: c10d::TCPStore::get(std::string const&) + 0x7a (0x147db7c1f93a in /net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/miniforge3/envs/starVLA/lib/python3.10/site-packages/torch/lib/libtorch_cpu.so)
+[rank7]: frame #5: c10d::PrefixStore::get(std::string const&) + 0x31 (0x147db7bcc5d1 in /net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/miniforge3/envs/starVLA/lib/python3.10/site-packages/torch/lib/libtorch_cpu.so)
+[rank7]: frame #6: c10d::PrefixStore::get(std::string const&) + 0x31 (0x147db7bcc5d1 in /net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/miniforge3/envs/starVLA/lib/python3.10/site-packages/torch/lib/libtorch_cpu.so)
+[rank7]: frame #7: c10d::PrefixStore::get(std::string const&) + 0x31 (0x147db7bcc5d1 in /net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/miniforge3/envs/starVLA/lib/python3.10/site-packages/torch/lib/libtorch_cpu.so)
+[rank7]: frame #8: c10d::ProcessGroupNCCL::broadcastUniqueNCCLID(ncclUniqueId*, bool, std::string const&, int) + 0xaf (0x147d7d95ca9f in /net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/miniforge3/envs/starVLA/lib/python3.10/site-packages/torch/lib/libtorch_cuda.so)
+[rank7]: frame #9: c10d::ProcessGroupNCCL::initNCCLComm(std::string const&, c10::Device&, c10d::OpType, int, bool) + 0x1176 (0x147d7d96a666 in /net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/miniforge3/envs/starVLA/lib/python3.10/site-packages/torch/lib/libtorch_cuda.so)
+[rank7]: frame #10: <unknown function> + 0x1209be1 (0x147d7d970be1 in /net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/miniforge3/envs/starVLA/lib/python3.10/site-packages/torch/lib/libtorch_cuda.so)
+[rank7]: frame #11: c10d::ProcessGroupNCCL::allreduce_impl(at::Tensor&, char const*, c10d::AllreduceOptions const&) + 0x13e (0x147d7d9715de in /net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/miniforge3/envs/starVLA/lib/python3.10/site-packages/torch/lib/libtorch_cuda.so)
+[rank7]: frame #12: c10d::ProcessGroupNCCL::barrier(c10d::BarrierOptions const&) + 0x465 (0x147d7d981995 in /net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/miniforge3/envs/starVLA/lib/python3.10/site-packages/torch/lib/libtorch_cuda.so)
+[rank7]: frame #13: <unknown function> + 0x62afec2 (0x147db7bbeec2 in /net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/miniforge3/envs/starVLA/lib/python3.10/site-packages/torch/lib/libtorch_cpu.so)
+[rank7]: frame #14: <unknown function> + 0x62ba655 (0x147db7bc9655 in /net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/miniforge3/envs/starVLA/lib/python3.10/site-packages/torch/lib/libtorch_cpu.so)
+[rank7]: frame #15: <unknown function> + 0x58bc27b (0x147db71cb27b in /net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/miniforge3/envs/starVLA/lib/python3.10/site-packages/torch/lib/libtorch_cpu.so)
+[rank7]: frame #16: <unknown function> + 0x58b9af9 (0x147db71c8af9 in /net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/miniforge3/envs/starVLA/lib/python3.10/site-packages/torch/lib/libtorch_cpu.so)
+[rank7]: frame #17: <unknown function> + 0x1aca9f8 (0x147db33d99f8 in /net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/miniforge3/envs/starVLA/lib/python3.10/site-packages/torch/lib/libtorch_cpu.so)
+[rank7]: frame #18: <unknown function> + 0x62c6464 (0x147db7bd5464 in /net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/miniforge3/envs/starVLA/lib/python3.10/site-packages/torch/lib/libtorch_cpu.so)
+[rank7]: frame #19: <unknown function> + 0x62c72d9 (0x147db7bd62d9 in /net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/miniforge3/envs/starVLA/lib/python3.10/site-packages/torch/lib/libtorch_cpu.so)
+[rank7]: frame #20: <unknown function> + 0xe9caf8 (0x147dc788daf8 in /net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/miniforge3/envs/starVLA/lib/python3.10/site-packages/torch/lib/libtorch_python.so)
+[rank7]: frame #21: <unknown function> + 0x518d37 (0x147dc6f09d37 in /net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/miniforge3/envs/starVLA/lib/python3.10/site-packages/torch/lib/libtorch_python.so)
+[rank7]: frame #22: /net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/miniforge3/envs/starVLA/bin/python3.10() [0x4fe087]
+[rank7]: frame #23: _PyObject_MakeTpCall + 0x25b (0x4f77db in /net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/miniforge3/envs/starVLA/bin/python3.10)
+[rank7]: frame #24: /net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/miniforge3/envs/starVLA/bin/python3.10() [0x50a0cf]
+[rank7]: frame #25: _PyEval_EvalFrameDefault + 0x13b3 (0x4ef863 in /net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/miniforge3/envs/starVLA/bin/python3.10)
+[rank7]: frame #26: _PyFunction_Vectorcall + 0x6f (0x4fe4cf in /net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/miniforge3/envs/starVLA/bin/python3.10)
+[rank7]: frame #27: _PyEval_EvalFrameDefault + 0x2b79 (0x4f1029 in /net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/miniforge3/envs/starVLA/bin/python3.10)
+[rank7]: frame #28: _PyFunction_Vectorcall + 0x6f (0x4fe4cf in /net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/miniforge3/envs/starVLA/bin/python3.10)
+[rank7]: frame #29: _PyEval_EvalFrameDefault + 0x4b26 (0x4f2fd6 in /net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/miniforge3/envs/starVLA/bin/python3.10)
+[rank7]: frame #30: _PyFunction_Vectorcall + 0x6f (0x4fe4cf in /net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/miniforge3/envs/starVLA/bin/python3.10)
+[rank7]: frame #31: _PyEval_EvalFrameDefault + 0x731 (0x4eebe1 in /net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/miniforge3/envs/starVLA/bin/python3.10)
+[rank7]: frame #32: _PyFunction_Vectorcall + 0x6f (0x4fe4cf in /net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/miniforge3/envs/starVLA/bin/python3.10)
+[rank7]: frame #33: _PyObject_FastCallDictTstate + 0x17d (0x4f6bdd in /net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/miniforge3/envs/starVLA/bin/python3.10)
+[rank7]: frame #34: /net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/miniforge3/envs/starVLA/bin/python3.10() [0x5079a8]
+[rank7]: frame #35: _PyObject_MakeTpCall + 0x2ab (0x4f782b in /net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/miniforge3/envs/starVLA/bin/python3.10)
+[rank7]: frame #36: _PyEval_EvalFrameDefault + 0x58eb (0x4f3d9b in /net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/miniforge3/envs/starVLA/bin/python3.10)
+[rank7]: frame #37: _PyFunction_Vectorcall + 0x6f (0x4fe4cf in /net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/miniforge3/envs/starVLA/bin/python3.10)
+[rank7]: frame #38: _PyEval_EvalFrameDefault + 0x13b3 (0x4ef863 in /net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/miniforge3/envs/starVLA/bin/python3.10)
+[rank7]: frame #39: _PyFunction_Vectorcall + 0x6f (0x4fe4cf in /net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/miniforge3/envs/starVLA/bin/python3.10)
+[rank7]: frame #40: _PyEval_EvalFrameDefault + 0x13b3 (0x4ef863 in /net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/miniforge3/envs/starVLA/bin/python3.10)
+[rank7]: frame #41: _PyFunction_Vectorcall + 0x6f (0x4fe4cf in /net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/miniforge3/envs/starVLA/bin/python3.10)
+[rank7]: frame #42: _PyEval_EvalFrameDefault + 0x13b3 (0x4ef863 in /net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/miniforge3/envs/starVLA/bin/python3.10)
+[rank7]: frame #43: _PyFunction_Vectorcall + 0x6f (0x4fe4cf in /net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/miniforge3/envs/starVLA/bin/python3.10)
+[rank7]: frame #44: _PyEval_EvalFrameDefault + 0x13b3 (0x4ef863 in /net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/miniforge3/envs/starVLA/bin/python3.10)
+[rank7]: frame #45: _PyFunction_Vectorcall + 0x6f (0x4fe4cf in /net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/miniforge3/envs/starVLA/bin/python3.10)
+[rank7]: frame #46: _PyEval_EvalFrameDefault + 0x31f (0x4ee7cf in /net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/miniforge3/envs/starVLA/bin/python3.10)
+[rank7]: frame #47: /net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/miniforge3/envs/starVLA/bin/python3.10() [0x596192]
+[rank7]: frame #48: PyEval_EvalCode + 0x87 (0x5960d7 in /net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/miniforge3/envs/starVLA/bin/python3.10)
+[rank7]: frame #49: /net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/miniforge3/envs/starVLA/bin/python3.10() [0x5c72d7]
+[rank7]: frame #50: /net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/miniforge3/envs/starVLA/bin/python3.10() [0x5c2420]
+[rank7]: frame #51: /net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/miniforge3/envs/starVLA/bin/python3.10() [0x4598b9]
+[rank7]: frame #52: _PyRun_SimpleFileObject + 0x19f (0x5bc9af in /net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/miniforge3/envs/starVLA/bin/python3.10)
+[rank7]: frame #53: _PyRun_AnyFileObject + 0x43 (0x5bc713 in /net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/miniforge3/envs/starVLA/bin/python3.10)
+[rank7]: frame #54: Py_RunMain + 0x38d (0x5b94cd in /net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/miniforge3/envs/starVLA/bin/python3.10)
+[rank7]: frame #55: Py_BytesMain + 0x39 (0x588fa9 in /net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/miniforge3/envs/starVLA/bin/python3.10)
+[rank7]: frame #56: __libc_start_main + 0xe5 (0x147dd3a1b865 in /lib64/libc.so.6)
+[rank7]: frame #57: /net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/miniforge3/envs/starVLA/bin/python3.10() [0x588e5e]
+[rank7]: . This may indicate a possible application crash on rank 0 or a network set up issue.
+[rank4]: Traceback (most recent call last):
+[rank4]:   File "/net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/starVLA/starVLA/training/train_starvla.py", line 397, in <module>
+[rank4]:     main(cfg)
+[rank4]:   File "/net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/starVLA/starVLA/training/train_starvla.py", line 355, in main
+[rank4]:     vla_train_dataloader = prepare_data(cfg=cfg, accelerator=accelerator, output_dir=output_dir)
+[rank4]:   File "/net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/starVLA/starVLA/training/train_starvla.py", line 80, in prepare_data
+[rank4]:     vla_train_dataloader = build_dataloader(cfg=cfg, dataset_py=cfg.datasets.vla_data.dataset_py)
+[rank4]:   File "/net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/starVLA/starVLA/dataloader/__init__.py", line 44, in build_dataloader
+[rank4]:     vla_dataset = get_vla_dataset(data_cfg=vla_dataset_cfg)
+[rank4]:   File "/net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/starVLA/starVLA/dataloader/lerobot_datasets.py", line 85, in get_vla_dataset
+[rank4]:     dataset_mixture.append((make_LeRobotSingleDataset(Path(data_root_dir), d_name, robot_type, delete_pause_frame=delete_pause_frame, data_cfg=data_cfg), d_weight))
+[rank4]:   File "/net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/starVLA/starVLA/dataloader/lerobot_datasets.py", line 48, in make_LeRobotSingleDataset
+[rank4]:     return LeRobotSingleDataset(
+[rank4]:   File "/net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/starVLA/starVLA/dataloader/gr00t_lerobot/datasets.py", line 427, in __init__
+[rank4]:     self._metadata = self._get_metadata(EmbodimentTag(self.tag))
+[rank4]:   File "/net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/starVLA/starVLA/dataloader/gr00t_lerobot/datasets.py", line 763, in _get_metadata
+[rank4]:     dist.barrier()
+[rank4]:   File "/net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/miniforge3/envs/starVLA/lib/python3.10/site-packages/torch/distributed/c10d_logger.py", line 81, in wrapper
+[rank4]:     return func(*args, **kwargs)
+[rank4]:   File "/net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/miniforge3/envs/starVLA/lib/python3.10/site-packages/torch/distributed/distributed_c10d.py", line 4551, in barrier
+[rank4]:     work = group.barrier(opts=opts)
+[rank4]: torch.distributed.DistBackendError: [4] is setting up NCCL communicator and retrieving ncclUniqueId from [0] via c10d key-value store by key '0', but store->get('0') got error: failed to recv, got 0 bytes
+[rank4]: Exception raised from recvBytes at /pytorch/torch/csrc/distributed/c10d/Utils.hpp:671 (most recent call first):
+[rank4]: frame #0: c10::Error::Error(c10::SourceLocation, std::string) + 0x96 (0x14fcc3bf11b6 in /net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/miniforge3/envs/starVLA/lib/python3.10/site-packages/torch/lib/libc10.so)
+[rank4]: frame #1: <unknown function> + 0x6312a88 (0x14fcff1f6a88 in /net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/miniforge3/envs/starVLA/lib/python3.10/site-packages/torch/lib/libtorch_cpu.so)
+[rank4]: frame #2: c10d::TCPStore::doWait(c10::ArrayRef<std::string>, std::chrono::duration<long, std::ratio<1l, 1000l> >) + 0x367 (0x14fcff1f3817 in /net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/miniforge3/envs/starVLA/lib/python3.10/site-packages/torch/lib/libtorch_cpu.so)
+[rank4]: frame #3: c10d::TCPStore::doGet(std::string const&) + 0x2a (0x14fcff1f3b9a in /net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/miniforge3/envs/starVLA/lib/python3.10/site-packages/torch/lib/libtorch_cpu.so)
+[rank4]: frame #4: c10d::TCPStore::get(std::string const&) + 0x7a (0x14fcff1f493a in /net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/miniforge3/envs/starVLA/lib/python3.10/site-packages/torch/lib/libtorch_cpu.so)
+[rank4]: frame #5: c10d::PrefixStore::get(std::string const&) + 0x31 (0x14fcff1a15d1 in /net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/miniforge3/envs/starVLA/lib/python3.10/site-packages/torch/lib/libtorch_cpu.so)
+[rank4]: frame #6: c10d::PrefixStore::get(std::string const&) + 0x31 (0x14fcff1a15d1 in /net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/miniforge3/envs/starVLA/lib/python3.10/site-packages/torch/lib/libtorch_cpu.so)
+[rank4]: frame #7: c10d::PrefixStore::get(std::string const&) + 0x31 (0x14fcff1a15d1 in /net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/miniforge3/envs/starVLA/lib/python3.10/site-packages/torch/lib/libtorch_cpu.so)
+[rank4]: frame #8: c10d::ProcessGroupNCCL::broadcastUniqueNCCLID(ncclUniqueId*, bool, std::string const&, int) + 0xaf (0x14fcc4f31a9f in /net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/miniforge3/envs/starVLA/lib/python3.10/site-packages/torch/lib/libtorch_cuda.so)
+[rank4]: frame #9: c10d::ProcessGroupNCCL::initNCCLComm(std::string const&, c10::Device&, c10d::OpType, int, bool) + 0x1176 (0x14fcc4f3f666 in /net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/miniforge3/envs/starVLA/lib/python3.10/site-packages/torch/lib/libtorch_cuda.so)
+[rank4]: frame #10: <unknown function> + 0x1209be1 (0x14fcc4f45be1 in /net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/miniforge3/envs/starVLA/lib/python3.10/site-packages/torch/lib/libtorch_cuda.so)
+[rank4]: frame #11: c10d::ProcessGroupNCCL::allreduce_impl(at::Tensor&, char const*, c10d::AllreduceOptions const&) + 0x13e (0x14fcc4f465de in /net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/miniforge3/envs/starVLA/lib/python3.10/site-packages/torch/lib/libtorch_cuda.so)
+[rank4]: frame #12: c10d::ProcessGroupNCCL::barrier(c10d::BarrierOptions const&) + 0x465 (0x14fcc4f56995 in /net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/miniforge3/envs/starVLA/lib/python3.10/site-packages/torch/lib/libtorch_cuda.so)
+[rank4]: frame #13: <unknown function> + 0x62afec2 (0x14fcff193ec2 in /net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/miniforge3/envs/starVLA/lib/python3.10/site-packages/torch/lib/libtorch_cpu.so)
+[rank4]: frame #14: <unknown function> + 0x62ba655 (0x14fcff19e655 in /net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/miniforge3/envs/starVLA/lib/python3.10/site-packages/torch/lib/libtorch_cpu.so)
+[rank4]: frame #15: <unknown function> + 0x58bc27b (0x14fcfe7a027b in /net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/miniforge3/envs/starVLA/lib/python3.10/site-packages/torch/lib/libtorch_cpu.so)
+[rank4]: frame #16: <unknown function> + 0x58b9af9 (0x14fcfe79daf9 in /net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/miniforge3/envs/starVLA/lib/python3.10/site-packages/torch/lib/libtorch_cpu.so)
+[rank4]: frame #17: <unknown function> + 0x1aca9f8 (0x14fcfa9ae9f8 in /net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/miniforge3/envs/starVLA/lib/python3.10/site-packages/torch/lib/libtorch_cpu.so)
+[rank4]: frame #18: <unknown function> + 0x62c6464 (0x14fcff1aa464 in /net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/miniforge3/envs/starVLA/lib/python3.10/site-packages/torch/lib/libtorch_cpu.so)
+[rank4]: frame #19: <unknown function> + 0x62c72d9 (0x14fcff1ab2d9 in /net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/miniforge3/envs/starVLA/lib/python3.10/site-packages/torch/lib/libtorch_cpu.so)
+[rank4]: frame #20: <unknown function> + 0xe9caf8 (0x14fd0ee62af8 in /net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/miniforge3/envs/starVLA/lib/python3.10/site-packages/torch/lib/libtorch_python.so)
+[rank4]: frame #21: <unknown function> + 0x518d37 (0x14fd0e4ded37 in /net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/miniforge3/envs/starVLA/lib/python3.10/site-packages/torch/lib/libtorch_python.so)
+[rank4]: frame #22: /net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/miniforge3/envs/starVLA/bin/python3.10() [0x4fe087]
+[rank4]: frame #23: _PyObject_MakeTpCall + 0x25b (0x4f77db in /net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/miniforge3/envs/starVLA/bin/python3.10)
+[rank4]: frame #24: /net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/miniforge3/envs/starVLA/bin/python3.10() [0x50a0cf]
+[rank4]: frame #25: _PyEval_EvalFrameDefault + 0x13b3 (0x4ef863 in /net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/miniforge3/envs/starVLA/bin/python3.10)
+[rank4]: frame #26: _PyFunction_Vectorcall + 0x6f (0x4fe4cf in /net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/miniforge3/envs/starVLA/bin/python3.10)
+[rank4]: frame #27: _PyEval_EvalFrameDefault + 0x2b79 (0x4f1029 in /net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/miniforge3/envs/starVLA/bin/python3.10)
+[rank4]: frame #28: _PyFunction_Vectorcall + 0x6f (0x4fe4cf in /net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/miniforge3/envs/starVLA/bin/python3.10)
+[rank4]: frame #29: _PyEval_EvalFrameDefault + 0x4b26 (0x4f2fd6 in /net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/miniforge3/envs/starVLA/bin/python3.10)
+[rank4]: frame #30: _PyFunction_Vectorcall + 0x6f (0x4fe4cf in /net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/miniforge3/envs/starVLA/bin/python3.10)
+[rank4]: frame #31: _PyEval_EvalFrameDefault + 0x731 (0x4eebe1 in /net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/miniforge3/envs/starVLA/bin/python3.10)
+[rank4]: frame #32: _PyFunction_Vectorcall + 0x6f (0x4fe4cf in /net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/miniforge3/envs/starVLA/bin/python3.10)
+[rank4]: frame #33: _PyObject_FastCallDictTstate + 0x17d (0x4f6bdd in /net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/miniforge3/envs/starVLA/bin/python3.10)
+[rank4]: frame #34: /net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/miniforge3/envs/starVLA/bin/python3.10() [0x5079a8]
+[rank4]: frame #35: _PyObject_MakeTpCall + 0x2ab (0x4f782b in /net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/miniforge3/envs/starVLA/bin/python3.10)
+[rank4]: frame #36: _PyEval_EvalFrameDefault + 0x58eb (0x4f3d9b in /net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/miniforge3/envs/starVLA/bin/python3.10)
+[rank4]: frame #37: _PyFunction_Vectorcall + 0x6f (0x4fe4cf in /net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/miniforge3/envs/starVLA/bin/python3.10)
+[rank4]: frame #38: _PyEval_EvalFrameDefault + 0x13b3 (0x4ef863 in /net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/miniforge3/envs/starVLA/bin/python3.10)
+[rank4]: frame #39: _PyFunction_Vectorcall + 0x6f (0x4fe4cf in /net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/miniforge3/envs/starVLA/bin/python3.10)
+[rank4]: frame #40: _PyEval_EvalFrameDefault + 0x13b3 (0x4ef863 in /net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/miniforge3/envs/starVLA/bin/python3.10)
+[rank4]: frame #41: _PyFunction_Vectorcall + 0x6f (0x4fe4cf in /net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/miniforge3/envs/starVLA/bin/python3.10)
+[rank4]: frame #42: _PyEval_EvalFrameDefault + 0x13b3 (0x4ef863 in /net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/miniforge3/envs/starVLA/bin/python3.10)
+[rank4]: frame #43: _PyFunction_Vectorcall + 0x6f (0x4fe4cf in /net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/miniforge3/envs/starVLA/bin/python3.10)
+[rank4]: frame #44: _PyEval_EvalFrameDefault + 0x13b3 (0x4ef863 in /net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/miniforge3/envs/starVLA/bin/python3.10)
+[rank4]: frame #45: _PyFunction_Vectorcall + 0x6f (0x4fe4cf in /net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/miniforge3/envs/starVLA/bin/python3.10)
+[rank4]: frame #46: _PyEval_EvalFrameDefault + 0x31f (0x4ee7cf in /net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/miniforge3/envs/starVLA/bin/python3.10)
+[rank4]: frame #47: /net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/miniforge3/envs/starVLA/bin/python3.10() [0x596192]
+[rank4]: frame #48: PyEval_EvalCode + 0x87 (0x5960d7 in /net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/miniforge3/envs/starVLA/bin/python3.10)
+[rank4]: frame #49: /net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/miniforge3/envs/starVLA/bin/python3.10() [0x5c72d7]
+[rank4]: frame #50: /net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/miniforge3/envs/starVLA/bin/python3.10() [0x5c2420]
+[rank4]: frame #51: /net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/miniforge3/envs/starVLA/bin/python3.10() [0x4598b9]
+[rank4]: frame #52: _PyRun_SimpleFileObject + 0x19f (0x5bc9af in /net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/miniforge3/envs/starVLA/bin/python3.10)
+[rank4]: frame #53: _PyRun_AnyFileObject + 0x43 (0x5bc713 in /net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/miniforge3/envs/starVLA/bin/python3.10)
+[rank4]: frame #54: Py_RunMain + 0x38d (0x5b94cd in /net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/miniforge3/envs/starVLA/bin/python3.10)
+[rank4]: frame #55: Py_BytesMain + 0x39 (0x588fa9 in /net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/miniforge3/envs/starVLA/bin/python3.10)
+[rank4]: frame #56: __libc_start_main + 0xe5 (0x14fd1aff0865 in /lib64/libc.so.6)
+[rank4]: frame #57: /net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/miniforge3/envs/starVLA/bin/python3.10() [0x588e5e]
+[rank4]: . This may indicate a possible application crash on rank 0 or a network set up issue.
+[rank4]:[W218 21:10:18.906136366 ProcessGroupNCCL.cpp:1496] Warning: WARNING: destroy_process_group() was not called before program exit, which can leak resources. For more info, please see https://pytorch.org/docs/stable/distributed.html#shutdown (function operator())
+srun: error: holygpu8a10302: task 0: Exited with exit code 1
+W0218 21:10:20.033000 398497 site-packages/torch/distributed/elastic/multiprocessing/api.py:897] Sending process 398557 closing signal SIGTERM
+W0218 21:10:20.033000 398497 site-packages/torch/distributed/elastic/multiprocessing/api.py:897] Sending process 398558 closing signal SIGTERM
+W0218 21:10:20.034000 398497 site-packages/torch/distributed/elastic/multiprocessing/api.py:897] Sending process 398560 closing signal SIGTERM
+E0218 21:10:20.361000 398497 site-packages/torch/distributed/elastic/multiprocessing/api.py:869] failed (exitcode: 1) local_rank: 2 (pid: 398559) of binary: /net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/miniforge3/envs/starVLA/bin/python3.10
+Traceback (most recent call last):
+  File "/net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/miniforge3/envs/starVLA/bin/accelerate", line 7, in <module>
+    sys.exit(main())
+  File "/net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/miniforge3/envs/starVLA/lib/python3.10/site-packages/accelerate/commands/accelerate_cli.py", line 48, in main
+    args.func(args)
+  File "/net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/miniforge3/envs/starVLA/lib/python3.10/site-packages/accelerate/commands/launch.py", line 1177, in launch_command
+    deepspeed_launcher(args)
+  File "/net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/miniforge3/envs/starVLA/lib/python3.10/site-packages/accelerate/commands/launch.py", line 863, in deepspeed_launcher
+    distrib_run.run(args)
+  File "/net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/miniforge3/envs/starVLA/lib/python3.10/site-packages/torch/distributed/run.py", line 909, in run
+    elastic_launch(
+  File "/net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/miniforge3/envs/starVLA/lib/python3.10/site-packages/torch/distributed/launcher/api.py", line 138, in __call__
+    return launch_agent(self._config, self._entrypoint, list(args))
+  File "/net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/miniforge3/envs/starVLA/lib/python3.10/site-packages/torch/distributed/launcher/api.py", line 269, in launch_agent
+    raise ChildFailedError(
+torch.distributed.elastic.multiprocessing.errors.ChildFailedError: 
+============================================================
+starVLA/training/train_starvla.py FAILED
+------------------------------------------------------------
+Failures:
+  <NO_OTHER_FAILURES>
+------------------------------------------------------------
+Root Cause (first observed failure):
+[0]:
+  time      : 2026-02-18_21:10:20
+  host      : holygpu8a10401.rc.fas.harvard.edu
+  rank      : 6 (local_rank: 2)
+  exitcode  : 1 (pid: 398559)
+  error_file: <N/A>
+  traceback : To enable traceback see: https://pytorch.org/docs/stable/elastic/errors.html
+============================================================
+srun: error: holygpu8a10401: task 1: Exited with exit code 1

@@ -15,17 +15,47 @@
 | conda 环境 | 就绪 | lab miniforge `starVLA`（torch 2.6.0+cu124, transformers 4.57.0, accelerate 1.5.2） |
 | `mixtures.py` | 已注册 | `custom_all`（33 tasks）和 `custom_task1`（调试用） |
 | `logs/` 目录 | 已创建 | SLURM 输出写入 `logs/` |
+| Image-in-parquet 支持 | 已修复 | `datasets.py` 三处 patch（metadata/get_video/getitem），见第 8 节 |
 
 ---
 
 ## TL;DR — 提交命令
 
+### 提交训练
+
 ```bash
 cd /net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/starVLA
+
+# 1 node × 4 GPU
 sbatch scripts/slurm_custom_requeue.sh
+
+# 2 nodes × 4 GPU = 8 GPU（见第 10 节多节点训练）
+sbatch scripts/slurm_custom_requeue-2node.sh
 ```
 
-监控：
+### 查看资源 & 预估排队时间
+
+```bash
+# ── 查看 requeue 分区空闲 GPU ──
+sinfo -p kempner_requeue -o "%N %G %t %f" | grep -E "idle|mix"
+
+# ── 各 GPU 类型详细状态（空闲/总数/排队数） ──
+bash /net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/scripts/requeue_summary.sh
+bash /net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/scripts/requeue_summary.sh h200  # 只看 H200
+bash /net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/scripts/requeue_summary.sh h100  # 只看 H100
+
+# ── 所有分区概览 ──
+bash /net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/scripts/most_empty_partition.sh
+
+# ── 提交后查看预估开始时间 ──
+squeue --start -j <jobid>
+
+# ── 查看排队中的作业数量 ──
+squeue -p kempner_requeue | wc -l
+```
+
+### 监控
+
 ```bash
 squeue -u $USER                                # 查看作业状态
 scancel <jobid>                                 # 取消作业
@@ -39,6 +69,16 @@ tail -f logs/starVLA_custom_<jobid>.out        # 实时看训练输出
 tail -f logs/starVLA_custom_<jobid>.err        # 实时看错误/警告
 # 如果作业失败，先看 .err 文件找 Traceback
 ```
+
+### 排队状态含义
+
+| 状态 | 含义 | 预期 |
+|------|------|------|
+| `PD (Resources)` | SLURM 准备调度，等待空闲 GPU | 通常很快 |
+| `PD (Priority)` | 有更高优先级的作业排在前面 | 可能较久 |
+| `PD (ReqNodeNotAvail)` | 预选节点不可用（维护中） | 取消重提交 |
+| `R` | 运行中 | — |
+| `PR` | 被抢占 | 自动重新排队 |
 
 ---
 
@@ -279,13 +319,15 @@ place_empty_cup        place_empty_cup_wp1        place_empty_cup_wp2
 
 ```
 results/Checkpoints/custom_qwenOFT_requeue/
-├── config.yaml                     # 自动保存的完整训练配置
-├── dataset_statistics.json         # action/state 归一化统计量
+├── config.yaml                                # 自动保存的完整训练配置
+├── dataset_statistics.json                    # action/state 归一化统计量
+├── summary.jsonl                              # 每次保存 checkpoint 追加一行
 ├── checkpoints/
-│   ├── steps_50000/
-│   │   └── pytorch_model.pt
+│   ├── steps_50000/                           # 完整训练状态（accelerator.save_state）
+│   │   └── (model shards, optimizer shards, scheduler.bin, random_states, ...)
+│   ├── steps_50000_pytorch_model.pt           # 独立模型权重（部署/评估用）
 │   ├── steps_100000/
-│   │   └── pytorch_model.pt
+│   ├── steps_100000_pytorch_model.pt
 │   └── ...
 ```
 
@@ -492,6 +534,32 @@ KeyError: 'info'
 **原因：** Custom 数据集使用 image-in-parquet 格式（`dtype: image`），其 `info.json` 中 names 为 `["channels", "height", "width"]`（复数 `channels`）。而 `datasets.py` 的 `_get_metadata()` 只处理了两种 video 格式变体：`"channel"`（单数）和 `le_video_meta["info"]["video.channels"]`，都不匹配 image 格式。
 **解决：** 已在 `starVLA/dataloader/gr00t_lerobot/datasets.py:624` 增加第三层 fallback，支持 image 格式的 `"channels"`（复数），并从顶层 `info.json` 读取 `fps`。
 
+### 训练卡在 0%（Image-in-parquet 无限循环）
+
+```
+  0%|          | 0/500000 [00:00<?, ?it/s]
+```
+
+进度条显示 0% 且永远不动，无任何错误消息。
+
+**原因：** `datasets.py` 中有两个问题：
+
+1. **`LeRobotMixtureDataset.__getitem__()`（行 ~2094）**：`while True` 循环调用 `os.path.exists(video_path)` 检查视频文件是否存在。Image-in-parquet 数据集（`total_videos: 0`）没有 `.mp4` 文件，所以检查永远为 False，循环无限运行。
+
+2. **`LeRobotSingleDataset.get_video()`（行 ~1187）**：即使跳过了上述循环，`get_video()` 仍然会尝试打开不存在的 `.mp4` 文件，导致 `FileNotFoundError`。
+
+**解决：** 在 `datasets.py` 中添加了三处修改：
+- `is_image_dataset` 属性：通过 `total_videos == 0` 判断是否为 image 数据集
+- `_get_images_from_parquet()` 方法：从 parquet DataFrame 列中解码 PNG bytes 为 numpy 数组
+- `__getitem__()` 中的 `while True` 循环：image 数据集跳过视频文件存在性检查
+
+**验证：**
+```bash
+python test_image_dataset.py   # Tests 0-4 应全部 PASS
+```
+
+此测试同时确认 RoboTwin 视频数据集不受影响。
+
 ### ReqNodeNotAvail, UnavailableNodes
 
 ```
@@ -525,33 +593,140 @@ squeue --start -j <jobid>
 用监控脚本查看各 GPU 类型的实时空闲情况：
 ```bash
 # 查看 requeue 分区所有 GPU 类型的详细状态
-bash ~/kaiwen/scripts/requeue_summary.sh
+bash /net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/scripts/requeue_summary.sh
 
 # 只看某种 GPU
-bash ~/kaiwen/scripts/requeue_summary.sh h200
-bash ~/kaiwen/scripts/requeue_summary.sh h100
+bash /net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/scripts/requeue_summary.sh h200
+bash /net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/scripts/requeue_summary.sh h100
 
 # 查看所有分区概览
-bash ~/kaiwen/scripts/most_empty_partition.sh
+bash /net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/scripts/most_empty_partition.sh
 ```
 
 如果 H100 满载（>95%），考虑切换到 H200 或等待非高峰时段。修改 `--constraint` 和 `--cpus-per-task` 即可（见 1.2 节的切换表）。
 
 ---
 
-## 9. 文件清单
+## 9. 多节点训练（2 nodes × 4 GPU）
+
+### 9.1 概述
+
+2 节点训练将 GPU 数量从 4 翻倍到 8，有效 batch size 翻倍。为保持相同的有效学习量，需要相应调整参数：
+
+| | 1 node (4 GPU) | 2 nodes (8 GPU) |
+|---|---|---|
+| GPU 总数 | 4 | 8 |
+| `per_device_batch_size` | 8 | 8 |
+| `gradient_accumulation_steps` | 2 | 1 |
+| **Effective batch** | **64** | **64** |
+| `max_train_steps` | 500,000 | 250,000 |
+| `save_interval` | 50,000 | 25,000 |
+| `run_id` | `custom_qwenOFT_requeue` | `custom_qwenOFT_2node` |
+| 脚本 | `slurm_custom_requeue.sh` | `slurm_custom_requeue-2node.sh` |
+| accelerate config | `deepspeed_zero2.yaml` | `deepspeed_zero2_2node.yaml` |
+
+> **注意：** 上表保持了 effective batch = 64 不变（8 GPU × 8 batch × 1 accum = 64）。如果想增大 effective batch 来加速收敛，可以保持 `gradient_accumulation_steps=2`（effective batch = 128），并相应减少 `max_train_steps`。
+
+### 9.2 提交
+
+```bash
+cd /net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/starVLA
+sbatch scripts/slurm_custom_requeue-2node.sh
+```
+
+### 9.3 与单节点的关键差异
+
+**SLURM 参数：**
+```bash
+#SBATCH --nodes=2                    # 2 个节点
+#SBATCH --ntasks-per-node=1          # 每节点 1 个 task（accelerate 在 task 内部 spawn 4 GPU 进程）
+```
+
+**多节点通信：**
+```bash
+export MASTER_ADDR=$(scontrol show hostnames "$SLURM_JOB_NODELIST" | head -n 1)
+export MASTER_PORT=29500
+export NCCL_IB_DISABLE=0             # 启用 InfiniBand（Kempner 节点间高速互联）
+```
+
+**启动方式：**
+```bash
+# srun 在每个节点上启动一个 task，每个 task 运行 accelerate launch
+# SLURM_PROCID 自动提供 machine_rank（节点 0 → rank 0，节点 1 → rank 1）
+srun bash -c '
+accelerate launch \
+  --config_file starVLA/config/deepseeds/deepspeed_zero2_2node.yaml \
+  --num_machines 2 \
+  --num_processes 8 \
+  --machine_rank $SLURM_PROCID \
+  --main_process_ip '"$MASTER_ADDR"' \
+  --main_process_port '"$MASTER_PORT"' \
+  starVLA/training/train_starvla.py \
+  ...
+'
+```
+
+**accelerate 配置（`deepspeed_zero2_2node.yaml`）：**
+```yaml
+num_machines: 2          # 关键区别：1 → 2
+num_processes: 8         # 总 GPU 数：4 × 2 = 8
+```
+
+### 9.4 2 节点排队注意事项
+
+- 2 节点作业需要 SLURM 同时分配 2 个满足 constraint 的节点，排队时间通常比单节点更长
+- 如果 H200 排不上，可以改 `--constraint=h100`（同时改 `--cpus-per-task=96`）
+- 抢占恢复机制不变：`--requeue` + `--trainer.is_resume true`
+- 2 节点作业被抢占的概率更高（任一节点被抢占都会导致整个作业失败）
+
+### 9.5 扩展到更多节点
+
+如需 4 节点（16 GPU），修改以下参数：
+
+```bash
+#SBATCH --nodes=4
+# accelerate launch 参数：
+--num_machines 4 --num_processes 16
+# accelerate config 中：
+num_machines: 4
+num_processes: 16
+# 训练参数相应调整（保持 effective batch 不变）：
+--trainer.gradient_accumulation_steps 1
+--trainer.max_train_steps 125000
+--trainer.save_interval 12500
+--run_id custom_qwenOFT_4node
+```
+
+---
+
+## 10. 文件清单
 
 | 文件 | 用途 |
 |------|------|
-| `scripts/slurm_custom_requeue.sh` | SLURM 提交脚本（本文档的核心） |
+| `scripts/slurm_custom_requeue.sh` | SLURM 提交脚本（1 节点 × 4 GPU） |
+| `scripts/slurm_custom_requeue-2node.sh` | SLURM 提交脚本（2 节点 × 4 GPU = 8 GPU） |
 | `scripts/split_custom_lerobot.py` | 拆分合并数据集为 per-task 目录 |
 | `scripts/split_custom_all.sh` | 拆分脚本的 shell wrapper |
+| `starVLA/dataloader/gr00t_lerobot/datasets.py` | 核心数据集类（已 patch 支持 image-in-parquet） |
 | `starVLA/dataloader/gr00t_lerobot/mixtures.py` | `custom_all` / `custom_task1` 混合定义 |
+| `starVLA/dataloader/lerobot_datasets.py` | 数据集工厂（`make_LeRobotSingleDataset`, `get_vla_dataset`） |
 | `examples/Robotwin/train_files/starvla_cotrain_robotwin.yaml` | 基础训练 YAML 配置 |
-| `starVLA/config/deepseeds/deepspeed_zero2.yaml` | Accelerate + DeepSpeed ZeRO-2 配置 |
+| `starVLA/config/deepseeds/deepspeed_zero2.yaml` | Accelerate + DeepSpeed ZeRO-2 配置（1 节点） |
+| `starVLA/config/deepseeds/deepspeed_zero2_2node.yaml` | Accelerate + DeepSpeed ZeRO-2 配置（2 节点） |
 | `starVLA/config/deepseeds/ds_config.yaml` | DeepSpeed 具体参数（BF16, ZeRO-2） |
+| `test_image_dataset.py` | Image-in-parquet 数据集加载单元测试 |
 | `~/.bashrc-kaiwen` | 环境变量、conda 初始化 |
 | `playground/Datasets/Custom/` | Custom 数据集（33 task 目录） |
 | `playground/Pretrained_models/Qwen3-VL-4B-Instruct-Action/` | 预训练 VLM |
-| `results/Checkpoints/custom_qwenOFT_requeue/` | 训练输出（checkpoint、config、stats） |
+| `results/Checkpoints/custom_qwenOFT_requeue/` | 1 节点训练输出 |
+| `results/Checkpoints/custom_qwenOFT_2node/` | 2 节点训练输出 |
 | `logs/` | SLURM stdout/stderr 日志 |
+
+---
+
+## 相关文档
+
+| 文档 | 内容 |
+|------|------|
+| `Kempner-custom-dataset-v0.md` | 自包含的 Custom 数据集训练指南（英文） |
+| `0218-reuse-custom-lerobot-dataset.md` | 数据集拆分过程和 image-in-parquet patch 说明 |

@@ -1,0 +1,68 @@
+#!/bin/bash
+#SBATCH --job-name=starVLA_v0218_h100
+#SBATCH --partition=kempner_h100
+#SBATCH --account=kempner_ydu_lab
+#SBATCH --constraint=h100
+#SBATCH --nodes=1
+#SBATCH --ntasks-per-node=1
+#SBATCH --cpus-per-task=96
+#SBATCH --gpus-per-node=4
+#SBATCH --mem=1440G
+#SBATCH --time=3-00:00:00
+#SBATCH --output=logs/%x_%j.out
+#SBATCH --error=logs/%x_%j.err
+
+# ============================================================
+# StarVLA Custom v0218 (27 variants) on kempner_h100
+# 1 node x 4 H100 80GB, DeepSpeed ZeRO-2, QwenOFT
+# Stable partition (not preemptable), 3-day time limit
+# ============================================================
+
+# ── Environment setup ──
+set +u
+source ~/.bashrc-kaiwen
+set -euo pipefail
+
+module load cuda/12.2.0-fasrc01
+conda activate starVLA
+
+cd /net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/starVLA
+
+# ── NCCL ──
+export NCCL_BLOCKING_WAIT=1
+export NCCL_ASYNC_ERROR_HANDLING=1
+
+# ── Diagnostics ──
+echo "============================================"
+echo "Job:       $SLURM_JOB_ID"
+echo "Node:      $(hostname)"
+echo "GPUs:      $CUDA_VISIBLE_DEVICES"
+echo "Python:    $(which python)"
+echo "Torch:     $(python -c 'import torch; print(torch.__version__)')"
+echo "CUDA avail:$(python -c 'import torch; print(torch.cuda.is_available())')"
+echo "HF_HOME:   $HF_HOME"
+echo "============================================"
+
+# ── Training ──
+accelerate launch \
+  --config_file starVLA/config/deepseeds/deepspeed_zero2.yaml \
+  --num_processes 4 \
+  starVLA/training/train_starvla.py \
+  --config_yaml ./examples/Robotwin/train_files/starvla_cotrain_robotwin.yaml \
+  --framework.name QwenOFT \
+  --framework.qwenvl.base_vlm playground/Pretrained_models/Qwen3-VL-4B-Instruct-Action \
+  --framework.qwenvl.attn_implementation sdpa \
+  --datasets.vla_data.data_root_dir playground/Datasets/Custom \
+  --datasets.vla_data.data_mix custom_v0218 \
+  --datasets.vla_data.per_device_batch_size 8 \
+  --trainer.freeze_modules '' \
+  --trainer.max_train_steps 500000 \
+  --trainer.save_interval 50000 \
+  --trainer.logging_frequency 100 \
+  --trainer.eval_interval 5000 \
+  --trainer.gradient_accumulation_steps 2 \
+  --trainer.is_resume true \
+  --run_root_dir ./results/Checkpoints \
+  --run_id custom_v0218_qwenOFT_h100 \
+  --wandb_project starVLA_Custom_v0218 \
+  --wandb_entity kaiwenh-17-uiuc

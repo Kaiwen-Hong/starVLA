@@ -1184,6 +1184,36 @@ class LeRobotSingleDataset(Dataset):
         else:
             raise ValueError(f"Invalid modality: {modality}")
 
+    @property
+    def is_image_dataset(self) -> bool:
+        """True when images are stored in parquet (no external video files)."""
+        return self.lerobot_info_meta.get("total_videos", 0) == 0
+
+    def _get_images_from_parquet(
+        self,
+        le_key: str,
+        step_indices: np.ndarray,
+    ) -> np.ndarray:
+        """Read image frames from parquet columns for image-in-parquet datasets.
+
+        Args:
+            le_key: The original LeRobot column name (e.g. "observation.images.cam_high").
+            step_indices: Array of step indices to read.
+
+        Returns:
+            np.ndarray: Frames with shape (T, H, W, C), dtype uint8.
+        """
+        import io as _io
+
+        assert self.curr_traj_data is not None
+        col = self.curr_traj_data[le_key]
+        frames = []
+        for idx in step_indices:
+            img_dict = col.iloc[idx]
+            img = Image.open(_io.BytesIO(img_dict["bytes"]))
+            frames.append(np.array(img))
+        return np.stack(frames)
+
     def get_video(
         self,
         trajectory_id: int,
@@ -1213,6 +1243,14 @@ class LeRobotSingleDataset(Dataset):
         assert key.startswith("video."), f"Video key must start with 'video.', got {key}"
         # Get the sub-key
         key = key.replace("video.", "")
+
+        # For image-in-parquet datasets, read directly from the DataFrame
+        if self.is_image_dataset:
+            le_key = self.lerobot_modality_meta.video[key].original_key
+            if le_key is None:
+                le_key = key
+            return self._get_images_from_parquet(le_key, step_indices)
+
         video_path = self.get_video_path(trajectory_id, key)
         # Get the action/state timestamps for each frame in the video
         assert self.curr_traj_data is not None, f"No data found for {trajectory_id=}"
@@ -2053,8 +2091,12 @@ class LeRobotMixtureDataset(Dataset):
 
         for attempt in range(max_retries):
             try:
-                while True:  # @DUG
+                while True:
                     dataset, trajectory_id, step = self.sample_step(index)
+                    # Image-in-parquet datasets have no external video files;
+                    # skip the existence check to avoid an infinite loop.
+                    if dataset.is_image_dataset:
+                        break
                     key = dataset.modality_keys["video"][0].replace("video.", "")
                     video_path = dataset.get_video_path(trajectory_id, key)
                     if os.path.exists(video_path):
