@@ -224,3 +224,97 @@ python starVLA/model/framework/QwenGR00T.py   # should print model and exit
 | 6. Remove Home env | `~/miniforge3/bin/conda env remove -n starVLA` | Eliminates wrong env entirely |
 
 Changes 1–3 alone were **insufficient** because existing `activate.d` symlinks still ran during `conda activate`. Change 4 removed them but wasn't permanent (the hook would re-create them). **Change 5 is the permanent fix** — disabling the source file makes all symlinks (existing and future) no-ops.
+
+---
+
+---
+
+# Fix: .condarc 反复损坏问题
+
+**日期：** 2026-02-22
+
+**症状：** 每隔一段时间，打开新终端时报错：
+
+```
+Ignoring configuration file (/n/home01/haonan/.condarc) due to error:
+Unable to load configuration file.
+  path: /n/home01/haonan/.condarc
+  reason: invalid yaml at line 3, column 0
+```
+
+手动修复 `.condarc` 后过一段时间又会复发。
+
+---
+
+## 根本原因
+
+`~/.bashrc` 第 76-80 行（修改前行号）在每次 shell 启动时运行 `conda config` 写入命令：
+
+```bash
+# 已删除的代码：
+{
+    conda config --remove channels nodefaults 2>/dev/null || true
+    conda config --set channel_priority flexible 2>/dev/null || true
+    conda config --add channels defaults 2>/dev/null || true
+} &>/dev/null
+```
+
+`~/.bashrc-kaiwen` 第 48 行（修改前行号）也有类似问题：
+
+```bash
+# 已删除的代码：
+conda config --set auto_activate_base false 2>/dev/null
+```
+
+每条 `conda config` 命令的执行流程是：读取 `~/.condarc` → 内存中修改 → 写回文件。在 HPC 集群上多个 shell 或 Slurm job 同时启动时，多个进程并发读写同一个文件，产生竞争条件（race condition），导致写出的 YAML 内容损坏（例如出现 ` ble` 这样的乱码片段、或 key 重复）。
+
+---
+
+## 修改内容
+
+### 1. 删除 `~/.bashrc` 中的 conda config 代码块
+
+删除了以下代码（原第 75-80 行）：
+
+```bash
+# Conda channel configuration (run silently to avoid errors)
+{
+    conda config --remove channels nodefaults 2>/dev/null || true
+    conda config --set channel_priority flexible 2>/dev/null || true
+    conda config --add channels defaults 2>/dev/null || true
+} &>/dev/null
+```
+
+**对 owner 无影响：** 这些命令是幂等操作（每次运行结果一样），配置已经静态写在 `.condarc` 里，删除后 conda 的行为完全不变。
+
+### 2. 删除 `~/.bashrc-kaiwen` 中的 conda config 命令
+
+删除了以下代码（原第 48 行）：
+
+```bash
+conda config --set auto_activate_base false 2>/dev/null
+```
+
+### 3. 一次性写入正确的 `~/.condarc`
+
+不再依赖 shell 启动时动态生成，直接设置为最终状态：
+
+```yaml
+channels:
+  - defaults
+channel_priority: flexible
+auto_activate_base: false
+```
+
+---
+
+## 影响范围
+
+- 这些 `conda config` 命令是幂等的，删除后 conda 的实际行为不变
+- 对 owner 的使用（包括 `claude` 等工具）无任何影响
+- shell 启动会稍微快一点（少跑 `conda config` 命令）
+- 彻底解决 `.condarc` 被并发写坏的问题
+
+## 如何回退
+
+如果需要恢复原来的行为，把上面删除的代码块加回对应文件即可。
