@@ -31,6 +31,7 @@ export TRANSFORMERS_CACHE=${HF_HOME}/transformers
 export HF_DATASETS_CACHE=${HF_HOME}/datasets
 export PIP_CACHE_DIR=${LAB_ROOT}/.cache/pip
 export WANDB_DIR=${LAB_ROOT}/.cache/wandb
+export WANDB_MODE=disabled
 export TRITON_CACHE_DIR=/tmp/triton_cache_${USER}
 
 # ── Conda ──
