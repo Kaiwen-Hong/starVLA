@@ -3,13 +3,13 @@
 # StarVLA FastUMI pickandplace training -- standalone server
 #
 # Usage:
-#   bash realworld/0306-train-pickandplace.sh          # auto-detect GPUs
+#   bash realworld/0306-train-pickandplace.sh          # use 4 GPUs (default)
 #   bash realworld/0306-train-pickandplace.sh 2         # use 2 GPUs
 #
 # Prerequisites:
 #   - conda env "starVLA" with all dependencies installed
 #   - Pretrained model downloaded to playground/Pretrained_models/Qwen3-VL-4B-Instruct-Action/
-#   - Dataset at playground/Datasets/FastUMI/pickandplace_vla/ (90 episodes)
+#   - Dataset at playground/Datasets/FastUMI/${DATASET_NAME}/
 # ============================================================
 
 set -euo pipefail
@@ -17,6 +17,12 @@ set -euo pipefail
 # ── Paths ──
 REPO_DIR=/net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/starVLA
 LAB_ROOT=/net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen
+
+# ── Dataset config (edit these to switch datasets) ──
+# DATASET_NAME : subdirectory under playground/Datasets/FastUMI/
+# DATA_MIX     : matching entry in starVLA/dataloader/gr00t_lerobot/mixtures.py
+DATASET_NAME=pickandplace-real-0307
+DATA_MIX=fastumi_pickandplace_real_0307
 
 # ── HuggingFace / cache (keep everything off home dir) ──
 export HF_HOME=${LAB_ROOT}/.cache/huggingface
@@ -52,7 +58,7 @@ cd "${REPO_DIR}"
 if [ $# -ge 1 ]; then
     NUM_GPUS=$1
 else
-    NUM_GPUS=$(python3 -c "import torch; print(torch.cuda.device_count())")
+    NUM_GPUS=4
 fi
 
 # Gradient accumulation to keep effective batch ~64
@@ -78,13 +84,14 @@ echo "============================================"
 echo "StarVLA FastUMI pickandplace training"
 echo "============================================"
 echo "Repo:      ${REPO_DIR}"
+echo "Dataset:   playground/Datasets/FastUMI/${DATASET_NAME}"
+echo "Data mix:  ${DATA_MIX}"
 echo "GPUs:      ${NUM_GPUS}"
 echo "Batch:     ${PER_DEVICE_BATCH} x ${NUM_GPUS} x ${GRAD_ACCUM} = $(( PER_DEVICE_BATCH * NUM_GPUS * GRAD_ACCUM )) effective"
 echo "Attention: ${ATTN_IMPL}"
 echo "Python:    $(which python)"
 echo "Torch:     $(python3 -c 'import torch; print(torch.__version__)')"
 echo "CUDA:      $(python3 -c 'import torch; print(torch.version.cuda)')"
-echo "Dataset:   playground/Datasets/FastUMI/pickandplace_vla (90 eps, 7824 frames)"
 echo "============================================"
 
 # ── Preflight checks ──
@@ -95,8 +102,8 @@ if [ ! -d "playground/Pretrained_models/Qwen3-VL-4B-Instruct-Action" ]; then
     ERRORS=$((ERRORS + 1))
 fi
 
-if [ ! -f "playground/Datasets/FastUMI/pickandplace_vla/meta/info.json" ]; then
-    echo "[ERROR] Dataset not found: playground/Datasets/FastUMI/pickandplace_vla/"
+if [ ! -f "playground/Datasets/FastUMI/${DATASET_NAME}/meta/info.json" ]; then
+    echo "[ERROR] Dataset not found: playground/Datasets/FastUMI/${DATASET_NAME}/"
     ERRORS=$((ERRORS + 1))
 fi
 
@@ -118,7 +125,7 @@ export NCCL_ASYNC_ERROR_HANDLING=1
 # Key FastUMI overrides vs RoboTwin defaults:
 #   action_dim/state_dim: 10 (not 14) -- 3 pos + 6 rot6d + 1 gripper
 #   data_root_dir: FastUMI (not RoboTwin)
-#   data_mix: fastumi_pickandplace
+#   data_mix: from DATA_MIX variable
 #   video_backend: torchvision_av (h264 video)
 #
 accelerate launch \
@@ -132,7 +139,7 @@ accelerate launch \
   --framework.action_model.action_dim 10 \
   --framework.action_model.state_dim 10 \
   --datasets.vla_data.data_root_dir playground/Datasets/FastUMI \
-  --datasets.vla_data.data_mix fastumi_pickandplace \
+  --datasets.vla_data.data_mix ${DATA_MIX} \
   --datasets.vla_data.per_device_batch_size ${PER_DEVICE_BATCH} \
   --datasets.vla_data.video_backend torchvision_av \
   --trainer.freeze_modules '' \
