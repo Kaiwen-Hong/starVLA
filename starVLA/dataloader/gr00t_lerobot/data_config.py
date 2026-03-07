@@ -905,6 +905,88 @@ class AgilexDataConfig:
 ###########################################################################################
 
 
+class FastUMIDataConfig:
+    """FastUMI Pro: single-arm robot with wrist camera, 10D EEF pose + rot6d.
+
+    State:  [x, y, z, rot6d(6), gripper] = 10D absolute EEF pose
+    Action: [rel_x, rel_y, rel_z, rel_rot6d(6), gripper] = 10D pre-computed relative
+    Camera: 1x wrist (256x256)
+
+    action_mode should be "abs" because actions are ALREADY relative
+    (inv(base_pose) @ target_pose). No further delta computation needed.
+    """
+
+    video_keys = [
+        "video.wrist",
+    ]
+    state_keys = [
+        "state.eef_pos",
+        "state.eef_rot6d",
+        "state.gripper",
+    ]
+    action_keys = [
+        "action.eef_pos",
+        "action.eef_rot6d",
+        "action.gripper",
+    ]
+    language_keys = ["annotation.human.action.task_description"]
+    observation_indices = [0]
+    action_indices = list(range(16))
+
+    def modality_config(self):
+        video_modality = ModalityConfig(
+            delta_indices=self.observation_indices,
+            modality_keys=self.video_keys,
+        )
+        state_modality = ModalityConfig(
+            delta_indices=self.observation_indices,
+            modality_keys=self.state_keys,
+        )
+        action_modality = ModalityConfig(
+            delta_indices=self.action_indices,
+            modality_keys=self.action_keys,
+        )
+        language_modality = ModalityConfig(
+            delta_indices=self.observation_indices,
+            modality_keys=self.language_keys,
+        )
+        modality_configs = {
+            "video": video_modality,
+            "state": state_modality,
+            "action": action_modality,
+            "language": language_modality,
+        }
+        return modality_configs
+
+    def transform(self):
+        transforms = [
+            # state transforms
+            StateActionToTensor(apply_to=self.state_keys),
+            StateActionTransform(
+                apply_to=self.state_keys,
+                normalization_modes={
+                    "state.eef_pos": "min_max",
+                    "state.eef_rot6d": "min_max",
+                    "state.gripper": "binary",
+                },
+            ),
+            # action transforms
+            StateActionToTensor(apply_to=self.action_keys),
+            StateActionTransform(
+                apply_to=self.action_keys,
+                normalization_modes={
+                    "action.eef_pos": "min_max",
+                    "action.eef_rot6d": "min_max",
+                    "action.gripper": "binary",
+                },
+            ),
+        ]
+        return ComposedModalityTransform(transforms=transforms)
+
+
+###########################################################################################
+
+
 ROBOT_TYPE_CONFIG_MAP = {
     "libero_franka": Libero4in1DataConfig(),
     "oxe_droid": OxeDroidDataConfig(),
@@ -916,6 +998,8 @@ ROBOT_TYPE_CONFIG_MAP = {
     "robotwin": AgilexDataConfig(),
     "fourier_gr1_arms_waist": FourierGr1ArmsWaistDataConfig(),
     
+    "fastumi": FastUMIDataConfig(),
+
     "custom_robot_config": SingleFrankaRobotiqDeltaEefDataConfig(),
 }
 

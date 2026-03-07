@@ -1,4 +1,4 @@
-# RoboTwin 2.0 Setup Guide for StarVLA (Kempner)
+# RoboTwin 2.0 Training Guide for StarVLA
 
 > **CRITICAL:** All downloads/caches go under `/net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/`, **never `~`**.
 
@@ -13,8 +13,8 @@ The **RoboTwin-Randomized** dataset has been downloaded and extracted. It is rea
 | Randomized tar.gz | Downloaded | `data/RoboTwin-Randomized-targz/` (50 `.tar.gz` files) |
 | Extracted dataset | Ready | `playground/Datasets/RoboTwin/` (50 task directories) |
 | Dataset version | **Randomized** | 500 episodes/task, fps=15, mp4 video (AV1), modality.json included |
-| Total data | 25,000 episodes | 50 tasks × 500 episodes each |
-| Compatibility | Verified | No config changes needed — works directly with `bash examples/Robotwin/train_files/run_robotwin_train.sh` |
+| Total data | 25,000 episodes | 50 tasks x 500 episodes each |
+| Compatibility | Verified | No config changes needed -- works directly with `bash examples/Robotwin/train_files/run_robotwin_train.sh` |
 
 **Note on data sources:** There are two versions of the RoboTwin dataset (see [Section 4.1](#41-two-dataset-versions) for full comparison):
 
@@ -26,59 +26,36 @@ The **RoboTwin-Randomized** dataset has been downloaded and extracted. It is rea
 | Scene variation | Fixed | **Randomized** positions & appearances |
 | Recommended | Debugging only | **Training** |
 
-Both are LeRobot v2.1 format. The StarVLA dataloader auto-detects video vs image mode from `modality.json` — no config changes needed for either version.
+Both are LeRobot v2.1 format. The StarVLA dataloader auto-detects video vs image mode from `modality.json` -- no config changes needed for either version.
 
 A previously processed merged version of the demo-clean data also exists at `$HF_LEROBOT_HOME/demo_clean_all_repo/` (all 50 tasks combined into one dataset, 2,500 episodes, image-in-parquet, fps=50). This is **not** used by the per-task training pipeline in `mixtures.py`.
 
 ---
 
-## TL;DR — Copy-Paste Quickstart
+## TL;DR -- Copy-Paste Quickstart
+
+> **Prerequisites:** Environment setup (conda env, dependencies, CUDA module) and cluster-specific configuration (env vars, cache paths) must be completed first.
+> See `DOC-setup/install.md` for environment setup and `DOC-training/kempner-cluster.md` for Kempner-specific environment configuration.
 
 Run these blocks in order. Each step is self-contained. Details in later sections.
 
 ```bash
-# ── 0. Env vars (add to ~/.bashrc-kaiwen, then source ~/.bashrc-kaiwen) ──
-LAB_ROOT=/net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen
-export HF_HOME=$LAB_ROOT/.cache/huggingface
-export HF_HUB_CACHE=$HF_HOME/hub
-export TRANSFORMERS_CACHE=$HF_HOME/transformers
-export HF_DATASETS_CACHE=$HF_HOME/datasets
-export CONDA_PKGS_DIRS=$LAB_ROOT/.conda/pkgs
-export PIP_CACHE_DIR=$LAB_ROOT/.cache/pip
-export WANDB_DIR=$LAB_ROOT/.cache/wandb
-export WANDB_CACHE_DIR=$LAB_ROOT/.cache/wandb
-export TRITON_CACHE_DIR=/tmp/triton_cache_$USER
-export TOKENIZERS_PARALLELISM=false
-mkdir -p $HF_HOME/hub $CONDA_PKGS_DIRS $PIP_CACHE_DIR $WANDB_DIR $TRITON_CACHE_DIR
-```
-
-```bash
-# ── 1. Conda env + install ──
-conda create -n starVLA python=3.10 -y && conda activate starVLA
-cd /net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/starVLA
-module load cuda/12.2.0-fasrc01 || module load cuda
-pip install -r requirements.txt
-pip install flash-attn --no-build-isolation
-pip install -e .
-```
-
-```bash
-# ── 2. Download pretrained VLM (login node, ~8GB) ──
+# -- 1. Download pretrained VLM (login node, ~8GB) --
 huggingface-cli download StarVLA/Qwen3-VL-4B-Instruct-Action \
   --local-dir ./playground/Pretrained_models/Qwen3-VL-4B-Instruct-Action \
   --cache-dir $HF_HUB_CACHE
 ```
 
 ```bash
-# ── 3. Download RoboTwin dataset (login node) ──
-# Option A: Demo-clean (50 tasks × 50 episodes = 2,500 demos, image-in-parquet, fps=50)
+# -- 2. Download RoboTwin dataset (login node) --
+# Option A: Demo-clean (50 tasks x 50 episodes = 2,500 demos, image-in-parquet, fps=50)
 mkdir -p playground/Datasets/RoboTwin
 huggingface-cli download YaoMarkMu/robotwin_dataset \
   --repo-type dataset \
   --local-dir ./playground/Datasets/RoboTwin \
   --cache-dir $HF_HUB_CACHE
 
-# Option B: Randomized (50 tasks × 500 episodes = 25,000 demos, mp4 video, fps=15)
+# Option B: Randomized (50 tasks x 500 episodes = 25,000 demos, mp4 video, fps=15)
 bash scripts/download_robotwin_randomized.sh
 # Then extract into playground/Datasets/RoboTwin:
 mkdir -p playground/Datasets/RoboTwin
@@ -88,7 +65,7 @@ done
 ```
 
 ```bash
-# ── 4. Copy modality.json into every task folder (Option A only; Option B already includes it) ──
+# -- 3. Copy modality.json into every task folder (Option A only; Option B already includes it) --
 for d in playground/Datasets/RoboTwin/*/; do
   if [ ! -f "$d/meta/modality.json" ]; then
     mkdir -p "$d/meta"
@@ -98,12 +75,12 @@ done
 ```
 
 ```bash
-# ── 5. Smoke test ──
+# -- 4. Smoke test --
 python starVLA/model/framework/QwenGR00T.py   # should print model and exit
 ```
 
 ```bash
-# ── 6. Train (4×H100 ready-to-use command) ──
+# -- 5. Train (4xH100 ready-to-use command) --
 #
 # Pre-conditions:
 #   - conda activate starVLA
@@ -120,9 +97,9 @@ python starVLA/model/framework/QwenGR00T.py   # should print model and exit
 
 # before running, make sure to run:
 
-source ~/.bashrc-kaiwen                                                             
+source ~/.bashrc-kaiwen
 conda activate starVLA
-module load cuda/12.2.0-fasrc01                                                     
+module load cuda/12.2.0-fasrc01
 cd /net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/starVLA
 
 
@@ -150,10 +127,10 @@ accelerate launch \
   --wandb_entity kaiwenh-17-uiuc
 ```
 
-> **4×H100 notes:**
-> - `--num_processes 4` — matches 4 GPUs
-> - `--trainer.gradient_accumulation_steps 2` — compensates for fewer GPUs (effective global batch = 4 × 8 × 2 = 64, same as 8 GPU with batch 8)
-> - `--framework.qwenvl.attn_implementation sdpa` — use this if flash_attn has GLIBC issues on your node (see [Troubleshooting](#kempner-glibc-and-flash-attention)); switch to `flash_attention_2` on nodes with GLIBC >= 2.32 for better performance
+> **4xH100 notes:**
+> - `--num_processes 4` -- matches 4 GPUs
+> - `--trainer.gradient_accumulation_steps 2` -- compensates for fewer GPUs (effective global batch = 4 x 8 x 2 = 64, same as 8 GPU with batch 8)
+> - `--framework.qwenvl.attn_implementation sdpa` -- use this if flash_attn has GLIBC issues on your node (see [Troubleshooting](#10-troubleshooting)); switch to `flash_attention_2` on nodes with GLIBC >= 2.32 for better performance
 > - For quick debugging, replace `--datasets.vla_data.data_mix robotwin` with `robotwin_task1` (loads only adjust_bottle)
 
 That's it. Scroll down for detailed explanations, config tuning, evaluation, and troubleshooting.
@@ -198,125 +175,14 @@ The default training script uses `QwenFast`, while the YAML config defaults to `
 
 ## 2. Environment Setup
 
-### 2.1 Set ALL Cache/Storage Environment Variables (DO THIS FIRST)
+See `DOC-setup/install.md` for environment setup and `DOC-training/kempner-cluster.md` for Kempner-specific environment configuration.
 
-**This must be done BEFORE creating the conda env or installing anything.**
-
-Add all of the following to `~/.bashrc-kaiwen`:
-
-```bash
-# ============================================================
-# STORAGE REDIRECTION — keep everything off ~ (limited quota)
-# ============================================================
-LAB_ROOT=/net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen
-
-# --- HuggingFace ---
-export HF_HOME=$LAB_ROOT/.cache/huggingface
-export HF_HUB_CACHE=$HF_HOME/hub
-export TRANSFORMERS_CACHE=$HF_HOME/transformers
-export HF_DATASETS_CACHE=$HF_HOME/datasets
-
-# --- Conda packages (avoid filling ~/.conda/pkgs) ---
-export CONDA_PKGS_DIRS=$LAB_ROOT/.conda/pkgs
-
-# --- pip cache ---
-export PIP_CACHE_DIR=$LAB_ROOT/.cache/pip
-
-# --- WandB ---
-export WANDB_DIR=$LAB_ROOT/.cache/wandb
-export WANDB_CACHE_DIR=$LAB_ROOT/.cache/wandb
-
-# --- Triton compilation (use local /tmp for speed) ---
-export TRITON_CACHE_DIR=/tmp/triton_cache_$USER
-
-# --- Misc ---
-export TOKENIZERS_PARALLELISM=false
-```
-
-Then reload and create the cache directories:
-
-```bash
-source ~/.bashrc-kaiwen
-
-mkdir -p $HF_HOME/hub
-mkdir -p $CONDA_PKGS_DIRS
-mkdir -p $PIP_CACHE_DIR
-mkdir -p $WANDB_DIR
-mkdir -p $TRITON_CACHE_DIR
-```
-
-**Verify the variables are set correctly:**
-
-```bash
-echo "HF_HOME:       $HF_HOME"
-echo "HF_HUB_CACHE:  $HF_HUB_CACHE"
-echo "PIP_CACHE_DIR: $PIP_CACHE_DIR"
-echo "CONDA_PKGS_DIRS: $CONDA_PKGS_DIRS"
-
-# Should print the lab path, NOT anything under ~/
-python -c "from huggingface_hub import constants; print('HF cache:', constants.HF_HUB_CACHE)"
-```
-
-### 2.2 Create Conda Environment
-
-> **IMPORTANT:** Make sure `which conda` points to the **lab miniforge**
+> **Note on conda:** Make sure `which conda` points to the **lab miniforge**
 > (`/net/.../kaiwen/miniforge3/condabin/conda`), NOT the home miniforge
 > (`~/miniforge3/condabin/conda`). Run `source ~/.bashrc-kaiwen` first.
 > If you create the env under the wrong miniforge, `which python` will
 > resolve to the wrong binary even after `conda activate`. See
-> `0206-change-bashrc-conda-related.md` for full details.
-
-```bash
-# Option A: named env (conda will still use CONDA_PKGS_DIRS for package cache)
-conda create -n starVLA python=3.10 -y
-conda activate starVLA
-
-# Option B: prefix env stored entirely under lab directory (recommended if ~ is tight)
-conda create --prefix $LAB_ROOT/conda_envs/starVLA python=3.10 -y
-conda activate $LAB_ROOT/conda_envs/starVLA
-```
-
-### 2.3 Load CUDA Module (HPC Only)
-
-```bash
-module load cuda/12.2.0-fasrc01 || module load cuda
-
-# Verify CUDA
-nvcc -V
-# Expected: CUDA 12.0 or 12.4 (verified compatible versions)
-```
-
-### 2.4 Install Dependencies
-
-```bash
-cd /net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/starVLA
-
-# Install Python requirements
-pip install -r requirements.txt
-
-# Install FlashAttention2 (must match your CUDA version)
-pip install flash-attn --no-build-isolation
-
-# Install starVLA in editable mode
-pip install -e .
-```
-
-**Key dependencies** (from `requirements.txt`):
-- `transformers==4.57.0`
-- `accelerate==1.5.2`
-- `deepspeed==0.16.9`
-- `torchvision==0.21.0`
-- `numpy==1.26.4`
-- `flash-attn` (verified: `2.7.4.post1` works with CUDA 12.0/12.4)
-
-### 2.5 Verify Flash Attention
-
-```bash
-python -c "import flash_attn; print(flash_attn.__version__)"
-pip list | grep -E 'torch|transformers|flash-attn'
-```
-
-If `flash-attn` fails to install, check that your `nvcc` version and PyTorch CUDA version match.
+> `DOC-setup/conda-fixes.md` for full details.
 
 ---
 
@@ -325,7 +191,7 @@ If `flash-attn` fails to install, check that your `nvcc` version and PyTorch CUD
 All models go into `playground/Pretrained_models/` (under the repo, which is under lab storage).
 
 > **Reminder:** Every `huggingface-cli download` below uses `--cache-dir $HF_HUB_CACHE`
-> to keep the HF blob cache under lab storage. **Never omit this flag** — without it,
+> to keep the HF blob cache under lab storage. **Never omit this flag** -- without it,
 > HuggingFace defaults to `~/.cache/huggingface/` which will fill your home quota.
 > Verify `echo $HF_HUB_CACHE` prints the lab path before running any download.
 
@@ -395,7 +261,7 @@ There are two versions of the RoboTwin dataset, both in LeRobot v2.1 format:
 | modality.json | **Not included** (must copy manually) | **Included** in each tar.gz |
 
 **Which to use?**
-- **Randomized** is recommended for training — 10x more data, better generalization, and matches the StarVLA per-task data loading pipeline directly.
+- **Randomized** is recommended for training -- 10x more data, better generalization, and matches the StarVLA per-task data loading pipeline directly.
 - **Demo-clean** is useful for quick debugging or if you want to use the single merged dataset at `$HF_LEROBOT_HOME/demo_clean_all_repo/`.
 
 ### 4.2 Option A: Download Demo-Clean Dataset
@@ -409,7 +275,7 @@ echo $HF_HUB_CACHE  # must NOT be under ~/
 
 mkdir -p playground/Datasets/RoboTwin
 
-# Download all task datasets — each task is a separate dataset folder
+# Download all task datasets -- each task is a separate dataset folder
 huggingface-cli download YaoMarkMu/robotwin_dataset \
   --repo-type dataset \
   --local-dir ./playground/Datasets/RoboTwin \
@@ -510,8 +376,8 @@ stack_bowls_two        stamp_seal             turn_switch
 ```
 
 You can also use smaller subsets for debugging:
-- `robotwin_task1` — only `adjust_bottle`
-- `robotwin_task2` — only `place_a2b_left` + `place_a2b_right`
+- `robotwin_task1` -- only `adjust_bottle`
+- `robotwin_task2` -- only `place_a2b_left` + `place_a2b_right`
 
 ---
 
@@ -521,7 +387,7 @@ You can also use smaller subsets for debugging:
 
 Each task's `meta/` folder **must** have a `modality.json` file. The RoboTwin-specific modality mapping is at `examples/Robotwin/train_files/modality.json`.
 
-> **Note:** If you used **Option B (Randomized)**, each tar.gz already includes `modality.json` — you can skip this step. The script below is safe to run regardless; it only copies when the file is missing.
+> **Note:** If you used **Option B (Randomized)**, each tar.gz already includes `modality.json` -- you can skip this step. The script below is safe to run regardless; it only copies when the file is missing.
 
 ```bash
 cd /net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/starVLA
@@ -587,9 +453,9 @@ Note: This requires a debugger to attach (the main block has `debugpy.wait_for_c
 
 ## 7. Training
 
-### 7.1 Quick Start (4×H100, Verified)
+### 7.1 Quick Start (4xH100, Verified)
 
-The ready-to-use training command is in the [TL;DR Quickstart (Step 6)](#tldr--copy-paste-quickstart). Copy it directly.
+The ready-to-use training command is in the [TL;DR Quickstart (Step 5)](#tldr--copy-paste-quickstart). Copy it directly.
 
 Alternatively, you can use the provided shell script with edits:
 ```bash
@@ -777,7 +643,7 @@ In a **separate** conda environment (not starVLA):
 # Follow the official RoboTwin install guide:
 # https://robotwin-platform.github.io/doc/usage/robotwin-install.html
 
-# Make sure CONDA_PKGS_DIRS and PIP_CACHE_DIR are set (see Section 2.1)
+# Make sure CONDA_PKGS_DIRS and PIP_CACHE_DIR are set (see DOC-training/kempner-cluster.md)
 
 # Option A: named env
 conda create -n robotwin python=3.10 -y
@@ -832,7 +698,7 @@ ROBOTWIN_PATH=/path/to/your/RoboTwin   # Path to RoboTwin simulator repo
 
 ### 8.3 Run Evaluation
 
-**Terminal 1** (starVLA environment) — start the policy server:
+**Terminal 1** (starVLA environment) -- start the policy server:
 ```bash
 conda activate starVLA
 cd /net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/starVLA
@@ -841,7 +707,7 @@ bash examples/Robotwin/eval_files/run_policy_server.sh
 
 This loads the model checkpoint and starts a WebSocket server on the specified port.
 
-**Terminal 2** (robotwin environment) — run the simulation:
+**Terminal 2** (robotwin environment) -- run the simulation:
 ```bash
 conda activate robotwin
 cd /net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/starVLA/examples/Robotwin/eval_files
@@ -909,7 +775,7 @@ if robot_type not in ROBOT_TYPE_TO_EMBODIMENT_TAG:
     embodiment_tag = EmbodimentTag.NEW_EMBODIMENT
 ```
 
-This is expected behavior — RoboTwin uses the `NEW_EMBODIMENT` tag (projector index 31).
+This is expected behavior -- RoboTwin uses the `NEW_EMBODIMENT` tag (projector index 31).
 
 ### 9.3 Data Mixture Registry
 
@@ -966,32 +832,7 @@ This moves left_gripper from index 6 to after right_joints.
 
 ## 10. Troubleshooting
 
-### Kempner: GLIBC and Flash Attention
-
-**Symptom:**
-```
-ImportError: /lib64/libc.so.6: version `GLIBC_2.32' not found
-  (required by .../flash_attn_2_cuda.cpython-310-x86_64-linux-gnu.so)
-```
-
-**Root cause:** The Kempner login/GPU nodes run Rocky Linux 8 with GLIBC 2.28. The `flash-attn` pip wheel was compiled against GLIBC 2.32+. This affects both `import flash_attn` and any code using `attn_implementation: flash_attention_2`.
-
-**Solution:** Use PyTorch's built-in SDPA (Scaled Dot Product Attention) instead:
-```bash
-# In your training command, add:
---framework.qwenvl.attn_implementation sdpa
-```
-
-SDPA provides similar functionality (fused attention kernels) without the GLIBC dependency. Performance difference is minimal on H100.
-
-**If you want to try flash_attn anyway:** Check your node's GLIBC version:
-```bash
-ldd --version | head -1
-# If it says 2.32 or higher, flash_attention_2 will work
-# If 2.28 (Rocky 8 default), use sdpa
-```
-
-### Kempner: QwenFast Missing FAST Tokenizer
+### QwenFast Missing FAST Tokenizer
 
 **Symptom:**
 ```
@@ -1001,37 +842,19 @@ HFValidationError: Repo id must be in the form 'repo_name' or 'namespace/repo_na
 
 **Root cause:** The `QwenFast` framework requires the FAST tokenizer from `physical-intelligence/fast` at `playground/Pretrained_models/fast/`. This is not included in the base VLM download and must be downloaded separately.
 
-**Solution — Option A:** Download the FAST tokenizer:
+**Solution -- Option A:** Download the FAST tokenizer:
 ```bash
 huggingface-cli download physical-intelligence/fast \
   --local-dir ./playground/Pretrained_models/fast \
   --cache-dir $HF_HUB_CACHE
 ```
 
-**Solution — Option B:** Use `QwenOFT` instead (recommended, no extra downloads):
+**Solution -- Option B:** Use `QwenOFT` instead (recommended, no extra downloads):
 ```bash
 --framework.name QwenOFT
 ```
 
-### Kempner: DeepSpeed `nvcc` Not Found
-
-**Symptom:**
-```
-FileNotFoundError: [Errno 2] No such file or directory: '/usr/local/cuda/bin/nvcc'
-```
-
-**Root cause:** DeepSpeed tries to find `nvcc` at `/usr/local/cuda/bin/nvcc` but Kempner uses environment modules. If `module load cuda` wasn't run, or if `CUDA_HOME` is unset/wrong, DeepSpeed can't find the CUDA compiler.
-
-**Solution:**
-```bash
-module load cuda/12.2.0-fasrc01
-# Verify:
-which nvcc   # should print the module path, not /usr/local/cuda/bin/nvcc
-```
-
-If running from a script (not interactive), add `module load cuda/12.2.0-fasrc01` at the top.
-
-### Kempner: `is_debug True` Hangs on Launch
+### `is_debug True` Hangs on Launch
 
 **Symptom:** Training starts but rank 0 prints `Rank 0 waiting for debugger attach on port 10092...` and hangs forever, while other ranks crash from timeout.
 
@@ -1043,36 +866,23 @@ If running from a script (not interactive), add `module load cuda/12.2.0-fasrc01
 --is_debug False
 ```
 
-### Kempner: Verified Working Configuration (2025-02-17)
+### Video Backend Error
 
-The following configuration was tested end-to-end on Kempner 4×H100 80GB:
-
-```
-Framework:        QwenOFT (DiT-B action head)
-VLM:              Qwen3-VL-4B-Instruct-Action
-Attention:        sdpa (not flash_attention_2, due to GLIBC)
-Dataset:          RoboTwin-Randomized (500 eps/task, video mode, AV1, fps=15)
-GPUs:             4× H100 80GB
-Batch:            4 per GPU × 4 GPUs × 2 grad_accum = 32 effective
-DeepSpeed:        ZeRO Stage 2, BF16
-GPU Memory:       ~17 GB peak per GPU (plenty of headroom)
-Training speed:   ~0.33s per step after warmup
-Result:           10 steps completed, loss 0.87 → 0.84
-```
-
-### `NotImplementedError: Framework QwenXXX is not implemented`
-The framework file wasn't imported. Run the standalone test first:
+If `torchvision_av` fails, try the default:
 ```bash
-python starVLA/model/framework/QwenGR00T.py
+--datasets.vla_data.video_backend decord
 ```
 
-### CUDA Out of Memory
-Reduce batch size:
+### Dataset Not Found
+
+Ensure the path structure matches exactly:
 ```bash
---datasets.vla_data.per_device_batch_size 4  # Default is 16, script uses 8
+ls playground/Datasets/RoboTwin/adjust_bottle/meta/
+# Should see: modality.json, episodes.jsonl, tasks.jsonl, info.json
 ```
 
 ### Missing modality.json
+
 ```
 FileNotFoundError: .../meta/modality.json
 ```
@@ -1081,55 +891,37 @@ Copy from the template:
 cp examples/Robotwin/train_files/modality.json playground/Datasets/RoboTwin/<task>/meta/
 ```
 
-### NCCL Timeout (Multi-GPU)
+### `NotImplementedError: Framework QwenXXX is not implemented`
+
+The framework file wasn't imported. Run the standalone test first:
 ```bash
-export NCCL_BLOCKING_WAIT=1
-export NCCL_ASYNC_ERROR_HANDLING=1
-export NCCL_TIMEOUT=10000
-export NCCL_SOCKET_TIMEOUT_MS=360000
+python starVLA/model/framework/QwenGR00T.py
 ```
 
-### Dataset Not Found
-Ensure the path structure matches exactly:
+### CUDA Out of Memory
+
+Reduce batch size:
 ```bash
-ls playground/Datasets/RoboTwin/adjust_bottle/meta/
-# Should see: modality.json, episodes.jsonl, tasks.jsonl, info.json
+--datasets.vla_data.per_device_batch_size 4  # Default is 16, script uses 8
 ```
 
-### Video Backend Error
-If `torchvision_av` fails, try the default:
-```bash
---datasets.vla_data.video_backend decord
+For cluster-specific issues (GLIBC, NCCL, DeepSpeed nvcc, WandB, home directory quota), see `DOC-training/kempner-cluster.md`.
+
+### Verified Working Configuration (2025-02-17)
+
+The following configuration was tested end-to-end on Kempner 4xH100 80GB:
+
 ```
-
-### WandB Not Logging
-Remove the disable line in the training script:
-```bash
-# Remove or comment out:
-# export WANDB_MODE=disabled
-```
-
-### Home Directory Filling Up
-Something is writing to `~/.cache/`. Check and redirect:
-```bash
-# Find the offender
-du -sh ~/.cache/huggingface/ ~/.cache/pip/ ~/.conda/pkgs/ 2>/dev/null
-
-# Verify env vars are set (all should point to lab storage, not ~)
-echo "HF_HOME=$HF_HOME"
-echo "HF_HUB_CACHE=$HF_HUB_CACHE"
-echo "PIP_CACHE_DIR=$PIP_CACHE_DIR"
-echo "CONDA_PKGS_DIRS=$CONDA_PKGS_DIRS"
-
-# If any is empty or points to ~, re-source bashrc:
-source ~/.bashrc-kaiwen
-
-# Double-check with Python
-python -c "from huggingface_hub import constants; print(constants.HF_HUB_CACHE)"
-# Must print: /net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/.cache/huggingface/hub
-
-# If old cache exists under ~, you can safely symlink or remove it:
-# rm -rf ~/.cache/huggingface  # after confirming env vars are set
+Framework:        QwenOFT (DiT-B action head)
+VLM:              Qwen3-VL-4B-Instruct-Action
+Attention:        sdpa (not flash_attention_2, due to GLIBC)
+Dataset:          RoboTwin-Randomized (500 eps/task, video mode, AV1, fps=15)
+GPUs:             4x H100 80GB
+Batch:            4 per GPU x 4 GPUs x 2 grad_accum = 32 effective
+DeepSpeed:        ZeRO Stage 2, BF16
+GPU Memory:       ~17 GB peak per GPU (plenty of headroom)
+Training speed:   ~0.33s per step after warmup
+Result:           10 steps completed, loss 0.87 -> 0.84
 ```
 
 ---

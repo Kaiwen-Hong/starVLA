@@ -1,0 +1,51 @@
+{
+  "action": {
+    "eef_pos": {
+      "start": 0,
+      "end": 3,
+      "original_key": "action",
+      "absolute": false
+    },
+    "eef_rot6d": {
+      "start": 3,
+      "end": 9,
+      "original_key": "action",
+      "rotation_type": "rotation_6d",
+      "absolute": false
+    },
+    "gripper": {
+      "start": 9,
+      "end": 10,
+      "original_key": "action",
+      "absolute": false
+    }
+  },
+  "state": {
+    "eef_pos": {
+      "start": 0,
+      "end": 3,
+      "original_key": "observation.state"
+    },
+    "eef_rot6d": {
+      "start": 3,
+      "end": 9,
+      "original_key": "observation.state",
+      "rotation_type": "rotation_6d"
+    },
+    "gripper": {
+      "start": 9,
+      "end": 10,
+      "original_key": "observation.state"
+    }
+  },
+  "video": {
+    "wrist": {
+      "original_key": "observation.images.wrist"
+    }
+  },
+  "annotation": {
+    "human.action.task_description": {
+      "original_key": "task_index"
+    }
+  }
+}

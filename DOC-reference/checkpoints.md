@@ -1,4 +1,4 @@
-# StarVLA Checkpoint Summary
+# Checkpoint Summary
 
 > Updated: 2026-02-22. Lists the four runs that have actual model weights saved.
 
