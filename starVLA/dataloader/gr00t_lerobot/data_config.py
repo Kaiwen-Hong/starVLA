@@ -902,6 +902,72 @@ class AgilexDataConfig:
 
         return ComposedModalityTransform(transforms=transforms)
 
+
+class FastUMIDataConfig:
+    """FastUMI pickandplace: single wrist cam, 10-dim state/action (3 pos + 6 rot6d + 1 gripper)."""
+    video_keys = ["video.wrist"]
+    state_keys = [
+        "state.eef_pos",
+        "state.eef_rot6d",
+        "state.gripper",
+    ]
+    action_keys = [
+        "action.eef_pos",
+        "action.eef_rot6d",
+        "action.gripper",
+    ]
+    language_keys = ["annotation.human.action.task_description"]
+    observation_indices = [0]
+    action_indices = list(range(16))
+
+    def modality_config(self):
+        video_modality = ModalityConfig(
+            delta_indices=self.observation_indices,
+            modality_keys=self.video_keys,
+        )
+        state_modality = ModalityConfig(
+            delta_indices=self.observation_indices,
+            modality_keys=self.state_keys,
+        )
+        action_modality = ModalityConfig(
+            delta_indices=self.observation_indices,
+            modality_keys=self.action_keys,
+        )
+        language_modality = ModalityConfig(
+            delta_indices=self.observation_indices,
+            modality_keys=self.language_keys,
+        )
+        return {
+            "video": video_modality,
+            "state": state_modality,
+            "action": action_modality,
+            "language": language_modality,
+        }
+
+    def transform(self):
+        transforms = [
+            StateActionToTensor(apply_to=self.state_keys),
+            StateActionTransform(
+                apply_to=self.state_keys,
+                normalization_modes={
+                    "state.eef_pos": "min_max",
+                    "state.eef_rot6d": "min_max",
+                    "state.gripper": "binary",
+                },
+            ),
+            StateActionToTensor(apply_to=self.action_keys),
+            StateActionTransform(
+                apply_to=self.action_keys,
+                normalization_modes={
+                    "action.eef_pos": "min_max",
+                    "action.eef_rot6d": "min_max",
+                    "action.gripper": "binary",
+                },
+            ),
+        ]
+        return ComposedModalityTransform(transforms=transforms)
+
+
 ###########################################################################################
 
 
@@ -914,6 +980,7 @@ ROBOT_TYPE_CONFIG_MAP = {
     "demo_sim_franka_delta_joints": SingleFrankaRobotiqDeltaJointsDataConfig(),
     "arx_x5": ArxX5DataConfig(),
     "robotwin": AgilexDataConfig(),
+    "fastumi": FastUMIDataConfig(),
     "fourier_gr1_arms_waist": FourierGr1ArmsWaistDataConfig(),
     
     "custom_robot_config": SingleFrankaRobotiqDeltaEefDataConfig(),

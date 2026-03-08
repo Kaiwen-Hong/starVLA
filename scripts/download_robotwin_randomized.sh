@@ -1,17 +1,24 @@
 #!/usr/bin/env bash
 # Download StarVLA/RoboTwin-Randomized-targz dataset
-# All data and caches stay under lab storage — nothing in ~
+# Uses REPO_ROOT if set; otherwise infers from script location (works on Kempner and local)
 
 set -euo pipefail
 
-# ── paths (never use home directory) ──────────────────────────────
-LAB_ROOT="/net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen"
-DEST_DIR="${LAB_ROOT}/starVLA/data/RoboTwin-Randomized-targz"
-HF_CACHE="${LAB_ROOT}/.cache/huggingface"
+# ── paths: REPO_ROOT (local) | LAB_ROOT/starVLA (Kempner) | script dir ───
+if [ -n "${REPO_ROOT:-}" ]; then
+  REPO="${REPO_ROOT}"
+elif [ -n "${LAB_ROOT:-}" ]; then
+  REPO="${LAB_ROOT}/starVLA"
+else
+  SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+  REPO="$(cd "${SCRIPT_DIR}/.." && pwd)"
+fi
+DEST_DIR="${REPO}/data/RoboTwin-Randomized-targz"
+HF_CACHE="${REPO}/.cache/huggingface"
 
 export HF_HOME="${HF_CACHE}"
 export HF_HUB_CACHE="${HF_CACHE}/hub"
-export TMPDIR="${LAB_ROOT}/.tmp"
+export TMPDIR="${REPO}/.tmp"
 
 mkdir -p "${DEST_DIR}" "${HF_HUB_CACHE}" "${TMPDIR}"
 

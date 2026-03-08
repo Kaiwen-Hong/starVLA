@@ -4,6 +4,10 @@
 
 """Training entrypoint for StarVLA single-task VLA training."""
 
+# Disable torchvision video deprecation warning
+import warnings
+warnings.filterwarnings("ignore", module="torchvision.io._video_deprecation_warning")
+
 # Standard Library
 import argparse
 import os
@@ -216,7 +220,9 @@ class VLATrainer(TrainerUtils):
             logger.info(f"  Total batch size = {self.total_batch_size}")
 
     def _log_metrics(self, metrics):
-        if self.completed_steps % self.config.trainer.logging_frequency != 0:
+        is_log_step = self.completed_steps % self.config.trainer.logging_frequency == 0
+        has_eval_metrics = "mse_score" in metrics
+        if not is_log_step and not has_eval_metrics:
             return
         if not is_main_process():
             return

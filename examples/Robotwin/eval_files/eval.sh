@@ -1,6 +1,8 @@
 #!/bin/bash
-
-ROBOTWIN_PATH=/mnt/data/gaoning/code_repos/RoboTwin
+# Set ROBOTWIN_PATH to your RoboTwin repo root, e.g.:
+#   export ROBOTWIN_PATH=/path/to/RoboTwin
+#   bash eval.sh adjust_bottle demo_clean my_test_v1 0 0
+ROBOTWIN_PATH="${ROBOTWIN_PATH:-/mnt/data/gaoning/code_repos/RoboTwin}"
 
 policy_name="model2robotwin_interface"
 task_name=${1}
@@ -20,6 +22,11 @@ export PYTHONPATH=$ROBOTWIN_PATH:$PYTHONPATH
 export PYTHONPATH=$STARVLA_PATH:$PYTHONPATH
 export PYTHONPATH=$EVAL_FILES_PATH:$PYTHONPATH
 
+if [ ! -d "$ROBOTWIN_PATH" ]; then
+  echo "ROBOTWIN_PATH=$ROBOTWIN_PATH does not exist."
+  echo "Clone RoboTwin and set: export ROBOTWIN_PATH=/path/to/RoboTwin"
+  exit 1
+fi
 cd $ROBOTWIN_PATH
 
 echo "PYTHONPATH: $PYTHONPATH"

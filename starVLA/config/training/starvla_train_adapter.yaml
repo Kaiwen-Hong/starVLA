@@ -2,7 +2,7 @@ run_id: starvla
 run_root_dir: path/to/result
 seed: 42
 trackers: [jsonl, wandb]
-wandb_entity: your-wandb-entity
+wandb_entity: "2200011093-peking-university"
 wandb_project: your-wandb-project
 is_debug: false
 

@@ -210,5 +210,6 @@ def start_debugpy_once():
     start_debugpy_once._started = True
 
 if __name__ == "__main__":
-    start_debugpy_once()
+    if os.environ.get("STARVLA_DEBUG"):
+        start_debugpy_once()
     main()

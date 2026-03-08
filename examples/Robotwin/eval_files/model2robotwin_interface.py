@@ -37,6 +37,9 @@ class ModelClient:
         host="127.0.0.1",
         port=5694,
         action_mode: str = "abs",
+        use_realtime_chunking: bool = True,
+        inference_delay: int = 1,
+        **kwargs,
     ) -> None:
 
         self.client = WebsocketClientPolicy(host, port)
@@ -72,6 +75,9 @@ class ModelClient:
         self.action_chunk_size = self.get_action_chunk_size(policy_ckpt_path=policy_ckpt_path)
         self.state_norm_stats = self.get_state_stats(self.unnorm_key, policy_ckpt_path=policy_ckpt_path)
         self.raw_actions = None
+        self.prev_normalized_actions = None  # For realtime chunking (model space)
+        self.use_realtime_chunking = use_realtime_chunking
+        self.inference_delay = inference_delay
 
     def reset(self, task_description: str) -> None:
         self.task_description = task_description
@@ -80,6 +86,8 @@ class ModelClient:
             self.action_ensembler.reset()
         self.num_image_history = 0
         self.raw_actions = None
+        self.prev_normalized_actions = None
+        self.prev_normalized_actions = None
         # Reset state tracking for delta/rel modes
         self.initial_state = None
         self.prev_action = None
@@ -121,6 +129,9 @@ class ModelClient:
             "use_ddim": self.use_ddim,
             "num_ddim_steps": self.num_ddim_steps,
         }
+        if self.use_realtime_chunking and self.prev_normalized_actions is not None:
+            vla_input["prev_action_chunk"] = self.prev_normalized_actions
+            vla_input["inference_delay"] = self.inference_delay
 
         action_chunk_size = self.action_chunk_size
 
@@ -133,6 +144,7 @@ class ModelClient:
                 raise KeyError(f"Key 'normalized_actions' not found in response data: {response['data'].keys()}")
 
             normalized_actions = normalized_actions[0]
+            self.prev_normalized_actions = normalized_actions.copy()
             # Unnormalize to get delta/rel values
             raw_actions = self.unnormalize_actions(
                 normalized_actions=normalized_actions, action_norm_stats=self.action_norm_stats
@@ -174,6 +186,20 @@ class ModelClient:
         )
         normalized_state = np.where(~mask, (normalized_state > 0.5).astype(normalized_state.dtype), normalized_state)
         return normalized_state
+
+    @staticmethod
+    def normalize_actions(raw_actions: np.ndarray, action_norm_stats: Dict[str, np.ndarray]) -> np.ndarray:
+        """Inverse of unnormalize_actions: raw -> normalized [-1, 1]."""
+        mask = action_norm_stats.get("mask", np.ones_like(action_norm_stats["min"], dtype=bool))
+        action_high, action_low = np.array(action_norm_stats["max"]), np.array(action_norm_stats["min"])
+        denom = action_high - action_low
+        denom = np.where(denom <= 0, 1.0, denom)
+        normalized = np.where(
+            mask,
+            2.0 * (raw_actions - action_low) / denom - 1.0,
+            raw_actions,
+        )
+        return np.clip(normalized, -1, 1).astype(np.float32)
 
     @staticmethod
     def unnormalize_actions(normalized_actions: np.ndarray, action_norm_stats: Dict[str, np.ndarray]) -> np.ndarray:
@@ -287,6 +313,8 @@ def get_model(usr_args):
     port = usr_args.get("port", 5694)
     unnorm_key = usr_args.get("unnorm_key", None)
     action_mode = usr_args.get("action_mode", "abs")
+    use_realtime_chunking = usr_args.get("use_realtime_chunking", True)
+    inference_delay = usr_args.get("inference_delay", 1)
 
     if policy_ckpt_path is None:
         raise ValueError("policy_ckpt_path must be provided in config")
@@ -297,6 +325,8 @@ def get_model(usr_args):
         port=port,
         unnorm_key=unnorm_key,
         action_mode=action_mode,
+        use_realtime_chunking=use_realtime_chunking,
+        inference_delay=inference_delay,
     )
 
 
