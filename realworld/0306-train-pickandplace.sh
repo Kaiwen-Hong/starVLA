@@ -122,6 +122,12 @@ fi
 export NCCL_BLOCKING_WAIT=1
 export NCCL_ASYNC_ERROR_HANDLING=1
 
+# ── Log file ──
+LOG_DIR=./results/Checkpoints/fastumi_pickandplace_qwenOFT/logs
+mkdir -p "${LOG_DIR}"
+LOG_FILE="${LOG_DIR}/train_$(date +%Y%m%d_%H%M%S).log"
+echo "Logging to: ${LOG_FILE}"
+
 # ── Training ──
 # Key FastUMI overrides vs RoboTwin defaults:
 #   action_dim/state_dim: 10 (not 14) -- 3 pos + 6 rot6d + 1 gripper
@@ -153,4 +159,5 @@ accelerate launch \
   --run_root_dir ./results/Checkpoints \
   --run_id fastumi_pickandplace_qwenOFT \
   --wandb_project starVLA_FastUMI \
-  --wandb_entity kaiwenh-17-uiuc
+  --wandb_entity kaiwenh-17-uiuc \
+  2>&1 | tee "${LOG_FILE}"
