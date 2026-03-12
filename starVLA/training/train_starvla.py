@@ -4,6 +4,14 @@
 
 """Training entrypoint for StarVLA single-task VLA training."""
 
+# Ensure repo root is on sys.path (accelerate simple_launcher subprocess may lack it)
+import sys
+from pathlib import Path
+
+_repo_root = Path(__file__).resolve().parent.parent.parent
+if str(_repo_root) not in sys.path:
+    sys.path.insert(0, str(_repo_root))
+
 # Disable torchvision video deprecation warning
 import warnings
 warnings.filterwarnings("ignore", module="torchvision.io._video_deprecation_warning")
@@ -12,7 +20,6 @@ warnings.filterwarnings("ignore", module="torchvision.io._video_deprecation_warn
 import argparse
 import os
 import time
-from pathlib import Path
 from typing import Tuple
 
 # Third-Party Libraries
@@ -38,7 +45,9 @@ from starVLA.training.trainer_utils.trainer_tools import (
     normalize_dotlist_args,
 )
 
-deepspeed_plugin = DeepSpeedPlugin()
+# Skip DeepSpeed when using accelerate_debug (1-GPU, no distributed) to avoid MPI deps
+_use_deepspeed = "--no_deepspeed" not in sys.argv
+deepspeed_plugin = DeepSpeedPlugin() if _use_deepspeed else None
 accelerator = Accelerator(deepspeed_plugin=deepspeed_plugin)
 accelerator.print(accelerator.state)
 
@@ -272,7 +281,11 @@ class VLATrainer(TrainerUtils):
         examples = self._get_next_batch()
         actions = [example["action"] for example in examples]
 
-        output_dict = self.model.predict_action(examples=examples, use_ddim=True, num_ddim_steps=20)
+        output_dict = self.model.predict_action(
+            examples=examples,
+            decode_temperature=0.0,
+            choice_temperature=0.0,
+        )
         if self.accelerator.is_main_process:
             normalized_actions = output_dict["normalized_actions"]
             actions = np.array(actions)
@@ -357,8 +370,8 @@ def main(cfg) -> None:
     logger.info("Configuration wrapped for access tracking")
 
     output_dir = setup_directories(cfg=cfg)
-    vla = build_framework(cfg)
     vla_train_dataloader = prepare_data(cfg=cfg, accelerator=accelerator, output_dir=output_dir)
+    vla = build_framework(cfg)
     optimizer, lr_scheduler = setup_optimizer_and_scheduler(model=vla, cfg=cfg)
 
     trainer = VLATrainer(
@@ -380,6 +393,7 @@ def main(cfg) -> None:
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
+    parser.add_argument("--no_deepspeed", action="store_true", help="Disable DeepSpeed (for accelerate_debug / 1-GPU)")
     parser.add_argument(
         "--config_yaml",
         type=str,

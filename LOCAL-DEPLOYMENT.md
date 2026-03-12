@@ -103,32 +103,33 @@ conda activate starVLA
 
 accelerate launch \
   --config_file starVLA/config/deepseeds/deepspeed_zero2.yaml \
-  --num_processes 4 \
+  --num_processes 8 \
   starVLA/training/train_starvla.py \
-  --config_yaml ./examples/Robotwin/train_files/starvla_cotrain_robotwin.yaml \
-  --framework.name QwenOFT \
-  --framework.qwenvl.base_vlm playground/Pretrained_models/Qwen3-VL-4B-Instruct-Action \
+  --config_yaml ./starVLA/config/training/starvla_cotrain_robotwin.yaml \
+  --framework.name QwenPI \
+  --framework.qwenvl.base_vlm playground/Pretrained_models/Qwen2.5-VL-3B-Instruct-Action \
   --framework.qwenvl.attn_implementation flash_attention_2 \
   --datasets.vla_data.per_device_batch_size 8 \
   --datasets.vla_data.data_mix robotwin_task1 \
   --trainer.freeze_modules '' \
-  --trainer.max_train_steps 100000 \
-  --trainer.save_interval 10000 \
-  --trainer.logging_frequency 100 \
-  --trainer.eval_interval 1000 \
-  --trainer.gradient_accumulation_steps 2 \
+  --trainer.max_train_steps 30000 \
+  --trainer.save_interval 5000 \
+  --trainer.logging_frequency 50 \
+  --trainer.eval_interval 100 \
+  --trainer.gradient_accumulation_steps 1 \
   --run_root_dir ./results/Checkpoints \
-  --run_id robotwin_qwenOFT_local \
+  --run_id robotwin_qwenPI_local \
   --wandb_project starVLA_Robotwin \
   --wandb_entity 2200011093-peking-university
 ```
 
 > Use `robotwin_task1` for quick debug (single task). For full training, use `robotwin`.
+> QwenPI uses the **flow-matching** head (LayerwiseFlowmatchingActionHead). If your dataset has no `state`, add `--framework.action_model.state_dim 0`.
 
 **8-GPU single-line command** (use `--main_process_port` if 29500 is busy):
 
 ```bash
-accelerate launch --config_file starVLA/config/deepseeds/deepspeed_zero2.yaml --num_processes 8 --main_process_port 29501 starVLA/training/train_starvla.py --config_yaml ./examples/Robotwin/train_files/starvla_cotrain_robotwin.yaml --framework.name QwenOFT --framework.qwenvl.base_vlm playground/Pretrained_models/Qwen3-VL-4B-Instruct-Action --framework.qwenvl.attn_implementation flash_attention_2 --datasets.vla_data.per_device_batch_size 8 --datasets.vla_data.data_mix robotwin_task1 --trainer.freeze_modules '' --trainer.max_train_steps 15000 --trainer.save_interval 10000 --trainer.logging_frequency 100 --trainer.eval_interval 1000 --trainer.gradient_accumulation_steps 1 --run_root_dir ./results/Checkpoints --run_id robotwin_qwenOFT_local --wandb_project starVLA_Robotwin --wandb_entity 2200011093-peking-university
+accelerate launch --config_file starVLA/config/deepseeds/deepspeed_zero2.yaml --num_processes 8 --main_process_port 29501 starVLA/training/train_starvla.py --config_yaml ./examples/Robotwin/train_files/starvla_cotrain_robotwin.yaml --framework.name QwenPI --framework.qwenvl.base_vlm playground/Pretrained_models/Qwen3-VL-4B-Instruct-Action --framework.qwenvl.attn_implementation flash_attention_2 --datasets.vla_data.per_device_batch_size 8 --datasets.vla_data.data_mix robotwin_task1 --trainer.freeze_modules '' --trainer.max_train_steps 15000 --trainer.save_interval 10000 --trainer.logging_frequency 100 --trainer.eval_interval 1000 --trainer.gradient_accumulation_steps 1 --run_root_dir ./results/Checkpoints --run_id robotwin_qwenPI_local --wandb_project starVLA_Robotwin --wandb_entity 2200011093-peking-university
 ```
 
 ---

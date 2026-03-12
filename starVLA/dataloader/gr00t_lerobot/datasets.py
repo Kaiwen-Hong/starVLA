@@ -1604,6 +1604,11 @@ class LeRobotSingleDataset(Dataset):
                 mask = generate_action_mask_for_used_keys(self.metadata.modalities.action, filtered_action_stats.keys())
                 combined_action_stats["mask"] = mask
 
+                # Persist per-dimension normalization modes if available
+                norm_modes = _extract_action_norm_modes(self.transforms, list(filtered_action_stats.keys()))
+                if norm_modes is not None:
+                    combined_action_stats["norm_modes"] = norm_modes
+
                 tag_stats["action"] = combined_action_stats
 
         # Process state statistics (only for used keys)
@@ -1799,6 +1804,65 @@ def combine_modality_stats(modality_stats: dict) -> dict:
                     combined_stats[stat_name].append(float(stat_value))
 
     return combined_stats
+
+
+def _infer_norm_mode_from_stats(stat_dict: dict) -> str:
+    if "min" in stat_dict and "max" in stat_dict:
+        return "min_max"
+    if "mean" in stat_dict and "std" in stat_dict:
+        return "mean_std"
+    if "q01" in stat_dict and "q99" in stat_dict:
+        return "q99"
+    return "min_max"
+
+
+def _extract_action_norm_modes(
+    transforms: ComposedModalityTransform, action_subkeys_ordered: list[str]
+) -> list[str] | None:
+    """
+    Extract per-dimension action normalization modes from the transform chain.
+
+    Returns a list like: ["min_max","min_max",...,"binary"] whose length matches the
+    concatenated action vector order used by save_dataset_statistics().
+    """
+    if transforms is None or not hasattr(transforms, "transforms"):
+        return None
+
+    # Find the StateActionTransform that applies to action.* keys
+    sa_transform = None
+    for t in transforms.transforms:
+        if hasattr(t, "normalization_modes") and hasattr(t, "apply_to"):
+            apply_to = getattr(t, "apply_to", []) or []
+            if any(str(k).startswith("action.") for k in apply_to):
+                sa_transform = t
+                break
+    if sa_transform is None:
+        return None
+
+    norm_modes = []
+    normalization_modes = getattr(sa_transform, "normalization_modes", {}) or {}
+    normalization_statistics = getattr(sa_transform, "normalization_statistics", {}) or {}
+
+    for subkey in action_subkeys_ordered:
+        full_key = f"action.{subkey}"
+        mode = normalization_modes.get(full_key, None)
+        if mode is None:
+            mode = _infer_norm_mode_from_stats(normalization_statistics.get(full_key, {}))
+
+        # Determine dimensionality from stats (prefer mean/std/min/max arrays)
+        stats = normalization_statistics.get(full_key, {})
+        dim = None
+        for k in ("mean", "std", "min", "max", "q01", "q99"):
+            if k in stats and isinstance(stats[k], (list, tuple)):
+                dim = len(stats[k])
+                break
+        if dim is None:
+            # Fallback: assume scalar
+            dim = 1
+
+        norm_modes.extend([str(mode)] * dim)
+
+    return norm_modes
 
 
 def generate_action_mask_for_used_keys(action_modalities: dict, used_action_keys_ordered) -> list[bool]:
@@ -2442,6 +2506,13 @@ class LeRobotMixtureDataset(Dataset):
                         merged_metadata.modalities.action, filtered_action_stats.keys()
                     )
                     combined_action_stats["mask"] = mask
+
+                    norm_modes = _extract_action_norm_modes(
+                        self.datasets[0].transforms if self.datasets else None,
+                        list(filtered_action_stats.keys()),
+                    )
+                    if norm_modes is not None:
+                        combined_action_stats["norm_modes"] = norm_modes
 
                     tag_stats["action"] = combined_action_stats
 

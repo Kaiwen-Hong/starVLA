@@ -1,0 +1,10 @@
+{
+  "is_debug": true,
+  "trainer.max_train_steps": 5,
+  "trainer.save_interval": 2,
+  "trainer.logging_frequency": 1,
+  "trainer.eval_interval": 2,
+  "datasets.vla_data.per_device_batch_size": 1,
+  "trainer.gradient_accumulation_steps": 1,
+  "run_id": "debug_1gpu"
+}

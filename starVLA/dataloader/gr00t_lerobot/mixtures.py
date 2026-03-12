@@ -225,8 +225,58 @@ DATASET_NAMED_MIXTURES = {
         ("adjust_bottle", 1.0, "robotwin"),
     ],
 
+    # ── Custom v0225_v3: 20 variants (clean + hv/lv, 10 tasks) ──
+    # 5 tasks with clean/hv/lv, 5 tasks with clean only
+    "custom_v0225_v3": [
+        ("adjust_bottle", 1.0, "robotwin"),
+        ("adjust_bottle_hv", 1.0, "robotwin"),
+        ("adjust_bottle_lv", 1.0, "robotwin"),
+        ("beat_block_hammer", 1.0, "robotwin"),
+        ("beat_block_hammer_hv", 1.0, "robotwin"),
+        ("beat_block_hammer_lv", 1.0, "robotwin"),
+        ("blocks_ranking_rgb", 1.0, "robotwin"),
+        ("blocks_ranking_rgb_hv", 1.0, "robotwin"),
+        ("blocks_ranking_rgb_lv", 1.0, "robotwin"),
+        ("blocks_ranking_size", 1.0, "robotwin"),           # clean only
+        ("handover_block", 1.0, "robotwin"),
+        ("handover_block_hv", 1.0, "robotwin"),
+        ("handover_block_lv", 1.0, "robotwin"),
+        ("handover_mic", 1.0, "robotwin"),                  # clean only
+        ("move_can_pot", 1.0, "robotwin"),
+        ("move_can_pot_hv", 1.0, "robotwin"),
+        ("move_can_pot_lv", 1.0, "robotwin"),
+        ("move_pillbottle_pad", 1.0, "robotwin"),           # clean only
+        ("move_stapler_pad", 1.0, "robotwin"),              # clean only
+        ("place_empty_cup", 1.0, "robotwin"),               # clean only
+    ],
+
+    # Debug subset: just 1 v0225_v3 task
+    "custom_v0225_v3_task1": [
+        ("adjust_bottle", 1.0, "robotwin"),
+    ],
+
     "multi_robot": [
         ("LEROBOT_LIBERO_DATA/libero_10_no_noops_1.0.0_lerobot", 1.0, "libero_franka"),
         # ("OXE_LEROBOT_DATASET/bridge_orig_1.0.0_lerobot", 1.0, "oxe_bridge"),
+    ],
+
+    # ── FastUMI: single-arm, wrist camera, 10D EEF + rot6d ──
+    "fastumi_pickandplace": [
+        ("pickandplace_vla", 1.0, "fastumi"),
+    ],
+
+    "fastumi_pickandplace_real_0307": [
+        ("pickandplace-real-0307", 1.0, "fastumi"),
+    ],
+
+    # Debug subset: just 1 FastUMI task
+    "fastumi_task1": [
+        ("pickandplace_vla", 1.0, "fastumi"),
+    ],
+
+    # Multi-task (add more as you convert them)
+    "fastumi_all": [
+        ("pickandplace_vla", 1.0, "fastumi"),
+        # ("handover_all",   1.0, "fastumi"),
     ],
 }

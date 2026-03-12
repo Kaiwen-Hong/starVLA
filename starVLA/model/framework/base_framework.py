@@ -178,13 +178,15 @@ class baseframework(PreTrainedModel):
     @staticmethod
     def unnormalize_actions(normalized_actions: np.ndarray, action_norm_stats: Dict[str, np.ndarray]) -> np.ndarray:
         """
-        Map normalized actions (≈[-1, 1]) back to original value range.
+        Map normalized actions back to original value range.
 
-        Steps:
-            - Clamp values to [-1, 1]
-            - Threshold channel index 6 to {0,1} (binary semantic)
-            - Apply linear scaling for masked dimensions using:
-                original = 0.5 * (norm + 1) * (q99 - q01) + q01
+        Two paths:
+        - Per-dim path: if `norm_modes` exists in action_norm_stats, apply inverse per dimension:
+            - min_max: clip to [-1,1], then (x+1)/2*(max-min)+min
+            - mean_std: x*std + mean (no clipping)
+            - binary: threshold at 0.5
+        - Legacy path: original behavior (q01/q99 + mask), but gripper index is configurable
+          via `gripper_idx` (defaults to 6 for backward compatibility).
 
         Args:
             normalized_actions: Array shape [T, D] (or chunk length × action_dim).
@@ -196,16 +198,52 @@ class baseframework(PreTrainedModel):
         Returns:
             np.ndarray: Unnormalized actions (same shape as input).
         """
-        mask = action_norm_stats.get("mask", np.ones_like(action_norm_stats["q01"], dtype=bool))
-        action_high, action_low = np.array(action_norm_stats["q99"]), np.array(action_norm_stats["q01"])
+        # --- New path: per-dimension inverse using norm_modes ---
+        if "norm_modes" in action_norm_stats:
+            norm_modes = list(action_norm_stats["norm_modes"])
+            mins = np.array(action_norm_stats.get("min", action_norm_stats.get("q01", [])), dtype=np.float32)
+            maxs = np.array(action_norm_stats.get("max", action_norm_stats.get("q99", [])), dtype=np.float32)
+            means = np.array(action_norm_stats.get("mean", []), dtype=np.float32)
+            stds = np.array(action_norm_stats.get("std", []), dtype=np.float32)
+
+            x = np.asarray(normalized_actions, dtype=np.float32).copy()
+            out = x.copy()
+
+            for d, mode in enumerate(norm_modes):
+                mode = str(mode)
+                if mode == "min_max":
+                    xd = np.clip(x[:, d], -1, 1)
+                    out[:, d] = 0.5 * (xd + 1.0) * (maxs[d] - mins[d]) + mins[d]
+                elif mode == "mean_std":
+                    out[:, d] = x[:, d] * stds[d] + means[d]
+                elif mode == "binary":
+                    out[:, d] = (x[:, d] >= 0.5).astype(np.float32)
+                else:
+                    # Unknown mode: leave as-is
+                    out[:, d] = x[:, d]
+            return out
+
+        # --- Legacy path (backward compatible) ---
+        mask = action_norm_stats.get(
+            "mask", np.ones_like(action_norm_stats["q01"], dtype=bool)
+        )
+        action_high, action_low = (
+            np.array(action_norm_stats["q99"]),
+            np.array(action_norm_stats["q01"]),
+        )
         normalized_actions = np.clip(normalized_actions, -1, 1)
-        normalized_actions[:, 6] = np.where(normalized_actions[:, 6] < 0.5, 0, 1)
+
+        gripper_idx = int(action_norm_stats.get("gripper_idx", 6))
+        if 0 <= gripper_idx < normalized_actions.shape[1]:
+            normalized_actions[:, gripper_idx] = np.where(
+                normalized_actions[:, gripper_idx] < 0.5, 0, 1
+            )
+
         actions = np.where(
             mask,
             0.5 * (normalized_actions + 1) * (action_high - action_low) + action_low,
             normalized_actions,
         )
-
         return actions
 
     @staticmethod

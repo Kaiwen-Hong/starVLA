@@ -292,7 +292,7 @@ class DiT(nn.Module):
         return torch.cat([eps, rest], dim=2)
 
 
-# Cross-Attention DiT Implementation
+
 
 
 class CrossAttention(nn.Module):

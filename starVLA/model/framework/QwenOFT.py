@@ -41,7 +41,10 @@ IGNORE_INDEX = -100
 
 from starVLA.model.framework.base_framework import baseframework
 from starVLA.model.modules.vlm import get_vlm_model
-from starVLA.model.modules.action_model.MLP_ActionHeader import get_action_model
+from starVLA.model.modules.action_model.MLP_ActionHeader import (
+    get_action_model,
+    L1RegressionActionHead,
+)
 from starVLA.training.trainer_utils.trainer_tools import resize_images
 
 @FRAMEWORK_REGISTRY.register("QwenOFT")
@@ -51,9 +54,7 @@ class Qwenvl_OFT(baseframework):
 
     Components:
       - Qwen2.5 VL interface for fused language/vision token embeddings
-      - Layer-wise QFormer for multi-layer feature aggregation
-      - DINO encoder for dense multi-view spatial tokens
-      - DiT diffusion head for future action sequence modeling
+      - MLP (L1RegressionActionHead) for future action sequence modeling (not DiT diffusion)
 
     Focus: Predict future continuous actions conditioned on images + instruction.
     """
@@ -76,6 +77,16 @@ class Qwenvl_OFT(baseframework):
         # align dims --> we should put them to config or no?
         config.framework.action_model.action_hidden_dim = self.qwen_vl_interface.model.config.hidden_size
         self.action_model = get_action_model(config=self.config)
+
+        # Verify: QwenOFT uses MLP head, not DiT diffusion (config keys like action_model_type, diffusion_model_cfg, noise_* are ignored)
+        assert isinstance(
+            self.action_model,
+            L1RegressionActionHead,
+        ), f"QwenOFT expects L1RegressionActionHead (MLP), got {type(self.action_model).__name__}"
+        logger.info(
+            "QwenOFT action head: L1RegressionActionHead (MLP). "
+            "Config keys action_model_type, diffusion_model_cfg, noise_*, num_timestep_buckets, etc. are ignored."
+        )
 
         self.future_action_window_size = config.framework.action_model.future_action_window_size
         self.past_action_window_size = config.framework.action_model.past_action_window_size

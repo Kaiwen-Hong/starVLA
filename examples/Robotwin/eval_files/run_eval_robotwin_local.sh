@@ -2,9 +2,10 @@
 # Local eval: download checkpoint + start policy server (1 GPU, no DeepSpeed)
 # Run from repo root: bash examples/Robotwin/eval_files/run_eval_robotwin_local.sh
 #
-# Override checkpoint via CKPT_DIR. Examples:
+# Default: robotwin_discrete_diffusion_local steps_30000.
+# Override via CKPT_DIR. Examples:
+#   CKPT_DIR=/scratch/wangpc/starVLA/results/Checkpoints/robotwin_discrete_diffusion_local
 #   CKPT_DIR=/scratch/wangpc/starVLA/checkpoints/Qwen3-VL-OFT-Robotwin2
-#   CKPT_DIR=/scratch/wangpc/starVLA/checkpoints/prefvla-models/robotwin_qwenOFT_4xH100
 
 set -euo pipefail
 
@@ -21,18 +22,15 @@ fi
 GPU_ID="${GPU_ID:-0}"
 PORT="${PORT:-5694}"
 
-# Checkpoint: override via CKPT_DIR; auto-detect .pt file
-CKPT_DIR="${CKPT_DIR:-$REPO_ROOT/checkpoints/Qwen3-VL-OFT-Robotwin2}"
-CKPT_PT="$(ls "$CKPT_DIR"/checkpoints/*.pt 2>/dev/null | head -1)"
+# Checkpoint: override via CKPT_DIR; prefer steps_30000 for discrete diffusion
+CKPT_DIR="${CKPT_DIR:-$REPO_ROOT/results/Checkpoints/robotwin_discrete_diffusion_local}"
+CKPT_PT="$CKPT_DIR/checkpoints/steps_30000_pytorch_model.pt"
+if [ ! -f "$CKPT_PT" ]; then
+  CKPT_PT="$(ls "$CKPT_DIR"/checkpoints/steps_*_pytorch_model.pt 2>/dev/null | head -1)"
+fi
 if [ -z "$CKPT_PT" ] || [ ! -f "$CKPT_PT" ]; then
-  CKPT_DIR="$REPO_ROOT/checkpoints/Qwen3-VL-OFT-Robotwin2"
-  CKPT_PT="$CKPT_DIR/checkpoints/steps_40000_pytorch_model.pt"
-  if [ ! -f "$CKPT_PT" ]; then
-    echo "Downloading checkpoint to $CKPT_DIR ..."
-    huggingface-cli download StarVLA/Qwen3-VL-OFT-Robotwin2 \
-      --local-dir "$CKPT_DIR" \
-      --local-dir-use-symlinks False
-  fi
+  echo "Checkpoint not found at $CKPT_DIR/checkpoints/steps_30000_pytorch_model.pt"
+  exit 1
 fi
 
 # Staging: patch config base_vlm (relative paths like ./playground/... are rejected by HF)
