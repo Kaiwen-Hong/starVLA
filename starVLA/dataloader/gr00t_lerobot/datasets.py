@@ -1732,13 +1732,21 @@ class LeRobotSingleDataset(Dataset):
             if filtered_action_stats:
                 # Combine statistics from filtered action sub-keys
                 combined_action_stats = combine_modality_stats(filtered_action_stats)
-                
+
                 # Add mask field based on whether it's gripper or not
                 mask = generate_action_mask_for_used_keys(
                     self.metadata.modalities.action, filtered_action_stats.keys()
                 )
                 combined_action_stats["mask"] = mask
-                
+
+                # Add per-dim norm_modes from the action transform (if available).
+                # This tells unnormalize_actions() which inverse to apply per dim.
+                norm_modes = _extract_action_norm_modes(
+                    self.transforms, reordered_keys, self.metadata.modalities.action,
+                )
+                if norm_modes:
+                    combined_action_stats["norm_modes"] = norm_modes
+
                 tag_stats["action"] = combined_action_stats
         
         # Process state statistics (only for used keys)
@@ -1974,6 +1982,49 @@ def generate_action_mask_for_used_keys(action_modalities: dict, used_action_keys
                 mask.append(not is_gripper)  # gripper is False, others are True
     
     return mask
+
+
+def _extract_action_norm_modes(transforms, reordered_action_subkeys, action_modalities):
+    """Extract per-dim normalization mode list from the transform chain.
+
+    Walks the ``ComposedModalityTransform`` to find the ``StateActionTransform``
+    that handles action keys, then expands its ``normalization_modes`` dict
+    (keyed by e.g. ``"action.eef_pos"``) into a flat per-dimension list such
+    as ``["min_max", "min_max", "min_max", "mean_std", ..., "binary"]``.
+
+    Returns an empty list if the information cannot be extracted (e.g. older
+    configs that do not use ``StateActionTransform``).
+    """
+    from starVLA.dataloader.gr00t_lerobot.transform.state_action import StateActionTransform
+
+    # Find the action StateActionTransform in the composed transforms
+    action_transform = None
+    for t in getattr(transforms, "transforms", []):
+        if isinstance(t, StateActionTransform):
+            if any(k.startswith("action.") for k in t.normalization_modes):
+                action_transform = t
+                break
+    if action_transform is None:
+        return []
+
+    norm_modes_by_key = action_transform.normalization_modes  # e.g. {"action.eef_pos": "min_max", ...}
+
+    modes = []
+    for subkey in reordered_action_subkeys:
+        full_key = f"action.{subkey}" if not subkey.startswith("action.") else subkey
+        mode = norm_modes_by_key.get(full_key, None)
+        if mode is None:
+            return []  # incomplete info, bail out
+
+        if subkey in action_modalities:
+            cfg = action_modalities[subkey]
+            dim_count = cfg.shape[0] if hasattr(cfg, "shape") and len(cfg.shape) > 0 else 1
+        else:
+            dim_count = 1
+        modes.extend([mode] * dim_count)
+
+    return modes
+
 
 def get_used_modality_keys(modality_keys: dict) -> tuple[list, list]:
     """Extract used action and state keys from modality configuration."""
@@ -2575,14 +2626,24 @@ class LeRobotMixtureDataset(Dataset):
                 
                 if filtered_action_stats:
                     combined_action_stats = combine_modality_stats(filtered_action_stats)
-                    
+
                     mask = generate_action_mask_for_used_keys(
                         merged_metadata.modalities.action, filtered_action_stats.keys()
                     )
                     combined_action_stats["mask"] = mask
-                    
+
+                    # Extract per-dim norm_modes from the first dataset's transforms
+                    if self.datasets:
+                        norm_modes = _extract_action_norm_modes(
+                            self.datasets[0].transforms,
+                            reordered_keys,
+                            merged_metadata.modalities.action,
+                        )
+                        if norm_modes:
+                            combined_action_stats["norm_modes"] = norm_modes
+
                     tag_stats["action"] = combined_action_stats
-            
+
             # Process state statistics
             if hasattr(merged_metadata.statistics, 'state') and merged_metadata.statistics.state:
                 state_stats = merged_metadata.statistics.state

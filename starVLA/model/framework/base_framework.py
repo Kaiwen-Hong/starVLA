@@ -179,28 +179,66 @@ class baseframework(PreTrainedModel):
     @staticmethod
     def unnormalize_actions(normalized_actions: np.ndarray, action_norm_stats: Dict[str, np.ndarray]) -> np.ndarray:
         """
-        Map normalized actions (≈[-1, 1]) back to original value range.
+        Map normalized actions back to original value range.
 
-        Steps:
-            - Clamp values to [-1, 1]
-            - Threshold channel index 6 to {0,1} (binary semantic)
-            - Apply linear scaling for masked dimensions using:
-                original = 0.5 * (norm + 1) * (q99 - q01) + q01
+        Supports per-dimension-group denormalization via the optional
+        ``norm_modes`` key in *action_norm_stats*.
 
         Args:
-            normalized_actions: Array shape [T, D] (or chunk length × action_dim).
-            action_norm_stats: Dict containing:
-                q01 (array-like): Lower percentile (per-dimension).
-                q99 (array-like): Upper percentile (per-dimension).
-                mask (optional bool array): True => apply de-normalization; False => keep original normalized value.
+            normalized_actions: Array shape [T, D].
+            action_norm_stats: Dict containing statistics. Two modes:
+
+                **Legacy (default)** — all dims use q99/q01 rescaling:
+                    q01, q99           : per-dim arrays
+                    mask (optional)    : bool array
+                    gripper_idx (opt)  : int, default 6
+
+                **Per-group** — activated by providing ``norm_modes``:
+                    norm_modes : list[str] of length D, each one of
+                                 "min_max", "mean_std", "binary"
+                    min, max   : per-dim arrays (used by min_max dims)
+                    mean, std  : per-dim arrays (used by mean_std dims)
+                    gripper_idx (opt) : int (ignored; binary dims are
+                                 determined by norm_modes)
 
         Returns:
             np.ndarray: Unnormalized actions (same shape as input).
         """
+        norm_modes = action_norm_stats.get("norm_modes", None)
+
+        if norm_modes is not None:
+            # ── Per-group denormalization ──
+            actions = normalized_actions.copy()
+            norm_modes = list(norm_modes)
+            D = actions.shape[-1]
+            assert len(norm_modes) == D, (
+                f"norm_modes length {len(norm_modes)} != action dim {D}"
+            )
+            for d in range(D):
+                mode = norm_modes[d]
+                if mode == "min_max":
+                    lo = float(action_norm_stats["min"][d])
+                    hi = float(action_norm_stats["max"][d])
+                    actions[:, d] = np.clip(actions[:, d], -1, 1)
+                    actions[:, d] = 0.5 * (actions[:, d] + 1) * (hi - lo) + lo
+                elif mode == "mean_std":
+                    mu = float(action_norm_stats["mean"][d])
+                    sd = float(action_norm_stats["std"][d])
+                    actions[:, d] = actions[:, d] * sd + mu
+                elif mode == "binary":
+                    actions[:, d] = np.where(actions[:, d] < 0.5, 0, 1)
+                else:
+                    pass  # leave as-is
+            return actions
+
+        # ── Legacy path (backward compatible) ──
         mask = action_norm_stats.get("mask", np.ones_like(action_norm_stats["q01"], dtype=bool))
         action_high, action_low = np.array(action_norm_stats["q99"]), np.array(action_norm_stats["q01"])
         normalized_actions = np.clip(normalized_actions, -1, 1)
-        normalized_actions[:, 6] = np.where(normalized_actions[:, 6] < 0.5, 0, 1)
+        gripper_idx = action_norm_stats.get("gripper_idx", 6)
+        normalized_actions[:, gripper_idx] = np.where(
+            normalized_actions[:, gripper_idx] < 0.5, 0, 1
+        )
         actions = np.where(
             mask,
             0.5 * (normalized_actions + 1) * (action_high - action_low) + action_low,
