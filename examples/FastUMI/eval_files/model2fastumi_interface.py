@@ -46,6 +46,11 @@ def load_fastumi_action_norm_stats(checkpoint_dir: str | Path) -> dict[str, Any]
         action_stats = dict(action_stats)
         action_stats["norm_modes"] = list(FastUMIDataConfig.ACTION_NORM_MODES)
 
+    # For any legacy callers that still rely on a single gripper index.
+    # FastUMI action is 10D and gripper is the last dim.
+    action_stats = dict(action_stats)
+    action_stats.setdefault("gripper_idx", 9)
+
     return action_stats
 
 

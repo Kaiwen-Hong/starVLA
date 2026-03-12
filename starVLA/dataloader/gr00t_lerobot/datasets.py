@@ -1608,6 +1608,10 @@ class LeRobotSingleDataset(Dataset):
                 norm_modes = _extract_action_norm_modes(self.transforms, list(filtered_action_stats.keys()))
                 if norm_modes is not None:
                     combined_action_stats["norm_modes"] = norm_modes
+                    # Provide gripper index for legacy unnormalize path (e.g., FastUMI gripper is dim 9)
+                    binary_idxs = [i for i, m in enumerate(norm_modes) if str(m) == "binary"]
+                    if binary_idxs:
+                        combined_action_stats["gripper_idx"] = int(binary_idxs[-1])
 
                 tag_stats["action"] = combined_action_stats
 
@@ -2513,6 +2517,9 @@ class LeRobotMixtureDataset(Dataset):
                     )
                     if norm_modes is not None:
                         combined_action_stats["norm_modes"] = norm_modes
+                        binary_idxs = [i for i, m in enumerate(norm_modes) if str(m) == "binary"]
+                        if binary_idxs:
+                            combined_action_stats["gripper_idx"] = int(binary_idxs[-1])
 
                     tag_stats["action"] = combined_action_stats
 

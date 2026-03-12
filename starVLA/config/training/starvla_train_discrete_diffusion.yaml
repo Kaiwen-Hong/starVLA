@@ -31,6 +31,8 @@ framework:
     past_action_window_size: 0
     repeated_diffusion_steps: 4
 
+
+
     # Binning: "bin" (B,T,D,num_bins) or "bit" (B,T,D,8) - 8 bits simulate 256 bins
     representation: bin  # bin | bit
     num_bins: 256

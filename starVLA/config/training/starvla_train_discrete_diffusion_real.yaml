@@ -1,5 +1,4 @@
 # Discrete Diffusion Policy (MaskGIT-style) - FastUMI real pick-and-place
-# Based on 0312.md: FastUMI normalization fixes are in data pipeline; here we set
 # the correct dataset mix + action/state dims + action_mode.
 
 run_id: fastumi_discrete_diffusion_real
@@ -32,6 +31,7 @@ framework:
     action_horizon: 16
     past_action_window_size: 0
     repeated_diffusion_steps: 4
+    num_inference_timesteps: 8
 
     # Binning: "bin" (B,T,D,num_bins) or "bit" (B,T,D,8) - 8 bits simulate 256 bins
     representation: bin  # bin | bit
@@ -79,9 +79,9 @@ datasets:
 
 trainer:
   epochs: 100
-  max_train_steps: 15000
+  max_train_steps: 30000
   num_warmup_steps: 5000
-  save_interval: 3000
+  save_interval: 5000
   eval_interval: 100
   learning_rate:
     base: 1.0e-05
@@ -98,7 +98,7 @@ trainer:
   max_grad_norm: 1.0
   warmup_ratio: 0.1
   weight_decay: 0.0
-  logging_frequency: 100
+  logging_frequency: 50
   gradient_clipping: 1.0
   gradient_accumulation_steps: 1
   optimizer:

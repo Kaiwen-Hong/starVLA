@@ -1060,7 +1060,7 @@ class FastUMIDataConfig:
                 apply_to=self.state_keys,
                 normalization_modes={
                     "state.eef_pos": "min_max",
-                    "state.eef_rot6d": "mean_std",
+                    "state.eef_rot6d": "min_max",
                     "state.gripper": "binary",
                 },
             ),

@@ -123,6 +123,40 @@ accelerate launch \
   --wandb_entity 2200011093-peking-university
 ```
 
+
+```bash
+accelerate launch \
+  --config_file starVLA/config/deepseeds/deepspeed_zero2.yaml  \
+  --num_processes 8 \
+  starVLA/training/train_starvla.py \
+  --config_yaml starVLA/config/training/starvla_train_discrete_diffusion.yaml \
+  --framework.name QwenDiscreteDiffusion \
+  --framework.qwenvl.base_vlm playground/Pretrained_models/Qwen2.5-VL-3B-Instruct-Action \
+  --framework.qwenvl.vl_hidden_dim 4096  \
+  --framework.qwenvl.attn_implementation flash_attention_2 \
+  --framework.action_model.representation bin  \
+  --framework.action_model.num_bins 256  \
+  --framework.action_model.action_low -1.0 \
+  --framework.action_model.action_high 1.0 \
+  --framework.action_model.num_inference_steps 8  \
+  --datasets.vla_data.data_root_dir playground/Datasets/RoboTwin \
+  --datasets.vla_data.data_mix robotwin_task1 \
+  --datasets.vla_data.action_type abs_qpos  \
+  --datasets.vla_data.per_device_batch_size 8  \
+  --datasets.vla_data.video_backend torchvision_av  \
+  --trainer.freeze_modules ''  \
+  --trainer.max_train_steps 30000  \
+  --trainer.save_interval 10000  \
+  --trainer.logging_frequency 50  \
+  --trainer.eval_interval 100  \
+  --trainer.gradient_accumulation_steps 1 \
+  --run_root_dir ./results/Checkpoints  \
+  --run_id robotwin_discrete_diffusion \
+  --wandb_project starVLA_Robotwin \
+  --wandb_entity 2200011093-peking-university
+```
+
+
 > Use `robotwin_task1` for quick debug (single task). For full training, use `robotwin`.
 > QwenPI uses the **flow-matching** head (LayerwiseFlowmatchingActionHead). If your dataset has no `state`, add `--framework.action_model.state_dim 0`.
 
