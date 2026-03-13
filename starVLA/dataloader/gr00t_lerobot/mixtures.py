@@ -476,6 +476,10 @@ DATASET_NAMED_MIXTURES = {
         ("pickandplace-real-0307", 1.0, "fastumi"),
     ],
 
+    "fastumi_pickandplace_debug_1ep": [
+        ("pickandplace-debug-1ep", 1.0, "fastumi"),
+    ],
+
     # Debug subset: just 1 FastUMI task
     "fastumi_task1": [
         ("pickandplace_vla", 1.0, "fastumi"),

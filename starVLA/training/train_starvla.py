@@ -15,9 +15,14 @@ import argparse
 import json
 import os
 import re
+import sys
 import time
+import warnings
 from pathlib import Path
 from typing import Tuple
+
+# Disable torchvision video deprecation warning (noisy, not actionable)
+warnings.filterwarnings("ignore", module="torchvision.io._video_deprecation_warning")
 
 # Third-Party Libraries
 import numpy as np
@@ -38,8 +43,13 @@ from starVLA.model.framework import build_framework
 from starVLA.training.trainer_utils.config_tracker import AccessTrackedConfig, wrap_config
 from starVLA.training.trainer_utils.trainer_tools import TrainerUtils, build_param_lr_groups, normalize_dotlist_args
 
-deepspeed_plugin = DeepSpeedPlugin()
-accelerator = Accelerator(deepspeed_plugin=deepspeed_plugin)
+# Check --no_deepspeed before creating accelerator (avoids MPI dependency when debugging)
+_no_deepspeed = "--no_deepspeed" in sys.argv
+if _no_deepspeed:
+    accelerator = Accelerator()
+else:
+    deepspeed_plugin = DeepSpeedPlugin()
+    accelerator = Accelerator(deepspeed_plugin=deepspeed_plugin)
 accelerator.print(accelerator.state)
 
 # Sane Defaults
@@ -71,7 +81,8 @@ def prepare_data(cfg, accelerator, output_dir) -> DataLoader:
     vla_train_dataloader = build_dataloader(cfg=cfg, dataset_py=cfg.datasets.vla_data.dataset_py)
 
     accelerator.dataloader_config.dispatch_batches = False
-    dist.barrier()
+    if dist.is_initialized():
+        dist.barrier()
     return vla_train_dataloader
 
 
@@ -235,7 +246,7 @@ class VLATrainer(TrainerUtils):
 
     def _log_metrics(self, metrics):
         """Record training metrics."""
-        if self.completed_steps % self.config.trainer.logging_frequency == 0 and dist.get_rank() == 0:
+        if self.completed_steps % self.config.trainer.logging_frequency == 0 and self.accelerator.is_main_process:
             metrics["learning_rate"] = self.lr_scheduler.get_last_lr()[0]
             metrics["epoch"] = round(self.completed_steps / len(self.vla_train_dataloader), 2)
             wandb.log(metrics, step=self.completed_steps)
@@ -312,12 +323,16 @@ class VLATrainer(TrainerUtils):
         if self.accelerator.is_main_process:
             normalized_actions = output_dict["normalized_actions"]
             actions = np.array(actions)
+            if np.abs(actions).max() > 1:
+                print(f"Unusual action found in eval: {np.abs(actions).max()}")
+                print(f"index: {np.abs(actions).argmax()}")
             num_pots = np.prod(actions.shape)
             score = TrainerUtils.euclidean_distance(normalized_actions, actions)
             step_metrics["mse_score"] = score / num_pots
 
         del examples
-        dist.barrier()
+        if dist.is_initialized():
+            dist.barrier()
         return step_metrics
 
     def _log_training_config(self):
@@ -398,8 +413,9 @@ def main(cfg) -> None:
     trainer.train()
 
     logger.info("... and that's all, folks!")
-    dist.barrier()
-    dist.destroy_process_group()
+    if dist.is_initialized():
+        dist.barrier()
+        dist.destroy_process_group()
 
 
 if __name__ == "__main__":

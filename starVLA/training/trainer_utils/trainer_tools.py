@@ -198,8 +198,11 @@ class TrainerUtils:
         print the total number of parameters and trainable parameters of the model
         :param model: PyTorch model instance
         """
-        if dist.get_rank() != 0:
-            return
+        try:
+            if dist.is_initialized() and dist.get_rank() != 0:
+                return
+        except ValueError:
+            pass  # process group not initialized (e.g. --no_deepspeed)
         print("📊 model parameter statistics:")
         num_params = sum(p.numel() for p in model.parameters())
         num_trainable_params = sum(p.numel() for p in model.parameters() if p.requires_grad)

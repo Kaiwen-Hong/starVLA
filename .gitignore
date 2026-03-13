@@ -215,6 +215,8 @@ starVLA/config/frameworks/*
 starVLA/model/modules/sam_model/*
 assets/SAMv2.txt
 playground/*
+results/*
+checkpoints/*
 qwen_talk.md
 assets/R1Pro.py
 examples/SPVLA

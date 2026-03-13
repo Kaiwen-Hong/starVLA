@@ -1016,10 +1016,11 @@ class FastUMIDataConfig:
     # Per-dim normalization modes for the 10D action vector.
     # Used by inference denormalization (unnormalize_actions).
     #   [0:3]  eef_pos   → min_max  (bounded [-1,1])
-    #   [3:9]  eef_rot6d → mean_std (unbounded z-score)
+    #   [3:9]  eef_rot6d → min_max  (bounded [-1,1], clips outliers)
     #   [9]    gripper   → binary   (0 or 1)
+    # Note: min_max used for rot6d to avoid large values from mean_std when data is offset.
     ACTION_NORM_MODES = (
-        ["min_max"] * 3 + ["mean_std"] * 6 + ["binary"]
+        ["min_max"] * 3 + ["min_max"] * 6 + ["binary"]
     )
 
     def modality_config(self):
@@ -1060,17 +1061,14 @@ class FastUMIDataConfig:
                 },
             ),
             # action transforms
-            # NOTE: eef_rot6d uses mean_std because the raw rot6d contains two
-            # near-constant diagonal entries (R00≈1, R11≈1) with range ~0.0007.
-            # min_max normalization amplifies floating-point noise on those dims
-            # to fill [-1,1].  mean_std gives all 6 rotation dims equal variance
-            # (~1.0) in normalized space, which is better for L1/MSE loss.
+            # eef_rot6d uses min_max to clip outliers; mean_std can produce large
+            # values when data is offset or has outliers.
             StateActionToTensor(apply_to=self.action_keys),
             StateActionTransform(
                 apply_to=self.action_keys,
                 normalization_modes={
                     "action.eef_pos": "min_max",
-                    "action.eef_rot6d": "mean_std",
+                    "action.eef_rot6d": "min_max",
                     "action.gripper": "binary",
                 },
             ),
