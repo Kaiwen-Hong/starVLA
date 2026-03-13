@@ -31,7 +31,7 @@ export TRANSFORMERS_CACHE=${HF_HOME}/transformers
 export HF_DATASETS_CACHE=${HF_HOME}/datasets
 export PIP_CACHE_DIR=${LAB_ROOT}/.cache/pip
 export WANDB_DIR=${LAB_ROOT}/.cache/wandb
-export WANDB_MODE=disabled
+export WANDB_MODE=online
 export TRITON_CACHE_DIR=/tmp/triton_cache_${USER}
 
 # ── Conda ──
@@ -189,8 +189,8 @@ accelerate launch \
   --trainer.is_resume true \
   --run_root_dir ./results/Checkpoints \
   --run_id fastumi_pickandplace_qwenPI \
-  --wandb_project starVLA_FastUMI \
-  --wandb_entity kaiwenh-17-uiuc \
+  --wandb_project starvla-realworld-dynamic \
+  --wandb_entity hca \
   2>&1 | tee "${LOG_FILE}"
 
 
@@ -230,8 +230,8 @@ accelerate launch \
   --trainer.is_resume true \
   --run_root_dir ./results/Checkpoints \
   --run_id fastumi_pickandplace_qwenPI \
-  --wandb_project starVLA_FastUMI \
-  --wandb_entity 2200011093-peking-university \
+  --wandb_project starvla-realworld-dynamic \
+  --wandb_entity hca \
 
 
 
@@ -272,7 +272,7 @@ accelerate launch \
   --trainer.is_resume true \
   --run_root_dir ./results/Checkpoints \
   --run_id fastumi_pickandplace_qwenPI \
-  --wandb_project starVLA_FastUMI \
-  --wandb_entity 2200011093-peking-university
+  --wandb_project starvla-realworld-dynamic \
+  --wandb_entity hca
 
 #   --datasets.vla_data.data_mix fastumi_pickandplace_debug_1ep \

@@ -10,7 +10,7 @@ logs/
 
 # C extensions
 *.so
-
+realworld/0312/
 # Distribution / packaging
 .Python
 build/

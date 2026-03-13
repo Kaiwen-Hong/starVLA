@@ -1733,6 +1733,11 @@ class LeRobotSingleDataset(Dataset):
                 # Combine statistics from filtered action sub-keys
                 combined_action_stats = combine_modality_stats(filtered_action_stats)
 
+                # Clamp near-constant dims (matching StateActionTransform.set_metadata)
+                nct = _extract_near_constant_threshold(self.transforms)
+                if nct > 0:
+                    _clamp_near_constant_dims(combined_action_stats, nct)
+
                 # Add mask field based on whether it's gripper or not
                 mask = generate_action_mask_for_used_keys(
                     self.metadata.modalities.action, filtered_action_stats.keys()
@@ -2024,6 +2029,37 @@ def _extract_action_norm_modes(transforms, reordered_action_subkeys, action_moda
         modes.extend([mode] * dim_count)
 
     return modes
+
+
+def _extract_near_constant_threshold(transforms):
+    """Extract near_constant_threshold from the action StateActionTransform."""
+    from starVLA.dataloader.gr00t_lerobot.transform.state_action import StateActionTransform
+
+    for t in getattr(transforms, "transforms", []):
+        if isinstance(t, StateActionTransform):
+            if any(k.startswith("action.") for k in t.normalization_modes):
+                return t.near_constant_threshold
+    return 0.0
+
+
+def _clamp_near_constant_dims(combined_stats, threshold):
+    """Clamp near-constant dimensions in combined statistics.
+
+    For any dim where max - min < threshold, sets min = max = mean.
+    Modifies combined_stats in place.
+    """
+    min_vals = combined_stats.get("min")
+    max_vals = combined_stats.get("max")
+    mean_vals = combined_stats.get("mean")
+    if min_vals is None or max_vals is None or mean_vals is None:
+        return
+    for i in range(len(min_vals)):
+        if max_vals[i] - min_vals[i] < threshold:
+            combined_stats["min"][i] = mean_vals[i]
+            combined_stats["max"][i] = mean_vals[i]
+            if "q01" in combined_stats and "q99" in combined_stats:
+                combined_stats["q01"][i] = mean_vals[i]
+                combined_stats["q99"][i] = mean_vals[i]
 
 
 def get_used_modality_keys(modality_keys: dict) -> tuple[list, list]:
@@ -2626,6 +2662,12 @@ class LeRobotMixtureDataset(Dataset):
                 
                 if filtered_action_stats:
                     combined_action_stats = combine_modality_stats(filtered_action_stats)
+
+                    # Clamp near-constant dims (matching StateActionTransform.set_metadata)
+                    if self.datasets:
+                        nct = _extract_near_constant_threshold(self.datasets[0].transforms)
+                        if nct > 0:
+                            _clamp_near_constant_dims(combined_action_stats, nct)
 
                     mask = generate_action_mask_for_used_keys(
                         merged_metadata.modalities.action, filtered_action_stats.keys()

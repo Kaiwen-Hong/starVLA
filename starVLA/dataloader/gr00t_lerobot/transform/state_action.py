@@ -303,6 +303,16 @@ class StateActionTransform(InvertibleModalityTransform):
     modality_metadata: dict[str, StateActionMetadata] = Field(
         default_factory=dict, description="The modality metadata for each state key."
     )
+    near_constant_threshold: float = Field(
+        default=0.0,
+        description=(
+            "If > 0, dims where (max - min) < threshold in the loaded statistics "
+            "are treated as constant: min and max are both set to the mean so the "
+            "Normalizer outputs 0 (forward) and the constant value (inverse). "
+            "Prevents noise amplification for near-constant dimensions such as "
+            "diagonal entries of near-identity rotation matrices."
+        ),
+    )
 
     # Model variables
     _rotation_transformers: dict[str, RotationTransform] = PrivateAttr(default_factory=dict)
@@ -418,6 +428,27 @@ class StateActionTransform(InvertibleModalityTransform):
             self.normalization_statistics[key] = getattr(dataset_statistics, modality)[
                 state_key
             ].model_dump()
+
+        # Clamp near-constant dims: set min = max = mean so Normalizer outputs 0.
+        # This prevents noise amplification for dims with negligible range
+        # (e.g., R00/R11 diagonal entries of near-identity rotation matrices).
+        if self.near_constant_threshold > 0:
+            for key, stats in self.normalization_statistics.items():
+                mode = self.normalization_modes.get(key)
+                if mode not in ("min_max", "q99"):
+                    continue
+                min_v = stats.get("min")
+                max_v = stats.get("max")
+                mean_v = stats.get("mean")
+                if min_v is None or max_v is None or mean_v is None:
+                    continue
+                for i in range(len(min_v)):
+                    if max_v[i] - min_v[i] < self.near_constant_threshold:
+                        stats["min"][i] = mean_v[i]
+                        stats["max"][i] = mean_v[i]
+                        if "q01" in stats and "q99" in stats:
+                            stats["q01"][i] = mean_v[i]
+                            stats["q99"][i] = mean_v[i]
 
         # Initialize the rotation transformers
         for key in self.target_rotations:
