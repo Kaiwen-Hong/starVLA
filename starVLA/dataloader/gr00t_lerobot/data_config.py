@@ -1012,20 +1012,18 @@ class FastUMIDataConfig:
     language_keys = ["annotation.human.action.task_description"]
     observation_indices = [0]
     action_indices = list(range(16))
-    # Per-dimension action normalization modes for the 10D FastUMI action vector:
-    # [dx, dy, dz, rot6d(6), gripper]
-    ACTION_NORM_MODES = [
-        "min_max",
-        "min_max",
-        "min_max",
-        "mean_std",
-        "mean_std",
-        "mean_std",
-        "mean_std",
-        "mean_std",
-        "mean_std",
-        "binary",
-    ]
+
+    # Per-dim normalization modes for the 10D action vector.
+    # Used by inference denormalization (unnormalize_actions).
+    #   [0:3]  eef_pos   → min_max  (bounded [-1,1])
+    #   [3:9]  eef_rot6d → min_max  (bounded [-1,1])
+    #          Near-constant dims (R00 idx=3, R11 idx=7) are auto-clamped
+    #          via near_constant_threshold=1e-3 so they map to 0 in
+    #          normalized space (trivially predictable, no noise amplification).
+    #   [9]    gripper   → binary   (0 or 1)
+    ACTION_NORM_MODES = (
+        ["min_max"] * 3 + ["min_max"] * 6 + ["binary"]
+    )
 
     def modality_config(self):
         video_modality = ModalityConfig(
@@ -1058,6 +1056,7 @@ class FastUMIDataConfig:
             StateActionToTensor(apply_to=self.state_keys),
             StateActionTransform(
                 apply_to=self.state_keys,
+                near_constant_threshold=1e-3,
                 normalization_modes={
                     "state.eef_pos": "min_max",
                     "state.eef_rot6d": "min_max",
@@ -1068,6 +1067,7 @@ class FastUMIDataConfig:
             StateActionToTensor(apply_to=self.action_keys),
             StateActionTransform(
                 apply_to=self.action_keys,
+                near_constant_threshold=1e-3,
                 normalization_modes={
                     "action.eef_pos": "min_max",
                     "action.eef_rot6d": "mean_std",

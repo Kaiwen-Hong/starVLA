@@ -90,13 +90,14 @@ class baseframework(PreTrainedModel):
         FrameworkModel = build_framework(cfg=model_config)
         # set for action un-norm
         FrameworkModel.norm_stats = norm_stats
-        # Load from Checkpoint - support both safetensors and pt formats
+        # Load from Checkpoint (Custom --> should load both *projector* and *llm* weights)
         if pretrained_checkpoint.suffix == ".safetensors":
             from safetensors.torch import load_file
 
             model_state_dict = load_file(str(pretrained_checkpoint))
         else:
             model_state_dict = torch.load(pretrained_checkpoint, map_location="cpu")
+        # logger.info(f"Loading model weights from `{pretrained_checkpoint}`")
         model_keys = set(FrameworkModel.state_dict().keys())
         checkpoint_keys = set(model_state_dict.keys())
         try:
@@ -180,50 +181,63 @@ class baseframework(PreTrainedModel):
         """
         Map normalized actions back to original value range.
 
-        Two paths:
-        - Per-dim path: if `norm_modes` exists in action_norm_stats, apply inverse per dimension:
+        Supports per-dimension-group denormalization via the optional
+        ``norm_modes`` key in *action_norm_stats*:
             - min_max: clip to [-1,1], then (x+1)/2*(max-min)+min
             - mean_std: x*std + mean (no clipping)
             - binary: threshold at 0.5
-        - Legacy path: original behavior (q01/q99 + mask), but gripper index is configurable
-          via `gripper_idx` (defaults to 6 for backward compatibility).
+        Legacy path: q01/q99 + mask, gripper index via ``gripper_idx`` (default 6).
 
         Args:
-            normalized_actions: Array shape [T, D] (or chunk length × action_dim).
-            action_norm_stats: Dict containing:
-                q01 (array-like): Lower percentile (per-dimension).
-                q99 (array-like): Upper percentile (per-dimension).
-                mask (optional bool array): True => apply de-normalization; False => keep original normalized value.
+            normalized_actions: Array shape [T, D].
+            action_norm_stats: Dict containing statistics. Two modes:
+
+                **Legacy (default)** — all dims use q99/q01 rescaling:
+                    q01, q99           : per-dim arrays
+                    mask (optional)    : bool array
+                    gripper_idx (opt)  : int, default 6
+
+                **Per-group** — activated by providing ``norm_modes``:
+                    norm_modes : list[str] of length D, each one of
+                                 "min_max", "mean_std", "binary"
+                    min, max   : per-dim arrays (used by min_max dims)
+                    mean, std  : per-dim arrays (used by mean_std dims)
+                    gripper_idx (opt) : int (ignored; binary dims are
+                                 determined by norm_modes)
 
         Returns:
             np.ndarray: Unnormalized actions (same shape as input).
         """
-        # --- New path: per-dimension inverse using norm_modes ---
-        if "norm_modes" in action_norm_stats:
-            norm_modes = list(action_norm_stats["norm_modes"])
+        norm_modes = action_norm_stats.get("norm_modes", None)
+
+        if norm_modes is not None:
+            actions = np.asarray(normalized_actions, dtype=np.float32).copy()
+            norm_modes = list(norm_modes)
+            D = actions.shape[-1]
+            assert len(norm_modes) == D, (
+                f"norm_modes length {len(norm_modes)} != action dim {D}"
+            )
             mins = np.array(action_norm_stats.get("min", action_norm_stats.get("q01", [])), dtype=np.float32)
             maxs = np.array(action_norm_stats.get("max", action_norm_stats.get("q99", [])), dtype=np.float32)
             means = np.array(action_norm_stats.get("mean", []), dtype=np.float32)
             stds = np.array(action_norm_stats.get("std", []), dtype=np.float32)
-
-            x = np.asarray(normalized_actions, dtype=np.float32).copy()
-            out = x.copy()
-
-            for d, mode in enumerate(norm_modes):
-                mode = str(mode)
+            for d in range(D):
+                mode = str(norm_modes[d])
                 if mode == "min_max":
-                    xd = np.clip(x[:, d], -1, 1)
-                    out[:, d] = 0.5 * (xd + 1.0) * (maxs[d] - mins[d]) + mins[d]
+                    lo = float(mins[d]) if d < len(mins) else float(mins[0])
+                    hi = float(maxs[d]) if d < len(maxs) else float(maxs[0])
+                    actions[:, d] = np.clip(actions[:, d], -1, 1)
+                    actions[:, d] = 0.5 * (actions[:, d] + 1) * (hi - lo) + lo
                 elif mode == "mean_std":
-                    out[:, d] = x[:, d] * stds[d] + means[d]
+                    mu = float(means[d]) if d < len(means) else 0.0
+                    sd = float(stds[d]) if d < len(stds) else 1.0
+                    actions[:, d] = actions[:, d] * sd + mu
                 elif mode == "binary":
-                    out[:, d] = (x[:, d] >= 0.5).astype(np.float32)
-                else:
-                    # Unknown mode: leave as-is
-                    out[:, d] = x[:, d]
-            return out
+                    actions[:, d] = np.where(actions[:, d] < 0.5, 0, 1).astype(np.float32)
+                # else: leave as-is
+            return actions
 
-        # --- Legacy path (backward compatible) ---
+        # Legacy path (backward compatible)
         mask = action_norm_stats.get(
             "mask", np.ones_like(action_norm_stats["q01"], dtype=bool)
         )
@@ -232,13 +246,11 @@ class baseframework(PreTrainedModel):
             np.array(action_norm_stats["q01"]),
         )
         normalized_actions = np.clip(normalized_actions, -1, 1)
-
         gripper_idx = int(action_norm_stats.get("gripper_idx", 6))
         if 0 <= gripper_idx < normalized_actions.shape[1]:
             normalized_actions[:, gripper_idx] = np.where(
                 normalized_actions[:, gripper_idx] < 0.5, 0, 1
             )
-
         actions = np.where(
             mask,
             0.5 * (normalized_actions + 1) * (action_high - action_low) + action_low,

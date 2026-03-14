@@ -122,6 +122,12 @@ fi
 export NCCL_BLOCKING_WAIT=1
 export NCCL_ASYNC_ERROR_HANDLING=1
 
+# ── Log file ──
+LOG_DIR=./results/Checkpoints/fastumi_pickandplace_qwenOFT/logs
+mkdir -p "${LOG_DIR}"
+LOG_FILE="${LOG_DIR}/train_$(date +%Y%m%d_%H%M%S).log"
+echo "Logging to: ${LOG_FILE}"
+
 # ── Training ──
 # Key FastUMI overrides vs RoboTwin defaults:
 #   action_dim/state_dim: 10 (not 14) -- 3 pos + 6 rot6d + 1 gripper
@@ -153,51 +159,5 @@ accelerate launch \
   --run_root_dir ./results/Checkpoints \
   --run_id fastumi_pickandplace_qwenPI \
   --wandb_project starVLA_FastUMI \
-  --wandb_entity 2200011093-peking-university
-
-
-
-accelerate launch \
- --config_file starVLA/config/deepseeds/deepspeed_zero2.yaml \
-   -tion_model.representation -num_processes 8 \
-   starVLA/training/train_starvla.py \
-    --config_yaml starVLA/config/training/starvla_train_discrete_diffusion.yaml \
-    --framework.name QwenDiscretenference_steps 8  \
-    --framework.action_model.action_dim 10 \
-    --framework.action_model.state_dim 10 \
-    --datasDiffusion  \
-    --framework.qwenvl.base_vlm playground/Pretrained_models/Qwen2.5-VL-3B-Instruct-Action  \
-    --framework.qwenvl.vl_hidden_dim 4096 \
-    --framework.qwenvl.atdata.per_device_batch_sizetn_implementation flash_attention_2 \
-    --framework.action_model.representation bin  \
-    --framework.action_model.num_bins 256  \
-    --framework.action_model.action_low -1logging_frequency 50 \
-    --t.0  \
-    --framework.action_model.action_high 1.0  \
-    --framework.action_model.num_inference_steps 8 \
-    --datasets.vla_data.data_root_dir playground/Datasets/RoboTwin \
-    starVLA_Robotwin \
-    --wand--datasets.vla_data.data_mix robotwin_task1 \
-    --datasets.vla_data.action_type abs_qpos \
-    --datasets.vla_data.per_device_batch_size 8 \
-    --datasets.vla_data.video_backend torchvision_av  \
-    --trainer.freeze_modules '' \
-    --trainer.max_train_steps 30000  \
-    --trainer.save_interval 10000  \
-    --trainer.logging_frequency 50 \
-    --trainer.eval_interval 100  \
-    --trainer.gradient_accumulation_steps 1 \
-    --run_root_dir ./results/Checkpoints \
-    --run_id robotwin_discrete_diffusion  \
-    --wandb_project starVLA_Robotwin \
-    --wandb_entity 2200011093-peking-university
-
-
-
-
-
-
-
-accelerate launch   --config_file starVLA/config/deepseeds/deepspeed_zero2.yaml   --num_processes 8   starVLA/training/train_starvla.py   --config_yaml starVLA/config/training/starvla_train_discrete_diffusion.yaml   --framework.name QwenDiscreteDiffusion   --framework.qwenvl.base_vlm playground/Pretrained_models/Qwen2.5-VL-3B-Instruct-Action   --framework.qwenvl.attn_implementation flash_attention_2   --framework.action_model.action_dim 10   --framework.action_model.state_dim 10   --datasets.vla_data.data_root_dir playground/Datasets/FastUMI   --datasets.vla_data.data_mix fastumi_pickandplace_real_0307   --datasets.vla_data.per_device_batch_size 8   --datasets.vla_data.video_backend torchvision_av   --trainer.freeze_modules ''   --trainer.max_train_steps 15000   --trainer.save_interval 3000   --tra
-iner.logging_frequency 100   --trainer.eval_interval 100   --trainer.gradient_accumulation_steps 1   --run_root_dir ./results/Checkpoints   --r
-un_id fastumi_pickandplace_discrete_diffusion   --wandb_project starVLA_FastUMI   --wandb_entity 2200011093-peking-university
+  --wandb_entity kaiwenh-17-uiuc \
+  2>&1 | tee "${LOG_FILE}"

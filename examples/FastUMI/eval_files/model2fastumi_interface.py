@@ -116,4 +116,3 @@ def normalize_fastumi_state(state: np.ndarray, state_stats: dict[str, Any]) -> n
     q99 = np.array(state_stats["q99"], dtype=np.float32)
     out = 2.0 * (x - q01) / (q99 - q01 + 1e-8) - 1.0
     return np.clip(out, -1, 1)
-

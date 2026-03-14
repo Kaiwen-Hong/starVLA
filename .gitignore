@@ -10,7 +10,7 @@ logs/
 
 # C extensions
 *.so
-
+realworld/0312/
 # Distribution / packaging
 .Python
 build/
@@ -215,6 +215,8 @@ starVLA/config/frameworks/*
 starVLA/model/modules/sam_model/*
 assets/SAMv2.txt
 playground/*
+results/*
+checkpoints/*
 qwen_talk.md
 assets/R1Pro.py
 examples/SPVLA
@@ -225,3 +227,5 @@ MUJOCO_LOG.TXT
 results/
 checkpoints/
 examples/MultiRobot/*
+
+AGENTS.md

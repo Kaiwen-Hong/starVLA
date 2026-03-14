@@ -98,9 +98,10 @@ class RotationTransform:
 class Normalizer:
     valid_modes = ["q99", "mean_std", "min_max", "binary"]
 
-    def __init__(self, mode: str, statistics: dict):
+    def __init__(self, mode: str, statistics: dict, binary_threshold: float = 0.5):
         self.mode = mode
         self.statistics = statistics
+        self.binary_threshold = binary_threshold
         for key, value in self.statistics.items():
             self.statistics[key] = torch.tensor(value)
 
@@ -184,7 +185,7 @@ class Normalizer:
 
         elif self.mode == "binary":
             # Range of binary is [0, 1]
-            normalized = (x > 0.5).to(x.dtype)
+            normalized = (x > self.binary_threshold).to(x.dtype)
         else:
             raise ValueError(f"Invalid normalization mode: {self.mode}")
 
@@ -207,7 +208,7 @@ class Normalizer:
             max = self.statistics["max"].to(x.dtype)
             return (x + 1) / 2 * (max - min) + min
         elif self.mode == "binary":
-            return (x > 0.5).to(x.dtype)
+            return (x > self.binary_threshold).to(x.dtype)
         else:
             raise ValueError(f"Invalid normalization mode: {self.mode}")
 
@@ -296,8 +297,21 @@ class StateActionTransform(InvertibleModalityTransform):
     normalization_statistics: dict[str, dict] = Field(
         default_factory=dict, description="The statistics for each state key."
     )
+    binary_threshold: float = Field(
+        default=0.5, description="Threshold for binary normalization mode."
+    )
     modality_metadata: dict[str, StateActionMetadata] = Field(
         default_factory=dict, description="The modality metadata for each state key."
+    )
+    near_constant_threshold: float = Field(
+        default=0.0,
+        description=(
+            "If > 0, dims where (max - min) < threshold in the loaded statistics "
+            "are treated as constant: min and max are both set to the mean so the "
+            "Normalizer outputs 0 (forward) and the constant value (inverse). "
+            "Prevents noise amplification for near-constant dimensions such as "
+            "diagonal entries of near-identity rotation matrices."
+        ),
     )
 
     # Model variables
@@ -415,6 +429,27 @@ class StateActionTransform(InvertibleModalityTransform):
                 state_key
             ].model_dump()
 
+        # Clamp near-constant dims: set min = max = mean so Normalizer outputs 0.
+        # This prevents noise amplification for dims with negligible range
+        # (e.g., R00/R11 diagonal entries of near-identity rotation matrices).
+        if self.near_constant_threshold > 0:
+            for key, stats in self.normalization_statistics.items():
+                mode = self.normalization_modes.get(key)
+                if mode not in ("min_max", "q99"):
+                    continue
+                min_v = stats.get("min")
+                max_v = stats.get("max")
+                mean_v = stats.get("mean")
+                if min_v is None or max_v is None or mean_v is None:
+                    continue
+                for i in range(len(min_v)):
+                    if max_v[i] - min_v[i] < self.near_constant_threshold:
+                        stats["min"][i] = mean_v[i]
+                        stats["max"][i] = mean_v[i]
+                        if "q01" in stats and "q99" in stats:
+                            stats["q01"][i] = mean_v[i]
+                            stats["q99"][i] = mean_v[i]
+
         # Initialize the rotation transformers
         for key in self.target_rotations:
             # Get the original representation of the state
@@ -467,7 +502,8 @@ class StateActionTransform(InvertibleModalityTransform):
             else:
                 statistics = self.normalization_statistics[key]
             self._normalizers[key] = Normalizer(
-                mode=self.normalization_modes[key], statistics=statistics
+                mode=self.normalization_modes[key], statistics=statistics,
+                binary_threshold=self.binary_threshold,
             )
 
     def apply(self, data: dict[str, Any]) -> dict[str, Any]:
