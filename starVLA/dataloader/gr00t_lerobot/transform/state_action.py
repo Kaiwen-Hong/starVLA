@@ -96,7 +96,7 @@ class RotationTransform:
 
 
 class Normalizer:
-    valid_modes = ["q99", "mean_std", "min_max", "binary"]
+    valid_modes = ["q99", "mean_std", "min_max", "binary", "none"]
 
     def __init__(self, mode: str, statistics: dict, binary_threshold: float = 0.5):
         self.mode = mode
@@ -186,6 +186,9 @@ class Normalizer:
         elif self.mode == "binary":
             # Range of binary is [0, 1]
             normalized = (x > self.binary_threshold).to(x.dtype)
+        elif self.mode == "none":
+            # Pass-through: no normalization
+            normalized = x.clone()
         else:
             raise ValueError(f"Invalid normalization mode: {self.mode}")
 
@@ -209,6 +212,8 @@ class Normalizer:
             return (x + 1) / 2 * (max - min) + min
         elif self.mode == "binary":
             return (x > self.binary_threshold).to(x.dtype)
+        elif self.mode == "none":
+            return x.clone()
         else:
             raise ValueError(f"Invalid normalization mode: {self.mode}")
 
@@ -393,6 +398,8 @@ class StateActionTransform(InvertibleModalityTransform):
                         0,
                         1,
                     ], f"Binary normalization should only have 0 or 1, but got {normalization_statistics[0]}"
+                elif normalization_mode == "none":
+                    pass  # No statistics required; pass-through mode
                 else:
                     raise ValueError(f"Invalid normalization mode: {normalization_mode}")
         return self
@@ -493,11 +500,14 @@ class StateActionTransform(InvertibleModalityTransform):
             # If the state is not continuous, we should not use normalization modes other than binary
             elif (
                 not self.modality_metadata[key].continuous
-                and self.normalization_modes[key] != "binary"
+                and self.normalization_modes[key] not in ("binary", "none")
             ):
                 raise ValueError(
                     f"{key} is not continuous, so it should be normalized using `binary` mode"
                 )
+            # For "none" mode: pass-through, no statistics needed
+            elif self.normalization_modes[key] == "none":
+                statistics = {}
             # Initialize the normalizer
             else:
                 statistics = self.normalization_statistics[key]

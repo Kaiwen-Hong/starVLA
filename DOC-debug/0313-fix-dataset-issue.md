@@ -16,6 +16,9 @@ and the constant value (inverse). No changes to normalization logic itself.
 FastUMIDataConfig sets `near_constant_threshold=1e-3` on both state and
 action transforms.
 
+**Alternative:** See `0314-no-normalization-on-rotation.md` for applying
+no normalization on rotation instead.
+
 ---
 
 ## Background

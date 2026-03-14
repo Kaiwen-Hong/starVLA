@@ -195,7 +195,7 @@ class baseframework(PreTrainedModel):
 
                 **Per-group** — activated by providing ``norm_modes``:
                     norm_modes : list[str] of length D, each one of
-                                 "min_max", "mean_std", "binary"
+                                 "min_max", "mean_std", "binary", "none"
                     min, max   : per-dim arrays (used by min_max dims)
                     mean, std  : per-dim arrays (used by mean_std dims)
                     gripper_idx (opt) : int (ignored; binary dims are
@@ -227,6 +227,8 @@ class baseframework(PreTrainedModel):
                     actions[:, d] = actions[:, d] * sd + mu
                 elif mode == "binary":
                     actions[:, d] = np.where(actions[:, d] < 0.5, 0, 1)
+                elif mode == "none":
+                    pass  # Pass-through: no denormalization
                 else:
                     pass  # leave as-is
             return actions

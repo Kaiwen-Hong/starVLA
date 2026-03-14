@@ -90,6 +90,8 @@ def unnormalize_fastumi_actions(
             actions[:, d] = actions[:, d] * sd + mu
         elif mode == "binary":
             actions[:, d] = np.where(actions[:, d] < 0.5, 0, 1)
+        elif mode == "none":
+            pass  # Pass-through: no denormalization
 
     return actions
 

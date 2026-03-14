@@ -348,3 +348,35 @@ accelerate launch   \
     --wandb_entity 2200011093-peking-university
 
 #   --datasets.vla_data.data_mix fastumi_pickandplace_debug_1ep \
+
+
+############# 0314 #############
+accelerate launch      \
+    --config_file starVLA/config/deepseeds/deepspeed_zero2.yaml      \
+    --num_processes 8      \
+    starVLA/training/train_starvla.py      \
+    --config_yaml starVLA/config/training/starvla_train_discrete_diffusion_real.yaml      \
+    --framework.name QwenDiscreteDiffusion      \
+    --framework.qwenvl.base_vlm playground/Pretrained_models/Qwen2.5-VL-3B-Instruct-Action      \
+    --framework.qwenvl.vl_hidden_dim 4096    \
+    --framework.qwenvl.attn_implementation flash_attention_2       \
+    --framework.action_model.representation bin        \
+    --framework.action_model.num_bins 256       \
+    --framework.action_model.action_low -1.0       \
+    --framework.action_model.action_high 1.0      \
+    --framework.action_model.num_inference_steps 8       \
+    --datasets.vla_data.data_root_dir playground/Datasets/FastUMI      \
+    --datasets.vla_data.data_mix fastumi_pickandplace_ur5_0314       \
+    --datasets.vla_data.include_state true       \
+    --datasets.vla_data.per_device_batch_size 8        \
+    --datasets.vla_data.video_backend torchvision_av        \
+    --trainer.freeze_modules ''        \
+    --trainer.max_train_steps 30000        \
+    --trainer.save_interval 10000       \
+    --trainer.logging_frequency 50       \
+    --trainer.eval_interval 100       \
+    --trainer.gradient_accumulation_steps 1      \
+    --run_root_dir ./results/Checkpoints        \
+    --run_id fastumi_pickandplace_discrete_diffusion_real_0314       \
+    --wandb_project starVLA_FastUMI       \
+    --wandb_entity 2200011093-peking-university
