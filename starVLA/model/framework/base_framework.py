@@ -182,11 +182,7 @@ class baseframework(PreTrainedModel):
         Map normalized actions back to original value range.
 
         Supports per-dimension-group denormalization via the optional
-        ``norm_modes`` key in *action_norm_stats*:
-            - min_max: clip to [-1,1], then (x+1)/2*(max-min)+min
-            - mean_std: x*std + mean (no clipping)
-            - binary: threshold at 0.5
-        Legacy path: q01/q99 + mask, gripper index via ``gripper_idx`` (default 6).
+        ``norm_modes`` key in *action_norm_stats*.
 
         Args:
             normalized_actions: Array shape [T, D].
@@ -211,51 +207,44 @@ class baseframework(PreTrainedModel):
         norm_modes = action_norm_stats.get("norm_modes", None)
 
         if norm_modes is not None:
-            actions = np.asarray(normalized_actions, dtype=np.float32).copy()
+            # ── Per-group denormalization ──
+            actions = normalized_actions.copy()
             norm_modes = list(norm_modes)
             D = actions.shape[-1]
             assert len(norm_modes) == D, (
                 f"norm_modes length {len(norm_modes)} != action dim {D}"
             )
-            mins = np.array(action_norm_stats.get("min", action_norm_stats.get("q01", [])), dtype=np.float32)
-            maxs = np.array(action_norm_stats.get("max", action_norm_stats.get("q99", [])), dtype=np.float32)
-            means = np.array(action_norm_stats.get("mean", []), dtype=np.float32)
-            stds = np.array(action_norm_stats.get("std", []), dtype=np.float32)
             for d in range(D):
-                mode = str(norm_modes[d])
+                mode = norm_modes[d]
                 if mode == "min_max":
-                    lo = float(mins[d]) if d < len(mins) else float(mins[0])
-                    hi = float(maxs[d]) if d < len(maxs) else float(maxs[0])
+                    lo = float(action_norm_stats["min"][d])
+                    hi = float(action_norm_stats["max"][d])
                     actions[:, d] = np.clip(actions[:, d], -1, 1)
                     actions[:, d] = 0.5 * (actions[:, d] + 1) * (hi - lo) + lo
                 elif mode == "mean_std":
-                    mu = float(means[d]) if d < len(means) else 0.0
-                    sd = float(stds[d]) if d < len(stds) else 1.0
+                    mu = float(action_norm_stats["mean"][d])
+                    sd = float(action_norm_stats["std"][d])
                     actions[:, d] = actions[:, d] * sd + mu
                 elif mode == "binary":
-                    actions[:, d] = np.where(actions[:, d] < 0.5, 0, 1).astype(np.float32)
-                # else: leave as-is
+                    actions[:, d] = np.where(actions[:, d] < 0.5, 0, 1)
+                else:
+                    pass  # leave as-is
             return actions
 
-        # Legacy path (backward compatible)
-        mask = action_norm_stats.get(
-            "mask", np.ones_like(action_norm_stats["q01"], dtype=bool)
-        )
-        action_high, action_low = (
-            np.array(action_norm_stats["q99"]),
-            np.array(action_norm_stats["q01"]),
-        )
+        # ── Legacy path (backward compatible) ──
+        mask = action_norm_stats.get("mask", np.ones_like(action_norm_stats["q01"], dtype=bool))
+        action_high, action_low = np.array(action_norm_stats["q99"]), np.array(action_norm_stats["q01"])
         normalized_actions = np.clip(normalized_actions, -1, 1)
-        gripper_idx = int(action_norm_stats.get("gripper_idx", 6))
-        if 0 <= gripper_idx < normalized_actions.shape[1]:
-            normalized_actions[:, gripper_idx] = np.where(
-                normalized_actions[:, gripper_idx] < 0.5, 0, 1
-            )
+        gripper_idx = action_norm_stats.get("gripper_idx", 6)
+        normalized_actions[:, gripper_idx] = np.where(
+            normalized_actions[:, gripper_idx] < 0.5, 0, 1
+        )
         actions = np.where(
             mask,
             0.5 * (normalized_actions + 1) * (action_high - action_low) + action_low,
             normalized_actions,
         )
+
         return actions
 
     @staticmethod

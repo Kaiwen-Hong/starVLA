@@ -137,27 +137,27 @@ echo "Logging to: ${LOG_FILE}"
 #
 accelerate launch \
   --config_file starVLA/config/deepseeds/deepspeed_zero2.yaml \
-  --num_processes 8 \
+  --num_processes ${NUM_GPUS} \
   starVLA/training/train_starvla.py \
   --config_yaml ./examples/Robotwin/train_files/starvla_cotrain_robotwin.yaml \
-  --framework.name QwenPI \
-  --framework.qwenvl.base_vlm playground/Pretrained_models/Qwen2.5-VL-3B-Instruct-Action \
-  --framework.qwenvl.attn_implementation flash_attention_2 \
+  --framework.name QwenOFT \
+  --framework.qwenvl.base_vlm playground/Pretrained_models/Qwen3-VL-4B-Instruct-Action \
+  --framework.qwenvl.attn_implementation ${ATTN_IMPL} \
   --framework.action_model.action_dim 10 \
   --framework.action_model.state_dim 10 \
   --datasets.vla_data.data_root_dir playground/Datasets/FastUMI \
-  --datasets.vla_data.data_mix fastumi_pickandplace_real_0307 \
-  --datasets.vla_data.per_device_batch_size 8 \
+  --datasets.vla_data.data_mix ${DATA_MIX} \
+  --datasets.vla_data.per_device_batch_size ${PER_DEVICE_BATCH} \
   --datasets.vla_data.video_backend torchvision_av \
   --trainer.freeze_modules '' \
   --trainer.max_train_steps 100000 \
   --trainer.save_interval 10000 \
-  --trainer.logging_frequency 50 \
-  --trainer.eval_interval 200 \
-  --trainer.gradient_accumulation_steps 1 \
+  --trainer.logging_frequency 100 \
+  --trainer.eval_interval 2000 \
+  --trainer.gradient_accumulation_steps ${GRAD_ACCUM} \
   --trainer.is_resume true \
   --run_root_dir ./results/Checkpoints \
-  --run_id fastumi_pickandplace_qwenPI \
+  --run_id fastumi_pickandplace_qwenOFT \
   --wandb_project starVLA_FastUMI \
   --wandb_entity kaiwenh-17-uiuc \
   2>&1 | tee "${LOG_FILE}"

@@ -1,118 +1,118 @@
+"""FastUMI model-to-robot interface for inference / open-loop evaluation.
+
+Key differences from the default base_framework.unnormalize_actions():
+  - Per-dim normalization modes: min_max (pos), mean_std (rot6d), binary (gripper)
+  - Gripper is at index 9 (not 6)
+  - No blanket np.clip(-1,1) on mean_std dims (they are unbounded z-scores)
+
+The norm_modes list is loaded from dataset_statistics.json (if available)
+or falls back to FastUMIDataConfig.ACTION_NORM_MODES.
 """
-FastUMI eval utilities.
-
-Provides:
-- load_fastumi_action_norm_stats(checkpoint_dir)
-- unnormalize_fastumi_actions(normalized_actions, stats)
-- normalize_fastumi_state(state, stats)
-"""
-
-from __future__ import annotations
-
 import json
 from pathlib import Path
-from typing import Any
+from typing import Dict
 
 import numpy as np
 
-from starVLA.dataloader.gr00t_lerobot.data_config import FastUMIDataConfig
 
+def load_fastumi_action_norm_stats(
+    checkpoint_dir: str | Path,
+    tag: str = "new_embodiment",
+) -> Dict[str, np.ndarray]:
+    """Load action norm stats from a checkpoint's dataset_statistics.json.
 
-def _pick_single_tag(stats_dict: dict[str, Any]) -> str:
-    if len(stats_dict) != 1:
-        raise ValueError(
-            f"Expected exactly 1 tag in dataset_statistics.json, got {list(stats_dict.keys())}"
-        )
-    return next(iter(stats_dict.keys()))
-
-
-def load_fastumi_action_norm_stats(checkpoint_dir: str | Path) -> dict[str, Any]:
+    Returns a dict with keys: mean, std, min, max, q01, q99, mask, norm_modes.
     """
-    Load action normalization statistics from `dataset_statistics.json` inside a checkpoint dir.
-    Ensures `norm_modes` exists (fallback to FastUMIDataConfig.ACTION_NORM_MODES if missing).
-    """
-    checkpoint_dir = Path(checkpoint_dir)
-    stats_path = checkpoint_dir / "dataset_statistics.json"
+    ckpt_path = Path(checkpoint_dir)
+    stats_path = ckpt_path / "dataset_statistics.json"
     if not stats_path.exists():
-        raise FileNotFoundError(f"Missing dataset statistics: {stats_path}")
+        raise FileNotFoundError(f"dataset_statistics.json not found in {ckpt_path}")
 
-    with open(stats_path, "r", encoding="utf-8") as f:
+    with open(stats_path) as f:
         all_stats = json.load(f)
 
-    tag = _pick_single_tag(all_stats)
     action_stats = all_stats[tag]["action"]
 
-    if "norm_modes" not in action_stats:
-        action_stats = dict(action_stats)
-        action_stats["norm_modes"] = list(FastUMIDataConfig.ACTION_NORM_MODES)
+    # Convert lists to numpy arrays for the numeric fields
+    result = {}
+    for key in ["mean", "std", "min", "max", "q01", "q99"]:
+        if key in action_stats:
+            result[key] = np.array(action_stats[key], dtype=np.float64)
 
-    # For any legacy callers that still rely on a single gripper index.
-    # FastUMI action is 10D and gripper is the last dim.
-    action_stats = dict(action_stats)
-    action_stats.setdefault("gripper_idx", 9)
+    if "mask" in action_stats:
+        result["mask"] = np.array(action_stats["mask"], dtype=bool)
 
-    return action_stats
+    # norm_modes: use saved value if present, otherwise fall back to config
+    if "norm_modes" in action_stats:
+        result["norm_modes"] = action_stats["norm_modes"]
+    else:
+        from starVLA.dataloader.gr00t_lerobot.data_config import FastUMIDataConfig
+        result["norm_modes"] = FastUMIDataConfig.ACTION_NORM_MODES
+
+    return result
 
 
 def unnormalize_fastumi_actions(
-    normalized_actions: np.ndarray, action_stats: dict[str, Any]
+    normalized_actions: np.ndarray,
+    action_norm_stats: Dict[str, np.ndarray],
 ) -> np.ndarray:
-    """
-    Inverse normalization for FastUMI 10D actions using per-dim `norm_modes`.
-    """
-    x = np.asarray(normalized_actions, dtype=np.float32)
-    if x.ndim == 1:
-        x = x[None, :]
+    """Unnormalize FastUMI 10D actions using per-dim normalization modes.
 
-    modes = list(action_stats["norm_modes"])
-    mins = np.array(action_stats.get("min", action_stats.get("q01")), dtype=np.float32)
-    maxs = np.array(action_stats.get("max", action_stats.get("q99")), dtype=np.float32)
-    means = np.array(action_stats.get("mean"), dtype=np.float32)
-    stds = np.array(action_stats.get("std"), dtype=np.float32)
+    This is a convenience wrapper that delegates to the updated
+    base_framework.unnormalize_actions (which supports norm_modes),
+    but can also be used standalone.
 
-    out = x.copy()
-    for d, mode in enumerate(modes):
+    Args:
+        normalized_actions: shape (T, 10) — model output.
+        action_norm_stats: dict from load_fastumi_action_norm_stats().
+
+    Returns:
+        Raw actions, shape (T, 10).
+    """
+    norm_modes = action_norm_stats.get("norm_modes", None)
+    if norm_modes is None:
+        from starVLA.dataloader.gr00t_lerobot.data_config import FastUMIDataConfig
+        norm_modes = FastUMIDataConfig.ACTION_NORM_MODES
+
+    actions = normalized_actions.copy()
+    D = actions.shape[-1]
+
+    for d in range(D):
+        mode = norm_modes[d]
         if mode == "min_max":
-            xd = np.clip(x[:, d], -1, 1)
-            out[:, d] = 0.5 * (xd + 1.0) * (maxs[d] - mins[d]) + mins[d]
+            lo = float(action_norm_stats["min"][d])
+            hi = float(action_norm_stats["max"][d])
+            actions[:, d] = np.clip(actions[:, d], -1, 1)
+            actions[:, d] = 0.5 * (actions[:, d] + 1) * (hi - lo) + lo
         elif mode == "mean_std":
-            out[:, d] = x[:, d] * stds[d] + means[d]
+            mu = float(action_norm_stats["mean"][d])
+            sd = float(action_norm_stats["std"][d])
+            actions[:, d] = actions[:, d] * sd + mu
         elif mode == "binary":
-            out[:, d] = (x[:, d] >= 0.5).astype(np.float32)
-        else:
-            out[:, d] = x[:, d]
-    return out
+            actions[:, d] = np.where(actions[:, d] < 0.5, 0, 1)
+
+    return actions
 
 
-def normalize_fastumi_state(state: np.ndarray, state_stats: dict[str, Any]) -> np.ndarray:
+def normalize_fastumi_state(
+    state: np.ndarray,
+    state_norm_stats: Dict[str, np.ndarray],
+) -> np.ndarray:
+    """Normalize a raw 10D FastUMI state for model input.
+
+    State uses min_max for pos and rot6d, binary for gripper.
     """
-    Normalize FastUMI state with the same per-dim logic if norm_modes exists;
-    otherwise behaves like min_max on q01/q99.
-    """
-    x = np.asarray(state, dtype=np.float32)
-    if x.ndim == 1:
-        x = x[None, :]
+    lo = np.array(state_norm_stats["min"], dtype=np.float64)
+    hi = np.array(state_norm_stats["max"], dtype=np.float64)
 
-    if "norm_modes" in state_stats:
-        modes = list(state_stats["norm_modes"])
-        mins = np.array(state_stats.get("min", state_stats.get("q01")), dtype=np.float32)
-        maxs = np.array(state_stats.get("max", state_stats.get("q99")), dtype=np.float32)
-        means = np.array(state_stats.get("mean"), dtype=np.float32)
-        stds = np.array(state_stats.get("std"), dtype=np.float32)
-        out = x.copy()
-        for d, mode in enumerate(modes):
-            if mode == "min_max":
-                out[:, d] = 2.0 * (x[:, d] - mins[d]) / (maxs[d] - mins[d] + 1e-8) - 1.0
-                out[:, d] = np.clip(out[:, d], -1, 1)
-            elif mode == "mean_std":
-                out[:, d] = (x[:, d] - means[d]) / (stds[d] + 1e-8)
-            elif mode == "binary":
-                out[:, d] = (x[:, d] >= 0.5).astype(np.float32)
-            else:
-                out[:, d] = x[:, d]
-        return out
+    normalized = state.copy().astype(np.float64)
 
-    q01 = np.array(state_stats["q01"], dtype=np.float32)
-    q99 = np.array(state_stats["q99"], dtype=np.float32)
-    out = 2.0 * (x - q01) / (q99 - q01 + 1e-8) - 1.0
-    return np.clip(out, -1, 1)
+    # Dims 0:9 — min_max
+    rng = hi[:9] - lo[:9]
+    rng[rng == 0] = 1.0  # avoid division by zero
+    normalized[..., :9] = 2.0 * (normalized[..., :9] - lo[:9]) / rng - 1.0
+
+    # Dim 9 — binary (gripper)
+    normalized[..., 9] = (normalized[..., 9] > 0.5).astype(np.float64)
+
+    return normalized

@@ -10,18 +10,6 @@ Conventions:
 3. Put each training strategy in its own `trainer_*.py` file (avoid large if‑else chains).
 """
 
-# Ensure repo root is on sys.path (accelerate simple_launcher subprocess may lack it)
-import sys
-from pathlib import Path
-
-_repo_root = Path(__file__).resolve().parent.parent.parent
-if str(_repo_root) not in sys.path:
-    sys.path.insert(0, str(_repo_root))
-
-# Disable torchvision video deprecation warning
-import warnings
-warnings.filterwarnings("ignore", module="torchvision.io._video_deprecation_warning")
-
 # Standard Library
 import argparse
 import json
@@ -29,6 +17,8 @@ import os
 import re
 import sys
 import time
+import warnings
+from pathlib import Path
 from typing import Tuple
 
 # Disable torchvision video deprecation warning (noisy, not actionable)
@@ -256,18 +246,11 @@ class VLATrainer(TrainerUtils):
 
     def _log_metrics(self, metrics):
         """Record training metrics."""
-        is_log_step = self.completed_steps % self.config.trainer.logging_frequency == 0
-        has_eval_metrics = "mse_score" in metrics
-        if not is_log_step and not has_eval_metrics:
-            return
-        if not self.accelerator.is_main_process:
-            return
-
-        metrics["learning_rate"] = self.lr_scheduler.get_last_lr()[0]
-        if hasattr(self.vla_train_dataloader, "__len__") and len(self.vla_train_dataloader):
+        if self.completed_steps % self.config.trainer.logging_frequency == 0 and self.accelerator.is_main_process:
+            metrics["learning_rate"] = self.lr_scheduler.get_last_lr()[0]
             metrics["epoch"] = round(self.completed_steps / len(self.vla_train_dataloader), 2)
-        wandb.log(metrics, step=self.completed_steps)
-        logger.info(f"Step {self.completed_steps}, Loss: {metrics})")
+            wandb.log(metrics, step=self.completed_steps)
+            logger.info(f"Step {self.completed_steps}, Loss: {metrics})")
 
     def _create_data_iterators(self):
         """Create data iterators."""
@@ -413,8 +396,8 @@ def main(cfg) -> None:
     logger.info("✅ Configuration wrapped for access tracking")
 
     output_dir = setup_directories(cfg=cfg)
-    vla_train_dataloader = prepare_data(cfg=cfg, accelerator=accelerator, output_dir=output_dir)
     vla = build_framework(cfg)
+    vla_train_dataloader = prepare_data(cfg=cfg, accelerator=accelerator, output_dir=output_dir)
     optimizer, lr_scheduler = setup_optimizer_and_scheduler(model=vla, cfg=cfg)
 
     trainer = VLATrainer(
@@ -437,7 +420,6 @@ def main(cfg) -> None:
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("--no_deepspeed", action="store_true", help="Disable DeepSpeed (for accelerate_debug / 1-GPU)")
     parser.add_argument(
         "--config_yaml",
         type=str,

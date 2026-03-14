@@ -1070,7 +1070,7 @@ class FastUMIDataConfig:
                 near_constant_threshold=1e-3,
                 normalization_modes={
                     "action.eef_pos": "min_max",
-                    "action.eef_rot6d": "mean_std",
+                    "action.eef_rot6d": "min_max",
                     "action.gripper": "binary",
                 },
             ),
@@ -1097,3 +1097,4 @@ ROBOT_TYPE_CONFIG_MAP = {
 
     "custom_robot_config": SingleFrankaRobotiqDeltaEefDataConfig(),
 }
+
