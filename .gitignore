@@ -5,7 +5,7 @@ third_party/
 __pycache__/
 *.py[cod]
 *$py.class
-
+checkpoints/
 logs/
 
 # C extensions
