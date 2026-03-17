@@ -25,14 +25,13 @@ import subprocess
 import numpy as np
 import zarr
 from scipy.spatial.transform import Rotation as Rot
+from rtde_control import RTDEControlInterface
+from rtde_receive import RTDEReceiveInterface
+from rtde_io import RTDEIOInterface
 import modular_policy
 
 # Resolve fastumipro-collection root from the installed modular_policy package
 project_root = Path(modular_policy.__file__).parent.parent
-
-from modular_policy.real_world.real_ur5e_env import RealUR5eEnv
-from modular_policy.common.trans_utils import are_joints_close
-from modular_policy.common.precise_sleep import precise_wait
 
 # Load robot extrinsics (base pose in world frame)
 _extrinsics_dir = os.path.join(
@@ -386,7 +385,11 @@ class MovementFilter:
             obs_joints_6d = obs_joints[:, :6] if obs_joints.shape[1] > 6 else obs_joints
             joint_actions_6d = joint_actions[:, :6] if joint_actions.shape[1] > 6 else joint_actions
             
-            not_moving_mask = are_joints_close(obs_joints_6d, joint_actions_6d)
+            # Inline are_joints_close: normalize to [0,2π], check euclidean dist
+            norm1 = np.mod(obs_joints_6d, 2 * np.pi)
+            norm2 = np.mod(joint_actions_6d, 2 * np.pi)
+            distances = np.linalg.norm(norm1 - norm2, axis=1)
+            not_moving_mask = distances <= np.pi / 180
             moving_mask = ~not_moving_mask
         except KeyError as e:
             logger.warning(f"Could not filter joint movements: {e}")
@@ -424,147 +427,98 @@ HOME_POSE_WORLD = {
 }
 
 
+def _precise_wait(t_end: float, slack_time: float = 0.001):
+    """Hybrid sleep + spin wait for precise timing."""
+    t_wait = t_end - time.monotonic()
+    if t_wait > 0:
+        t_sleep = t_wait - slack_time
+        if t_sleep > 0:
+            time.sleep(t_sleep)
+        while time.monotonic() < t_end:
+            pass
+
+
 class RobotReplayer:
-    """Handles robot control and action execution."""
+    """Handles robot control and action execution via direct RTDE."""
 
-    def __init__(self, env_config: Dict):
-        self.env_config = env_config
+    def __init__(self, robot_ip: str, speed_slider: float, arm: str):
+        self.robot_ip = robot_ip
+        self.speed_slider = speed_slider
+        self.arm = arm
 
-    def _go_home(self, env, arm: str):
-        """Move robot to home pose before replay (world frame → base frame)."""
+    def _go_home(self, rtde_c: RTDEControlInterface, arm: str):
+        """Move robot to home pose before replay (world frame -> base frame)."""
         if arm not in HOME_POSE_WORLD:
             logger.warning(f"No home pose defined for arm '{arm}', skipping go-home.")
             return
         pose_world = HOME_POSE_WORLD[arm]
-        # Convert world frame to base frame (same as gohome_ee.py)
         T_bw = BASE_IN_WORLD[arm]
         pose_base = [
             pose_world[0] - T_bw[0, 3],
             pose_world[1] - T_bw[1, 3],
             pose_world[2] - T_bw[2, 3],
-        ] + pose_world[3:] + [0.0]  # rotation unchanged (R_bw=I) + gripper open (0=open)
+        ] + pose_world[3:]
         logger.info(f"Moving to home pose (world): {pose_world}")
-        logger.info(f"Home pose (base): {pose_base[:6]}")
-        home_action = np.array([pose_base], dtype=np.float64)  # (1, 7)
-        ts = np.array([time.time() + 2.0])
-        env.exec_actions(
-            joint_actions=np.zeros((1, 6)),
-            eef_actions=home_action,
-            timestamps=ts,
-            mode='eef',
-        )
-        time.sleep(3.0)
+        logger.info(f"Home pose (base): {pose_base}")
+        rtde_c.moveL(pose_base, 0.25, 0.5)
         logger.info("Reached home pose.")
 
     def replay_episode(self, action_data: ActionData, ctrl_mode: str,
                       frequency: int, batch_size: int):
-        """Execute action sequence on robot."""
+        """Execute action sequence on robot using direct RTDE."""
 
-        with RealUR5eEnv(**self.env_config) as env:
-            logger.info('Environment created, starting replay...')
+        logger.info(f"Connecting to robot at {self.robot_ip}...")
+        rtde_c = RTDEControlInterface(self.robot_ip)
+        rtde_r = RTDEReceiveInterface(self.robot_ip)
+        rtde_io = RTDEIOInterface(self.robot_ip)
 
+        rtde_io.setSpeedSlider(self.speed_slider)
+        logger.info(f"Speed slider set to {self.speed_slider}")
+
+        current_pose = rtde_r.getActualTCPPose()
+        logger.info(f"Current TCP pose: {np.round(current_pose, 4).tolist()}")
+
+        try:
             # Go to home pose first
-            self._go_home(env, self.env_config.get('single_arm_type', 'left'))
-            
-            # Generate timestamps
-            timestamps = time.time() + np.arange(len(action_data.actions)) / frequency + 2.0
-            start_step = 0
-            
-            logger.info(f"Replaying {len(action_data.actions)} actions at {frequency} Hz...")
+            self._go_home(rtde_c, self.arm)
+
+            actions = action_data.actions
+            dt = 1.0 / frequency
+            n_actions = len(actions)
+            logger.info(f"Replaying {n_actions} actions at {frequency} Hz ({ctrl_mode} mode)...")
             logger.info("Press Ctrl+C to stop replay")
-            
-            try:
-                while start_step < len(action_data.actions):
-                    end_step = min(start_step + batch_size, len(action_data.actions))
-                    
-                    # Extract batch
-                    action_batch = action_data.actions[start_step:end_step]
-                    timestamp_batch = timestamps[start_step:end_step]
-                    
-                    print(f'action_batch: {action_batch}, timestamp_batch: {timestamp_batch}')
-                    
-                    # Execute actions
-                    self._execute_action_batch(
-                        env, action_batch, action_data.gripper_actions,
-                        timestamp_batch, start_step, end_step, ctrl_mode
-                    )
-                    
-                    logger.info(f'Executed actions {start_step} to {end_step-1} / {len(action_data.actions)}')
-                    start_step = end_step
-                    
-                    # Wait for next batch
-                    precise_wait(time.monotonic() + 1.0)
-                
-                logger.info("Replay completed successfully!")
-                
-            except KeyboardInterrupt:
-                logger.info("Replay interrupted by user")
-            except Exception as e:
-                logger.error(f"Error during replay: {e}")
-                raise
-    
-    def _execute_action_batch(self, env, action_batch: np.ndarray,
-                             gripper_actions: Optional[np.ndarray],
-                             timestamp_batch: np.ndarray, start_step: int,
-                             end_step: int, ctrl_mode: str):
-        """Execute a batch of actions."""
-        
-        if ctrl_mode == 'joint':
-            joint_batch = self._prepare_joint_batch(
-                action_batch, gripper_actions, start_step, end_step)
-            
-            env.exec_actions(
-                joint_actions=joint_batch,
-                eef_actions=np.zeros((joint_batch.shape[0], 7)),
-                timestamps=timestamp_batch,
-                mode=ctrl_mode,
-            )
-        else:  # eef mode
-            eef_batch = self._prepare_eef_batch(
-                action_batch, gripper_actions, start_step, end_step)
-            
-            env.exec_actions(
-                joint_actions=np.zeros((eef_batch.shape[0], 6)),
-                eef_actions=eef_batch,
-                timestamps=timestamp_batch,
-                mode=ctrl_mode,
-            )
-    
-    def _prepare_joint_batch(self, action_batch: np.ndarray,
-                           gripper_actions: Optional[np.ndarray],
-                           start_step: int, end_step: int) -> np.ndarray:
-        """Prepare joint action batch with optional gripper."""
-        joint_batch = action_batch
-        
-        # Ensure 6D joints
-        if joint_batch.shape[1] > 6:
-            joint_batch = joint_batch[:, :6]
-        
-        # Add gripper if available
-        if gripper_actions is not None and self.env_config.get('use_gripper', True):
-            gripper_batch = gripper_actions[start_step:end_step]
-            joint_batch = np.concatenate([joint_batch, gripper_batch], axis=1)
-            if start_step == 0:
-                logger.info(f"Added gripper to joint actions - Final shape: {joint_batch.shape}")
-        
-        return joint_batch
-    
-    def _prepare_eef_batch(self, action_batch: np.ndarray,
-                          gripper_actions: Optional[np.ndarray],
-                          start_step: int, end_step: int) -> np.ndarray:
-        """Prepare EEF action batch with optional gripper."""
-        eef_batch = action_batch
-        
-        # Add gripper if available and not already included
-        if (gripper_actions is not None and 
-            self.env_config.get('use_gripper', True) and 
-            eef_batch.shape[1] < 7):
-            gripper_batch = gripper_actions[start_step:end_step]
-            eef_batch = np.concatenate([eef_batch, gripper_batch], axis=1)
-            if start_step == 0:
-                logger.info(f"Added gripper to EEF actions - Final shape: {eef_batch.shape}")
-        
-        return eef_batch
+
+            t_start = time.monotonic()
+
+            for i in range(n_actions):
+                if ctrl_mode == 'joint':
+                    pose = actions[i, :6].tolist()
+                    rtde_c.servoJ(pose, 0, 0, dt, 0.1, 300)
+                else:  # eef
+                    pose = actions[i, :6].tolist()
+                    rtde_c.servoL(pose, 0, 0, dt, 0.1, 300)
+
+                if i % 50 == 0:
+                    logger.info(f"Step {i}/{n_actions}")
+
+                _precise_wait(t_start + (i + 1) * dt)
+
+            if ctrl_mode == 'joint':
+                rtde_c.servoStop()
+            else:
+                rtde_c.servoStop()
+
+            logger.info("Replay completed successfully!")
+
+        except KeyboardInterrupt:
+            logger.info("Replay interrupted by user")
+            rtde_c.servoStop()
+        except Exception as e:
+            logger.error(f"Error during replay: {e}")
+            rtde_c.servoStop()
+            raise
+        finally:
+            rtde_c.stopScript()
 
 
 def get_episode_slice(episode_num: int, episode_ends: np.ndarray) -> slice:
@@ -579,18 +533,9 @@ def get_episode_slice(episode_num: int, episode_ends: np.ndarray) -> slice:
     return slice(episode_start, episode_end)
 
 
-def create_env_config(args) -> Dict:
-    """Create environment configuration from arguments."""
-    return {
-        'output_dir': '/tmp/ur5_replay',  # required by env, written to /tmp to avoid clutter
-        'ctrl_mode': args.mode,
-        'speed_slider_value': args.speed,
-        'single_arm_type': args.arm,
-        'use_gripper': not args.no_gripper,
-        'robot_left_ip': args.robot_left_ip,
-        'robot_right_ip': args.robot_right_ip,
-        'tactile_sensors': None
-    }
+def get_robot_ip(args) -> str:
+    """Get robot IP based on selected arm."""
+    return args.robot_left_ip if args.arm == 'left' else args.robot_right_ip
 
 
 def world_to_base_actions(action_data: ActionData, arm: str) -> ActionData:
@@ -634,8 +579,8 @@ def replay_episode_pipeline(args):
         action_data = world_to_base_actions(action_data, args.arm)
 
     # Create and run replayer
-    env_config = create_env_config(args)
-    replayer = RobotReplayer(env_config)
+    robot_ip = get_robot_ip(args)
+    replayer = RobotReplayer(robot_ip, args.speed, args.arm)
     replayer.replay_episode(action_data, args.mode, args.frequency, args.batch_size)
 
 
