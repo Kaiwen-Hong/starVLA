@@ -494,4 +494,41 @@ DATASET_NAMED_MIXTURES = {
         ("pickandplace_vla", 1.0, "fastumi"),
         # ("handover_all",   1.0, "fastumi"),
     ],
+
+    # ── Custom v0309 v30 EE: 4 variants, 16D end-effector space ──
+    "custom_v0309_v30_ee": [
+        ("place_container_plate_clean1_ee", 1.0, "robotwin_ee"),
+        ("place_container_plate_wp4_ee", 1.0, "robotwin_ee"),
+        ("place_object_stand_clean1_ee", 1.0, "robotwin_ee"),
+        ("place_object_stand_wp4_ee", 1.0, "robotwin_ee"),
+    ],
+
+    # ── Custom v0309 v31 EE: 3 variants (no place_object_stand wp4) ──
+    "custom_v0309_v31_ee": [
+        ("place_container_plate_clean1_ee", 1.0, "robotwin_ee"),
+        ("place_container_plate_wp4_ee", 1.0, "robotwin_ee"),
+        ("place_object_stand_clean1_ee", 1.0, "robotwin_ee"),
+    ],
+
+    # ── Custom v0309 v32 EE: 3 variants (wp5 instead of wp4 for container_plate) ──
+    "custom_v0309_v32_ee": [
+        ("place_container_plate_clean1_ee", 1.0, "robotwin_ee"),
+        ("place_container_plate_wp5_ee", 1.0, "robotwin_ee"),
+        ("place_object_stand_clean1_ee", 1.0, "robotwin_ee"),
+    ],
+
+    # ── Custom v0309 v33 EE: 4 variants, clean2 environment ──
+    "custom_v0309_v33_ee": [
+        ("place_container_plate_clean2_ee", 1.0, "robotwin_ee"),
+        ("place_container_plate_wp4_ee", 1.0, "robotwin_ee"),
+        ("place_object_stand_clean2_ee", 1.0, "robotwin_ee"),
+        ("place_object_stand_wp4_ee", 1.0, "robotwin_ee"),
+    ],
+
+    # ── Custom v0309 v34 EE: 3 variants, clean2 environment (no place_object_stand wp4) ──
+    "custom_v0309_v34_ee": [
+        ("place_container_plate_clean2_ee", 1.0, "robotwin_ee"),
+        ("place_container_plate_wp4_ee", 1.0, "robotwin_ee"),
+        ("place_object_stand_clean2_ee", 1.0, "robotwin_ee"),
+    ],
 }

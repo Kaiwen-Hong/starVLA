@@ -48,7 +48,8 @@ MODALITY_JSON = {
 
 
 def process_single_task(src, dst, task_name, task_idx, total_tasks,
-                        all_episodes, src_info, episodes_per_task, chunks_size):
+                        all_episodes, src_info, episodes_per_task, chunks_size,
+                        modality_json=None):
     """Process one task: read source parquets, remap metadata columns, write per-task dataset."""
     ep_start = task_idx * episodes_per_task
     ep_end = ep_start + episodes_per_task
@@ -151,14 +152,15 @@ def process_single_task(src, dst, task_name, task_idx, total_tasks,
             f.write(json.dumps(t) + "\n")
 
     # Write meta/modality.json
+    modality_to_write = modality_json if modality_json is not None else MODALITY_JSON
     with open(meta_dir / "modality.json", "w") as f:
-        json.dump(MODALITY_JSON, f, indent=4)
+        json.dump(modality_to_write, f, indent=4)
 
     return task_name, episodes_per_task, total_frames, len(local_task_list)
 
 
 def split_dataset(src: Path, dst: Path, task_names: list[str],
-                  episodes_per_task: int, workers: int):
+                  episodes_per_task: int, workers: int, modality_json=None):
     # Read source metadata
     with open(src / "meta" / "info.json") as f:
         src_info = json.load(f)
@@ -184,6 +186,7 @@ def split_dataset(src: Path, dst: Path, task_names: list[str],
             result = process_single_task(
                 src, dst, task_name, task_idx, total_tasks,
                 all_episodes, src_info, episodes_per_task, chunks_size,
+                modality_json,
             )
             name, n_eps, n_frames, n_tasks = result
             print(f"[{task_idx+1:2d}/{total_tasks}] {name}: {n_eps} episodes, {n_frames} frames, {n_tasks} unique tasks")
@@ -196,6 +199,7 @@ def split_dataset(src: Path, dst: Path, task_names: list[str],
                     process_single_task,
                     src, dst, task_name, task_idx, total_tasks,
                     all_episodes, src_info, episodes_per_task, chunks_size,
+                    modality_json,
                 )
                 futures[fut] = task_idx
 
@@ -215,10 +219,18 @@ def main():
     parser.add_argument("--episodes-per-task", type=int, default=100, help="Episodes per task variant")
     parser.add_argument("--workers", type=int, default=0,
                         help="Number of parallel workers (default: 0 = one per task, use 1 for sequential)")
+    parser.add_argument("--modality-file", type=Path, default=None,
+                        help="Path to a custom modality JSON file (default: use built-in 14D joint-space)")
     args = parser.parse_args()
 
+    modality_json = None
+    if args.modality_file is not None:
+        with open(args.modality_file) as f:
+            modality_json = json.load(f)
+        print(f"Using custom modality from: {args.modality_file}")
+
     workers = args.workers if args.workers > 0 else len(args.tasks)
-    split_dataset(args.src, args.dst, args.tasks, args.episodes_per_task, workers)
+    split_dataset(args.src, args.dst, args.tasks, args.episodes_per_task, workers, modality_json)
 
 
 if __name__ == "__main__":

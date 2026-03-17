@@ -414,8 +414,13 @@ def main(cfg) -> None:
 
     logger.info("... and that's all, folks!")
     if dist.is_initialized():
-        dist.barrier()
-        dist.destroy_process_group()
+        import torch.cuda
+        torch.cuda.empty_cache()
+        try:
+            dist.barrier()
+            dist.destroy_process_group()
+        except Exception as e:
+            logger.warning(f"Non-fatal error during process group shutdown: {e}")
 
 
 if __name__ == "__main__":

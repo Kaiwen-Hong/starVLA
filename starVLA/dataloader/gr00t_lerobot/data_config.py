@@ -1076,6 +1076,93 @@ class FastUMIDataConfig:
 ###########################################################################################
 
 
+class RobotwinEEDataConfig:
+    """RoboTwin dual-arm EE space: 16D (3 pos + 4 quat + 1 gripper per arm)."""
+    video_keys = [
+        "video.cam_high",
+        "video.cam_left_wrist",
+        "video.cam_right_wrist",
+    ]
+    state_keys = [
+        "state.left_pos",
+        "state.left_quat",
+        "state.left_gripper",
+        "state.right_pos",
+        "state.right_quat",
+        "state.right_gripper",
+    ]
+    action_keys = [
+        "action.left_pos",
+        "action.left_quat",
+        "action.left_gripper",
+        "action.right_pos",
+        "action.right_quat",
+        "action.right_gripper",
+    ]
+    language_keys = ["annotation.human.action.task_description"]
+    observation_indices = [0]
+    action_indices = list(range(16))
+
+    def modality_config(self):
+        video_modality = ModalityConfig(
+            delta_indices=self.observation_indices,
+            modality_keys=self.video_keys,
+        )
+        state_modality = ModalityConfig(
+            delta_indices=self.observation_indices,
+            modality_keys=self.state_keys,
+        )
+        action_modality = ModalityConfig(
+            delta_indices=self.action_indices,
+            modality_keys=self.action_keys,
+        )
+        language_modality = ModalityConfig(
+            delta_indices=self.observation_indices,
+            modality_keys=self.language_keys,
+        )
+        modality_configs = {
+            "video": video_modality,
+            "state": state_modality,
+            "action": action_modality,
+            "language": language_modality,
+        }
+        return modality_configs
+
+    def transform(self):
+        transforms = [
+            # state transforms
+            StateActionToTensor(apply_to=self.state_keys),
+            StateActionTransform(
+                apply_to=self.state_keys,
+                normalization_modes={
+                    "state.left_pos": "min_max",
+                    "state.left_quat": "min_max",
+                    "state.left_gripper": "binary",
+                    "state.right_pos": "min_max",
+                    "state.right_quat": "min_max",
+                    "state.right_gripper": "binary",
+                },
+            ),
+            # action transforms
+            StateActionToTensor(apply_to=self.action_keys),
+            StateActionTransform(
+                apply_to=self.action_keys,
+                normalization_modes={
+                    "action.left_pos": "min_max",
+                    "action.left_quat": "min_max",
+                    "action.left_gripper": "binary",
+                    "action.right_pos": "min_max",
+                    "action.right_quat": "min_max",
+                    "action.right_gripper": "binary",
+                },
+            ),
+        ]
+        return ComposedModalityTransform(transforms=transforms)
+
+
+###########################################################################################
+
+
 ROBOT_TYPE_CONFIG_MAP = {
     "libero_franka": Libero4in1DataConfig(),
     "oxe_droid": OxeDroidDataConfig(),
@@ -1089,6 +1176,7 @@ ROBOT_TYPE_CONFIG_MAP = {
     "fourier_gr1_arms_waist": FourierGr1ArmsWaistDataConfig(),
     
     "fastumi": FastUMIDataConfig(),
+    "robotwin_ee": RobotwinEEDataConfig(),
 
     "custom_robot_config": SingleFrankaRobotiqDeltaEefDataConfig(),
 }
