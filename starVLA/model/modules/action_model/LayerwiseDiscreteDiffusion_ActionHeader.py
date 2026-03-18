@@ -330,6 +330,120 @@ class LayerwiseDiscreteDiffusionActionHead(nn.Module):
 
         return self.binning.decode(cur_seqs)
 
+    @torch.no_grad()
+    def predict_action_realtime(
+        self,
+        vl_embs_list,
+        state=None,
+        prev_action_chunk: torch.Tensor | None = None,
+        inference_delay: int = 1,
+        choice_temperature: float = 0.1,
+        decode_temperature: float = 1.0,
+    ) -> torch.Tensor:
+        """
+        RTC-aware MaskGIT decode: prefix the first `inference_delay` timesteps
+        with the (still-being-executed) actions from the previous chunk so the
+        iterative unmasking only needs to fill the remaining positions.
+
+        Args:
+            prev_action_chunk: (B, T, action_dim) continuous actions from the
+                previous prediction.  If None or inference_delay <= 0, falls
+                back to standard predict_action.
+            inference_delay: number of leading timesteps to treat as known prefix.
+        """
+        if prev_action_chunk is None or inference_delay <= 0:
+            return self.predict_action(
+                vl_embs_list, state,
+                choice_temperature=choice_temperature,
+                decode_temperature=decode_temperature,
+            )
+
+        B = vl_embs_list[0].shape[0]
+        device = vl_embs_list[0].device
+        L = self.seq_len
+        deterministic_decode = decode_temperature == 0
+        deterministic_choice = choice_temperature == 0
+        inference_delay = min(inference_delay, self.action_horizon)
+
+        # Encode the prefix into bin indices
+        prefix_bins = self.binning.encode(prev_action_chunk)
+        prefix_mask = (
+            torch.arange(self.action_horizon, device=device)[None, :, None]
+            < inference_delay
+        ).expand(B, self.action_horizon, self.action_dim)
+
+        cur_seqs = torch.where(
+            prefix_mask,
+            prefix_bins,
+            torch.full_like(prefix_bins, self.mask_token_id),
+        )
+        unknown_init = torch.full(
+            (B,),
+            (self.action_horizon - inference_delay) * self.action_dim,
+            dtype=torch.long,
+            device=device,
+        )
+
+        state_feat = None
+        if state is not None and self.state_encoder is not None:
+            if state.dim() == 3:
+                state = state.squeeze(1)
+            state_feat = self.state_encoder(state).unsqueeze(1)
+
+        for step_idx in range(self.num_inference_steps):
+            logits = self._forward_logits(
+                vl_embs_list, cur_seqs, state_feat, device
+            )
+            safe_temp = max(decode_temperature, 1e-8)
+            sampled, selected_probs = self.binning.sample_indices_from_logits(
+                logits,
+                temperature=safe_temp,
+                deterministic=deterministic_decode,
+            )
+
+            unknown_map = cur_seqs == self.mask_token_id
+            # Force prefix positions to stay as encoded prefix
+            sampled = torch.where(prefix_mask, prefix_bins, sampled)
+            sampled = torch.where(unknown_map, sampled, cur_seqs)
+
+            ratio = (step_idx + 1.0) / self.num_inference_steps
+            mask_ratio = decode_mask_schedule(
+                torch.tensor(ratio, device=device), self.decode_schedule
+            )
+            mask_len = (unknown_init.float() * mask_ratio).long()
+            min_len = torch.full_like(mask_len, 1)
+            max_len = (unknown_init - 1).clamp(min=0)
+            mask_len = mask_len.clamp(min=min_len, max=max_len)
+            if step_idx == self.num_inference_steps - 1:
+                mask_len = torch.zeros_like(mask_len)
+
+            selected_probs = torch.where(
+                unknown_map,
+                selected_probs,
+                torch.full_like(selected_probs, float("inf")),
+            )
+
+            selected_flat = selected_probs.reshape(B, L)
+            if deterministic_choice:
+                action_mask_flat = mask_by_deterministic_lowest(
+                    selected_flat, mask_len
+                )
+            else:
+                temp = choice_temperature * (1.0 - ratio)
+                action_mask_flat = mask_by_random_topk(
+                    selected_flat, mask_len, temperature=temp
+                )
+            action_mask = action_mask_flat.reshape(
+                B, self.action_horizon, self.action_dim
+            )
+            cur_seqs = torch.where(
+                prefix_mask,
+                prefix_bins,
+                torch.where(action_mask, self.mask_token_id, sampled),
+            )
+
+        return self.binning.decode(cur_seqs)
+
 
 def get_action_model(config=None, action_norm_stats=None):
     return LayerwiseDiscreteDiffusionActionHead(
