@@ -1,21 +1,27 @@
 #!/usr/bin/env python3
 """
-Step 6: Closed-loop control with real robot.
+Step 6: Closed-loop control with real robot (Discrete Diffusion).
 
 Synchronous receding-horizon loop:
     1. Read current EE pose from robot (RTDE)
     2. Grab camera frame
-    3. Run model inference → predicted action chunk (T, 10)
+    3. Run discrete diffusion inference -> predicted action chunk (T, 10)
     4. Denormalize
-    5. Execute first N actions via servoL (default N=2)
+    5. Execute first N actions via servoL (default N=8)
     6. Repeat from step 1
+
+Key differences from QwenPI version:
+  - 8-step MaskGIT decode (vs 4-step flow matching) -> potentially slower inference
+  - Supports temperature tuning for action quality
+  - Actions quantized to 256 bins (~0.0078 resolution in normalized space)
 
 The robot WILL move. Use Ctrl+C to stop at any time.
 
 Usage:
-    python ur5/step6-closed-loop.py
-    python ur5/step6-closed-loop.py --n_actions 2 --arm left
-    python ur5/step6-closed-loop.py --no-go-home --max-steps 50
+    python ur5-dd/step6-closed-loop.py
+    python ur5-dd/step6-closed-loop.py --n_actions 2 --arm left
+    python ur5-dd/step6-closed-loop.py --use_simple_max  # faster, deterministic
+    python ur5-dd/step6-closed-loop.py --decode_temperature 0.5
 """
 
 import sys
@@ -31,13 +37,14 @@ from PIL import Image
 # ── Repo setup ──────────────────────────────────────────────────────
 REPO_DIR = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(REPO_DIR))
+sys.path.insert(0, str(REPO_DIR / "ur5"))  # for robotiq_gripper
 os.chdir(REPO_DIR)
 
 from starVLA.model.framework.share_tools import read_mode_config, dict_to_namespace
 from starVLA.model.framework import build_framework
 from starVLA.model.framework.base_framework import baseframework
 
-# ── Import camera from step2 ────────────────────────────────────────
+# ── Import camera from ur5/step2 ───────────────────────────────────
 import importlib
 _step2 = importlib.import_module("ur5.step2-replace-with-real-camera")
 RealCamera = _step2.RealCamera
@@ -64,7 +71,7 @@ HOME_POSES_WORLD = {
 }
 
 INSTRUCTION = "pick up the building block"
-CONTROL_HZ = 20  # must match training data FPS
+CONTROL_HZ = 20
 
 
 # ═══════════════════════════════════════════════════════════════════
@@ -72,21 +79,18 @@ CONTROL_HZ = 20  # must match training data FPS
 # ═══════════════════════════════════════════════════════════════════
 
 def base_to_world(pose_base, T_bw):
-    """[x,y,z,rx,ry,rz] base → world. R_bw=I, translation only."""
     p = list(pose_base)
     p[0] += T_bw[0, 3]; p[1] += T_bw[1, 3]; p[2] += T_bw[2, 3]
     return p
 
 
 def world_to_base(pose_world, T_bw):
-    """[x,y,z,rx,ry,rz] world → base. R_bw=I, translation only."""
     p = list(pose_world)
     p[0] -= T_bw[0, 3]; p[1] -= T_bw[1, 3]; p[2] -= T_bw[2, 3]
     return p
 
 
 def rot6d_to_mat(d6: np.ndarray) -> np.ndarray:
-    """rot6d (6,) → rotation matrix (3,3) via Gram-Schmidt."""
     a1 = d6[:3].astype(np.float64)
     a2 = d6[3:].astype(np.float64)
     b1 = a1 / np.linalg.norm(a1)
@@ -97,7 +101,6 @@ def rot6d_to_mat(d6: np.ndarray) -> np.ndarray:
 
 
 def rot6d_to_axisangle(d6: np.ndarray) -> np.ndarray:
-    """rot6d (6,) → axis-angle (3,)."""
     R = rot6d_to_mat(d6)
     return Rotation.from_matrix(R).as_rotvec().astype(np.float32)
 
@@ -108,14 +111,12 @@ def axisangle_to_rot6d(rx, ry, rz):
 
 
 def ee_pose_to_state10d(pose_6d, gripper: float) -> np.ndarray:
-    """[x,y,z,rx,ry,rz] + gripper → 10D [xyz, rot6d(6), gripper]."""
     x, y, z, rx, ry, rz = pose_6d[:6]
     rot6d = axisangle_to_rot6d(rx, ry, rz)
     return np.array([x, y, z, *rot6d, gripper], dtype=np.float32)
 
 
 def action_10d_to_delta7d(action_10d: np.ndarray) -> np.ndarray:
-    """Single 10D action → 7D delta [dx, dy, dz, drx, dry, drz, gripper]."""
     delta = np.zeros(7, dtype=np.float32)
     delta[:3] = action_10d[:3]
     delta[3:6] = rot6d_to_axisangle(action_10d[3:9])
@@ -124,7 +125,6 @@ def action_10d_to_delta7d(action_10d: np.ndarray) -> np.ndarray:
 
 
 def _precise_wait(t_end: float, slack_time: float = 0.001):
-    """Hybrid sleep + spin wait for precise timing."""
     t_wait = t_end - time.monotonic()
     if t_wait > 0:
         t_sleep = t_wait - slack_time
@@ -165,7 +165,9 @@ def load_model(checkpoint_path: str):
     model.load_state_dict(state_dict, strict=True)
 
     model = model.to("cuda").eval()
-    print(f"Model loaded in {time.time() - t0:.1f}s")
+    print(f"Model loaded in {time.time() - t0:.1f}s ({config.framework.name})")
+    print(f"  num_bins: {getattr(config.framework.action_model, 'num_bins', 'N/A')}")
+    print(f"  num_inference_steps: {getattr(config.framework.action_model, 'num_inference_steps', 'N/A')}")
     return model
 
 
@@ -182,10 +184,9 @@ def build_example(image: Image.Image, instruction: str,
 # ═══════════════════════════════════════════════════════════════════
 
 def go_home(rtde_c, rtde_r, arm, T_bw, robot_ip):
-    """Move to home pose and open gripper."""
     home = HOME_POSES_WORLD[arm]
     ee_pose = home[:6]
-    gripper_value = home[6]  # 1=open in gohome convention
+    gripper_value = home[6]
 
     home_base = world_to_base(ee_pose, T_bw)
     target_joints = rtde_c.getInverseKinematics(home_base)
@@ -196,15 +197,14 @@ def go_home(rtde_c, rtde_r, arm, T_bw, robot_ip):
     current_world = base_to_world(current_base, T_bw)
     print(f"Reached: {[round(x, 4) for x in current_world]}")
 
-    # Open gripper
     from robotiq_gripper import RobotiqGripper
     gripper = RobotiqGripper()
     gripper.connect(hostname=robot_ip, port=63352)
-    pos = int((1.0 - gripper_value) * 255)  # 1=open → pos=0
+    pos = int((1.0 - gripper_value) * 255)
     gripper.move(pos, 255, 150)
     gripper.disconnect()
     print("Gripper opened.")
-    return gripper_value  # return in gohome convention (1=open)
+    return gripper_value
 
 
 # ═══════════════════════════════════════════════════════════════════
@@ -212,22 +212,30 @@ def go_home(rtde_c, rtde_r, arm, T_bw, robot_ip):
 # ═══════════════════════════════════════════════════════════════════
 
 def main():
-    parser = argparse.ArgumentParser(description="Closed-loop control with UR5")
+    parser = argparse.ArgumentParser(
+        description="Closed-loop control with UR5 (Discrete Diffusion)")
     parser.add_argument(
         "--checkpoint", type=str,
         default="checkpoints/DiscreteRTC/"
-                "fastumi_pickandplace_discrete_diffusion_real_0314_no_state/"
-                "checkpoints/steps_20000_pytorch_model.pt",
+                "fastumi_pickandplace_discrete_diffusion_real_0314_no_state_fixgripper/"
+                "checkpoints/steps_15000_pytorch_model.pt",
     )
     parser.add_argument("--arm", choices=["left", "right"], default="left")
     parser.add_argument("--camera_dev", type=int, default=0)
     parser.add_argument("--n_actions", type=int, default=8,
-                        help="Number of actions  to execute per inference (default: 2)")
+                        help="Number of actions to execute per inference (default: 8)")
     parser.add_argument("--max_steps", type=int, default=0,
                         help="Max inference steps (0=unlimited, Ctrl+C to stop)")
     parser.add_argument("--include_state", action="store_true", default=False)
     parser.add_argument("--no_go_home", action="store_true", default=False)
     parser.add_argument("--instruction", type=str, default=INSTRUCTION)
+    # Discrete diffusion specific
+    parser.add_argument("--decode_temperature", type=float, default=0.1,
+                        help="Temperature for MaskGIT decode (default: 0.1)")
+    parser.add_argument("--choice_temperature", type=float, default=0.1,
+                        help="Temperature for token choice (default: 0.1)")
+    parser.add_argument("--use_simple_max", action="store_true", default=False,
+                        help="Use argmax (faster, deterministic, skips iterative decode)")
     args = parser.parse_args()
 
     robot_ip = ROBOT_IPS[args.arm]
@@ -237,7 +245,6 @@ def main():
     # ── Load model ───────────────────────────────────────────────────
     model = load_model(args.checkpoint)
 
-    # Get denormalization stats
     norm_stats = model.norm_stats
     dataset_key = list(norm_stats.keys())[0]
     action_stats = norm_stats[dataset_key]["action"]
@@ -257,8 +264,7 @@ def main():
     print("Connecting to gripper...")
     gripper_hw = RobotiqGripper()
     gripper_hw.connect(hostname=robot_ip, port=63352)
-    # Model convention: 0=open, 1=closed
-    current_gripper = 0.0  # assume open after go-home
+    current_gripper = 0.0
 
     # ── Open camera ──────────────────────────────────────────────────
     print(f"Opening camera /dev/video{args.camera_dev}...")
@@ -272,17 +278,20 @@ def main():
     # ── Go home ──────────────────────────────────────────────────────
     if not args.no_go_home:
         go_home(rtde_c, rtde_r, args.arm, T_bw, robot_ip)
-        current_gripper = 0.0  # open after go-home (model convention)
+        current_gripper = 0.0
 
     # ── Print config ─────────────────────────────────────────────────
     print(f"\n{'=' * 60}")
-    print(f"  Closed-loop control")
-    print(f"  Arm:             {args.arm}")
-    print(f"  Instruction:     {args.instruction}")
-    print(f"  Actions/step:    {args.n_actions}")
-    print(f"  Control freq:    {CONTROL_HZ} Hz (dt={dt*1000:.0f}ms)")
-    print(f"  Max steps:       {'unlimited' if args.max_steps == 0 else args.max_steps}")
-    print(f"  Include state:   {args.include_state}")
+    print(f"  Closed-loop control (Discrete Diffusion)")
+    print(f"  Arm:                {args.arm}")
+    print(f"  Instruction:        {args.instruction}")
+    print(f"  Actions/step:       {args.n_actions}")
+    print(f"  Control freq:       {CONTROL_HZ} Hz (dt={dt*1000:.0f}ms)")
+    print(f"  Max steps:          {'unlimited' if args.max_steps == 0 else args.max_steps}")
+    print(f"  Include state:      {args.include_state}")
+    print(f"  decode_temperature: {args.decode_temperature}")
+    print(f"  choice_temperature: {args.choice_temperature}")
+    print(f"  use_simple_max:     {args.use_simple_max}")
     print(f"{'=' * 60}")
 
     input("\n>>> Press Enter to START (Ctrl+C to abort) <<<")
@@ -304,12 +313,17 @@ def main():
                 print("[WARN] Camera frame dropped, retrying...")
                 continue
 
-            # 3. Inference
+            # 3. Inference (discrete diffusion)
             state_for_model = current_state_10d if args.include_state else None
             example = build_example(pil_img, args.instruction, state_10d=state_for_model)
 
             t_infer = time.monotonic()
-            output = model.predict_action(examples=[example])
+            output = model.predict_action(
+                examples=[example],
+                decode_temperature=args.decode_temperature,
+                choice_temperature=args.choice_temperature,
+                use_simple_max=args.use_simple_max,
+            )
             infer_ms = (time.monotonic() - t_infer) * 1000
 
             pred_normalized = output["normalized_actions"][0].astype(np.float32)
@@ -317,35 +331,31 @@ def main():
             # 4. Denormalize
             pred_actions_10d = baseframework.unnormalize_actions(pred_normalized, action_stats)
 
-            # 5. Execute first N actions (delta in world frame → accumulate)
+            # 5. Execute first N actions
             n_exec = min(args.n_actions, len(pred_actions_10d))
-            current_pos = np.array(pose_world, dtype=np.float64)  # [x,y,z,rx,ry,rz]
+            current_pos = np.array(pose_world, dtype=np.float64)
 
             t_exec_start = time.monotonic()
 
             for i in range(n_exec):
-                # Convert 10D delta to 7D [dx,dy,dz,drx,dry,drz,gripper]
                 delta = action_10d_to_delta7d(pred_actions_10d[i])
 
-                # Accumulate: target = current + delta
                 target_world = current_pos + delta[:6]
                 target_base = world_to_base(target_world.tolist(), T_bw)
 
-                # Send to robot
                 rtde_c.servoL(target_base, 0, 0, dt, 0.1, 300)
 
-                # Handle gripper (only on state change)
+                # Handle gripper
                 new_gripper = float(delta[6])
                 if (new_gripper > 0.5) != (current_gripper > 0.5):
                     grip_pos = int(new_gripper * 255)
                     label = "CLOSE" if new_gripper > 0.5 else "OPEN"
-                    print(f"  Gripper → {label} (pos={grip_pos})")
+                    print(f"  Gripper -> {label} (pos={grip_pos})")
                     gripper_hw.move(grip_pos, 255, 150)
                     current_gripper = new_gripper
 
                 current_pos = target_world
 
-                # Precise timing for 20Hz
                 _precise_wait(t_exec_start + (i + 1) * dt)
 
             rtde_c.servoStop()
@@ -353,7 +363,6 @@ def main():
             exec_ms = (time.monotonic() - t_exec_start) * 1000
             total_ms = (time.monotonic() - loop_t0) * 1000
 
-            # Log
             pos = pose_world[:3]
             print(f"[step {step:4d}]  infer={infer_ms:5.0f}ms  exec={exec_ms:5.0f}ms  "
                   f"total={total_ms:5.0f}ms  "

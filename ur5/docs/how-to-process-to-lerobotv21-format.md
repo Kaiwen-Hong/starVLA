@@ -103,12 +103,22 @@ def process_trajectory_10d(traj):
         rot6d = euler_to_rot6d(roll_rad, pitch_rad, yaw_rad)  # (6,)
         processed[i, 3:9] = rot6d
 
-        # [9] 夹爪，翻转语义: 1.0 - gripper (原始0=闭→转换后1=闭)
-        g = traj['gripper'][i]
-        processed[i, 9] = 0.0 if np.isnan(g) else 1.0 - g
+        # [9] 夹爪，显式二值化 (阈值 0.9 on clamp_open)
+        # clamp_open: ~1.0=张开, ~0.475=夹住物体
+        # 必须输出干净的 0/1，否则下游 binary normalization (threshold=0.5) 会失效
+        g = traj['gripper'][i]  # clamp_open
+        if np.isnan(g) or g >= 0.9:
+            processed[i, 9] = 0.0  # open
+        else:
+            processed[i, 9] = 1.0  # closed
 
     return processed  # (N, 10) float32
 ```
+
+> **重要修复 (2026-03):** 旧版使用 `1.0 - g` 产生连续值 (0~0.525)，
+> 导致训练时 binary normalization (`(x > 0.5).float()`) 几乎将所有 "闭合" 帧
+> 标为 0，模型学不到夹爪闭合信号。现改为显式二值化，阈值 0.9 on `clamp_open`，
+> 产出干净 0/1。处理后数据集中 closed/open 约 46%/54%，分布均衡。
 
 ### `euler_to_rot6d` 内部调用链
 
