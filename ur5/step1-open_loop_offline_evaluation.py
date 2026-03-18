@@ -235,13 +235,13 @@ def main():
     parser = argparse.ArgumentParser(description="Open-loop eval for FastUMI QwenPI policy")
     parser.add_argument(
         "--checkpoint", type=str,
-        default="checkpoints/DiscreteRTC/fastumi_pickandplace_qwenPI/checkpoints/steps_15000_pytorch_model.pt",
+        default="checkpoints/DiscreteRTC/fastumi_pickandplace_discrete_diffusion_real_0314_no_state/checkpoints/steps_20000_pytorch_model.pt",
         help="Path to checkpoint .pt file",
     )
     parser.add_argument("--num_samples", type=int, default=200,
                         help="Number of dataset samples to evaluate on (0 = all)")
-    parser.add_argument("--include_state", action="store_true", default=True,
-                        help="Include state in evaluation (default: True, matching training)")
+    parser.add_argument("--include_state", action="store_true", default=False,
+                        help="Include state in evaluation (default: False for no_state model)")
     parser.add_argument("--output", type=str, default=None,
                         help="Path to save results JSON (default: auto in checkpoint dir)")
     args = parser.parse_args()

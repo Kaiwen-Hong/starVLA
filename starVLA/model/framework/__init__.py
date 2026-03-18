@@ -30,11 +30,7 @@ if pkg_path is not None:
         try:
             importlib.import_module(f"{__name__}.{module_name}")
         except Exception as e:
-<<<<<<< Updated upstream
             logger.warning(f"Skipping framework module {module_name}: {e}")
-=======
-            print(f"[framework/__init__] Warning: Failed to import {module_name}: {e}")
->>>>>>> Stashed changes
         
 def build_framework(cfg):
     """

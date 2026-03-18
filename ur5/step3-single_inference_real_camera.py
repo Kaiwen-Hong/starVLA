@@ -1,16 +1,19 @@
 #!/usr/bin/env python3
 """
-Step 3: Single-shot inference with real camera + fixed state.
+Step 3: Single-shot inference with real camera.
 
 Loads the QwenPI model, grabs one frame from the real camera,
-combines it with a hardcoded UR5 EE pose (axis-angle → 10D),
 and runs predict_action once. Robot does NOT move.
+
+By default uses the no_state model (image + language only).
+Pass --include_state to also feed the EE pose as 10D state.
 
 Usage:
     python ur5/step3-single_inference_real_camera.py
+    python ur5/step3-single_inference_real_camera.py --include_state
     python ur5/step3-single_inference_real_camera.py --checkpoint <path>
 
-State conversion (UR5 → model 10D):
+State conversion (UR5 → model 10D, only when --include_state):
     UR5 RTDE:  [x, y, z, rx, ry, rz]  (axis-angle, meters/radians)
         ↓ scipy Rotation.from_rotvec → .as_matrix()
     R (3x3)
@@ -108,20 +111,23 @@ def load_model(checkpoint_path: str):
     return model
 
 
-def build_example(image: Image.Image, state_10d: np.ndarray, instruction: str) -> dict:
+def build_example(image: Image.Image, instruction: str,
+                  state_10d: np.ndarray = None) -> dict:
     """
     Build a single example dict matching what predict_action expects.
 
     Format (same as dataset __getitem__ output):
         image: List[PIL.Image]   — camera views
         lang:  str               — task instruction
-        state: np.ndarray (1, 10) — current EE state
+        state: np.ndarray (1, 10) — current EE state (optional, omit for no_state model)
     """
-    return {
+    example = {
         "image": [image],               # single camera view
         "lang": instruction,
-        "state": state_10d.reshape(1, -1),  # (1, 10)
     }
+    if state_10d is not None:
+        example["state"] = state_10d.reshape(1, -1)  # (1, 10)
+    return example
 
 
 DIM_LABELS = [
@@ -211,22 +217,32 @@ def main():
     parser = argparse.ArgumentParser(description="Single-shot inference with real camera")
     parser.add_argument(
         "--checkpoint", type=str,
-        default="checkpoints/DiscreteRTC/fastumi_pickandplace_qwenPI/checkpoints/steps_15000_pytorch_model.pt",
+        default="checkpoints/DiscreteRTC/fastumi_pickandplace_discrete_diffusion_real_0314_no_state/checkpoints/steps_20000_pytorch_model.pt",
     )
     parser.add_argument("--camera_dev", type=int, default=0)
+    parser.add_argument("--include_state", action="store_true", default=False,
+                        help="Include EE state in inference (default: False for no_state model)")
     args = parser.parse_args()
 
     # 1. Load model
     model = load_model(args.checkpoint)
 
-    # 2. Convert fixed EE pose to 10D state
-    state_10d = ee_pose_to_state10d(FIXED_EE_POSE, FIXED_GRIPPER)
-    print(f"\nState 10D: {state_10d}")
+    # 2. Convert fixed EE pose to 10D state (only when --include_state)
+    state_10d = None
+    if args.include_state:
+        state_10d = ee_pose_to_state10d(FIXED_EE_POSE, FIXED_GRIPPER)
+        print(f"\nState 10D: {state_10d}")
+    else:
+        print("\nState: not included (no_state model)")
     print(f"Instruction: {INSTRUCTION}")
 
-    # 3. Grab one frame from real camera
+    # 3. Grab one frame from real camera (warm up for auto-exposure/white-balance)
     print(f"\nOpening camera /dev/video{args.camera_dev}...")
     cam = RealCamera(dev=args.camera_dev)
+    print("Warming up camera (2s)...")
+    t_warm = time.monotonic() + 2.0
+    while time.monotonic() < t_warm:
+        cam.grab_rgb()  # discard frames while auto-exposure stabilizes
     pil_img = cam.grab_pil()
     cam.close()
     if pil_img is None:
@@ -235,7 +251,7 @@ def main():
     print(f"Captured image: {pil_img.size}")
 
     # 4. Build example and run inference
-    example = build_example(pil_img, state_10d, INSTRUCTION)
+    example = build_example(pil_img, INSTRUCTION, state_10d=state_10d)
     batch = [example]
 
     print("\nRunning predict_action...")
