@@ -10,6 +10,7 @@ Based on step8 (direct servoL) but with two improvements:
 Usage:
     python ur5/step9-dd-closed-loop-smooth.py
     python ur5/step9-dd-closed-loop-smooth.py --n_actions 14 --arm left
+    python ur5/step9-dd-closed-loop-smooth.py --n_actions 8 --arm left 
 """
 
 import sys

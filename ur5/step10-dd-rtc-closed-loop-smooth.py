@@ -11,7 +11,7 @@ Combines step7 (RTC) and step9 (smooth motion):
 Usage:
     python ur5/step10-dd-rtc-closed-loop-smooth.py
     python ur5/step10-dd-rtc-closed-loop-smooth.py --n_actions 14 --arm left
-    python ur5/step10-dd-rtc-closed-loop-smooth.py --n_actions 8 --inference_delay 8 --arm left
+    python ur5/step10-dd-rtc-closed-loop-smooth.py --n_actions 8 --inference_delay 8 --arm left --no_save_rollout 
 """
 
 import sys
