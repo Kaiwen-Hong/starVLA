@@ -322,30 +322,34 @@ class AsyncInference:
     Runs model inference in a background thread so that execution and
     inference can overlap (real-time chunking).
 
-    Measures inference time with torch.cuda.synchronize() for accuracy.
+    Records CUDA events for precise GPU timing without blocking the thread.
+    Timing is resolved lazily in wait() after the thread signals completion.
     """
 
     def __init__(self):
         self._thread = None
         self._result = None
         self._error = None
-        self._infer_ms = 0.0
+        self._start_event = None
+        self._end_event = None
         self._done = threading.Event()
 
     def start(self, model, example, prev_normalized, inference_delay, kwargs):
         """Launch inference in a background thread."""
+        import torch
         self._result = None
         self._error = None
-        self._infer_ms = 0.0
+        # Create CUDA events on the main thread (same CUDA context)
+        self._start_event = torch.cuda.Event(enable_timing=True)
+        self._end_event = torch.cuda.Event(enable_timing=True)
         self._done.clear()
 
-        def _run():
-            import torch
-            try:
-                start_event = torch.cuda.Event(enable_timing=True)
-                end_event = torch.cuda.Event(enable_timing=True)
+        start_evt = self._start_event
+        end_evt = self._end_event
 
-                start_event.record()
+        def _run():
+            try:
+                start_evt.record()
 
                 if prev_normalized is not None and inference_delay > 0:
                     out = model.predict_action_realtime(
@@ -360,9 +364,8 @@ class AsyncInference:
                         **kwargs,
                     )
 
-                end_event.record()
-                torch.cuda.synchronize()
-                self._infer_ms = start_event.elapsed_time(end_event)
+                end_evt.record()
+                # NO torch.cuda.synchronize() here — don't block the thread
                 self._result = out
             except Exception as e:
                 self._error = e
@@ -381,8 +384,16 @@ class AsyncInference:
 
     @property
     def infer_ms(self):
-        """Precise inference time (CUDA-synced), available after wait()."""
-        return self._infer_ms
+        """Precise inference time (CUDA-event based). Call after wait().
+
+        Calls torch.cuda.synchronize() to ensure the end event is resolved,
+        then reads elapsed time from the GPU clock.
+        """
+        import torch
+        if self._start_event is None or self._end_event is None:
+            return 0.0
+        self._end_event.synchronize()  # only sync the end event, not all CUDA work
+        return self._start_event.elapsed_time(self._end_event)
 
     @property
     def is_done(self):
