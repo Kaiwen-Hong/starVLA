@@ -1,0 +1,29 @@
+{
+  "checkpoint": "checkpoints/DiscreteRTC/fastumi_pickandplace_discrete_diffusion_real_0314_no_state_fixgripper/checkpoints/steps_15000_pytorch_model.pt",
+  "arm": "left",
+  "instruction": "pick up the building block",
+  "n_actions": 14,
+  "inference_delay": 14,
+  "max_steps": 0,
+  "include_state": false,
+  "control_hz": 20,
+  "servo_hz": 100,
+  "interp_mult": 5,
+  "decode_temperature": 0.0,
+  "choice_temperature": 0.1,
+  "use_simple_max": false,
+  "dataset_key": "new_embodiment",
+  "norm_modes": [
+    "min_max",
+    "min_max",
+    "min_max",
+    "none",
+    "none",
+    "none",
+    "none",
+    "none",
+    "none",
+    "binary"
+  ],
+  "method": "discrete_rtc_smooth"
+}

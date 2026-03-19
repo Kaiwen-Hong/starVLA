@@ -19,6 +19,7 @@ import time
 import json
 import argparse
 import threading
+from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 
 import numpy as np
@@ -480,6 +481,9 @@ def main():
         with open(rollout_dir / "config.json", "w") as f:
             json.dump(run_config, f, indent=2)
 
+    # Single-worker pool for non-blocking viz saves
+    viz_executor = ThreadPoolExecutor(max_workers=1)
+
     input("\n>>> Press Enter to START (Ctrl+C to abort) <<<")
 
     # ── Inference kwargs (shared) ────────────────────────────────────
@@ -622,18 +626,15 @@ def main():
 
             # ── Save rollout step ────────────────────────────────────
             if args.save_rollout and rollout_dir is not None:
-                img_path = rollout_dir / "images" / f"step_{step:04d}.jpg"
-                pil_img.save(str(img_path), quality=90)
-
                 deltas_7d_all = actions_10d_to_7d(current_actions_10d)
                 world_poses_all = accumulate_deltas(pose_world, deltas_7d_all)
 
-                viz_path = rollout_dir / "images" / f"step_{step:04d}_viz.png"
-                visualize_step(
-                    world_poses_all, pil_img, pose_world,
-                    n_exec=n_exec, step_idx=step,
-                    save_path=str(viz_path),
-                    instruction=args.instruction,
+                # Offload viz to background thread (non-blocking)
+                viz_path = str(rollout_dir / "images" / f"step_{step:04d}_viz.png")
+                viz_executor.submit(
+                    visualize_step,
+                    world_poses_all.copy(), pil_img.copy(), list(pose_world),
+                    n_exec, step, viz_path, args.instruction,
                 )
 
                 step_data = {
@@ -653,7 +654,6 @@ def main():
                     "exec_ms": round(exec_ms, 1),
                     "infer_hidden_ms": round(infer_hidden, 1),
                     "total_ms": round(total_ms, 1),
-                    "image_file": f"images/step_{step:04d}.jpg",
                     "viz_file": f"images/step_{step:04d}_viz.png",
                 }
                 rollout_log.append(step_data)
@@ -675,14 +675,17 @@ def main():
         except Exception: pass
         cam.close()
 
-        # ── Save rollout log ─────────────────────────────────────────
+        # ── Wait for pending viz saves, then save rollout log ────────
+        print("Waiting for pending viz saves...")
+        viz_executor.shutdown(wait=True)
+
         if args.save_rollout and rollout_dir is not None and rollout_log:
             rollout_path = rollout_dir / "rollout.json"
             with open(rollout_path, "w") as f:
                 json.dump(rollout_log, f, indent=2)
             print(f"Rollout saved: {rollout_dir}")
-            print(f"  {len(rollout_log)} steps, {len(rollout_log)} images")
-            print(f"  rollout.json + config.json + images/step_XXXX.jpg")
+            print(f"  {len(rollout_log)} steps")
+            print(f"  rollout.json + config.json + images/step_XXXX_viz.png")
 
         print(f"Done. Executed {step} inference steps.")
 

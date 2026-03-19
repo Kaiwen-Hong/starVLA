@@ -35,12 +35,14 @@ def main():
             "fastumi_pickandplace_qwenPI_no_state_fixgripper/dataset_statistics.json",
             "fastumi_pickandplace_qwenPI_no_state_fixgripper/summary.jsonl",
             "fastumi_pickandplace_qwenPI_no_state_fixgripper/checkpoints/steps_5000_pytorch_model.pt",
+            "fastumi_pickandplace_qwenPI_no_state_fixgripper/checkpoints/steps_10000_pytorch_model.pt",
         ],
         max_workers=2,
     )
     print(f"Checkpoint downloaded to: {path}")
     print(f"  - fastumi_pickandplace_discrete_diffusion_real_0314_no_state_fixgripper/checkpoints/steps_15000_pytorch_model.pt")
     print(f"  - fastumi_pickandplace_qwenPI_no_state_fixgripper/checkpoints/steps_5000_pytorch_model.pt")
+    print(f"  - fastumi_pickandplace_qwenPI_no_state_fixgripper/checkpoints/steps_10000_pytorch_model.pt")
 
 
 if __name__ == "__main__":
