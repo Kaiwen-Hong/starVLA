@@ -1,17 +1,24 @@
 #!/usr/bin/env python3
 """
-Step 10: Closed-loop control with Real-Time Chunking + smooth interpolation.
+Step 10s: Synchronous RTC simulation with precise inference timing.
 
-Combines step7 (RTC) and step9 (smooth motion):
-  1. RTC: overlap inference with execution (hide inference latency)
-  2. Linear interpolation between predicted waypoints (20Hz → 100Hz servo)
-  3. Z-floor clamping instead of emergency stop
-  4. Tuned servoL parameters (lookahead=0.2, gain=200) for smoother motion
+Simulates the async RTC pipeline from step10 in a strictly sequential manner:
+    1. Read state + grab camera frame
+    2. Build shifted prefix (same RTC logic as step10)
+    3. Run inference SYNCHRONOUSLY (with torch.cuda.synchronize for precise timing)
+    4. Execute n_actions from the PREVIOUS chunk via interpolated servoL
+    5. Swap: new prediction becomes current chunk
+    6. Repeat
+
+This gives exact inference latency measurements without thread contention
+or overlap, while preserving the same RTC prefix conditioning as step10.
+
+Parameters d (inference_delay) and s (n_actions) are static CLI args.
 
 Usage:
-    python ur5/step10-dd-rtc-closed-loop-smooth.py
-    python ur5/step10-dd-rtc-closed-loop-smooth.py --n_actions 14 --arm left
-    python ur5/step10-dd-rtc-closed-loop-smooth.py --n_actions 8 --inference_delay 8 --arm left
+    python ur5/step10s-dd-rtc-sync.py
+    python ur5/step10s-dd-rtc-sync.py --n_actions 8 --inference_delay 8
+    python ur5/step10s-dd-rtc-sync.py --n_actions 14 --inference_delay 14 --arm left
 """
 
 import sys
@@ -19,10 +26,10 @@ import os
 import time
 import json
 import argparse
-import threading
 from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 
+import torch
 import numpy as np
 import matplotlib
 matplotlib.use("Agg")
@@ -63,7 +70,7 @@ HOME_POSES_WORLD = {
 
 INSTRUCTION = "pick up the building block"
 CONTROL_HZ = 20
-INTERP_MULT = 5       # interpolation multiplier: 20Hz × 5 = 100Hz servo
+INTERP_MULT = 5
 SERVO_HZ = CONTROL_HZ * INTERP_MULT  # 100Hz
 Z_MIN_WORLD = 0.001793 - 0.02
 
@@ -116,7 +123,6 @@ def action_10d_to_delta7d(action_10d: np.ndarray) -> np.ndarray:
 
 
 def actions_10d_to_7d(actions_10d: np.ndarray) -> np.ndarray:
-    """(T,10) actions -> (T,7) [dx,dy,dz,drx,dry,drz,gripper]."""
     T = actions_10d.shape[0]
     out = np.zeros((T, 7), dtype=np.float32)
     for t in range(T):
@@ -127,7 +133,6 @@ def actions_10d_to_7d(actions_10d: np.ndarray) -> np.ndarray:
 
 
 def accumulate_deltas(current_pose_world, deltas_7d):
-    """Accumulate delta actions on current pose -> absolute trajectory (T,7)."""
     T = deltas_7d.shape[0]
     poses = np.zeros((T, 7), dtype=np.float64)
     pos = np.array(current_pose_world[:3], dtype=np.float64)
@@ -151,17 +156,9 @@ def _precise_wait(t_end: float, slack_time: float = 0.001):
             pass
 
 
-# ── Interpolation (from step9) ──────────────────────────────────────
+# ── Interpolation ───────────────────────────────────────────────────
 
 def interpolate_waypoints(start_pose, waypoints, mult):
-    """Linearly interpolate between waypoints.
-
-    start_pose: (6,) current pose
-    waypoints:  (N, 6) target poses
-    mult:       number of sub-steps between each waypoint
-
-    Returns (N*mult, 6) interpolated poses.
-    """
     all_poses = []
     prev = start_pose
     for wp in waypoints:
@@ -173,22 +170,41 @@ def interpolate_waypoints(start_pose, waypoints, mult):
     return np.array(all_poses, dtype=np.float64)
 
 
-# ── Visualization (from step7) ──────────────────────────────────────
+# ── Precise inference timing ────────────────────────────────────────
+
+def timed_inference(model, example, prev_normalized, inference_delay, kwargs):
+    """Run inference synchronously with GPU-clock timing via CUDA events.
+
+    Returns (output_dict, infer_ms).
+    """
+    start_event = torch.cuda.Event(enable_timing=True)
+    end_event = torch.cuda.Event(enable_timing=True)
+
+    start_event.record()
+
+    if prev_normalized is not None and inference_delay > 0:
+        out = model.predict_action_realtime(
+            examples=[example],
+            prev_action_chunk_normalized=prev_normalized,
+            inference_delay=inference_delay,
+            **kwargs,
+        )
+    else:
+        out = model.predict_action(
+            examples=[example],
+            **kwargs,
+        )
+
+    end_event.record()
+    torch.cuda.synchronize()
+    infer_ms = start_event.elapsed_time(end_event)
+    return out, infer_ms
+
+
+# ── Visualization ───────────────────────────────────────────────────
 
 def visualize_step(exec_poses, new_poses, camera_image, current_ee,
                    n_exec, inference_delay, step_idx, save_path, instruction):
-    """Visualize executing chunk and new RTC prediction, time-aligned.
-
-    exec_poses:  (T_exec, 7) trajectory from the chunk executed this step
-    new_poses:   (T_new, 7) trajectory from the new RTC prediction
-    n_exec:      number of actions executed from exec_poses
-    inference_delay: number of prefix timesteps in the new prediction
-
-    Time alignment:
-      - exec_poses is plotted at t = [0, 1, ..., T_exec-1] / 20Hz
-      - new_poses is plotted at t = [n_exec, n_exec+1, ...] / 20Hz
-        (because the new prediction starts where execution ended)
-    """
     T_exec = exec_poses.shape[0]
     T_new = new_poses.shape[0]
     ts_exec = np.arange(T_exec) / 20.0
@@ -216,40 +232,31 @@ def visualize_step(exec_poses, new_poses, camera_image, current_ee,
         ax = fig.add_subplot(gs[row, 1], sharex=share)
         axes.append(ax)
 
-        # --- Executing chunk ---
         exec_vals = exec_poses[:, dim_idx]
-        # Executed portion (solid)
         ax.plot(ts_exec[:n_exec], exec_vals[:n_exec], "o-",
                 markersize=5, linewidth=2.0, color=color,
                 label="executed" if row == 0 else None)
-        # Tail of executing chunk beyond n_exec (dotted, faded)
         if n_exec < T_exec:
             ax.plot(ts_exec[n_exec - 1:], exec_vals[n_exec - 1:], "o:",
                     markersize=3, linewidth=1.2, color=color, alpha=0.3,
                     label="prev tail" if row == 0 else None)
 
-        # --- New RTC prediction (time-shifted) ---
         new_vals = new_poses[:, dim_idx]
-        # Inpainting prefix portion (square markers, dashed)
         if inference_delay > 0 and inference_delay <= T_new:
             ax.plot(ts_new[:inference_delay], new_vals[:inference_delay], "s--",
                     markersize=4, linewidth=1.5, color=color, alpha=0.6,
                     label="RTC prefix" if row == 0 else None)
-        # Free prediction portion
         free_start = max(0, inference_delay)
         if free_start < T_new:
-            # Connect from prefix end (or execution end)
             connect = max(0, free_start - 1)
             ax.plot(ts_new[connect:], new_vals[connect:], "D--",
                     markersize=3, linewidth=1.5, color=color, alpha=0.5,
                     label="RTC new" if row == 0 else None)
 
-        # Current EE position line
         if start_val is not None:
             ax.axhline(start_val, color=color, linewidth=1.0, linestyle="--",
                        alpha=0.4, label=f"EE={start_val:.4f}" if row == 0 else None)
 
-        # Vertical line at execution boundary
         ax.axvline(ts_exec[n_exec - 1], color="black", linewidth=1.0,
                    linestyle=":", alpha=0.6,
                    label="exec boundary" if row == 0 else None)
@@ -264,7 +271,7 @@ def visualize_step(exec_poses, new_poses, camera_image, current_ee,
             ax.set_xlabel("Time (s) — 20Hz", fontsize=10)
 
     fig.suptitle(
-        f'Step {step_idx} (DD-RTC-Smooth): exec={n_exec}, delay={inference_delay}\n'
+        f'Step {step_idx} (DD-RTC-Sync): s={n_exec}, d={inference_delay}\n'
         f'"{instruction}"',
         fontsize=13, fontweight="bold", y=0.98)
 
@@ -283,8 +290,6 @@ def _detect_attn_implementation():
 
 
 def load_model(checkpoint_path: str):
-    import torch
-
     print(f"Loading model from: {checkpoint_path}")
     t0 = time.time()
 
@@ -315,80 +320,6 @@ def build_example(image: Image.Image, instruction: str,
     return example
 
 
-# ── Background inference helper (from step7) ────────────────────────
-
-class AsyncInference:
-    """
-    Runs model inference in a background thread so that execution and
-    inference can overlap (real-time chunking).
-
-    Measures inference time with torch.cuda.synchronize() for accuracy.
-    """
-
-    def __init__(self):
-        self._thread = None
-        self._result = None
-        self._error = None
-        self._infer_ms = 0.0
-        self._done = threading.Event()
-
-    def start(self, model, example, prev_normalized, inference_delay, kwargs):
-        """Launch inference in a background thread."""
-        self._result = None
-        self._error = None
-        self._infer_ms = 0.0
-        self._done.clear()
-
-        def _run():
-            import torch
-            try:
-                start_event = torch.cuda.Event(enable_timing=True)
-                end_event = torch.cuda.Event(enable_timing=True)
-
-                start_event.record()
-
-                if prev_normalized is not None and inference_delay > 0:
-                    out = model.predict_action_realtime(
-                        examples=[example],
-                        prev_action_chunk_normalized=prev_normalized,
-                        inference_delay=inference_delay,
-                        **kwargs,
-                    )
-                else:
-                    out = model.predict_action(
-                        examples=[example],
-                        **kwargs,
-                    )
-
-                end_event.record()
-                torch.cuda.synchronize()
-                self._infer_ms = start_event.elapsed_time(end_event)
-                self._result = out
-            except Exception as e:
-                self._error = e
-            finally:
-                self._done.set()
-
-        self._thread = threading.Thread(target=_run, daemon=True)
-        self._thread.start()
-
-    def wait(self, timeout=None):
-        """Block until inference completes. Returns the result dict."""
-        self._done.wait(timeout=timeout)
-        if self._error is not None:
-            raise self._error
-        return self._result
-
-    @property
-    def infer_ms(self):
-        """Precise inference time (CUDA-synced), available after wait()."""
-        return self._infer_ms
-
-    @property
-    def is_done(self):
-        return self._done.is_set()
-
-
 # ── Go home ─────────────────────────────────────────────────────────
 
 def go_home(rtde_c, rtde_r, arm, T_bw, robot_ip):
@@ -416,7 +347,7 @@ def go_home(rtde_c, rtde_r, arm, T_bw, robot_ip):
 
 def main():
     parser = argparse.ArgumentParser(
-        description="Closed-loop control with RTC + smooth interpolated servoL")
+        description="Synchronous RTC simulation with precise inference timing")
     parser.add_argument(
         "--checkpoint", type=str,
         default="checkpoints/DiscreteRTC/"
@@ -426,12 +357,11 @@ def main():
     parser.add_argument("--arm", choices=["left", "right"], default="left")
     parser.add_argument("--camera_dev", type=int, default=0)
     parser.add_argument("--n_actions", type=int, default=14,
-                        help="Number of actions to execute per chunk (= execute_horizon)")
+                        help="s: number of actions to execute per chunk (= shift)")
     parser.add_argument("--inference_delay", type=int, default=-1,
-                        help="Number of prefix timesteps for RTC decode. "
+                        help="d: number of prefix timesteps for RTC decode. "
                              "-1 = same as n_actions (default)")
-    parser.add_argument("--max_steps", type=int, default=0,
-                        help="Max inference steps (0=unlimited, Ctrl+C to stop)")
+    parser.add_argument("--max_steps", type=int, default=0)
     parser.add_argument("--include_state", action="store_true", default=False)
     parser.add_argument("--no_go_home", action="store_true", default=False)
     parser.add_argument("--instruction", type=str, default=INSTRUCTION)
@@ -440,7 +370,6 @@ def main():
     parser.add_argument("--use_simple_max", action="store_true", default=False)
     parser.add_argument("--fix_rotation", action="store_true", default=True)
     parser.add_argument("--no_fix_rotation", action="store_true", default=False)
-    # Rollout saving
     parser.add_argument("--save_rollout", action="store_true", default=True)
     parser.add_argument("--no_save_rollout", action="store_true", default=False)
     parser.add_argument("--rollout_dir", type=str, default=None)
@@ -494,18 +423,15 @@ def main():
 
     # ── Print config ─────────────────────────────────────────────────
     print(f"\n{'=' * 60}")
-    print(f"  Step 10: Closed-loop (DD + RTC + smooth {SERVO_HZ}Hz)")
+    print(f"  Step 10s: Sync RTC simulation (precise timing)")
     print(f"  Arm:                {args.arm}")
     print(f"  Instruction:        {args.instruction}")
-    print(f"  Actions/step:       {args.n_actions}")
-    print(f"  Inference delay:    {args.inference_delay}")
-    print(f"  Waypoints:          {CONTROL_HZ}Hz × {INTERP_MULT} = {SERVO_HZ}Hz servo")
+    print(f"  s (n_actions):      {args.n_actions}")
+    print(f"  d (inference_delay):{args.inference_delay}")
+    print(f"  Servo:              {CONTROL_HZ}Hz × {INTERP_MULT} = {SERVO_HZ}Hz")
     print(f"  servoL params:      lookahead=0.2, gain=200")
     print(f"  Z safety:           clamp to {Z_MIN_WORLD:.4f}m")
-    print(f"  Include state:      {args.include_state}")
-    print(f"  decode_temperature: {args.decode_temperature}")
-    print(f"  choice_temperature: {args.choice_temperature}")
-    print(f"  use_simple_max:     {args.use_simple_max}")
+    print(f"  Mode:               SYNCHRONOUS (infer → execute → infer → ...)")
     print(f"  fix_rotation:       {args.fix_rotation}")
     print(f"{'=' * 60}")
 
@@ -517,7 +443,7 @@ def main():
             rollout_dir = Path(args.rollout_dir)
         else:
             ts = time.strftime("%Y%m%d_%H%M%S")
-            rollout_dir = Path("ur5") / "rollouts" / f"dd_rtc_smooth_{ts}"
+            rollout_dir = Path("ur5") / "rollouts" / f"dd_rtc_sync_{ts}"
         rollout_dir.mkdir(parents=True, exist_ok=True)
         (rollout_dir / "images").mkdir(exist_ok=True)
         print(f"\n  Rollout saving: {rollout_dir}")
@@ -538,7 +464,7 @@ def main():
             "use_simple_max": args.use_simple_max,
             "dataset_key": dataset_key,
             "norm_modes": action_stats.get("norm_modes", "legacy"),
-            "method": "discrete_rtc_smooth",
+            "method": "discrete_rtc_sync",
         }
         with open(rollout_dir / "config.json", "w") as f:
             json.dump(run_config, f, indent=2)
@@ -548,7 +474,7 @@ def main():
 
     input("\n>>> Press Enter to START (Ctrl+C to abort) <<<")
 
-    # ── Inference kwargs (shared) ────────────────────────────────────
+    # ── Inference kwargs ─────────────────────────────────────────────
     infer_kwargs = dict(
         decode_temperature=args.decode_temperature,
         choice_temperature=args.choice_temperature,
@@ -556,7 +482,7 @@ def main():
     )
 
     # ═════════════════════════════════════════════════════════════════
-    #  Step 0: Initial inference (synchronous, no prefix available)
+    #  Step 0: Initial inference (no prefix)
     # ═════════════════════════════════════════════════════════════════
     pose_base = rtde_r.getActualTCPPose()
     pose_world = base_to_world(pose_base, T_bw)
@@ -569,15 +495,11 @@ def main():
     state_for_model = current_state_10d if args.include_state else None
     example = build_example(pil_img, args.instruction, state_10d=state_for_model)
 
-    t_infer = time.monotonic()
-    output = model.predict_action(examples=[example], **infer_kwargs)
-    init_infer_ms = (time.monotonic() - t_infer) * 1000
-    print(f"[init]  inference={init_infer_ms:.0f}ms (synchronous, no prefix)")
+    output, init_infer_ms = timed_inference(model, example, None, 0, infer_kwargs)
+    print(f"[init]  inference={init_infer_ms:.1f}ms (sync, no prefix, cuda-synced)")
 
     current_normalized = output["normalized_actions"][0].astype(np.float32)
     current_actions_10d = baseframework.unnormalize_actions(current_normalized, action_stats)
-
-    async_infer = AsyncInference()
 
     # ── Control loop ─────────────────────────────────────────────────
     step = 0
@@ -592,14 +514,13 @@ def main():
             current_state_10d = ee_pose_to_state10d(pose_world, current_gripper)
             current_pos = np.array(pose_world, dtype=np.float64)
 
-            # 2. Grab camera frame for NEXT inference
+            # 2. Grab camera frame
             pil_img = cam.grab_pil()
             if pil_img is None:
                 print("[WARN] Camera frame dropped, retrying...")
                 continue
 
-            # 3. Build the shifted prefix for RTC
-            #    Save the current chunk before it gets swapped out
+            # 3. Build shifted prefix for RTC (same logic as step10)
             executing_normalized = current_normalized.copy()
             n_exec = min(args.n_actions, len(current_actions_10d))
             chunk_len = current_normalized.shape[0]
@@ -613,21 +534,16 @@ def main():
 
             actual_delay = min(args.inference_delay, chunk_len - shift) if shift < chunk_len else 0
 
-            # 4. Launch background inference (RTC)
+            # 4. Run inference SYNCHRONOUSLY with precise CUDA-synced timing
             state_for_model = current_state_10d if args.include_state else None
             next_example = build_example(pil_img, args.instruction, state_10d=state_for_model)
-
             prev_norm_batch = shifted_normalized[np.newaxis, ...] if actual_delay > 0 else None
 
-            t_infer_start = time.monotonic()
-            async_infer.start(
-                model, next_example,
-                prev_normalized=prev_norm_batch,
-                inference_delay=actual_delay,
-                kwargs=infer_kwargs,
+            next_output, infer_ms = timed_inference(
+                model, next_example, prev_norm_batch, actual_delay, infer_kwargs
             )
 
-            # 5. Convert current chunk to absolute world-frame waypoints
+            # 5. Execute actions from the CURRENT chunk (after inference is done)
             waypoints = np.zeros((n_exec, 6), dtype=np.float64)
             pos = current_pos.copy()
             executed_targets = []
@@ -638,7 +554,6 @@ def main():
                     delta[3:6] = 0.0
                 pos = pos + delta[:6]
 
-                # Safety: clamp z
                 if pos[2] < Z_MIN_WORLD:
                     print(f"  [SAFETY] z clamped: {pos[2]:.4f} → {Z_MIN_WORLD:.4f}")
                     pos[2] = Z_MIN_WORLD
@@ -646,7 +561,6 @@ def main():
                 waypoints[i] = pos
                 executed_targets.append(pos.tolist())
 
-                # Handle gripper on first transition
                 new_gripper = float(delta[6])
                 if (new_gripper > 0.5) != (current_gripper > 0.5):
                     grip_pos = int(new_gripper * 255)
@@ -655,7 +569,7 @@ def main():
                     gripper_hw.move(grip_pos, 255, 150)
                     current_gripper = new_gripper
 
-            # 6. Interpolate and execute at 100Hz (while inference runs in background)
+            # 6. Interpolate and execute at 100Hz
             interp_poses = interpolate_waypoints(current_pos, waypoints, INTERP_MULT)
 
             t_exec_start = time.monotonic()
@@ -667,15 +581,8 @@ def main():
             rtde_c.servoStop()
             exec_ms = (time.monotonic() - t_exec_start) * 1000
 
-            # 7. Wait for background inference to complete (should already be done)
-            next_output = async_infer.wait(timeout=10.0)
-            infer_ms = async_infer.infer_ms  # precise CUDA-synced time
-            wait_ms = (time.monotonic() - t_infer_start) * 1000  # wall time including exec overlap
-            infer_hidden = max(0, wait_ms - exec_ms)  # extra wait beyond execution
-
-            if next_output is None:
-                print("[ERROR] Inference timed out, reusing current chunk")
-            else:
+            # 7. Swap: new prediction becomes current
+            if next_output is not None:
                 current_normalized = next_output["normalized_actions"][0].astype(np.float32)
                 current_actions_10d = baseframework.unnormalize_actions(
                     current_normalized, action_stats
@@ -683,27 +590,22 @@ def main():
 
             total_ms = (time.monotonic() - loop_t0) * 1000
 
-            print(f"[step {step:4d}]  infer={infer_ms:5.0f}ms  exec={exec_ms:5.0f}ms  "
-                  f"hidden={infer_hidden:5.0f}ms  total={total_ms:5.0f}ms  "
-                  f"delay={actual_delay}  "
+            print(f"[step {step:4d}]  infer={infer_ms:6.1f}ms  exec={exec_ms:5.0f}ms  "
+                  f"total={total_ms:6.1f}ms  d={actual_delay}  s={n_exec}  "
                   f"pos=[{pose_world[0]:.3f}, {pose_world[1]:.3f}, {pose_world[2]:.3f}]  "
                   f"grip={'C' if current_gripper > 0.5 else 'O'}")
 
             # ── Save rollout step ────────────────────────────────────
             if args.save_rollout and rollout_dir is not None:
-                # Executing chunk trajectory (the chunk we just ran)
                 exec_actions_10d = baseframework.unnormalize_actions(
                     executing_normalized, action_stats)
                 exec_deltas_7d = actions_10d_to_7d(exec_actions_10d)
                 exec_poses_all = accumulate_deltas(pose_world, exec_deltas_7d)
 
-                # New RTC prediction trajectory
                 new_deltas_7d = actions_10d_to_7d(current_actions_10d)
-                # The new prediction starts from where execution ended
                 exec_end_pos = list(executed_targets[-1]) + list(pose_world[3:6])
                 new_poses_all = accumulate_deltas(exec_end_pos, new_deltas_7d)
 
-                # Offload viz to background thread (non-blocking)
                 viz_path = str(rollout_dir / "images" / f"step_{step:04d}_viz.png")
                 viz_executor.submit(
                     visualize_step,
@@ -730,7 +632,6 @@ def main():
                     "inference_delay": actual_delay,
                     "infer_ms": round(infer_ms, 1),
                     "exec_ms": round(exec_ms, 1),
-                    "infer_hidden_ms": round(infer_hidden, 1),
                     "total_ms": round(total_ms, 1),
                     "viz_file": f"images/step_{step:04d}_viz.png",
                 }
@@ -753,7 +654,6 @@ def main():
         except Exception: pass
         cam.close()
 
-        # ── Wait for pending viz saves, then save rollout log ────────
         print("Waiting for pending viz saves...")
         viz_executor.shutdown(wait=True)
 
@@ -764,6 +664,15 @@ def main():
             print(f"Rollout saved: {rollout_dir}")
             print(f"  {len(rollout_log)} steps")
             print(f"  rollout.json + config.json + images/step_XXXX_viz.png")
+
+            # Print inference time summary
+            infer_times = [s["infer_ms"] for s in rollout_log]
+            print(f"\n  Inference timing summary ({len(infer_times)} steps):")
+            print(f"    mean:   {np.mean(infer_times):6.1f} ms")
+            print(f"    std:    {np.std(infer_times):6.1f} ms")
+            print(f"    min:    {np.min(infer_times):6.1f} ms")
+            print(f"    max:    {np.max(infer_times):6.1f} ms")
+            print(f"    median: {np.median(infer_times):6.1f} ms")
 
         print(f"Done. Executed {step} inference steps.")
 
