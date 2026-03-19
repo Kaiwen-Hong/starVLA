@@ -453,7 +453,7 @@ def main():
     parser.add_argument("--no_fix_rotation", action="store_true", default=False)
     parser.add_argument("--stop_when_grasping_high_enough", action="store_true", default=True)
     parser.add_argument("--no_stop_when_grasping_high_enough", action="store_true", default=False)
-    parser.add_argument("--grasp_lift_threshold", type=float, default=0.10,
+    parser.add_argument("--grasp_lift_threshold", type=float, default=0.04,
                         help="Min lift above Z_MIN_WORLD to consider 'high enough' (m)")
     # Rollout saving
     parser.add_argument("--save_rollout", action="store_true", default=True)
@@ -599,6 +599,7 @@ def main():
 
     # ── Control loop ─────────────────────────────────────────────────
     step = 0
+    visited_near_table = False  # True once z has been within 5cm of Z_MIN_WORLD
     try:
         while args.max_steps == 0 or step < args.max_steps:
             loop_t0 = time.monotonic()
@@ -610,8 +611,12 @@ def main():
             current_state_10d = ee_pose_to_state10d(pose_world, current_gripper)
             current_pos = np.array(pose_world, dtype=np.float64)
 
-            # 1b. Check if grasping and lifted high enough → done
-            if args.stop_when_grasping_high_enough and current_gripper > 0.5:
+            # 1b. Track if robot has been near the table, then check lift
+            if not visited_near_table and (pose_world[2] - Z_MIN_WORLD) < 0.05:
+                visited_near_table = True
+                print(f"  [INFO] Visited near table (z={pose_world[2]:.4f}), lift check now armed")
+
+            if args.stop_when_grasping_high_enough and visited_near_table and current_gripper > 0.5:
                 lift = pose_world[2] - Z_MIN_WORLD
                 if lift >= args.grasp_lift_threshold:
                     print(f"\n[DONE] Grasped and lifted {lift:.3f}m >= {args.grasp_lift_threshold:.2f}m threshold. Stopping.")

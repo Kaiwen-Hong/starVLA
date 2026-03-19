@@ -1,24 +1,15 @@
 #!/usr/bin/env python3
 """
-Step 10s: Synchronous RTC simulation with precise inference timing.
+Step 10s + Website Stopwatch: Synchronous RTC simulation with precise inference
+timing and an auto-triggered browser stopwatch.
 
-Simulates the async RTC pipeline from step10 in a strictly sequential manner:
-    1. Read state + grab camera frame
-    2. Build shifted prefix (same RTC logic as step10)
-    3. Run inference SYNCHRONOUSLY (with torch.cuda.synchronize for precise timing)
-    4. Execute n_actions from the PREVIOUS chunk via interpolated servoL
-    5. Swap: new prediction becomes current chunk
-    6. Repeat
-
-This gives exact inference latency measurements without thread contention
-or overlap, while preserving the same RTC prefix conditioning as step10.
-
-Parameters d (inference_delay) and s (n_actions) are static CLI args.
+Same as step10s-dd-rtc-sync.py but with an embedded HTTP server that auto-starts
+a stopwatch when the policy loop begins and auto-stops it when the policy finishes.
 
 Usage:
-    python ur5/step10s-dd-rtc-sync.py
-    python ur5/step10s-dd-rtc-sync.py --n_actions 8 --inference_delay 8
-    python ur5/step10s-dd-rtc-sync.py --n_actions 14 --inference_delay 14 --arm left
+    python ur5/step10s-dd-rtc-sync-with_website.py
+    python ur5/step10s-dd-rtc-sync-with_website.py --n_actions 8 --inference_delay 8
+    python ur5/step10s-dd-rtc-sync-with_website.py --stopwatch_port 8765
 """
 
 import sys
@@ -26,6 +17,10 @@ import os
 import time
 import json
 import argparse
+import threading
+import queue
+import http.server
+import webbrowser
 from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 
@@ -320,6 +315,428 @@ def build_example(image: Image.Image, instruction: str,
     return example
 
 
+# ── Stopwatch web server (SSE-based, daemon thread) ─────────────────
+
+STOPWATCH_HTML = """<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Policy Stopwatch</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;700&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: #0a0a0f;
+    font-family: 'JetBrains Mono', monospace;
+    user-select: none;
+    overflow: hidden;
+  }
+
+  .ring {
+    position: absolute;
+    width: 420px; height: 420px;
+    border-radius: 50%;
+    background: conic-gradient(from 0deg, #6366f1, #a855f7, #ec4899, #6366f1);
+    opacity: 0.15;
+    animation: spin 6s linear infinite;
+    filter: blur(30px);
+    transition: opacity 0.5s;
+  }
+  .ring.active { opacity: 0.35; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .container {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 28px;
+  }
+
+  #time {
+    font-size: 6rem;
+    font-weight: 700;
+    letter-spacing: 4px;
+    color: #e2e8f0;
+    text-shadow: 0 0 40px rgba(99,102,241,0.4);
+    transition: text-shadow 0.3s;
+  }
+  #time.active {
+    text-shadow: 0 0 60px rgba(168,85,247,0.6), 0 0 120px rgba(99,102,241,0.3);
+  }
+
+  #ms {
+    font-size: 3rem;
+    font-weight: 300;
+    color: #94a3b8;
+    margin-left: 4px;
+  }
+  #ms.active { color: #c4b5fd; }
+
+  #status {
+    font-size: 1rem;
+    font-weight: 400;
+    letter-spacing: 6px;
+    text-transform: uppercase;
+    color: #475569;
+    transition: color 0.3s;
+  }
+  #status.active { color: #a78bfa; }
+
+  .hint {
+    position: fixed;
+    bottom: 32px;
+    font-size: 0.8rem;
+    color: #334155;
+    letter-spacing: 2px;
+  }
+
+  #laps {
+    margin-top: 12px;
+    max-height: 180px;
+    overflow-y: auto;
+    width: 360px;
+    scrollbar-width: thin;
+    scrollbar-color: #1e1e2e transparent;
+  }
+  .lap {
+    display: flex;
+    justify-content: space-between;
+    padding: 6px 16px;
+    font-size: 0.85rem;
+    color: #64748b;
+    border-bottom: 1px solid #1e1e2e;
+  }
+  .lap:first-child { color: #a78bfa; }
+
+  /* ── Splash screen ── */
+  .splash {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: #0a0a0f;
+    z-index: 100;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.8s ease;
+  }
+  .splash.active {
+    opacity: 1;
+    pointer-events: auto;
+  }
+  .splash-title {
+    font-size: 2.6rem;
+    font-weight: 700;
+    color: #e2e8f0;
+    text-align: center;
+    line-height: 1.4;
+    letter-spacing: 3px;
+    padding: 0 40px;
+    animation: splash-glow 2.5s ease-in-out infinite;
+  }
+  @keyframes splash-glow {
+    0%, 100% { text-shadow: 0 0 30px rgba(99,102,241,0.3), 0 0 60px rgba(168,85,247,0.15); }
+    50%      { text-shadow: 0 0 60px rgba(99,102,241,0.6), 0 0 120px rgba(168,85,247,0.4), 0 0 180px rgba(236,72,153,0.15); }
+  }
+  .splash-sub {
+    margin-top: 20px;
+    font-size: 1rem;
+    font-weight: 300;
+    letter-spacing: 6px;
+    text-transform: uppercase;
+    color: #64748b;
+  }
+  .splash-bar-track {
+    margin-top: 48px;
+    width: 320px;
+    height: 3px;
+    background: #1e1e2e;
+    border-radius: 2px;
+    overflow: hidden;
+  }
+  .splash-bar {
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(90deg, #6366f1, #a855f7, #ec4899);
+    border-radius: 2px;
+  }
+</style>
+</head>
+<body>
+
+<!-- Splash overlay -->
+<div class="splash" id="splash">
+  <div class="splash-title" id="splashTitle"></div>
+  <div class="splash-sub" id="splashSub">starting in 5s</div>
+  <div class="splash-bar-track">
+    <div class="splash-bar" id="splashBar"></div>
+  </div>
+</div>
+
+<div class="ring" id="ring"></div>
+
+<div class="container">
+  <div id="status">Waiting for policy</div>
+  <div>
+    <span id="time">00:00</span><span id="ms">.000</span>
+  </div>
+  <div id="laps"></div>
+</div>
+
+<div class="hint">auto-controlled by robot policy via SSE</div>
+
+<script>
+  const timeEl     = document.getElementById('time');
+  const msEl       = document.getElementById('ms');
+  const statusEl   = document.getElementById('status');
+  const ringEl     = document.getElementById('ring');
+  const lapsEl     = document.getElementById('laps');
+  const splashEl   = document.getElementById('splash');
+  const splashTitle= document.getElementById('splashTitle');
+  const splashSub  = document.getElementById('splashSub');
+  const splashBar  = document.getElementById('splashBar');
+
+  let running   = false;
+  let startTs   = 0;
+  let elapsed   = 0;
+  let rafId     = null;
+  let lapCount  = 0;
+  let splashRaf = null;
+
+  function fmt(totalMs) {
+    const mins = Math.floor(totalMs / 60000);
+    const secs = Math.floor((totalMs % 60000) / 1000);
+    const ms   = Math.floor(totalMs % 1000);
+    return {
+      main: String(mins).padStart(2,'0') + ':' + String(secs).padStart(2,'0'),
+      sub:  '.' + String(ms).padStart(3,'0')
+    };
+  }
+
+  function render(totalMs) {
+    const {main, sub} = fmt(totalMs);
+    timeEl.textContent = main;
+    msEl.textContent   = sub;
+  }
+
+  function tick() {
+    const now = performance.now();
+    render(elapsed + (now - startTs));
+    rafId = requestAnimationFrame(tick);
+  }
+
+  function showSplash(title, durationMs) {
+    splashTitle.textContent = title;
+    splashEl.classList.add('active');
+
+    const t0 = performance.now();
+    function animateBar() {
+      const pct = Math.min((performance.now() - t0) / durationMs, 1);
+      splashBar.style.width = (pct * 100) + '%';
+      const remaining = Math.ceil((durationMs - (performance.now() - t0)) / 1000);
+      splashSub.textContent = remaining > 0 ? 'starting in ' + remaining + 's' : 'go';
+      if (pct < 1) splashRaf = requestAnimationFrame(animateBar);
+    }
+    splashRaf = requestAnimationFrame(animateBar);
+  }
+
+  function hideSplash() {
+    if (splashRaf) cancelAnimationFrame(splashRaf);
+    splashEl.classList.remove('active');
+  }
+
+  function start() {
+    if (running) return;
+    hideSplash();
+    running = true;
+    elapsed = 0;
+    startTs = performance.now();
+    statusEl.textContent = 'Running';
+    statusEl.classList.add('active');
+    timeEl.classList.add('active');
+    msEl.classList.add('active');
+    ringEl.classList.add('active');
+    tick();
+  }
+
+  function stop() {
+    if (!running) return;
+    running = false;
+    elapsed += performance.now() - startTs;
+    cancelAnimationFrame(rafId);
+    statusEl.textContent = 'Finished';
+    statusEl.classList.remove('active');
+    timeEl.classList.remove('active');
+    msEl.classList.remove('active');
+    ringEl.classList.remove('active');
+
+    lapCount++;
+    const div = document.createElement('div');
+    div.className = 'lap';
+    const {main, sub} = fmt(elapsed);
+    div.innerHTML = '<span>#' + lapCount + '</span><span>' + main + sub + '</span>';
+    lapsEl.prepend(div);
+  }
+
+  // SSE: listen for events from the robot policy server
+  const evtSource = new EventSource('/events');
+  evtSource.addEventListener('splash', function(e) {
+    // data format: "title|durationMs"
+    const parts = e.data.split('|');
+    const title = parts[0];
+    const dur   = parseInt(parts[1]) || 5000;
+    showSplash(title, dur);
+  });
+  evtSource.addEventListener('timer', function(e) {
+    if (e.data === 'start') start();
+    else if (e.data === 'stop') stop();
+  });
+  evtSource.onerror = function() {
+    statusEl.textContent = 'Disconnected';
+  };
+
+  // Manual click still works as override
+  document.body.addEventListener('click', () => {
+    if (splashEl.classList.contains('active')) { hideSplash(); start(); return; }
+    if (running) stop(); else start();
+  });
+  document.body.addEventListener('dblclick', (e) => {
+    e.preventDefault();
+    hideSplash();
+    running = false;
+    elapsed = 0;
+    lapCount = 0;
+    cancelAnimationFrame(rafId);
+    render(0);
+    statusEl.textContent = 'Waiting for policy';
+    statusEl.classList.remove('active');
+    timeEl.classList.remove('active');
+    msEl.classList.remove('active');
+    ringEl.classList.remove('active');
+    lapsEl.innerHTML = '';
+  });
+</script>
+</body>
+</html>
+"""
+
+
+class StopwatchServer:
+    """Embedded HTTP + SSE server for the stopwatch. Runs in a daemon thread."""
+
+    def __init__(self, port=8765):
+        self._port = port
+        self._sse_queues = []
+        self._lock = threading.Lock()
+        self._server = None
+
+    def _broadcast(self, event: str, data: str):
+        """Non-blocking: push (event, data) to all connected SSE clients."""
+        with self._lock:
+            dead = []
+            for q in self._sse_queues:
+                try:
+                    q.put_nowait((event, data))
+                except queue.Full:
+                    dead.append(q)
+            for q in dead:
+                self._sse_queues.remove(q)
+
+    def start_timer(self, splash_title=None, splash_duration=5):
+        """Optionally show splash for splash_duration seconds, then start timer."""
+        if splash_title:
+            self._broadcast("splash", f"{splash_title}|{splash_duration * 1000}")
+            time.sleep(splash_duration)
+        self._broadcast("timer", "start")
+
+    def stop_timer(self):
+        self._broadcast("timer", "stop")
+
+    def serve(self, open_browser=True):
+        """Start the HTTP server in a daemon thread and optionally open browser."""
+        parent = self
+
+        class Handler(http.server.BaseHTTPRequestHandler):
+            def do_GET(self):
+                if self.path == "/events":
+                    self._handle_sse()
+                else:
+                    self._handle_page()
+
+            def _handle_page(self):
+                self.send_response(200)
+                self.send_header("Content-Type", "text/html; charset=utf-8")
+                self.end_headers()
+                self.wfile.write(STOPWATCH_HTML.encode())
+
+            def _handle_sse(self):
+                self.send_response(200)
+                self.send_header("Content-Type", "text/event-stream")
+                self.send_header("Cache-Control", "no-cache")
+                self.send_header("Connection", "keep-alive")
+                self.end_headers()
+
+                q = queue.Queue(maxsize=64)
+                with parent._lock:
+                    parent._sse_queues.append(q)
+                try:
+                    while True:
+                        try:
+                            event, data = q.get(timeout=15)
+                            self.wfile.write(f"event: {event}\ndata: {data}\n\n".encode())
+                            self.wfile.flush()
+                        except queue.Empty:
+                            # Send keepalive comment to prevent timeout
+                            self.wfile.write(b": keepalive\n\n")
+                            self.wfile.flush()
+                except (BrokenPipeError, ConnectionResetError, OSError):
+                    pass
+                finally:
+                    with parent._lock:
+                        if q in parent._sse_queues:
+                            parent._sse_queues.remove(q)
+
+            def log_message(self, *args):
+                pass  # silence HTTP logs
+
+        # Try ports starting from self._port, auto-increment on conflict
+        for port in range(self._port, self._port + 100):
+            try:
+                self._server = http.server.HTTPServer(("", port), Handler)
+                break
+            except OSError:
+                continue
+        else:
+            raise RuntimeError(f"Could not find a free port in range {self._port}-{self._port + 99}")
+        self._port = port
+        self._server.daemon_threads = True
+
+        t = threading.Thread(target=self._server.serve_forever, daemon=True)
+        t.start()
+
+        url = f"http://localhost:{self._port}"
+        print(f"Stopwatch server running at {url}")
+
+        if open_browser:
+            threading.Timer(0.3, lambda: webbrowser.open(url)).start()
+
+    def shutdown(self):
+        if self._server:
+            self._server.shutdown()
+
+
 # ── Go home ─────────────────────────────────────────────────────────
 
 def go_home(rtde_c, rtde_r, arm, T_bw, robot_ip):
@@ -347,7 +764,7 @@ def go_home(rtde_c, rtde_r, arm, T_bw, robot_ip):
 
 def main():
     parser = argparse.ArgumentParser(
-        description="Synchronous RTC simulation with precise inference timing")
+        description="Synchronous RTC simulation with precise inference timing + website stopwatch")
     parser.add_argument(
         "--checkpoint", type=str,
         default="checkpoints/DiscreteRTC/"
@@ -370,16 +787,28 @@ def main():
     parser.add_argument("--use_simple_max", action="store_true", default=False)
     parser.add_argument("--fix_rotation", action="store_true", default=True)
     parser.add_argument("--no_fix_rotation", action="store_true", default=False)
+    parser.add_argument("--stop_when_grasping_high_enough", action="store_true", default=True)
+    parser.add_argument("--no_stop_when_grasping_high_enough", action="store_true", default=False)
+    parser.add_argument("--grasp_lift_threshold", type=float, default=0.04,
+                        help="Min lift above Z_MIN_WORLD to consider 'high enough' (m)")
     parser.add_argument("--save_rollout", action="store_true", default=False)
     parser.add_argument("--no_save_rollout", action="store_true", default=False)
     parser.add_argument("--rollout_dir", type=str, default=None)
+    # Stopwatch
+    parser.add_argument("--stopwatch_port", type=int, default=8765)
     args = parser.parse_args()
+    if args.no_stop_when_grasping_high_enough:
+        args.stop_when_grasping_high_enough = False
     if args.no_save_rollout:
         args.save_rollout = False
     if args.no_fix_rotation:
         args.fix_rotation = False
     if args.inference_delay < 0:
         args.inference_delay = args.n_actions
+
+    # ── Start stopwatch server (early, for debug visibility) ────────
+    stopwatch = StopwatchServer(port=args.stopwatch_port)
+    stopwatch.serve(open_browser=True)
 
     robot_ip = ROBOT_IPS[args.arm]
     T_bw = BASE_IN_WORLD[args.arm]
@@ -433,6 +862,8 @@ def main():
     print(f"  Z safety:           clamp to {Z_MIN_WORLD:.4f}m")
     print(f"  Mode:               SYNCHRONOUS (infer → execute → infer → ...)")
     print(f"  fix_rotation:       {args.fix_rotation}")
+    print(f"  stop_when_grasping: {args.stop_when_grasping_high_enough} (lift>={args.grasp_lift_threshold:.2f}m)")
+    print(f"  stopwatch:          http://localhost:{stopwatch._port}")
     print(f"{'=' * 60}")
 
     # ── Setup rollout saving ─────────────────────────────────────────
@@ -501,8 +932,13 @@ def main():
     current_normalized = output["normalized_actions"][0].astype(np.float32)
     current_actions_10d = baseframework.unnormalize_actions(current_normalized, action_stats)
 
+    # ── Start stopwatch (splash + timer) ────────────────────────────
+    stopwatch.start_timer(splash_title="Discrete Diffusion\nSync Policy")
+    print("[STOPWATCH] Started")
+
     # ── Control loop ─────────────────────────────────────────────────
     step = 0
+    visited_near_table = False
     try:
         while args.max_steps == 0 or step < args.max_steps:
             loop_t0 = time.monotonic()
@@ -513,6 +949,17 @@ def main():
             pose_world = base_to_world(pose_base, T_bw)
             current_state_10d = ee_pose_to_state10d(pose_world, current_gripper)
             current_pos = np.array(pose_world, dtype=np.float64)
+
+            # 1b. Track if robot has been near the table, then check lift
+            if not visited_near_table and (pose_world[2] - Z_MIN_WORLD) < 0.05:
+                visited_near_table = True
+                print(f"  [INFO] Visited near table (z={pose_world[2]:.4f}), lift check now armed")
+
+            if args.stop_when_grasping_high_enough and visited_near_table and current_gripper > 0.5:
+                lift = pose_world[2] - Z_MIN_WORLD
+                if lift >= args.grasp_lift_threshold:
+                    print(f"\n[DONE] Grasped and lifted {lift:.3f}m >= {args.grasp_lift_threshold:.2f}m threshold. Stopping.")
+                    break
 
             # 2. Grab camera frame
             pil_img = cam.grab_pil()
@@ -645,6 +1092,10 @@ def main():
         print(f"\n[ERROR] {e}")
         raise
     finally:
+        # ── Stop stopwatch (policy execution ended) ──────────────────
+        stopwatch.stop_timer()
+        print("[STOPWATCH] Stopped")
+
         print("Cleaning up...")
         try: rtde_c.servoStop()
         except Exception: pass
