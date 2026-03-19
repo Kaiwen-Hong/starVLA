@@ -81,6 +81,7 @@ HOME_POSES_WORLD = {
 
 INSTRUCTION = "pick up the building block"
 CONTROL_HZ = 20
+Z_MIN_WORLD = 0.001793  # hard safety floor in world frame (meters)
 
 
 # ═══════════════════════════════════════════════════════════════════
@@ -601,6 +602,12 @@ def main():
                     delta[3:6] = 0.0
 
                 target_world = current_pos + delta[:6]
+
+                # Safety: hard z-floor constraint (world frame)
+                if target_world[2] < Z_MIN_WORLD:
+                    print(f"\n[SAFETY] z={target_world[2]:.6f} < Z_MIN={Z_MIN_WORLD}. Emergency stop.")
+                    raise RuntimeError(f"Z safety limit violated: z={target_world[2]:.6f} < {Z_MIN_WORLD}")
+
                 target_base = world_to_base(target_world.tolist(), T_bw)
 
                 rtde_c.servoL(target_base, 0, 0, dt, 0.1, 300)

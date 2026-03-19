@@ -229,3 +229,5 @@ checkpoints/
 examples/MultiRobot/*
 
 AGENTS.md
+
+ur5/rollouts
