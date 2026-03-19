@@ -324,8 +324,8 @@ def build_example(image: Image.Image, instruction: str,
 
 class AsyncInference:
     """
-    Runs model inference in a background thread so that execution and
-    inference can overlap (real-time chunking).
+    Runs camera capture + model inference in a background thread so that
+    both overlap with action execution (real-time chunking).
 
     Records CUDA events for precise GPU timing without blocking the thread.
     Timing is resolved lazily in wait() after the thread signals completion.
@@ -338,12 +338,21 @@ class AsyncInference:
         self._start_event = None
         self._end_event = None
         self._done = threading.Event()
+        self._camera_image = None  # PIL image captured by the background thread
+        self._obs_ms = 0.0         # time spent on camera capture
 
-    def start(self, model, example, prev_normalized, inference_delay, kwargs):
-        """Launch inference in a background thread."""
+    def start(self, model, cam, instruction, state_10d,
+              prev_normalized, inference_delay, kwargs):
+        """Launch camera capture + inference in a background thread.
+
+        The camera grab now happens inside the thread so it no longer
+        blocks the main servo loop.
+        """
         import torch
         self._result = None
         self._error = None
+        self._camera_image = None
+        self._obs_ms = 0.0
         # Create CUDA events on the main thread (same CUDA context)
         self._start_event = torch.cuda.Event(enable_timing=True)
         self._end_event = torch.cuda.Event(enable_timing=True)
@@ -354,6 +363,17 @@ class AsyncInference:
 
         def _run():
             try:
+                # ── Camera capture (overlaps with servo execution) ──
+                t_obs = time.monotonic()
+                pil_img = cam.grab_pil()
+                while pil_img is None:
+                    pil_img = cam.grab_pil()
+                self._camera_image = pil_img
+                self._obs_ms = (time.monotonic() - t_obs) * 1000
+
+                example = build_example(pil_img, instruction, state_10d=state_10d)
+
+                # ── Model inference ─────────────────────────────────
                 start_evt.record()
 
                 if prev_normalized is not None and inference_delay > 0:
@@ -386,6 +406,16 @@ class AsyncInference:
         if self._error is not None:
             raise self._error
         return self._result
+
+    @property
+    def camera_image(self):
+        """PIL image captured by the background thread. Available after wait()."""
+        return self._camera_image
+
+    @property
+    def obs_ms(self):
+        """Time spent on camera capture (ms). Available after wait()."""
+        return self._obs_ms
 
     @property
     def infer_ms(self):
@@ -1045,7 +1075,7 @@ def main():
             loop_t0 = time.monotonic()
             wall_time = time.time()
 
-            # 1. Read current robot state
+            # 1. Read current robot state (fast, ~1ms — stays on main thread)
             pose_base = rtde_r.getActualTCPPose()
             pose_world = base_to_world(pose_base, T_bw)
             current_state_10d = ee_pose_to_state10d(pose_world, current_gripper)
@@ -1062,13 +1092,7 @@ def main():
                     print(f"\n[DONE] Grasped and lifted {lift:.3f}m >= {args.grasp_lift_threshold:.2f}m threshold. Stopping.")
                     break
 
-            # 2. Grab camera frame for NEXT inference
-            pil_img = cam.grab_pil()
-            if pil_img is None:
-                print("[WARN] Camera frame dropped, retrying...")
-                continue
-
-            # 3. Build the shifted prefix for RTC
+            # 2. Build the shifted prefix for RTC
             #    Save the current chunk before it gets swapped out
             executing_normalized = current_normalized.copy()
             n_exec = min(args.n_actions, len(current_actions_10d))
@@ -1083,21 +1107,21 @@ def main():
 
             actual_delay = min(args.inference_delay, chunk_len - shift) if shift < chunk_len else 0
 
-            # 4. Launch background inference (RTC)
+            # 3. Launch background camera capture + inference (RTC)
+            #    Camera grab now happens inside the async thread so it
+            #    overlaps with action execution instead of blocking here.
             state_for_model = current_state_10d if args.include_state else None
-            next_example = build_example(pil_img, args.instruction, state_10d=state_for_model)
-
             prev_norm_batch = shifted_normalized[np.newaxis, ...] if actual_delay > 0 else None
 
             t_infer_start = time.monotonic()
             async_infer.start(
-                model, next_example,
+                model, cam, args.instruction, state_for_model,
                 prev_normalized=prev_norm_batch,
                 inference_delay=actual_delay,
                 kwargs=infer_kwargs,
             )
 
-            # 5. Convert current chunk to absolute world-frame waypoints
+            # 4. Convert current chunk to absolute world-frame waypoints
             waypoints = np.zeros((n_exec, 6), dtype=np.float64)
             pos = current_pos.copy()
             executed_targets = []
@@ -1125,7 +1149,7 @@ def main():
                     gripper_hw.move(grip_pos, 255, 150)
                     current_gripper = new_gripper
 
-            # 6. Interpolate and execute at 100Hz (while inference runs in background)
+            # 5. Interpolate and execute at 100Hz (while camera+inference run in background)
             interp_poses = interpolate_waypoints(current_pos, waypoints, INTERP_MULT)
 
             t_exec_start = time.monotonic()
@@ -1137,8 +1161,19 @@ def main():
             rtde_c.servoStop()
             exec_ms = (time.monotonic() - t_exec_start) * 1000
 
-            # 7. Wait for background inference to complete (should already be done)
-            next_output = async_infer.wait(timeout=10.0)
+            # 6b. Wait for background camera+inference to complete
+            if not async_infer.is_done:
+                t_wait_start = time.monotonic()
+                print(f"  [WAIT] Inference not done after execution, waiting...", end="", flush=True)
+                next_output = async_infer.wait(timeout=10.0)
+                extra_wait = (time.monotonic() - t_wait_start) * 1000
+                print(f" {extra_wait:.0f}ms")
+            else:
+                next_output = async_infer.wait(timeout=10.0)
+
+            # Retrieve camera image and obs timing from the async thread
+            pil_img = async_infer.camera_image
+            obs_ms = async_infer.obs_ms
             infer_ms = async_infer.infer_ms  # precise CUDA-synced time
             wait_ms = (time.monotonic() - t_infer_start) * 1000  # wall time including exec overlap
             infer_hidden = max(0, wait_ms - exec_ms)  # extra wait beyond execution
