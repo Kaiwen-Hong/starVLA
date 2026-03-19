@@ -440,11 +440,17 @@ def main():
     parser.add_argument("--use_simple_max", action="store_true", default=False)
     parser.add_argument("--fix_rotation", action="store_true", default=True)
     parser.add_argument("--no_fix_rotation", action="store_true", default=False)
+    parser.add_argument("--stop_when_grasping_high_enough", action="store_true", default=True)
+    parser.add_argument("--no_stop_when_grasping_high_enough", action="store_true", default=False)
+    parser.add_argument("--grasp_lift_threshold", type=float, default=0.10,
+                        help="Min lift above Z_MIN_WORLD to consider 'high enough' (m)")
     # Rollout saving
     parser.add_argument("--save_rollout", action="store_true", default=True)
     parser.add_argument("--no_save_rollout", action="store_true", default=False)
     parser.add_argument("--rollout_dir", type=str, default=None)
     args = parser.parse_args()
+    if args.no_stop_when_grasping_high_enough:
+        args.stop_when_grasping_high_enough = False
     if args.no_save_rollout:
         args.save_rollout = False
     if args.no_fix_rotation:
@@ -507,6 +513,7 @@ def main():
     print(f"  choice_temperature: {args.choice_temperature}")
     print(f"  use_simple_max:     {args.use_simple_max}")
     print(f"  fix_rotation:       {args.fix_rotation}")
+    print(f"  stop_when_grasping: {args.stop_when_grasping_high_enough} (lift>={args.grasp_lift_threshold:.2f}m)")
     print(f"{'=' * 60}")
 
     # ── Setup rollout saving ─────────────────────────────────────────
@@ -591,6 +598,13 @@ def main():
             pose_world = base_to_world(pose_base, T_bw)
             current_state_10d = ee_pose_to_state10d(pose_world, current_gripper)
             current_pos = np.array(pose_world, dtype=np.float64)
+
+            # 1b. Check if grasping and lifted high enough → done
+            if args.stop_when_grasping_high_enough and current_gripper > 0.5:
+                lift = pose_world[2] - Z_MIN_WORLD
+                if lift >= args.grasp_lift_threshold:
+                    print(f"\n[DONE] Grasped and lifted {lift:.3f}m >= {args.grasp_lift_threshold:.2f}m threshold. Stopping.")
+                    break
 
             # 2. Grab camera frame for NEXT inference
             pil_img = cam.grab_pil()
