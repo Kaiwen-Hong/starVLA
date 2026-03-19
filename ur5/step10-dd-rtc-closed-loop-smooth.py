@@ -174,9 +174,24 @@ def interpolate_waypoints(start_pose, waypoints, mult):
 
 # ── Visualization (from step7) ──────────────────────────────────────
 
-def visualize_step(world_poses, camera_image, current_ee, n_exec, step_idx, save_path, instruction):
-    T = world_poses.shape[0]
-    ts = np.arange(T) / 20.0
+def visualize_step(exec_poses, new_poses, camera_image, current_ee,
+                   n_exec, inference_delay, step_idx, save_path, instruction):
+    """Visualize executing chunk and new RTC prediction, time-aligned.
+
+    exec_poses:  (T_exec, 7) trajectory from the chunk executed this step
+    new_poses:   (T_new, 7) trajectory from the new RTC prediction
+    n_exec:      number of actions executed from exec_poses
+    inference_delay: number of prefix timesteps in the new prediction
+
+    Time alignment:
+      - exec_poses is plotted at t = [0, 1, ..., T_exec-1] / 20Hz
+      - new_poses is plotted at t = [n_exec, n_exec+1, ...] / 20Hz
+        (because the new prediction starts where execution ended)
+    """
+    T_exec = exec_poses.shape[0]
+    T_new = new_poses.shape[0]
+    ts_exec = np.arange(T_exec) / 20.0
+    ts_new = np.arange(T_new) / 20.0 + n_exec / 20.0
 
     fig = plt.figure(figsize=(16, 10))
     gs = GridSpec(4, 2, figure=fig, hspace=0.15, wspace=0.30,
@@ -199,30 +214,57 @@ def visualize_step(world_poses, camera_image, current_ee, n_exec, step_idx, save
         share = axes[0] if axes else None
         ax = fig.add_subplot(gs[row, 1], sharex=share)
         axes.append(ax)
-        vals = world_poses[:, dim_idx]
-        ax.plot(ts[:n_exec], vals[:n_exec], "o-",
-                markersize=5, linewidth=2.0, color=color)
-        if n_exec < T:
-            ax.plot(ts[n_exec - 1:], vals[n_exec - 1:], "o--",
-                    markersize=3, linewidth=1.2, color=color, alpha=0.4)
+
+        # --- Executing chunk ---
+        exec_vals = exec_poses[:, dim_idx]
+        # Executed portion (solid)
+        ax.plot(ts_exec[:n_exec], exec_vals[:n_exec], "o-",
+                markersize=5, linewidth=2.0, color=color,
+                label="executed" if row == 0 else None)
+        # Tail of executing chunk beyond n_exec (dotted, faded)
+        if n_exec < T_exec:
+            ax.plot(ts_exec[n_exec - 1:], exec_vals[n_exec - 1:], "o:",
+                    markersize=3, linewidth=1.2, color=color, alpha=0.3,
+                    label="prev tail" if row == 0 else None)
+
+        # --- New RTC prediction (time-shifted) ---
+        new_vals = new_poses[:, dim_idx]
+        # Inpainting prefix portion (square markers, dashed)
+        if inference_delay > 0 and inference_delay <= T_new:
+            ax.plot(ts_new[:inference_delay], new_vals[:inference_delay], "s--",
+                    markersize=4, linewidth=1.5, color=color, alpha=0.6,
+                    label="RTC prefix" if row == 0 else None)
+        # Free prediction portion
+        free_start = max(0, inference_delay)
+        if free_start < T_new:
+            # Connect from prefix end (or execution end)
+            connect = max(0, free_start - 1)
+            ax.plot(ts_new[connect:], new_vals[connect:], "D--",
+                    markersize=3, linewidth=1.5, color=color, alpha=0.5,
+                    label="RTC new" if row == 0 else None)
+
+        # Current EE position line
         if start_val is not None:
             ax.axhline(start_val, color=color, linewidth=1.0, linestyle="--",
-                       alpha=0.5, label=f"current={start_val:.4f}")
-            ax.legend(fontsize=8, loc="upper right")
-        if n_exec < T:
-            ax.axvline(ts[n_exec - 1], color="black", linewidth=1.0,
-                       linestyle=":", alpha=0.6)
-        for t_val in ts:
-            ax.axvline(t_val, color="gray", linewidth=0.3, alpha=0.2)
+                       alpha=0.4, label=f"EE={start_val:.4f}" if row == 0 else None)
+
+        # Vertical line at execution boundary
+        ax.axvline(ts_exec[n_exec - 1], color="black", linewidth=1.0,
+                   linestyle=":", alpha=0.6,
+                   label="exec boundary" if row == 0 else None)
+
         ax.set_ylabel(label, fontsize=10, fontweight="bold")
         ax.grid(True, axis="y", alpha=0.3)
+        if row == 0:
+            ax.legend(fontsize=7, loc="upper right", ncol=3)
         if row < len(dims) - 1:
             plt.setp(ax.get_xticklabels(), visible=False)
         else:
-            ax.set_xlabel("Time (s) — 20Hz  (solid=executed, dashed=predicted)", fontsize=10)
+            ax.set_xlabel("Time (s) — 20Hz", fontsize=10)
 
     fig.suptitle(
-        f'Step {step_idx} (DD-RTC-Smooth): Predicted Trajectory\n"{instruction}"',
+        f'Step {step_idx} (DD-RTC-Smooth): exec={n_exec}, delay={inference_delay}\n'
+        f'"{instruction}"',
         fontsize=13, fontweight="bold", y=0.98)
 
     plt.savefig(save_path, dpi=120, bbox_inches="tight")
@@ -537,6 +579,8 @@ def main():
                 continue
 
             # 3. Build the shifted prefix for RTC
+            #    Save the current chunk before it gets swapped out
+            executing_normalized = current_normalized.copy()
             n_exec = min(args.n_actions, len(current_actions_10d))
             chunk_len = current_normalized.shape[0]
             shift = n_exec
@@ -626,15 +670,25 @@ def main():
 
             # ── Save rollout step ────────────────────────────────────
             if args.save_rollout and rollout_dir is not None:
-                deltas_7d_all = actions_10d_to_7d(current_actions_10d)
-                world_poses_all = accumulate_deltas(pose_world, deltas_7d_all)
+                # Executing chunk trajectory (the chunk we just ran)
+                exec_actions_10d = baseframework.unnormalize_actions(
+                    executing_normalized, action_stats)
+                exec_deltas_7d = actions_10d_to_7d(exec_actions_10d)
+                exec_poses_all = accumulate_deltas(pose_world, exec_deltas_7d)
+
+                # New RTC prediction trajectory
+                new_deltas_7d = actions_10d_to_7d(current_actions_10d)
+                # The new prediction starts from where execution ended
+                exec_end_pos = list(executed_targets[-1]) + list(pose_world[3:6])
+                new_poses_all = accumulate_deltas(exec_end_pos, new_deltas_7d)
 
                 # Offload viz to background thread (non-blocking)
                 viz_path = str(rollout_dir / "images" / f"step_{step:04d}_viz.png")
                 viz_executor.submit(
                     visualize_step,
-                    world_poses_all.copy(), pil_img.copy(), list(pose_world),
-                    n_exec, step, viz_path, args.instruction,
+                    exec_poses_all.copy(), new_poses_all.copy(),
+                    pil_img.copy(), list(pose_world),
+                    n_exec, actual_delay, step, viz_path, args.instruction,
                 )
 
                 step_data = {
@@ -644,9 +698,12 @@ def main():
                     "ee_pose_world": list(pose_world),
                     "gripper_state": current_gripper,
                     "state_10d": current_state_10d.tolist(),
+                    "executing_chunk_normalized": executing_normalized.tolist(),
+                    "inpainting_prefix_normalized": shifted_normalized.tolist(),
                     "pred_normalized": current_normalized.tolist(),
                     "pred_actions_10d_denorm": current_actions_10d.tolist(),
-                    "pred_trajectory_world": world_poses_all.tolist(),
+                    "exec_trajectory_world": exec_poses_all.tolist(),
+                    "new_trajectory_world": new_poses_all.tolist(),
                     "n_actions_executed": n_exec,
                     "executed_targets_world": executed_targets,
                     "inference_delay": actual_delay,
