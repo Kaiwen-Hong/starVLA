@@ -195,6 +195,81 @@ class Qwen_PI(baseframework):
         normalized_actions = pred_actions.detach().cpu().numpy()
         return {"normalized_actions": normalized_actions}
 
+    @torch.inference_mode()
+    def predict_action_realtime(
+        self,
+        examples: List[dict] = None,
+        prev_action_chunk_normalized: np.ndarray = None,
+        inference_delay: int = 1,
+        **kwargs,
+    ) -> dict:
+        """
+        RTC-aware flow-matching inference.
+
+        Fixes the first `inference_delay` timesteps of the action chunk to
+        the previous prediction (prefix inpainting) and denoises the
+        remaining positions via Euler integration with per-position flow time.
+
+        Args:
+            prev_action_chunk_normalized: (B, T, action_dim) *normalized*
+                continuous actions from the previous prediction.
+            inference_delay: how many leading timesteps to keep as prefix.
+
+        Returns:
+            dict with 'normalized_actions' (np.ndarray) [B, T, action_dim]
+        """
+        if prev_action_chunk_normalized is None or inference_delay <= 0:
+            return self.predict_action(examples, **kwargs)
+
+        if not isinstance(examples, list):
+            examples = [examples]
+
+        from deployment.model_server.tools.image_tools import to_pil_preserve
+        batch_images = [to_pil_preserve(example["image"]) for example in examples]
+        instructions = [example["lang"] for example in examples]
+        state = [example["state"] for example in examples] if "state" in examples[0] else None
+
+        train_obs_image_size = getattr(self.config.datasets.vla_data, "image_size", None)
+        if train_obs_image_size:
+            batch_images = resize_images(batch_images, target_size=train_obs_image_size)
+
+        qwen_inputs = self.qwen_vl_interface.build_qwenvl_inputs(
+            images=batch_images, instructions=instructions
+        )
+        with torch.autocast("cuda", dtype=torch.bfloat16):
+            qwenvl_outputs = self.qwen_vl_interface(
+                **qwen_inputs,
+                output_attentions=False,
+                output_hidden_states=True,
+                return_dict=True,
+            )
+            all_hidden = qwenvl_outputs.hidden_states
+            expected_layers = len(self.action_model.model.transformer_blocks)
+            vl_embs_list = list(all_hidden[-expected_layers:])
+            base_hidden = vl_embs_list[-1]
+
+        state_t = (
+            torch.from_numpy(np.array(state)).to(
+                base_hidden.device, dtype=base_hidden.dtype
+            )
+            if state is not None
+            else None
+        )
+
+        prev_chunk_t = torch.from_numpy(
+            np.array(prev_action_chunk_normalized)
+        ).to(base_hidden.device, dtype=torch.float32)
+
+        with torch.autocast("cuda", dtype=torch.float32):
+            pred_actions = self.action_model.predict_action_realtime(
+                vl_embs_list,
+                state_t,
+                prev_action_chunk=prev_chunk_t,
+                inference_delay=inference_delay,
+            )
+
+        normalized_actions = pred_actions.detach().cpu().numpy()
+        return {"normalized_actions": normalized_actions}
 
 
 if __name__ == "__main__":

@@ -382,6 +382,127 @@ class LayerwiseFlowmatchingActionHead(nn.Module):
             actions = actions + dt * pred_velocity
         return actions
 
+    @torch.no_grad()
+    def predict_action_realtime(
+        self,
+        vl_embs_list: list,
+        state: torch.Tensor = None,
+        prev_action_chunk: torch.Tensor = None,
+        inference_delay: int = 1,
+    ) -> torch.Tensor:
+        """
+        RTC-aware flow-matching inference.
+
+        Implements the "simulated delay" technique from the RTC paper:
+        for the first `inference_delay` timesteps of the action chunk,
+        replace the noisy actions with the previous chunk's (already denoised)
+        actions and set their flow time to 1.0.  The remaining positions start
+        from noise at t=0 and are denoised normally via Euler integration.
+
+        Args:
+            vl_embs_list: layer-wise VL embeddings, list of (B, seq, D).
+            state: optional state tensor (B, 1, state_dim).
+            prev_action_chunk: (B, action_horizon, action_dim) normalised
+                actions from the previous prediction.
+            inference_delay: number of leading timesteps to fix as prefix.
+
+        Returns:
+            actions: (B, action_horizon, action_dim) predicted actions.
+        """
+        if prev_action_chunk is None or inference_delay <= 0:
+            return self.predict_action(vl_embs_list, state)
+
+        batch_size = vl_embs_list[0].shape[0]
+        device = vl_embs_list[0].device
+        dtype = vl_embs_list[0].dtype
+
+        # Start from noise
+        actions = torch.randn(
+            size=(batch_size, self.action_horizon, self.action_dim),
+            dtype=dtype,
+            device=device,
+        )
+
+        num_steps = self.num_inference_timesteps
+        dt = 1.0 / num_steps
+
+        state_features = self.state_encoder(state) if state is not None else None
+
+        # Build a per-timestep mask: True for prefix positions
+        # mask shape: (1, action_horizon, 1) for broadcasting
+        prefix_mask = torch.zeros(1, self.action_horizon, 1, device=device, dtype=torch.bool)
+        prefix_mask[:, :inference_delay, :] = True
+
+        for t_step in range(num_steps):
+            t_cont = t_step / float(num_steps)
+
+            # --- RTC core: replace prefix positions with prev chunk at t=1 ---
+            actions = torch.where(prefix_mask, prev_action_chunk.to(dtype), actions)
+
+            # Build per-position time: prefix gets 1.0, rest gets current t
+            # time shape: (B, action_horizon)
+            time_per_pos = torch.full(
+                (batch_size, self.action_horizon), t_cont, device=device, dtype=torch.long
+            )
+            # For discretised bucket index:
+            t_bucket = int(t_cont * self.num_timestep_buckets)
+            t_bucket_prefix = int(1.0 * self.num_timestep_buckets) - 1  # bucket for t=1
+            timesteps_tensor = torch.full(
+                (batch_size, self.action_horizon), t_bucket, device=device, dtype=torch.long
+            )
+            timesteps_tensor[:, :inference_delay] = t_bucket_prefix
+
+            # --- Encode actions with per-position timesteps ---
+            # ActionEncoder expects timesteps of shape (B,) and replicates.
+            # We need per-position timesteps, so we call it differently.
+            # Inline the encoder logic with per-position time:
+            B, T, _ = actions.shape
+            a_emb = self.action_encoder.layer1(actions)
+            # timesteps_tensor is (B, T) already — use positional encoding directly
+            tau_emb = self.action_encoder.pos_encoding(timesteps_tensor).to(dtype=a_emb.dtype)
+            x_enc = torch.cat([a_emb, tau_emb], dim=-1)
+            x_enc = swish(self.action_encoder.layer2(x_enc))
+            action_features = self.action_encoder.layer3(x_enc)
+
+            # Maybe add position embedding
+            if self.config.add_pos_embed:
+                pos_ids = torch.arange(action_features.shape[1], dtype=torch.long, device=device)
+                pos_embs = self.position_embedding(pos_ids).unsqueeze(0)
+                action_features = action_features + pos_embs
+
+            future_tokens = self.future_tokens.weight.unsqueeze(0).expand(batch_size, -1, -1)
+            sa_embs = (
+                torch.cat((state_features, future_tokens, action_features), dim=1)
+                if state_features is not None
+                else torch.cat((future_tokens, action_features), dim=1)
+            )
+
+            # Timestep embedding for DiT: use the non-prefix time
+            temb_tensor = torch.full(
+                (batch_size,), t_bucket, device=device, dtype=torch.long
+            )
+            temb = self.model.timestep_encoder(temb_tensor)
+
+            # Layerwise cross-attention
+            model_output = sa_embs
+            for layer_idx, layer in enumerate(self.model.transformer_blocks):
+                model_output = layer(
+                    hidden_states=model_output,
+                    encoder_hidden_states=vl_embs_list[layer_idx],
+                    temb=temb,
+                )
+
+            pred = self.action_decoder(model_output)
+            pred_velocity = pred[:, -self.action_horizon:]
+
+            # Euler step — only update non-prefix positions
+            actions = actions + dt * pred_velocity
+            # Re-clamp prefix to prev chunk (will be done at start of next iter,
+            # but also ensure final output has correct prefix)
+            actions = torch.where(prefix_mask, prev_action_chunk.to(dtype), actions)
+
+        return actions
+
     @property
     def device(self):
         return next(iter(self.parameters())).device

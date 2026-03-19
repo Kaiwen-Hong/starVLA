@@ -298,6 +298,7 @@ class Qwen_DiscreteDiffusion(baseframework):
 
         decode_temperature = kwargs.get("decode_temperature", 0.1)
         choice_temperature = kwargs.get("choice_temperature", 0.1)
+        fixed_steps = kwargs.get("fixed_steps", False)
 
         with torch.autocast("cuda", dtype=torch.float32):
             pred_actions = self.action_model.predict_action_realtime(
@@ -307,6 +308,7 @@ class Qwen_DiscreteDiffusion(baseframework):
                 inference_delay=inference_delay,
                 choice_temperature=choice_temperature,
                 decode_temperature=decode_temperature,
+                fixed_steps=fixed_steps,
             )
 
         normalized_actions = pred_actions.detach().float().cpu().numpy()

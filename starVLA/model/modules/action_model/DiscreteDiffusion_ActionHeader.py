@@ -383,6 +383,7 @@ class DiscreteDiffusionActionHead(nn.Module):
         inference_delay: int = 1,
         choice_temperature: float = 0.1,
         decode_temperature: float = 1.0,
+        fixed_steps: bool = False,
     ) -> torch.Tensor:
         if prev_action_chunk is None or inference_delay <= 0:
             return self.predict_action(vl_embs, state, choice_temperature, decode_temperature)
@@ -393,6 +394,11 @@ class DiscreteDiffusionActionHead(nn.Module):
         deterministic = decode_temperature == 0
         deterministic_choice = choice_temperature == 0
         inference_delay = min(inference_delay, self.action_horizon)
+
+        if fixed_steps:
+            num_steps = self.num_inference_steps
+        else:
+            num_steps = max(1, int(self.num_inference_steps * inference_delay / self.action_horizon))
 
         prefix_bins = self.binning.encode(prev_action_chunk)
         prefix_mask = (
@@ -419,7 +425,7 @@ class DiscreteDiffusionActionHead(nn.Module):
         else:
             state_features = None
 
-        for step_idx in range(self.num_inference_steps):
+        for step_idx in range(num_steps):
             bit_logits = self._forward_logits(vl_embs, cur_seqs, state_features)
             safe_temp = max(decode_temperature, 1e-8)
             probs = F.softmax(bit_logits / safe_temp, dim=-1)
@@ -437,7 +443,7 @@ class DiscreteDiffusionActionHead(nn.Module):
             sampled = torch.where(prefix_mask, prefix_bins, sampled)
             sampled = torch.where(unknown_map, sampled, cur_seqs)
 
-            ratio = (step_idx + 1.0) / self.num_inference_steps
+            ratio = (step_idx + 1.0) / num_steps
             mask_ratio = decode_mask_schedule(
                 torch.tensor(ratio, device=device), self.decode_schedule
             )
@@ -446,7 +452,7 @@ class DiscreteDiffusionActionHead(nn.Module):
             max_len = (unknown_init - 1).clamp(min=0)
             mask_len = mask_len.clamp(min=min_len, max=max_len)
             is_last_step = torch.tensor(
-                step_idx == self.num_inference_steps - 1,
+                step_idx == num_steps - 1,
                 device=device,
                 dtype=torch.bool,
             )
