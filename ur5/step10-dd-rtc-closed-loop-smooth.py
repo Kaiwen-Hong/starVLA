@@ -644,6 +644,9 @@ def main():
     total_action_gen_ms = 0.0
     total_sending_ms = 0.0
     total_loop_ms = 0.0
+    total_wall_ms = 0.0
+    total_extra_wait_ms = 0.0
+    n_extra_waits = 0
     try:
         while args.max_steps == 0 or step < args.max_steps:
             loop_t0 = time.monotonic()
@@ -738,12 +741,13 @@ def main():
             send_ms = (time.monotonic() - t_send_start) * 1000
 
             # 6b. Wait for background camera+inference to complete
+            extra_wait_ms = 0.0
             if not async_infer.is_done:
                 t_wait_start = time.monotonic()
-                print(f"  [WAIT] Inference not done after execution, waiting...", end="", flush=True)
                 next_output = async_infer.wait(timeout=10.0)
-                extra_wait = (time.monotonic() - t_wait_start) * 1000
-                print(f" {extra_wait:.0f}ms")
+                extra_wait_ms = (time.monotonic() - t_wait_start) * 1000
+                n_extra_waits += 1
+                total_extra_wait_ms += extra_wait_ms
             else:
                 next_output = async_infer.wait(timeout=10.0)
 
@@ -762,7 +766,7 @@ def main():
                     current_normalized, action_stats
                 )
 
-            total_ms = (time.monotonic() - loop_t0) * 1000
+            wall_ms = (time.monotonic() - loop_t0) * 1000
 
             # Accumulate timing
             step_total_ms = obs_ms + infer_ms + send_ms
@@ -770,13 +774,27 @@ def main():
             total_action_gen_ms += infer_ms
             total_sending_ms += send_ms
             total_loop_ms += step_total_ms
+            total_wall_ms += wall_ms
 
-            print(f"[step {step:4d}]  total={step_total_ms:5.0f}ms  "
+            # Action magnitude for this chunk
+            deltas_3d = np.array([action_10d_to_delta7d(current_actions_10d[i])[:3]
+                                  for i in range(n_exec)])
+            max_delta = np.abs(deltas_3d).max()
+            total_disp = np.linalg.norm(deltas_3d.sum(axis=0))
+            z_above_table = pose_world[2] - Z_MIN_WORLD
+
+            step_hz = 1000.0 / wall_ms if wall_ms > 0 else 0.0
+            wait_tag = f"  WAIT={extra_wait_ms:.0f}ms" if extra_wait_ms > 0 else ""
+
+            print(f"[step {step:4d}]  wall={wall_ms:5.0f}ms ({step_hz:4.1f}Hz)  "
                   f"obs={obs_ms:5.0f}ms  action_gen={infer_ms:5.0f}ms  "
                   f"send={send_ms:5.0f}ms  "
                   f"delay={actual_delay}  "
                   f"pos=[{pose_world[0]:.3f}, {pose_world[1]:.3f}, {pose_world[2]:.3f}]  "
-                  f"grip={'C' if current_gripper > 0.5 else 'O'}")
+                  f"z_above={z_above_table:.3f}m  "
+                  f"disp={total_disp:.4f}m  max_d={max_delta:.4f}m  "
+                  f"grip={'C' if current_gripper > 0.5 else 'O'}"
+                  f"{wait_tag}")
 
             # ── Save rollout step ────────────────────────────────────
             if args.save_rollout and rollout_dir is not None:
@@ -817,10 +835,13 @@ def main():
                     "n_actions_executed": n_exec,
                     "executed_targets_world": executed_targets,
                     "inference_delay": actual_delay,
+                    "obs_ms": round(obs_ms, 1),
                     "infer_ms": round(infer_ms, 1),
+                    "send_ms": round(send_ms, 1),
                     "exec_ms": round(exec_ms, 1),
-                    "infer_hidden_ms": round(infer_hidden, 1),
-                    "total_ms": round(total_ms, 1),
+                    "extra_wait_ms": round(extra_wait_ms, 1),
+                    "step_total_ms": round(step_total_ms, 1),
+                    "wall_ms": round(wall_ms, 1),
                     "viz_file": f"images/step_{step:04d}_viz.png",
                 }
                 rollout_log.append(step_data)
@@ -856,13 +877,21 @@ def main():
 
         # ── Timing summary ─────────────────────────────────────────
         if step > 0:
+            avg_wall = total_wall_ms / step
+            avg_hz = 1000.0 / avg_wall if avg_wall > 0 else 0.0
             print(f"\n{'=' * 60}")
-            print(f"  Avg Timing per Step ({step} steps)")
+            print(f"  Timing Summary ({step} steps)")
             print(f"{'=' * 60}")
-            print(f"  Total inference time:    {total_loop_ms / step:6.1f}ms")
-            print(f"  Observation time:        {total_observation_ms / step:6.1f}ms")
-            print(f"  Action generation time:  {total_action_gen_ms / step:6.1f}ms")
-            print(f"  Sending action time:     {total_sending_ms / step:6.1f}ms")
+            print(f"  Avg wall-clock per step: {avg_wall:6.1f}ms  ({avg_hz:.1f}Hz)")
+            print(f"  ├─ Observation time:     {total_observation_ms / step:6.1f}ms")
+            print(f"  ├─ Action generation:    {total_action_gen_ms / step:6.1f}ms")
+            print(f"  ├─ Sending action:       {total_sending_ms / step:6.1f}ms")
+            print(f"  └─ Sum (obs+gen+send):   {total_loop_ms / step:6.1f}ms")
+            if n_extra_waits > 0:
+                print(f"  Extra waits:  {n_extra_waits}/{step} steps "
+                      f"(avg {total_extra_wait_ms / n_extra_waits:.0f}ms when waiting)")
+            else:
+                print(f"  Extra waits:  0/{step} steps (inference always hidden)")
             print(f"{'=' * 60}")
         print(f"Done. Executed {step} inference steps.")
 
