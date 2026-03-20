@@ -14,7 +14,7 @@ This is the SYNCHRONOUS version: observe -> infer -> execute, no overlap.
 
 Usage:
     python ur5/step9-c-closed-loop-smooth-with_website.py
-    python ur5/step9-c-closed-loop-smooth-with_website.py --n_actions 14 --arm left
+    python ur5/step9-c-closed-loop-smooth-with_website.py --n_actions 8 --no_save_rollout
     python ur5/step9-c-closed-loop-smooth-with_website.py --stopwatch_port 8765
 """
 
@@ -730,7 +730,7 @@ def main():
         "--checkpoint", type=str,
         default="checkpoints/DiscreteRTC/"
                 "fastumi_pickandplace_qwenPI_no_state_fixgripper/"
-                "checkpoints/steps_10000_pytorch_model.pt",
+                "checkpoints/steps_25000_pytorch_model.pt",
     )
     parser.add_argument("--arm", choices=["left", "right"], default="left")
     parser.add_argument("--camera_dev", type=int, default=0)
@@ -771,6 +771,12 @@ def main():
 
     # -- Load model --
     model = load_model(args.checkpoint)
+    # Fix: ensure image_size is set so inference resizes camera frames to match training resolution.
+    # The QwenPI checkpoint config may lack this field, causing 1080x1080 camera images to be
+    # fed directly to the VLM instead of being resized to the ~256x256 training resolution.
+    if not getattr(model.config.datasets.vla_data, "image_size", None):
+        model.config.datasets.vla_data.image_size = [224, 224]
+        print("[FIX] Set image_size=[224,224] (was missing from checkpoint config)")
     norm_stats = model.norm_stats
     dataset_key = list(norm_stats.keys())[0]
     action_stats = norm_stats[dataset_key]["action"]

@@ -14,6 +14,8 @@ Usage:
     python ur5/step10-dd-rtc-closed-loop-smooth-with_website.py
     python ur5/step10-dd-rtc-closed-loop-smooth-with_website.py --n_actions 14 --arm left
     python ur5/step10-dd-rtc-closed-loop-smooth-with_website.py --stopwatch_port 8765
+    python ur5/step10-dd-rtc-closed-loop-smooth-with_website.py --n_actions 8 --inference_delay 8 --arm left --no_save_rollout --no_fixed_steps
+
 """
 
 import sys
@@ -891,7 +893,7 @@ def main():
         "--checkpoint", type=str,
         default="checkpoints/DiscreteRTC/"
                 "fastumi_pickandplace_discrete_diffusion_real_0314_no_state_fixgripper/"
-                "checkpoints/steps_15000_pytorch_model.pt",
+                "checkpoints/steps_25000_pytorch_model.pt",
     )
     parser.add_argument("--arm", choices=["left", "right"], default="left")
     parser.add_argument("--camera_dev", type=int, default=0)

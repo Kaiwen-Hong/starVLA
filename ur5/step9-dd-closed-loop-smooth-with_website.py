@@ -12,7 +12,7 @@ This is the SYNCHRONOUS version: observe -> infer -> execute, no overlap.
 
 Usage:
     python ur5/step9-dd-closed-loop-smooth-with_website.py
-    python ur5/step9-dd-closed-loop-smooth-with_website.py --n_actions 14 --arm left
+    python ur5/step9-dd-closed-loop-smooth-with_website.py --n_actions 8 --no_save_rollout
     python ur5/step9-dd-closed-loop-smooth-with_website.py --stopwatch_port 8765
 """
 

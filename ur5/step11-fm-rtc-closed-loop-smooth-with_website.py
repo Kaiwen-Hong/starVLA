@@ -844,9 +844,9 @@ def main():
         description="Closed-loop control with FM RTC + smooth servoL + website stopwatch")
     parser.add_argument(
         "--checkpoint", type=str,
-        default="checkpoints/FlowMatchingRTC/"
-                "fm_pickandplace_real/"
-                "checkpoints/steps_15000_pytorch_model.pt",
+        default="checkpoints/DiscreteRTC/"
+                "fastumi_pickandplace_qwenPI_no_state_fixgripper/"
+                "checkpoints/steps_25000_pytorch_model.pt",
     )
     parser.add_argument("--arm", choices=["left", "right"], default="left")
     parser.add_argument("--camera_dev", type=int, default=0)
@@ -892,6 +892,10 @@ def main():
 
     # -- Load model --
     model = load_model(args.checkpoint)
+    # Fix: ensure image_size is set so inference resizes camera frames to match training resolution.
+    if not getattr(model.config.datasets.vla_data, "image_size", None):
+        model.config.datasets.vla_data.image_size = [224, 224]
+        print("[FIX] Set image_size=[224,224] (was missing from checkpoint config)")
     norm_stats = model.norm_stats
     dataset_key = list(norm_stats.keys())[0]
     action_stats = norm_stats[dataset_key]["action"]
