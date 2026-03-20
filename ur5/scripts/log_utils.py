@@ -29,18 +29,13 @@ class TimingTracker:
         self.infer_ms = 0.0
         self.send_ms = 0.0
         self.wall_ms = 0.0
-        self.extra_wait_ms = 0.0
-        self.n_extra_waits = 0
 
-    def record(self, obs_ms, infer_ms, send_ms, wall_ms, extra_wait_ms=0.0):
+    def record(self, obs_ms, infer_ms, send_ms, wall_ms):
         self.steps += 1
         self.obs_ms += obs_ms
         self.infer_ms += infer_ms
         self.send_ms += send_ms
         self.wall_ms += wall_ms
-        if extra_wait_ms > 0:
-            self.extra_wait_ms += extra_wait_ms
-            self.n_extra_waits += 1
 
     def summary(self):
         if self.steps == 0:
@@ -53,12 +48,10 @@ class TimingTracker:
         print(f"{'=' * 60}")
         print(f"  Avg wall-clock per step: {avg_wall:6.1f}ms  ({avg_hz:.1f}Hz)")
         print(f"  ├─ Observation:          {self.obs_ms / n:6.1f}ms")
-        print(f"  ├─ Action generation:    {self.infer_ms / n:6.1f}ms")
-        print(f"  ├─ Sending action:       {self.send_ms / n:6.1f}ms")
-        print(f"  └─ Sum (obs+gen+send):   {(self.obs_ms + self.infer_ms + self.send_ms) / n:6.1f}ms")
-        if self.n_extra_waits > 0:
-            print(f"  Extra waits: {self.n_extra_waits}x, total={self.extra_wait_ms:.0f}ms, "
-                  f"avg={self.extra_wait_ms / self.n_extra_waits:.0f}ms")
+        print(f"  ├─ Inference:            {self.infer_ms / n:6.1f}ms")
+        if self.send_ms > 0:
+            print(f"  ├─ Execution:            {self.send_ms / n:6.1f}ms")
+        print(f"  └─ Sum:                  {(self.obs_ms + self.infer_ms + self.send_ms) / n:6.1f}ms")
         print(f"{'=' * 60}")
 
 

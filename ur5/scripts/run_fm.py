@@ -2,9 +2,9 @@
 """Unified closed-loop control with flow matching (continuous / QwenPI).
 
 Supports three execution modes via --mode:
-  sync        : observe -> infer -> execute (sequential, no overlap)
-  async       : overlaps inference with execution (no RTC prefix)
-  rtc         : overlaps inference with execution + RTC prefix inpainting
+  sync  : observe -> infer -> execute (sequential, no overlap)
+  async : gap-free 100Hz servo thread + async inference (no RTC prefix)
+  rtc   : gap-free 100Hz servo thread + async inference + RTC prefix inpainting
 
 Usage:
     python ur5/scripts/run_fm.py --mode sync

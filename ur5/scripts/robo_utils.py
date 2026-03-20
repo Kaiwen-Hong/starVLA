@@ -3,6 +3,7 @@
 import os
 import sys
 import time
+import collections
 import threading
 from pathlib import Path
 
@@ -384,6 +385,130 @@ def check_grasp_done(pose_world, current_gripper, visited_near_table,
 
 
 # ═════════════════════════════════════════════════════════════════════
+#  Continuous servo runner (gap-free execution)
+# ═════════════════════════════════════════════════════════════════════
+
+class ServoRunner:
+    """Daemon thread that continuously sends servoL at 100Hz from a waypoint buffer.
+
+    The thread never stops between chunks — it just consumes poses from a deque.
+    When the buffer is empty, it holds the last pose (no servoStop).
+    New waypoints are appended by the main thread whenever inference completes.
+
+    Gripper transitions are posted via push_waypoints() and executed in the servo
+    thread to avoid blocking the main thread.
+    """
+
+    def __init__(self, rtde_c, T_bw, gripper_hw):
+        self._rtde_c = rtde_c
+        self._T_bw = T_bw
+        self._gripper_hw = gripper_hw
+        self._buffer = collections.deque()       # (pose_world_6d,) at 100Hz
+        self._lock = threading.Lock()
+        self._running = False
+        self._thread = None
+        self._last_pose = None                   # last sent pose (world frame)
+        self._gripper_cmd = None                 # pending gripper pos (0-255) or None
+        self._gripper_lock = threading.Lock()
+        self._current_gripper = 0.0              # last known gripper state (0 or 1 scale)
+        self._poses_consumed = 0                 # total poses consumed (for timing)
+        self._starve_count = 0                   # how many ticks the buffer was empty
+
+    def start(self, initial_pose_world):
+        """Start the servo thread. initial_pose_world: (6,) current EE pose."""
+        self._last_pose = np.array(initial_pose_world[:6], dtype=np.float64)
+        self._running = True
+        self._poses_consumed = 0
+        self._starve_count = 0
+        self._thread = threading.Thread(target=self._loop, daemon=True)
+        self._thread.start()
+
+    def stop(self):
+        """Stop the servo thread and call servoStop."""
+        self._running = False
+        if self._thread:
+            self._thread.join(timeout=2.0)
+        try:
+            self._rtde_c.servoStop()
+        except Exception:
+            pass
+
+    def push_waypoints(self, current_pos, waypoints_20hz, gripper_transitions=None):
+        """Interpolate 20Hz waypoints to 100Hz and append to the buffer.
+
+        current_pos: (6,) start pose for interpolation (typically the last
+                     pose the servo thread consumed, or current EE pose).
+        waypoints_20hz: (N, 6) absolute world-frame waypoints at 20Hz.
+        gripper_transitions: [(index, value), ...] from compute_waypoints.
+        """
+        interp = interpolate_waypoints(current_pos, waypoints_20hz, INTERP_MULT)
+        with self._lock:
+            self._buffer.extend(interp)
+
+        # Handle gripper asynchronously
+        if gripper_transitions:
+            for _, new_val in gripper_transitions:
+                if (new_val > 0.5) != (self._current_gripper > 0.5):
+                    self._current_gripper = new_val
+                    with self._gripper_lock:
+                        self._gripper_cmd = int(new_val * 255)
+
+    @property
+    def buffer_len(self):
+        with self._lock:
+            return len(self._buffer)
+
+    @property
+    def last_pose(self):
+        return self._last_pose.copy() if self._last_pose is not None else None
+
+    @property
+    def current_gripper(self):
+        return self._current_gripper
+
+    @current_gripper.setter
+    def current_gripper(self, val):
+        self._current_gripper = val
+
+    @property
+    def starve_count(self):
+        return self._starve_count
+
+    def _loop(self):
+        servo_dt = 1.0 / SERVO_HZ
+        t_next = time.monotonic() + servo_dt
+
+        while self._running:
+            # Check for pending gripper command (non-blocking)
+            with self._gripper_lock:
+                grip_cmd = self._gripper_cmd
+                self._gripper_cmd = None
+            if grip_cmd is not None:
+                label = "CLOSE" if grip_cmd > 127 else "OPEN"
+                print(f"  Gripper -> {label} (pos={grip_cmd})")
+                self._gripper_hw.move(grip_cmd, 255, 150)
+
+            # Pop next pose or hold last
+            pose = None
+            with self._lock:
+                if self._buffer:
+                    pose = self._buffer.popleft()
+                    self._poses_consumed += 1
+                else:
+                    self._starve_count += 1
+
+            if pose is not None:
+                self._last_pose = pose
+            # Always send a servoL (either new pose or hold last)
+            if self._last_pose is not None:
+                target_base = world_to_base(self._last_pose.tolist(), self._T_bw)
+                self._rtde_c.servoL(target_base, 0, 0, servo_dt, 0.2, 200)
+
+            precise_wait(t_next)
+            t_next += servo_dt
+
+
+# ═════════════════════════════════════════════════════════════════════
 #  Shared control loops & main harness
 # ═════════════════════════════════════════════════════════════════════
 
@@ -425,7 +550,7 @@ def _print_step(step, wall_ms, obs_ms, infer_ms, send_ms,
 def _build_step_data(step, wall_time, pose_base, pose_world, gripper,
                      state_10d, normalized, actions_10d, poses,
                      n_exec, waypoints, obs_ms, infer_ms, send_ms,
-                     exec_ms, wall_ms, extra_wait_ms=0.0, inference_delay=None):
+                     exec_ms, wall_ms, inference_delay=None):
     d = {
         "step": step, "wall_time": wall_time,
         "ee_pose_base": list(pose_base), "ee_pose_world": list(pose_world),
@@ -440,8 +565,6 @@ def _build_step_data(step, wall_time, pose_base, pose_world, gripper,
         "wall_ms": round(wall_ms, 1),
         "viz_file": f"images/step_{step:04d}_viz.png",
     }
-    if extra_wait_ms > 0:
-        d["extra_wait_ms"] = round(extra_wait_ms, 1)
     if inference_delay is not None:
         d["inference_delay"] = inference_delay
     return d
@@ -455,8 +578,7 @@ def _save_rollout_step(saver, mode, step, wall_time, pose_base, pose_world,
                        pred_normalized=None, pred_actions=None,
                        # async/rtc-only
                        executing_normalized=None, current_actions=None,
-                       action_stats=None, actual_delay=0,
-                       extra_wait_ms=0.0):
+                       action_stats=None, actual_delay=0):
     """Save viz + step data to rollout saver."""
     from scripts.log_utils import visualize_step
 
@@ -485,7 +607,6 @@ def _save_rollout_step(saver, mode, step, wall_time, pose_base, pose_world,
             step, wall_time, pose_base, pose_world, current_gripper,
             state_10d, executing_normalized, exec_actions, exec_poses,
             n_exec, waypoints, obs_ms, infer_ms, send_ms, exec_ms, wall_ms,
-            extra_wait_ms=extra_wait_ms,
             inference_delay=actual_delay if mode == "rtc" else None))
 
 
@@ -545,17 +666,25 @@ def run_sync(args, model, action_stats, cam, rtde_c, rtde_r, gripper_hw,
     return step
 
 
-# ── Async / RTC control loop ─────────────────────────────────────────
+# ── Async / RTC control loop (continuous servo) ──────────────────────
 
 def run_async(args, model, action_stats, cam, rtde_c, rtde_r, gripper_hw,
               T_bw, infer_kwargs, saver, timer):
-    """Async (with or without RTC): overlaps inference with execution."""
+    """Async execution with continuous gap-free servo.
+
+    A daemon thread sends servoL at 100Hz from a waypoint buffer. The main
+    thread runs inference in the background and pushes new waypoints into the
+    buffer when ready. The servo thread never stops between chunks, eliminating
+    inter-chunk pauses entirely.
+
+    For mode=async: no RTC prefix, uses predict_action() in background.
+    For mode=rtc:   shifted prefix, uses predict_action_realtime() in background.
+    """
     use_rtc = (args.mode == "rtc")
-    current_gripper = 0.0
     visited_near_table = False
 
     # Step 0: initial sync inference (no prefix)
-    _, pose_world, state_10d, _ = _read_state(rtde_r, T_bw, current_gripper)
+    pose_base, pose_world, state_10d, current_pos = _read_state(rtde_r, T_bw, 0.0)
     pil_img = cam.grab_pil()
     while pil_img is None:
         pil_img = cam.grab_pil()
@@ -568,86 +697,101 @@ def run_async(args, model, action_stats, cam, rtde_c, rtde_r, gripper_hw,
 
     current_normalized = output["normalized_actions"][0].astype(np.float32)
     current_actions = baseframework.unnormalize_actions(current_normalized, action_stats)
+
+    # Start continuous servo thread
+    servo = ServoRunner(rtde_c, T_bw, gripper_hw)
+    servo.start(current_pos)
+
+    # Push first chunk into the buffer
+    n_exec = min(args.n_actions, len(current_actions))
+    waypoints, grip_trans = compute_waypoints(
+        current_pos, current_actions, n_exec, args.fix_rotation)
+    servo.push_waypoints(current_pos, waypoints, grip_trans)
+
     async_infer = AsyncInference()
-
     step = 0
-    while args.max_steps == 0 or step < args.max_steps:
-        loop_t0 = time.monotonic()
-        wall_time = time.time()
 
-        pose_base, pose_world, state_10d, current_pos = _read_state(rtde_r, T_bw, current_gripper)
-        done, visited_near_table = check_grasp_done(
-            pose_world, current_gripper, visited_near_table, args.grasp_lift_threshold)
-        if args.stop_when_grasping and done:
-            break
+    try:
+        while args.max_steps == 0 or step < args.max_steps:
+            loop_t0 = time.monotonic()
+            wall_time = time.time()
 
-        # Build RTC prefix (or None for async mode)
-        executing_normalized = current_normalized.copy()
-        n_exec = min(args.n_actions, len(current_actions))
-        chunk_len = current_normalized.shape[0]
+            # Read state (servo thread keeps running in background)
+            pose_base, pose_world, state_10d, current_pos = (
+                _read_state(rtde_r, T_bw, servo.current_gripper))
+            done, visited_near_table = check_grasp_done(
+                pose_world, servo.current_gripper, visited_near_table,
+                args.grasp_lift_threshold)
+            if args.stop_when_grasping and done:
+                break
 
-        if use_rtc:
-            shift = n_exec
-            shifted = np.zeros_like(current_normalized)
-            if shift < chunk_len:
-                shifted[:chunk_len - shift] = current_normalized[shift:]
-            actual_delay = min(args.inference_delay, chunk_len - shift) if shift < chunk_len else 0
-            prev_norm_batch = shifted[np.newaxis, ...] if actual_delay > 0 else None
-        else:
-            actual_delay = 0
-            prev_norm_batch = None
+            # Build RTC prefix (or None for async mode)
+            executing_normalized = current_normalized.copy()
+            n_exec = min(args.n_actions, len(current_actions))
+            chunk_len = current_normalized.shape[0]
 
-        # Launch background camera + inference
-        state_for_model = state_10d if args.include_state else None
-        async_infer.start(model, cam, args.instruction, state_for_model,
-                          prev_normalized=prev_norm_batch,
-                          inference_delay=actual_delay, infer_kwargs=infer_kwargs)
+            if use_rtc:
+                shift = n_exec
+                shifted = np.zeros_like(current_normalized)
+                if shift < chunk_len:
+                    shifted[:chunk_len - shift] = current_normalized[shift:]
+                actual_delay = min(args.inference_delay, chunk_len - shift) if shift < chunk_len else 0
+                prev_norm_batch = shifted[np.newaxis, ...] if actual_delay > 0 else None
+            else:
+                actual_delay = 0
+                prev_norm_batch = None
 
-        # Execute current chunk (overlaps with inference)
-        exec_ms, send_ms, waypoints, current_gripper = _execute_chunk(
-            rtde_c, current_pos, current_actions, n_exec, args.fix_rotation,
-            T_bw, gripper_hw, current_gripper)
+            # Launch background inference (servo keeps running from buffer)
+            state_for_model = state_10d if args.include_state else None
+            async_infer.start(model, cam, args.instruction, state_for_model,
+                              prev_normalized=prev_norm_batch,
+                              inference_delay=actual_delay, infer_kwargs=infer_kwargs)
 
-        # Wait for background inference
-        extra_wait_ms = 0.0
-        if not async_infer.is_done:
-            t_wait = time.monotonic()
-            next_output = async_infer.wait(timeout=10.0)
-            extra_wait_ms = (time.monotonic() - t_wait) * 1000
-        else:
-            next_output = async_infer.wait(timeout=10.0)
+            # Wait for inference (servo thread keeps consuming the buffer)
+            next_output = async_infer.wait(timeout=30.0)
+            pil_img = async_infer.camera_image
+            obs_ms = async_infer.obs_ms
+            infer_ms = async_infer.infer_ms
 
-        pil_img = async_infer.camera_image
-        obs_ms = async_infer.obs_ms
-        infer_ms = async_infer.infer_ms
+            if next_output is None:
+                print("[ERROR] Inference timed out, reusing current chunk")
+            else:
+                current_normalized = next_output["normalized_actions"][0].astype(np.float32)
+                current_actions = baseframework.unnormalize_actions(
+                    current_normalized, action_stats)
 
-        if next_output is None:
-            print("[ERROR] Inference timed out, reusing current chunk")
-        else:
-            current_normalized = next_output["normalized_actions"][0].astype(np.float32)
-            current_actions = baseframework.unnormalize_actions(current_normalized, action_stats)
+            # Push new waypoints into servo buffer (no gap, no servoStop)
+            n_exec = min(args.n_actions, len(current_actions))
+            start_pos = servo.last_pose if servo.last_pose is not None else current_pos
+            waypoints, grip_trans = compute_waypoints(
+                start_pos, current_actions, n_exec, args.fix_rotation)
+            servo.push_waypoints(start_pos, waypoints, grip_trans)
 
-        wall_ms = (time.monotonic() - loop_t0) * 1000
-        timer.record(obs_ms, infer_ms, send_ms, wall_ms, extra_wait_ms)
+            wall_ms = (time.monotonic() - loop_t0) * 1000
+            send_ms = 0.0  # waypoints pushed instantly into buffer
+            timer.record(obs_ms, infer_ms, send_ms, wall_ms)
 
-        suffix = ""
-        if use_rtc:
-            suffix += f"  delay={actual_delay}"
-        if extra_wait_ms > 0:
-            suffix += f"  WAIT={extra_wait_ms:.0f}ms"
-        _print_step(step, wall_ms, obs_ms, infer_ms, send_ms,
-                    pose_world, current_gripper, current_actions, n_exec, suffix)
+            buf_len = servo.buffer_len
+            suffix = f"  buf={buf_len}"
+            if use_rtc:
+                suffix += f"  delay={actual_delay}"
+            if servo.starve_count > 0:
+                suffix += f"  starved={servo.starve_count}"
+            _print_step(step, wall_ms, obs_ms, infer_ms, send_ms,
+                        pose_world, servo.current_gripper, current_actions, n_exec, suffix)
 
-        if saver:
-            _save_rollout_step(saver, args.mode, step, wall_time, pose_base, pose_world,
-                               current_gripper, state_10d, args.instruction,
-                               obs_ms, infer_ms, send_ms, exec_ms, wall_ms,
-                               n_exec, waypoints, pil_img,
-                               executing_normalized=executing_normalized,
-                               current_actions=current_actions,
-                               action_stats=action_stats, actual_delay=actual_delay,
-                               extra_wait_ms=extra_wait_ms)
-        step += 1
+            if saver:
+                _save_rollout_step(saver, args.mode, step, wall_time, pose_base, pose_world,
+                                   servo.current_gripper, state_10d, args.instruction,
+                                   obs_ms, infer_ms, send_ms, 0.0, wall_ms,
+                                   n_exec, waypoints, pil_img,
+                                   executing_normalized=executing_normalized,
+                                   current_actions=current_actions,
+                                   action_stats=action_stats, actual_delay=actual_delay)
+            step += 1
+
+    finally:
+        servo.stop()
 
     return step
 
@@ -689,7 +833,10 @@ def run_main(args, model, action_stats, dataset_key,
     print(f"  Actions/step:       {args.n_actions}")
     if args.mode == "rtc":
         print(f"  Inference delay:    {args.inference_delay}")
-    print(f"  Servo:              {CONTROL_HZ}Hz x {INTERP_MULT} = {SERVO_HZ}Hz")
+    if args.mode in ("async", "rtc"):
+        print(f"  Servo:              {SERVO_HZ}Hz continuous (gap-free)")
+    else:
+        print(f"  Servo:              {CONTROL_HZ}Hz x {INTERP_MULT} = {SERVO_HZ}Hz")
     print(f"  Z safety:           {Z_MIN_WORLD:.4f}m")
     print(f"  Include state:      {args.include_state}")
     for k, v in (extra_config or {}).items():
@@ -725,15 +872,11 @@ def run_main(args, model, action_stats, dataset_key,
     print("[STOPWATCH] Started")
 
     step = 0
+    loop_fn = run_sync if args.mode == "sync" else run_async
     try:
-        if args.mode == "sync":
-            step = run_sync(args, model, action_stats, cam,
-                            rtde_c, rtde_r, gripper_hw, T_bw,
-                            infer_kwargs, saver, timer)
-        else:
-            step = run_async(args, model, action_stats, cam,
-                             rtde_c, rtde_r, gripper_hw, T_bw,
-                             infer_kwargs, saver, timer)
+        step = loop_fn(args, model, action_stats, cam,
+                       rtde_c, rtde_r, gripper_hw, T_bw,
+                       infer_kwargs, saver, timer)
     except KeyboardInterrupt:
         print("\n\nStopped by user (Ctrl+C)")
     except Exception as e:
