@@ -201,9 +201,9 @@ class Inferencer:
             n_push = min(self._n_actions, len(actions_to_push))
             actions_to_push = actions_to_push[:n_push]
             start_pos = self._servo.last_pose
-            waypoints, _ = compute_waypoints(
+            waypoints, grip_trans = compute_waypoints(
                 start_pos, actions_to_push, n_push, self._fix_rotation)
-            self._servo.push_waypoints(start_pos, waypoints)
+            self._servo.push_waypoints(start_pos, waypoints, grip_trans)
 
             # 5. This prediction becomes the current chunk for next cycle
             current_normalized = new_normalized
