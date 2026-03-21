@@ -451,35 +451,28 @@ def run_sync(args, model, action_stats, cam, rtde_c, rtde_r, gripper_hw,
 
 def run_async(args, model, action_stats, cam, rtde_c, rtde_r, gripper_hw,
               T_bw, infer_kwargs, saver, timer):
-    """Async execution with continuous gap-free servo + fixed-cadence inference.
+    """Async execution with continuous gap-free servo + self-looping inferencer.
 
-    Follows Algorithm 1 from the RTC paper:
+    Two daemon threads run autonomously:
 
-      ServoRunner (GETACTION):
-        - 100Hz daemon thread, consumes from buffer, increments action_t.
-        - action_t counts 20Hz actions consumed (= paper's t).
+      ServoRunner: 100Hz, pops from buffer, sends servoL, increments action_t.
+      Inferencer:  self-looping — waits for cadence boundary, infers, pushes
+                   free actions into servo buffer, repeats. No main-loop
+                   handshake needed.
 
-      Inferencer (INFERENCELOOP):
-        - Persistent worker thread, watches servo.action_t.
-        - Waits until action_t >= chunk_start_t + n_actions (paper: t >= s_min).
-        - Snapshots s = actions consumed, builds A_prev = A_cur[s:] (shifted prefix).
-        - Runs camera capture + inference with prefix.
-        - Posts result with actual_delay from the shift.
-
-      Main loop:
-        - Collects inference result.
-        - Swaps in new chunk (paper line 20: A_cur = A_new).
-        - Pushes free actions (skip prefix) into servo buffer.
-        - Submits next job with the new chunk.
+    The main loop only:
+      - Reads inference results (non-blocking) for logging.
+      - Checks grasp-done stop condition.
+      - Sleeps briefly to avoid busy-waiting.
 
     Execution rhythm (chunk_len=16, n_actions=8, inference_delay=8):
 
       t=0 :  sync inference -> 16 actions.
-             Push first n_actions into buffer, start servo + inferencer.
-             Submit first job (inferencer waits for action_t=8).
-      t=8 :  inferencer fires, runs inference.
-             Main loop collects result, pushes 8 free actions, submits next.
-      t=16:  repeat.
+             Push first n_actions into buffer.
+             Start inferencer (fires immediately: camera + infer + push).
+             Start servo.
+      t=8 :  inferencer waits for boundary, fires again, pushes 8 more.
+      t=16:  repeat — fully autonomous.
     """
     from scripts.servo import ServoRunner
     from scripts.inferencer import Inferencer
@@ -504,107 +497,73 @@ def run_async(args, model, action_stats, cam, rtde_c, rtde_r, gripper_hw,
     chunk_len = current_normalized.shape[0]
     n_actions = min(args.n_actions, chunk_len)
 
-    # ── Push first n_actions into buffer (servo not started yet) ──────
+    # ── Prepare servo buffer (not started yet) ────────────────────────
     servo = ServoRunner(rtde_c, T_bw, gripper_hw)
     waypoints, grip_trans = compute_waypoints(
         current_pos, current_actions, n_actions, args.fix_rotation)
     servo.push_waypoints(current_pos, waypoints, grip_trans)
 
-    # ── Start servo + inferencer ──────────────────────────────────────
-    servo.start(current_pos)
-
+    # ── Create inferencer and start it BEFORE servo ───────────────────
+    #    First cycle fires immediately (no cadence wait).
     inferencer = Inferencer(
         model, cam, servo, n_actions, args.inference_delay,
-        args.instruction, infer_kwargs, use_rtc=use_rtc)
+        args.instruction, infer_kwargs, action_stats,
+        fix_rotation=args.fix_rotation, use_rtc=use_rtc,
+        include_state=args.include_state, rtde_r=rtde_r, T_bw=T_bw)
+    inferencer.start(current_normalized, chunk_len)
 
-    # Submit first job — inferencer watches servo.action_t, will wait
-    # for n_actions consumed, then build prefix from current_normalized
-    state_for_model = state_10d if args.include_state else None
-    inferencer.submit(state_for_model, current_normalized, chunk_len)
-
-    step = 0
+    # ── Start servo — both threads now run autonomously ───────────────
+    servo.start(current_pos)
 
     try:
-        while args.max_steps == 0 or step < args.max_steps:
-            loop_t0 = time.monotonic()
-            wall_time = time.time()
-
-            # 1. Wait for inferencer result
-            #    (inferencer internally waits for cadence boundary,
-            #     builds prefix, runs camera + inference, posts result)
+        while args.max_steps == 0 or servo.action_t < args.max_steps:
+            # Wait for next inference result (paced by inferencer cadence)
             result = inferencer.wait_result(timeout=60.0)
+            if result is None:
+                continue
 
-            # 2. Read robot state
-            pose_base, pose_world, state_10d, current_pos = (
-                _read_state(rtde_r, T_bw, servo.current_gripper))
+            step = servo.action_t
+
+            # ── Grasp-done check ──────────────────────────────────────
+            pose_base = rtde_r.getActualTCPPose()
+            pose_world = base_to_world(pose_base, T_bw)
             done, visited_near_table = check_grasp_done(
                 pose_world, servo.current_gripper, visited_near_table,
                 args.grasp_lift_threshold)
             if args.stop_when_grasping and done:
                 break
 
-            # 3. Process inference result
-            executing_normalized = current_normalized.copy()
-            if result is None:
-                print("[ERROR] Inference timed out, reusing current chunk")
-                obs_ms, infer_ms, pil_img = 0.0, 0.0, None
-                actual_delay = 0
-            else:
-                obs_ms = result.obs_ms
-                infer_ms = result.infer_ms
-                pil_img = result.camera_image
-                actual_delay = result.actual_delay
-                # Paper line 20: A_cur = A_new (swap in new chunk)
-                current_normalized = result.output["normalized_actions"][0].astype(np.float32)
-                current_actions = baseframework.unnormalize_actions(
-                    current_normalized, action_stats)
+            # ── Logging ───────────────────────────────────────────────
+            timer.record(result.obs_ms, result.infer_ms, 0.0, 0.0)
 
-            # 4. Push free actions (skip prefix) into servo buffer
-            actions_to_push = current_actions[actual_delay:]
-            n_push = min(n_actions, len(actions_to_push))
-            actions_to_push = actions_to_push[:n_push]
-            start_pos = servo.last_pose if servo.last_pose is not None else current_pos
-            waypoints, grip_trans = compute_waypoints(
-                start_pos, actions_to_push, n_push, args.fix_rotation)
-            servo.push_waypoints(start_pos, waypoints, grip_trans)
-
-            # 5. Submit next inference job with the new chunk
-            #    (inferencer will wait for next n_actions boundary,
-            #     then build prefix from current_normalized internally)
-            state_for_model = state_10d if args.include_state else None
-            inferencer.submit(state_for_model, current_normalized, chunk_len)
-
-            # 6. Logging
-            wall_ms = (time.monotonic() - loop_t0) * 1000
-            send_ms = 0.0
-            timer.record(obs_ms, infer_ms, send_ms, wall_ms)
-
-            current_action_t = servo.action_t
             buf_len = servo.buffer_len
-            suffix = f"  buf={buf_len}  t={current_action_t}"
+            suffix = f"  buf={buf_len}"
             if use_rtc:
-                suffix += f"  delay={actual_delay}"
+                suffix += f"  delay={result.actual_delay}"
             if servo.starve_count > 0:
                 suffix += f"  starved={servo.starve_count}"
-            _print_step(step, wall_ms, obs_ms, infer_ms, send_ms,
+            _print_step(step, 0.0, result.obs_ms, result.infer_ms, 0.0,
                         pose_world, servo.current_gripper,
-                        actions_to_push, n_push, suffix)
+                        result.actions[result.actual_delay:],
+                        result.n_pushed, suffix)
 
             if saver:
-                _save_rollout_step(saver, args.mode, step, wall_time, pose_base, pose_world,
-                                   servo.current_gripper, state_10d, args.instruction,
-                                   obs_ms, infer_ms, send_ms, 0.0, wall_ms,
-                                   n_push, waypoints, pil_img,
-                                   executing_normalized=executing_normalized,
-                                   current_actions=current_actions,
-                                   action_stats=action_stats, actual_delay=actual_delay)
-            step += 1
+                state_10d = ee_pose_to_state10d(pose_world, servo.current_gripper)
+                _save_rollout_step(
+                    saver, args.mode, step, time.time(), pose_base, pose_world,
+                    servo.current_gripper, state_10d, args.instruction,
+                    result.obs_ms, result.infer_ms, 0.0, 0.0, 0.0,
+                    result.n_pushed, np.zeros((0, 6)), result.camera_image,
+                    executing_normalized=result.normalized,
+                    current_actions=result.actions,
+                    action_stats=action_stats,
+                    actual_delay=result.actual_delay)
 
     finally:
         inferencer.stop()
         servo.stop()
 
-    return step
+    return servo.action_t
 
 
 # ═════════════════════════════════════════════════════════════════════
