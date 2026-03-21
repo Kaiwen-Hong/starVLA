@@ -614,6 +614,14 @@ Our method, DiscreteRTC, is the first effort to step outside the flow-matching p
 
 
 %===============================================================================
+
+\newpage
+\section{Additional Experiments}
+\label{app: addexp}
+
+
+
+%===============================================================================
 \newpage
 \section{Kinetix Implementation Details}
 \label{app: simexp}
@@ -628,13 +636,12 @@ Observations include a 4-frame history stack and the previous action.
 \textbf{Policy Architecture.}
 Both policies share an MLPMixer backbone with AdaLN conditioning: 4 blocks, each with token-mixing (hidden dim 64) and channel-mixing (hidden dim 512) paths, operating on $H{=}8$ tokens (one per chunk timestep) with channel dimension 256.
 
-For the \textbf{flow-matching policy}, the input is the observation concatenated with the noised action chunk.
+For \textbf{flow-matching policy}, the input is the observation concatenated with the noised action chunk.
 A sinusoidal time embedding conditions the AdaLN layers, and the output is a velocity vector.
-
-For the \textbf{discrete diffusion policy}, actions are discretized into 512 bins via uniform quantization.
-The input is the observation concatenated with bin embeddings (dim 128) of the partially masked token sequence.
+For \textbf{discrete diffusion policy}, actions are discretized into 512 bins via uniform quantization.
+The input is the observation concatenated with bin embeddings of the partially masked token sequence.
 The token sequence is packed from $(H, \text{action\_dim}, \text{embedding\_dim})$ to $(H, \text{channel\_dim})$ via a linear layer so the mixer sees the same 8-token structure.
-A learned null vector replaces the time conditioning.
+A learned vector replaces the time conditioning.
 
 \textbf{Training.}
 Both policies are trained for 32 epochs with batch size 512 using AdamW.
@@ -643,52 +650,11 @@ The discrete diffusion policy uses cosine LR decay and cross-entropy on masked p
 
 \textbf{Evaluation.}
 Both policies use 5 denoising/unmasking steps.
-For ContinuousRTC, $\Pi$GDM guidance with exponential-decay soft masking and clipping threshold $\beta{=}5.0$ steers generation toward the frozen prefix.
+For ContinuousRTC, $\Pi$GDM guidance with exponential-decay soft masking and clipping threshold $\beta$ steers generation toward the frozen prefix.
 For DiscreteRTC, the frozen prefix tokens are directly placed, and early stopping naturally reduces the number of unmasking steps.
 All remaining hyperparameters are listed in Table~\ref{tab:hyperparams_sim}.
 
-
-%===============================================================================
-\newpage
-\section{Real-world Implementation Details}
-\label{app: realexp}
-
-\textbf{Hardware and Data.}
-We use a single UR5e arm with a Robotiq gripper and a wrist-mounted RGB camera.
-Demonstrations are recorded at 15\,Hz via the FastUMI pipeline.
-Each action is a 10D vector $[\Delta x, \Delta y, \Delta z, \text{rot6d}(6), \text{gripper}]$, with translational dimensions normalized to $[-1, 1]$ via min-max scaling, rotation dimensions left unnormalized, and the gripper binarized to $\{0, 1\}$.
-Images are center-cropped and resized to $224 \times 224$.
-Training uses 8 GPUs with DeepSpeed ZeRO-2 and gradient checkpointing; deployment runs on a single RTX 4090.
-
-\textbf{Policy Architecture.}
-All policies use Qwen2.5-VL-3B-Instruct~\citep{yang2025qwen3} as the VLM backbone.
-Both action heads share the same QwenPI-style layerwise cross-attention DiT~\citep{peebles2023scalable}: 36 blocks (matching the VLM), each with AdaLN, cross-attention to the corresponding VLM hidden states, self-attention, and a feedforward network.
-Both prepend 32 learnable future vision tokens and add positional embeddings.
-When proprioceptive state is available, a two-layer MLP encodes it and prepends it to the sequence.
-
-For the \textbf{flow-matching head}, a three-layer MLP fuses per-timestep action embeddings with sinusoidal flow-time embeddings (output dim 2048); a sinusoidal \texttt{TimestepEncoder} provides AdaLN conditioning; and a two-layer MLP (hidden dim 1024) decodes the velocity output.
-
-For the \textbf{discrete diffusion head}, actions are quantized into 256 bins per dimension, yielding $16 \times 10 = 160$ tokens per chunk.
-Tokens (including a learnable \texttt{[MASK]} at index 256) are embedded via \texttt{nn.Embedding}(257, 2048).
-No timestep conditioning is used.
-
-\textbf{Training.}
-Both heads share the same optimizer (AdamW, $\beta_1{=}0.9$, $\beta_2{=}0.95$), learning rate schedule (cosine with warmup), and training budget (30k steps, effective batch size 64).
-The action head forward pass is repeated twice per VLM forward to amortize the VLM cost for both heads.
-The flow-matching head is trained with MSE on the predicted velocity field using a Beta($1.5, 1.0$) noise schedule.
-The discrete diffusion head is trained with cross-entropy on masked positions plus an auxiliary L1 loss ($\lambda{=}0.1$) using a cosine masking schedule.
-Mixed precision is used: the VLM runs in bfloat16, while both action heads run in float32.
-
-\textbf{Deployment.}
-The robot operates in closed-loop at 20\,Hz with 5$\times$ linear interpolation producing a 100\,Hz servo stream.
-Camera capture and model inference run in a background thread, overlapping with action execution.
-The flow-matching head uses 4 Euler denoising steps; the discrete diffusion head uses 8 MaskGIT unmasking steps with a cosine decode schedule (decode temperature 0.0, choice temperature 0.1).
-For DiscreteRTC, when a previous chunk is available, its shifted suffix serves as the inpainting prefix ($d$ timesteps pre-filled); remaining positions start fully masked.
-By default we use fixed unmasking steps; optionally steps scale as $\max(1, \lfloor 8 \cdot d / H \rfloor)$.
-
-All hyperparameters are summarized in Table~\ref{tab:real_hyperparams}.
-
-\begin{table}[t]
+\begin{table}[h]
 \centering
 \caption{Simulation experiment hyperparameters.}
 \label{tab:hyperparams_sim}
@@ -720,7 +686,47 @@ Execution horizon ($s$) / trials & \multicolumn{2}{c}{$\max(1, d)$ / 2{,}048} \\
 \end{tabular}
 \end{table}
 
-\begin{table}[t]
+%===============================================================================
+
+\newpage
+\section{Real-world Implementation Details}
+\label{app: realexp}
+
+\textbf{Hardware and Data.}
+We use a single UR5e arm with a Robotiq gripper and a wrist-mounted RGB camera.
+Demonstrations are recorded at 500\,Hz via the FastUMI pipeline.
+Each action is a 10D vector $[\Delta x, \Delta y, \Delta z, \text{rot6d}(6), \text{gripper}]$, with translational dimensions normalized to $[-1, 1]$ via min-max scaling, rotation dimensions left unnormalized, and the gripper binarized to $\{0, 1\}$.
+Images are center-cropped and resized to $224 \times 224$.
+Training uses 8 GPUs with DeepSpeed ZeRO-2 and gradient checkpointing; deployment runs on a single RTX 4090.
+
+\textbf{Policy Architecture.}
+All policies use Qwen2.5-VL-3B-Instruct~\citep{yang2025qwen3} as the VLM backbone.
+Both action heads share the same QwenPI-style layerwise cross-attention DiT~\citep{peebles2023scalable}: 36 blocks, each with AdaLN, cross-attention to the corresponding VLM hidden states, self-attention, and a feedforward network.
+Both prepend 32 learnable future vision tokens and add positional embeddings.
+When proprioceptive state is available, a two-layer MLP encodes it and prepends it to the sequence.
+
+For \textbf{flow-matching head}, a three-layer MLP fuses per-timestep action embeddings with sinusoidal flow-time embeddings (output dim 2048); a sinusoidal \texttt{TimestepEncoder} provides AdaLN conditioning; and a two-layer MLP decodes the velocity output.
+For \textbf{discrete diffusion head}, actions are quantized into 256 bins per dimension, yielding $16 \times 10 = 160$ tokens per chunk.
+Tokens (including a learnable \texttt{[MASK]}) are embedded via \texttt{nn.Embedding}(257, 2048) with no timestep conditioning.
+
+% \textbf{Training.}
+% Both heads share the same optimizer (AdamW, $\beta_1{=}0.9$, $\beta_2{=}0.95$), learning rate schedule (cosine with warmup), and training budget (30k steps, effective batch size 64).
+% The action head forward pass is repeated twice per VLM forward to amortize the VLM cost for both heads.
+% The flow-matching head is trained with MSE on the predicted velocity field using a Beta($1.5, 1.0$) noise schedule.
+% The discrete diffusion head is trained with cross-entropy on masked positions plus an auxiliary L1 loss ($\lambda{=}0.1$) using a cosine masking schedule.
+% Mixed precision is used: the VLM runs in bfloat16, while both action heads run in float32.
+
+\textbf{Deployment.}
+The robot operates in closed-loop at 20\,Hz with 5$\times$ linear interpolation producing a 100\,Hz servo stream.
+Camera capture and model inference run in a background thread, overlapping with action execution.
+The discrete diffusion head uses 8 MaskGIT unmasking steps with a cosine decode schedule (decode temperature 0.0, choice temperature 0.1).
+By default we use fixed unmasking steps; optionally steps scale as $\max(1, \lfloor 8 \cdot d / H \rfloor)$.
+
+All hyperparameters are summarized in Table~\ref{tab:real_hyperparams}.
+
+
+
+\begin{table}[h]
 \centering
 \caption{Real-world experiment hyperparameters.}
 \label{tab:real_hyperparams}
@@ -728,8 +734,9 @@ Execution horizon ($s$) / trials & \multicolumn{2}{c}{$\max(1, d)$ / 2{,}048} \\
 \toprule
 \textbf{Hyperparameter} & \textbf{Flow-Matching} & \textbf{Discrete Diffusion} \\
 \midrule
-\multicolumn{3}{l}{\textit{VLM Backbone \& Action Head (Layerwise Cross-Attention DiT)}} \\
-VLM backbone & \multicolumn{2}{c}{Qwen2.5-VL-3B-Instruct (2048 dim, 36 layers)} \\
+\multicolumn{3}{l}{\textit{VLM Backbone \& Action Head}} \\
+VLM backbone & \multicolumn{2}{c}{Qwen2.5-VL-3B-Instruct} \\
+Action head & \multicolumn{2}{c}{Layerwise Cross-Attention DiT} \\
 DiT layers / heads / head dim & \multicolumn{2}{c}{36 / 32 / 64 (inner dim 2048)} \\
 Dropout / future vision tokens & \multicolumn{2}{c}{0.2 / 32} \\
 Action encoder & 3-layer MLP + sinusoidal time & nn.Embedding(257, 2048) \\
@@ -750,13 +757,17 @@ Training loss & MSE (velocity) & CE + L1 ($\lambda{=}0.1$) \\
 Noise / mask schedule & Beta($1.5, 1.0$), $s{=}0.999$ & Cosine \\
 \midrule
 \multicolumn{3}{l}{\textit{Inference \& Deployment}} \\
-Denoising / unmasking steps & 4 & 8 \\
+Denoising / unmasking steps & 8 & 8 \\
 Decode / choice temperature & --- & 0.0 / 0.1 \\
 Control / servo frequency & \multicolumn{2}{c}{20\,Hz / 100\,Hz ($5\times$ interpolation)} \\
 Robot / camera & \multicolumn{2}{c}{UR5e + Robotiq / wrist-mounted fish-eye RGB} \\
 \bottomrule
 \end{tabular}
 \end{table}
+
+
+
+
 
 
 

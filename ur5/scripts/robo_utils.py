@@ -761,10 +761,16 @@ def run_async(args, model, action_stats, cam, rtde_c, rtde_r, gripper_hw,
                     current_normalized, action_stats)
 
             # Push new waypoints into servo buffer (no gap, no servoStop)
-            n_exec = min(args.n_actions, len(current_actions))
+            # For RTC: skip the first `actual_delay` actions — they are the
+            # inpainting prefix that corresponds to actions already in the
+            # buffer / already being executed.
+            actions_to_push = current_actions
+            if use_rtc and actual_delay > 0:
+                actions_to_push = current_actions[actual_delay:]
+            n_push = min(args.n_actions, len(actions_to_push))
             start_pos = servo.last_pose if servo.last_pose is not None else current_pos
             waypoints, grip_trans = compute_waypoints(
-                start_pos, current_actions, n_exec, args.fix_rotation)
+                start_pos, actions_to_push, n_push, args.fix_rotation)
             servo.push_waypoints(start_pos, waypoints, grip_trans)
 
             wall_ms = (time.monotonic() - loop_t0) * 1000
@@ -778,13 +784,13 @@ def run_async(args, model, action_stats, cam, rtde_c, rtde_r, gripper_hw,
             if servo.starve_count > 0:
                 suffix += f"  starved={servo.starve_count}"
             _print_step(step, wall_ms, obs_ms, infer_ms, send_ms,
-                        pose_world, servo.current_gripper, current_actions, n_exec, suffix)
+                        pose_world, servo.current_gripper, actions_to_push, n_push, suffix)
 
             if saver:
                 _save_rollout_step(saver, args.mode, step, wall_time, pose_base, pose_world,
                                    servo.current_gripper, state_10d, args.instruction,
                                    obs_ms, infer_ms, send_ms, 0.0, wall_ms,
-                                   n_exec, waypoints, pil_img,
+                                   n_push, waypoints, pil_img,
                                    executing_normalized=executing_normalized,
                                    current_actions=current_actions,
                                    action_stats=action_stats, actual_delay=actual_delay)
