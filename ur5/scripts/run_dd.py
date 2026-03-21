@@ -60,7 +60,7 @@ def parse_args():
     p.add_argument("--no_go_home", action="store_true", default=False)
     p.add_argument("--stop_when_grasping", action="store_true", default=True)
     p.add_argument("--no_stop_when_grasping", dest="stop_when_grasping", action="store_false")
-    p.add_argument("--grasp_lift_threshold", type=float, default=0.04)
+    p.add_argument("--grasp_lift_threshold", type=float, default=0.2)
     # Logging
     p.add_argument("--save_rollout", action="store_true", default=False)
     p.add_argument("--no_save_rollout", dest="save_rollout", action="store_false")
