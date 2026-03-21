@@ -278,7 +278,7 @@ def execute_servo(rtde_c, current_pos, waypoints, T_bw,
 
 
 def check_grasp_done(pose_world, current_gripper, visited_near_table,
-                     threshold=0.04):
+                     threshold=0.1):
     """Check early-stop: grasped + lifted high enough.
 
     Returns: (done, visited_near_table)
