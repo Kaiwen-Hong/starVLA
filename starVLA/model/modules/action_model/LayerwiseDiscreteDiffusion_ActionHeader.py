@@ -340,6 +340,8 @@ class LayerwiseDiscreteDiffusionActionHead(nn.Module):
         choice_temperature: float = 0.1,
         decode_temperature: float = 1.0,
         fixed_steps: bool = False,
+        hard_mask: bool = True,
+        early_stop: bool = False,
     ) -> torch.Tensor:
         """
         RTC-aware MaskGIT decode: prefix the first `inference_delay` timesteps
@@ -376,10 +378,17 @@ class LayerwiseDiscreteDiffusionActionHead(nn.Module):
 
         # Encode the prefix into bin indices
         prefix_bins = self.binning.encode(prev_action_chunk)
-        prefix_mask = (
-            torch.arange(self.action_horizon, device=device)[None, :, None]
-            < inference_delay
-        ).expand(B, self.action_horizon, self.action_dim)
+        if hard_mask:
+            prefix_mask = (
+                torch.arange(self.action_horizon, device=device)[None, :, None]
+                < inference_delay # This is the hard mask, where only the inference delay actions are not masked
+            ).expand(B, self.action_horizon, self.action_dim)
+        else:
+            # This is the soft mask, where the first chunk_size - inference_delay actions are masked
+            prefix_mask = (
+                torch.arange(self.action_horizon, device=device)[None, :, None]
+                < (self.action_horizon - inference_delay)
+            ).expand(B, self.action_horizon, self.action_dim)
 
         cur_seqs = torch.where(
             prefix_mask,
@@ -450,6 +459,11 @@ class LayerwiseDiscreteDiffusionActionHead(nn.Module):
                 prefix_bins,
                 torch.where(action_mask, self.mask_token_id, sampled),
             )
+
+            # if the first d + s actions in the cur_seqs are all unmasked, early stop
+            if early_stop:
+                if cur_seqs[:, :inference_delay + step_idx, :].all(dim=-1).all():
+                    break
 
         return self.binning.decode(cur_seqs)
 
