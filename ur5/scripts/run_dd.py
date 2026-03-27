@@ -7,9 +7,9 @@ Supports three execution modes via --mode:
   rtc   : gap-free 100Hz servo thread + async inference + RTC prefix inpainting
 
 Usage:
-    python ur5/scripts/run_dd.py --mode sync
+    python ur5/scripts/run_dd.py --mode sync --save_rollout
     python ur5/scripts/run_dd.py --mode async --n_actions 8
-    python ur5/scripts/run_dd.py --mode rtc   --n_actions 8 --inference_delay 8
+    python ur5/scripts/run_dd.py --mode rtc   --n_actions 8 --inference_delay 8 --save_rollout
 """
 
 import os
