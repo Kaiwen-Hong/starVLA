@@ -26,7 +26,7 @@ export NCCL_ASYNC_ERROR_HANDLING=1
 
 echo "============================================"
 echo "Node:      $(hostname)"
-echo "GPUs:      $CUDA_VISIBLE_DEVICES"
+echo "GPUs:      ${CUDA_VISIBLE_DEVICES:-all}"
 echo "Python:    $(which python)"
 echo "Torch:     $(python -c 'import torch; print(torch.__version__)')"
 echo "CUDA avail:$(python -c 'import torch; print(torch.cuda.is_available())')"
