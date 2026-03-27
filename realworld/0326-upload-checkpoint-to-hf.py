@@ -5,11 +5,13 @@ import os
 from huggingface_hub import HfApi
 
 REPO_ID = "kaiwen2/discreteRTC"
-CHECKPOINT_DIR = os.path.join(
+EXPERIMENT_DIR = os.path.join(
     os.path.dirname(os.path.abspath(__file__)),
-    "..", "results", "Checkpoints", "dynamic_first_0324", "checkpoints",
+    "..", "results", "Checkpoints", "dynamic_first_0324",
 )
+CHECKPOINT_DIR = os.path.join(EXPERIMENT_DIR, "checkpoints")
 HF_FOLDER = "0325"
+EXTRA_FILES = ["config.yaml", "dataset_statistics.json"]
 
 def get_latest_checkpoint(checkpoint_dir):
     """Find the checkpoint with the highest step number."""
@@ -34,6 +36,7 @@ def main():
         print("No token provided, aborting.")
         return
 
+    experiment_dir = os.path.normpath(EXPERIMENT_DIR)
     checkpoint_dir = os.path.normpath(CHECKPOINT_DIR)
     filename, step = get_latest_checkpoint(checkpoint_dir)
     local_path = os.path.join(checkpoint_dir, filename)
@@ -43,6 +46,12 @@ def main():
     print(f"Local path:        {local_path}")
     print(f"File size:         {file_size_gb:.2f} GB")
     print(f"Uploading to:      {REPO_ID}/{HF_FOLDER}/{filename}")
+    for ef in EXTRA_FILES:
+        ef_path = os.path.join(experiment_dir, ef)
+        if os.path.exists(ef_path):
+            print(f"Extra file:        {ef}")
+        else:
+            print(f"WARNING: missing extra file: {ef_path}")
     print("This may take a while for large files...")
 
     api = HfApi(token=token)
@@ -57,6 +66,10 @@ def main():
         folder_path = os.path.join(tmp_dir, HF_FOLDER)
         os.makedirs(folder_path)
         os.symlink(local_path, os.path.join(folder_path, filename))
+        for ef in EXTRA_FILES:
+            ef_path = os.path.join(experiment_dir, ef)
+            if os.path.exists(ef_path):
+                os.symlink(ef_path, os.path.join(folder_path, ef))
 
         api.upload_folder(
             folder_path=tmp_dir,
