@@ -1,0 +1,23 @@
+# StarVLA v30-ee eval config
+# v30 training: place_container_plate (clean1, wp4) + place_object_stand (clean1, wp4) — 4 tasks, 16D EE
+#
+# Usage (from ar-research-kempner root):
+#   python script/eval_policy.py --config <path>/deploy_policy_ee_v30.yml \
+#     --overrides --task_name place_object_stand --task_config place_object_stand_wp4 \
+#                 --seed 0 --exp_idx 30
+
+policy_name: starVLA_ee
+task_name: null
+task_config: null
+ckpt_setting: 0309-v30-ee
+seed: null
+instruction_type: unseen
+
+# StarVLA WebSocket client parameters
+host: "127.0.0.1"
+port: 5695
+policy_ckpt_path: "/home/kaiwen/Desktop/research/starVLA/results/Checkpoints/v0309_v30_ee_qwenPI_requeue/checkpoints/steps_50000_pytorch_model.pt"
+unnorm_key: "new_embodiment"
+action_mode: "abs"
+
+test_num: 50
