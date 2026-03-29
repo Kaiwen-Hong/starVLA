@@ -63,7 +63,10 @@ _VIZ_DIMS = [
     (0, "x (world, m)", "#e41a1c"),
     (1, "y (world, m)", "#377eb8"),
     (2, "z (world, m)", "#4daf4a"),
-    (6, "gripper",      "#ff7f00"),
+    (3, "rx (axis-angle)", "#984ea3"),
+    (4, "ry (axis-angle)", "#a65628"),
+    (5, "rz (axis-angle)", "#f781bf"),
+    (6, "gripper",         "#ff7f00"),
 ]
 
 
@@ -76,8 +79,9 @@ def visualize_step(camera_image, current_ee, n_exec, step_idx,
     For sync mode: only pred_poses is needed.
     For rtc mode: exec_poses (just-executed chunk) + new_poses (new RTC prediction).
     """
-    fig = plt.figure(figsize=(16, 10))
-    gs = GridSpec(4, 2, figure=fig, hspace=0.15, wspace=0.30,
+    n_dims = len(_VIZ_DIMS)
+    fig = plt.figure(figsize=(16, 2.5 * n_dims))
+    gs = GridSpec(n_dims, 2, figure=fig, hspace=0.15, wspace=0.30,
                   width_ratios=[1, 1.3])
 
     ax_img = fig.add_subplot(gs[:, 0])
@@ -91,7 +95,7 @@ def visualize_step(camera_image, current_ee, n_exec, step_idx,
         ax = fig.add_subplot(gs[row, 1], sharex=share)
         axes.append(ax)
 
-        start_val = current_ee[dim_idx] if dim_idx < 3 else None
+        start_val = current_ee[dim_idx] if dim_idx < 6 else None
 
         if mode == "sync" and pred_poses is not None:
             _plot_sync(ax, pred_poses, n_exec, color, start_val, dim_idx, row)
