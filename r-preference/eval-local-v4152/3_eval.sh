@@ -22,7 +22,7 @@
 #
 # Environment variables:
 #   STARVLA_ROOT   -- starVLA repo path (auto-detected)
-#   ROBOTWIN_PATH  -- RoboTwin repo path (default: from deploy yml)
+#   AR_ROOT        -- ar-research-kempner repo path (has assets/, script/, etc.)
 #   PORT           -- policy server port (default: 5694)
 #   STEP           -- checkpoint step for deploy yml (default: 60000)
 # ============================================================
@@ -59,27 +59,28 @@ if [ ! -f "$DEPLOY_YML" ]; then
     exit 1
 fi
 
-# Detect ROBOTWIN_PATH
-if [ -z "${ROBOTWIN_PATH:-}" ]; then
-    # Try common locations
+# Detect AR_ROOT (ar-research-kempner — contains assets/, script/, etc.)
+if [ -z "${AR_ROOT:-}" ]; then
     for candidate in \
-        "${HOME}/Desktop/research/RoboTwin" \
-        "${HOME}/RoboTwin" \
-        "${HOME}/code/RoboTwin" \
-        "/mnt/data/$(whoami)/code_repos/RoboTwin"; do
-        if [ -d "$candidate" ]; then
-            ROBOTWIN_PATH="$candidate"
+        "${HOME}/Desktop/research/ar-research-kempner" \
+        "${HOME}/ar-research-kempner" \
+        "${HOME}/code/ar-research-kempner"; do
+        if [ -d "$candidate/assets" ] && [ -f "$candidate/script/eval_policy.py" ]; then
+            AR_ROOT="$candidate"
             break
         fi
     done
 fi
 
-if [ -z "${ROBOTWIN_PATH:-}" ]; then
-    echo "ERROR: Cannot find RoboTwin. Set ROBOTWIN_PATH env var."
+if [ -z "${AR_ROOT:-}" ]; then
+    echo "ERROR: Cannot find ar-research-kempner (needs assets/ and script/eval_policy.py)."
+    echo "Set AR_ROOT env var, e.g.:"
+    echo "  AR_ROOT=~/Desktop/research/ar-research-kempner bash ..."
     exit 1
 fi
 
 CKPT_SETTING="${VERSION}_step${STEP}"
+EVAL_FILES_DIR="${STARVLA_ROOT}/examples/Robotwin/eval_files"
 
 echo "============================================"
 echo "RoboTwin Evaluation (joint-space, 14D)"
@@ -90,13 +91,13 @@ echo "  Seed:        ${SEED}"
 echo "  GPU:         ${GPU_ID}"
 echo "  Checkpoint:  ${CKPT_PATH}"
 echo "  Deploy YML:  ${DEPLOY_YML}"
-echo "  ROBOTWIN:    ${ROBOTWIN_PATH}"
+echo "  AR_ROOT:     ${AR_ROOT}"
 echo "============================================"
 
 export CUDA_VISIBLE_DEVICES="${GPU_ID}"
-export PYTHONPATH="${ROBOTWIN_PATH}:${STARVLA_ROOT}:$(dirname "$0"):${PYTHONPATH:-}"
+export PYTHONPATH="${AR_ROOT}:${STARVLA_ROOT}:${EVAL_FILES_DIR}:${PYTHONPATH:-}"
 
-cd "$ROBOTWIN_PATH"
+cd "$AR_ROOT"
 
 PYTHONWARNINGS=ignore::UserWarning \
 python script/eval_policy.py --config "$DEPLOY_YML" \

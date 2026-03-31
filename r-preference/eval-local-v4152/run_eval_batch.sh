@@ -17,7 +17,7 @@
 # Environment variables:
 #   STARVLA_ROOT   -- starVLA repo path (auto-detected)
 #   STARVLA_PYTHON -- starVLA env Python (default: ~/miniconda3/envs/starVLA/bin/python)
-#   ROBOTWIN_PATH  -- RoboTwin repo path
+#   AR_ROOT        -- ar-research-kempner repo path
 #   GPU_ID         -- GPU device (default: 0)
 #   SERVER_WAIT    -- seconds to wait for server (default: 120)
 # ============================================================
