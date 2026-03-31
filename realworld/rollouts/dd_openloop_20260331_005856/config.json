@@ -1,0 +1,12 @@
+{
+  "checkpoint": "checkpoints/discreteRTC/fastumi_pickandplace_qwenDiscreteDiffusion_329v2/checkpoints/steps_20000_pytorch_model.pt",
+  "instruction": "Pick up the purple block and place it on the red area of the board",
+  "num_samples": 50,
+  "data_root_dir": "/home/kaiwen/Desktop/research/fastumipro-collection/0srarvla-lerobo/starvla/datasets",
+  "chunk_len": 16,
+  "only_first_half": true,
+  "randomly_sample": false,
+  "decode_temperature": 0.0,
+  "choice_temperature": 0.1,
+  "use_simple_max": false
+}

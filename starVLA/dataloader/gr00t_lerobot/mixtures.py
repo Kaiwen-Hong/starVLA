@@ -496,10 +496,13 @@ DATASET_NAMED_MIXTURES = {
         ("dynamic-324", 1.0, "fastumi"),
     ],
 
+<<<<<<< HEAD
     "dynamic-329": [
         ("dynamic-329", 1.0, "fastumi"),
     ],
 
+=======
+>>>>>>> 2f21f6d55279fa08a5c185024fd64bb327bc1d7d
     "dynamic-329-v2": [
         ("dynamic-329-v2", 1.0, "fastumi"),
     ],
@@ -550,5 +553,41 @@ DATASET_NAMED_MIXTURES = {
         ("place_container_plate_clean2_ee", 1.0, "robotwin_ee"),
         ("place_container_plate_wp4_ee", 1.0, "robotwin_ee"),
         ("place_object_stand_clean2_ee", 1.0, "robotwin_ee"),
+    ],
+
+    # ── Custom v0320 v40: 4 variants, 14D joint-space (for OFT finetune) ──
+    "custom_v0320_v40": [
+        ("place_cup_tray_clean1", 1.0, "robotwin"),
+        ("place_cup_tray_wp5", 1.0, "robotwin"),
+        ("place_stapler_stand_clean1", 1.0, "robotwin"),
+        ("place_stapler_stand_wp5", 1.0, "robotwin"),
+    ],
+
+    # ── Custom v0320 v41: 3 variants, 14D joint-space (for OFT finetune) ──
+    "custom_v0320_v41": [
+        ("place_cup_tray_clean1", 1.0, "robotwin"),
+        ("place_cup_tray_wp4", 1.0, "robotwin"),
+        ("place_stapler_stand_clean1", 1.0, "robotwin"),
+    ],
+
+    # ── Custom v0320 v42: 3 variants, 14D joint-space (for OFT finetune) ──
+    "custom_v0320_v42": [
+        ("place_cup_tray_clean1", 1.0, "robotwin"),
+        ("place_cup_tray_wp5", 1.0, "robotwin"),
+        ("place_stapler_stand_clean1", 1.0, "robotwin"),
+    ],
+
+    # ── Custom v0320 v51: 3 variants, 14D joint-space (for OFT finetune) ──
+    "custom_v0320_v51": [
+        ("place_cup5_tray1_clean1", 1.0, "robotwin"),
+        ("place_cup5_tray1_wp4", 1.0, "robotwin"),
+        ("place_stapler_stand_clean1", 1.0, "robotwin"),
+    ],
+
+    # ── Custom v0320 v52: 3 variants, 14D joint-space (for OFT finetune) ──
+    "custom_v0320_v52": [
+        ("place_cup5_tray1_clean1", 1.0, "robotwin"),
+        ("place_cup5_tray1_wp5", 1.0, "robotwin"),
+        ("place_stapler_stand_clean1", 1.0, "robotwin"),
     ],
 }
