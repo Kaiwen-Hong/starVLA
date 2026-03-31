@@ -543,4 +543,26 @@ DATASET_NAMED_MIXTURES = {
         ("place_container_plate_wp4_ee", 1.0, "robotwin_ee"),
         ("place_object_stand_clean2_ee", 1.0, "robotwin_ee"),
     ],
+
+    # ── Custom v0320 v40: 4 variants, 14D joint-space (for OFT finetune) ──
+    "custom_v0320_v40": [
+        ("place_cup_tray_clean1", 1.0, "robotwin"),
+        ("place_cup_tray_wp5", 1.0, "robotwin"),
+        ("place_stapler_stand_clean1", 1.0, "robotwin"),
+        ("place_stapler_stand_wp5", 1.0, "robotwin"),
+    ],
+
+    # ── Custom v0320 v42: 3 variants, 14D joint-space (for OFT finetune) ──
+    "custom_v0320_v42": [
+        ("place_cup_tray_clean1", 1.0, "robotwin"),
+        ("place_cup_tray_wp5", 1.0, "robotwin"),
+        ("place_stapler_stand_clean1", 1.0, "robotwin"),
+    ],
+
+    # ── Custom v0320 v52: 3 variants, 14D joint-space (for OFT finetune) ──
+    "custom_v0320_v52": [
+        ("place_cup5_tray1_clean1", 1.0, "robotwin"),
+        ("place_cup5_tray1_wp5", 1.0, "robotwin"),
+        ("place_stapler_stand_clean1", 1.0, "robotwin"),
+    ],
 }
