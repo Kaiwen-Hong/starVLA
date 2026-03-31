@@ -14,7 +14,7 @@ accelerate launch      \
     --framework.action_model.action_high 1.0      \
     --framework.action_model.num_inference_steps 8       \
     --datasets.vla_data.data_root_dir playground/Datasets/FastUMI      \
-    --datasets.vla_data.data_mix dynamic-324       \
+    --datasets.vla_data.data_mix dynamic-329-v2       \
     --datasets.vla_data.include_state false       \
     --datasets.vla_data.per_device_batch_size 8        \
     --datasets.vla_data.video_backend torchvision_av        \
@@ -26,7 +26,7 @@ accelerate launch      \
     --trainer.eval_interval 100       \
     --trainer.gradient_accumulation_steps 1      \
     --run_root_dir ./results/Checkpoints        \
-    --run_id fastumi_pickandplace_qwenDiscreteDiffusion_dynamic_1 \
+    --run_id fastumi_pickandplace_qwenDiscreteDiffusion_329v2 \
     --wandb_project starVLA_FastUMI_dynamic_1 \
     --wandb_entity 2200011093-peking-university
 
@@ -55,7 +55,7 @@ accelerate launch \
   --framework.action_model.num_inference_timesteps 4 \
   --framework.action_model.num_target_vision_tokens 32 \
   --datasets.vla_data.data_root_dir playground/Datasets/FastUMI \
-  --datasets.vla_data.data_mix dynamic-324 \
+  --datasets.vla_data.data_mix dynamic-329-v2 \
   --datasets.vla_data.include_state false \
   --datasets.vla_data.per_device_batch_size 8 \
   --datasets.vla_data.video_backend torchvision_av \
@@ -67,6 +67,6 @@ accelerate launch \
   --trainer.gradient_accumulation_steps 1 \
   --trainer.is_resume true \
   --run_root_dir ./results/Checkpoints \
-  --run_id fastumi_pickandplace_qwenPI_dynamic_1 \
+  --run_id fastumi_pickandplace_qwenPI_329v2 \
   --wandb_project starVLA_FastUMI_dynamic_1 \
   --wandb_entity 2200011093-peking-university

@@ -496,6 +496,14 @@ DATASET_NAMED_MIXTURES = {
         ("dynamic-324", 1.0, "fastumi"),
     ],
 
+    "dynamic-329": [
+        ("dynamic-329", 1.0, "fastumi"),
+    ],
+
+    "dynamic-329-v2": [
+        ("dynamic-329-v2", 1.0, "fastumi"),
+    ],
+
     # Debug subset: just 1 FastUMI task
     "fastumi_task1": [
         ("pickandplace_vla", 1.0, "fastumi"),
