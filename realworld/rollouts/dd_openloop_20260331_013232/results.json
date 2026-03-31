@@ -1,0 +1,465 @@
+{
+  "num_samples": 50,
+  "chunk_len": 16,
+  "only_first_half": true,
+  "randomly_sample": false,
+  "decode_temperature": 0.0,
+  "choice_temperature": 0.1,
+  "use_simple_max": false,
+  "overall_mse": 0.03819454637821764,
+  "overall_l1": 0.06569477014243602,
+  "overall_mse_std": 0.028570908593958326,
+  "overall_l1_std": 0.036127446718997085,
+  "per_sample": [
+    {
+      "sample_idx": 0,
+      "dataset_idx": 0,
+      "trajectory_id": 0,
+      "base_index": 0,
+      "mse": 0.005525166168808937,
+      "l1": 0.03508979082107544,
+      "infer_ms": 2030.7
+    },
+    {
+      "sample_idx": 1,
+      "dataset_idx": 1,
+      "trajectory_id": 0,
+      "base_index": 1,
+      "mse": 0.006570884492248297,
+      "l1": 0.038061972707509995,
+      "infer_ms": 250.0
+    },
+    {
+      "sample_idx": 2,
+      "dataset_idx": 2,
+      "trajectory_id": 0,
+      "base_index": 2,
+      "mse": 0.00784358661621809,
+      "l1": 0.0407792292535305,
+      "infer_ms": 246.8
+    },
+    {
+      "sample_idx": 3,
+      "dataset_idx": 3,
+      "trajectory_id": 0,
+      "base_index": 3,
+      "mse": 0.04374069347977638,
+      "l1": 0.07518085092306137,
+      "infer_ms": 246.3
+    },
+    {
+      "sample_idx": 4,
+      "dataset_idx": 4,
+      "trajectory_id": 0,
+      "base_index": 4,
+      "mse": 0.05146940425038338,
+      "l1": 0.08463473618030548,
+      "infer_ms": 246.9
+    },
+    {
+      "sample_idx": 5,
+      "dataset_idx": 5,
+      "trajectory_id": 0,
+      "base_index": 5,
+      "mse": 0.058933157473802567,
+      "l1": 0.09346064925193787,
+      "infer_ms": 247.9
+    },
+    {
+      "sample_idx": 6,
+      "dataset_idx": 6,
+      "trajectory_id": 0,
+      "base_index": 6,
+      "mse": 0.06608689576387405,
+      "l1": 0.10206518322229385,
+      "infer_ms": 246.5
+    },
+    {
+      "sample_idx": 7,
+      "dataset_idx": 7,
+      "trajectory_id": 0,
+      "base_index": 7,
+      "mse": 0.0708269327878952,
+      "l1": 0.10916799306869507,
+      "infer_ms": 248.5
+    },
+    {
+      "sample_idx": 8,
+      "dataset_idx": 8,
+      "trajectory_id": 0,
+      "base_index": 8,
+      "mse": 0.07702126353979111,
+      "l1": 0.11795034259557724,
+      "infer_ms": 246.8
+    },
+    {
+      "sample_idx": 9,
+      "dataset_idx": 9,
+      "trajectory_id": 0,
+      "base_index": 9,
+      "mse": 0.07724340260028839,
+      "l1": 0.11577253043651581,
+      "infer_ms": 246.8
+    },
+    {
+      "sample_idx": 10,
+      "dataset_idx": 10,
+      "trajectory_id": 0,
+      "base_index": 10,
+      "mse": 0.07861541211605072,
+      "l1": 0.12183229625225067,
+      "infer_ms": 246.1
+    },
+    {
+      "sample_idx": 11,
+      "dataset_idx": 11,
+      "trajectory_id": 0,
+      "base_index": 11,
+      "mse": 0.07601442188024521,
+      "l1": 0.11982984840869904,
+      "infer_ms": 246.3
+    },
+    {
+      "sample_idx": 12,
+      "dataset_idx": 12,
+      "trajectory_id": 0,
+      "base_index": 12,
+      "mse": 0.08464924246072769,
+      "l1": 0.12700168788433075,
+      "infer_ms": 248.4
+    },
+    {
+      "sample_idx": 13,
+      "dataset_idx": 13,
+      "trajectory_id": 0,
+      "base_index": 13,
+      "mse": 0.08337144553661346,
+      "l1": 0.12485015392303467,
+      "infer_ms": 245.8
+    },
+    {
+      "sample_idx": 14,
+      "dataset_idx": 14,
+      "trajectory_id": 0,
+      "base_index": 14,
+      "mse": 0.08183617889881134,
+      "l1": 0.12085350602865219,
+      "infer_ms": 246.4
+    },
+    {
+      "sample_idx": 15,
+      "dataset_idx": 15,
+      "trajectory_id": 0,
+      "base_index": 15,
+      "mse": 0.07786881923675537,
+      "l1": 0.11439387500286102,
+      "infer_ms": 246.7
+    },
+    {
+      "sample_idx": 16,
+      "dataset_idx": 16,
+      "trajectory_id": 0,
+      "base_index": 16,
+      "mse": 0.07471847534179688,
+      "l1": 0.10952986776828766,
+      "infer_ms": 247.7
+    },
+    {
+      "sample_idx": 17,
+      "dataset_idx": 17,
+      "trajectory_id": 0,
+      "base_index": 17,
+      "mse": 0.09135083854198456,
+      "l1": 0.12532655894756317,
+      "infer_ms": 246.1
+    },
+    {
+      "sample_idx": 18,
+      "dataset_idx": 18,
+      "trajectory_id": 0,
+      "base_index": 18,
+      "mse": 0.07720337808132172,
+      "l1": 0.10766814649105072,
+      "infer_ms": 246.7
+    },
+    {
+      "sample_idx": 19,
+      "dataset_idx": 19,
+      "trajectory_id": 0,
+      "base_index": 19,
+      "mse": 0.04988785833120346,
+      "l1": 0.08497589826583862,
+      "infer_ms": 246.8
+    },
+    {
+      "sample_idx": 20,
+      "dataset_idx": 20,
+      "trajectory_id": 0,
+      "base_index": 20,
+      "mse": 0.04399122670292854,
+      "l1": 0.073220394551754,
+      "infer_ms": 247.0
+    },
+    {
+      "sample_idx": 21,
+      "dataset_idx": 21,
+      "trajectory_id": 0,
+      "base_index": 21,
+      "mse": 0.052757006138563156,
+      "l1": 0.08415554463863373,
+      "infer_ms": 246.5
+    },
+    {
+      "sample_idx": 22,
+      "dataset_idx": 22,
+      "trajectory_id": 0,
+      "base_index": 22,
+      "mse": 0.03663251921534538,
+      "l1": 0.06565485894680023,
+      "infer_ms": 246.3
+    },
+    {
+      "sample_idx": 23,
+      "dataset_idx": 23,
+      "trajectory_id": 0,
+      "base_index": 23,
+      "mse": 0.042614858597517014,
+      "l1": 0.0712701752781868,
+      "infer_ms": 246.1
+    },
+    {
+      "sample_idx": 24,
+      "dataset_idx": 24,
+      "trajectory_id": 0,
+      "base_index": 24,
+      "mse": 0.06259840726852417,
+      "l1": 0.09174700081348419,
+      "infer_ms": 246.0
+    },
+    {
+      "sample_idx": 25,
+      "dataset_idx": 25,
+      "trajectory_id": 0,
+      "base_index": 25,
+      "mse": 0.050695545971393585,
+      "l1": 0.07610322535037994,
+      "infer_ms": 246.2
+    },
+    {
+      "sample_idx": 26,
+      "dataset_idx": 26,
+      "trajectory_id": 0,
+      "base_index": 26,
+      "mse": 0.03813108056783676,
+      "l1": 0.06413517892360687,
+      "infer_ms": 246.0
+    },
+    {
+      "sample_idx": 27,
+      "dataset_idx": 27,
+      "trajectory_id": 0,
+      "base_index": 27,
+      "mse": 0.012760201469063759,
+      "l1": 0.034001223742961884,
+      "infer_ms": 246.0
+    },
+    {
+      "sample_idx": 28,
+      "dataset_idx": 28,
+      "trajectory_id": 0,
+      "base_index": 28,
+      "mse": 0.0020201478619128466,
+      "l1": 0.024110406637191772,
+      "infer_ms": 247.6
+    },
+    {
+      "sample_idx": 29,
+      "dataset_idx": 29,
+      "trajectory_id": 0,
+      "base_index": 29,
+      "mse": 0.0020977300591766834,
+      "l1": 0.02503921091556549,
+      "infer_ms": 247.6
+    },
+    {
+      "sample_idx": 30,
+      "dataset_idx": 30,
+      "trajectory_id": 0,
+      "base_index": 30,
+      "mse": 0.02155029959976673,
+      "l1": 0.04733792692422867,
+      "infer_ms": 246.3
+    },
+    {
+      "sample_idx": 31,
+      "dataset_idx": 31,
+      "trajectory_id": 0,
+      "base_index": 31,
+      "mse": 0.0202657338231802,
+      "l1": 0.04448159784078598,
+      "infer_ms": 247.7
+    },
+    {
+      "sample_idx": 32,
+      "dataset_idx": 32,
+      "trajectory_id": 0,
+      "base_index": 32,
+      "mse": 0.02218076027929783,
+      "l1": 0.04408526420593262,
+      "infer_ms": 246.1
+    },
+    {
+      "sample_idx": 33,
+      "dataset_idx": 33,
+      "trajectory_id": 0,
+      "base_index": 33,
+      "mse": 0.027265671640634537,
+      "l1": 0.049369193613529205,
+      "infer_ms": 246.1
+    },
+    {
+      "sample_idx": 34,
+      "dataset_idx": 34,
+      "trajectory_id": 0,
+      "base_index": 34,
+      "mse": 0.02865448035299778,
+      "l1": 0.05074518173933029,
+      "infer_ms": 245.6
+    },
+    {
+      "sample_idx": 35,
+      "dataset_idx": 35,
+      "trajectory_id": 0,
+      "base_index": 35,
+      "mse": 0.020286161452531815,
+      "l1": 0.04101181775331497,
+      "infer_ms": 246.4
+    },
+    {
+      "sample_idx": 36,
+      "dataset_idx": 36,
+      "trajectory_id": 0,
+      "base_index": 36,
+      "mse": 0.0261826254427433,
+      "l1": 0.04534653574228287,
+      "infer_ms": 246.1
+    },
+    {
+      "sample_idx": 37,
+      "dataset_idx": 37,
+      "trajectory_id": 0,
+      "base_index": 37,
+      "mse": 0.02613160014152527,
+      "l1": 0.04447805508971214,
+      "infer_ms": 246.3
+    },
+    {
+      "sample_idx": 38,
+      "dataset_idx": 38,
+      "trajectory_id": 0,
+      "base_index": 38,
+      "mse": 0.02024676278233528,
+      "l1": 0.041138555854558945,
+      "infer_ms": 246.5
+    },
+    {
+      "sample_idx": 39,
+      "dataset_idx": 39,
+      "trajectory_id": 0,
+      "base_index": 39,
+      "mse": 0.0206113550812006,
+      "l1": 0.042464856058359146,
+      "infer_ms": 246.0
+    },
+    {
+      "sample_idx": 40,
+      "dataset_idx": 40,
+      "trajectory_id": 0,
+      "base_index": 40,
+      "mse": 0.026562904939055443,
+      "l1": 0.046820588409900665,
+      "infer_ms": 246.0
+    },
+    {
+      "sample_idx": 41,
+      "dataset_idx": 41,
+      "trajectory_id": 0,
+      "base_index": 41,
+      "mse": 0.013751459307968616,
+      "l1": 0.03196708485484123,
+      "infer_ms": 246.1
+    },
+    {
+      "sample_idx": 42,
+      "dataset_idx": 42,
+      "trajectory_id": 0,
+      "base_index": 42,
+      "mse": 0.0013488541590049863,
+      "l1": 0.01991378143429756,
+      "infer_ms": 246.3
+    },
+    {
+      "sample_idx": 43,
+      "dataset_idx": 43,
+      "trajectory_id": 0,
+      "base_index": 43,
+      "mse": 0.00732009019702673,
+      "l1": 0.025071457028388977,
+      "infer_ms": 245.6
+    },
+    {
+      "sample_idx": 44,
+      "dataset_idx": 44,
+      "trajectory_id": 0,
+      "base_index": 44,
+      "mse": 0.013372831046581268,
+      "l1": 0.02973269857466221,
+      "infer_ms": 246.3
+    },
+    {
+      "sample_idx": 45,
+      "dataset_idx": 45,
+      "trajectory_id": 0,
+      "base_index": 45,
+      "mse": 0.019316229969263077,
+      "l1": 0.03332240507006645,
+      "infer_ms": 246.1
+    },
+    {
+      "sample_idx": 46,
+      "dataset_idx": 46,
+      "trajectory_id": 0,
+      "base_index": 46,
+      "mse": 0.007001745048910379,
+      "l1": 0.021839892491698265,
+      "infer_ms": 247.7
+    },
+    {
+      "sample_idx": 47,
+      "dataset_idx": 47,
+      "trajectory_id": 0,
+      "base_index": 47,
+      "mse": 0.0007880060002207756,
+      "l1": 0.015770461410284042,
+      "infer_ms": 245.7
+    },
+    {
+      "sample_idx": 48,
+      "dataset_idx": 48,
+      "trajectory_id": 0,
+      "base_index": 48,
+      "mse": 0.0008265593787655234,
+      "l1": 0.015956226736307144,
+      "infer_ms": 246.2
+    },
+    {
+      "sample_idx": 49,
+      "dataset_idx": 49,
+      "trajectory_id": 0,
+      "base_index": 49,
+      "mse": 0.0009870068170130253,
+      "l1": 0.016022589057683945,
+      "infer_ms": 246.3
+    }
+  ]
+}
