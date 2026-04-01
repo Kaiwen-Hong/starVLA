@@ -16,6 +16,7 @@ Usage:
 import sys
 import os
 import time
+import json
 import argparse
 from pathlib import Path
 
@@ -33,6 +34,8 @@ from starVLA.model.framework.share_tools import read_mode_config, dict_to_namesp
 from starVLA.model.framework import build_framework
 from starVLA.model.framework.base_framework import baseframework
 
+from scripts.log_utils import RolloutSaver, visualize_step
+
 import importlib
 _step2 = importlib.import_module("ur5.step2-replace-with-real-camera")
 RealCamera = _step2.RealCamera
@@ -49,11 +52,11 @@ BASE_IN_WORLD = {
 }
 ROBOT_IPS = {'left': '192.168.0.3', 'right': '192.168.0.2'}
 HOME_POSES_WORLD = {
-    'left': [0.30, -0.2, 0.25, -2.2192, 2.2148, 0.0091, 1],
+    'left': [0.300311, -0.489314, 0.250303, -2.220294, 2.215871, 0.010386, 1],
     'right': [-0.1, -0.3, 0.25, 2.2419, -2.1984, 0.0166, 1],
 }
 
-INSTRUCTION = "pick up the building block"
+INSTRUCTION = "pick up the block in the pot and place it in the red area on the turntable"
 CONTROL_HZ = 20
 INTERP_MULT = 5       # interpolation multiplier: 20Hz × 5 = 100Hz servo
 SERVO_HZ = CONTROL_HZ * INTERP_MULT  # 100Hz
@@ -150,8 +153,12 @@ def load_model(checkpoint_path: str):
     return model
 
 
+TRAIN_IMAGE_SIZE = (224, 224)
+
+
 def build_example(image: Image.Image, instruction: str,
                   state_10d: np.ndarray = None) -> dict:
+    image = image.resize(TRAIN_IMAGE_SIZE)
     example = {"image": [image], "lang": instruction}
     if state_10d is not None:
         example["state"] = state_10d.reshape(1, -1)
@@ -210,13 +217,13 @@ def main():
         description="Closed-loop control with smooth interpolated servoL")
     parser.add_argument(
         "--checkpoint", type=str,
-        default="checkpoints/DiscreteRTC/"
-                "fastumi_pickandplace_discrete_diffusion_real_0314_no_state_fixgripper/"
-                "checkpoints/steps_15000_pytorch_model.pt",
+        default="checkpoints/discreteRTC/"
+                "fastumi_pickandplace_qwenDiscreteDiffusion_329v2/"
+                "checkpoints/steps_20000_pytorch_model.pt",
     )
     parser.add_argument("--arm", choices=["left", "right"], default="left")
     parser.add_argument("--camera_dev", type=int, default=0)
-    parser.add_argument("--n_actions", type=int, default=14)
+    parser.add_argument("--n_actions", type=int, default=8)
     parser.add_argument("--max_steps", type=int, default=0)
     parser.add_argument("--include_state", action="store_true", default=False)
     parser.add_argument("--no_go_home", action="store_true", default=False)
@@ -224,8 +231,12 @@ def main():
     parser.add_argument("--decode_temperature", type=float, default=0.0)
     parser.add_argument("--choice_temperature", type=float, default=0.1)
     parser.add_argument("--use_simple_max", action="store_true", default=False)
-    parser.add_argument("--fix_rotation", action="store_true", default=True)
+    parser.add_argument("--fix_rotation", action="store_true", default=False)
     parser.add_argument("--no_fix_rotation", action="store_true", default=False)
+    parser.add_argument("--save_rollout", action="store_true", default=True)
+    parser.add_argument("--no_save_rollout", dest="save_rollout", action="store_false")
+    parser.add_argument("--rollout_dir", type=str, default=None,
+                        help="Directory to save rollout (default: auto)")
     args = parser.parse_args()
     if args.no_fix_rotation:
         args.fix_rotation = False
@@ -278,8 +289,29 @@ def main():
     print(f"  Waypoints:          {CONTROL_HZ}Hz × {INTERP_MULT} = {SERVO_HZ}Hz servo")
     print(f"  servoL params:      lookahead=0.2, gain=200")
     print(f"  Z safety:           clamp to {Z_MIN_WORLD:.4f}m")
+    print(f"  Include state:      {args.include_state}")
     print(f"  fix_rotation:       {args.fix_rotation}")
+    print(f"  Save rollout:       {args.save_rollout}")
     print(f"{'=' * 60}")
+
+    # ── Rollout saver ────────────────────────────────────────────
+    saver = None
+    if args.save_rollout:
+        ts = time.strftime("%Y%m%d_%H%M%S")
+        rollout_dir = Path(args.rollout_dir) if args.rollout_dir else (
+            Path("ur5") / "rollouts" / f"step9dd_dynamic_dd_{ts}")
+        run_config = {
+            "mode": "sync", "method": "step9dd-dynamic-dd",
+            "checkpoint": args.checkpoint,
+            "instruction": args.instruction,
+            "arm": args.arm, "camera_dev": args.camera_dev,
+            "n_actions": args.n_actions,
+            "include_state": args.include_state,
+            "fix_rotation": args.fix_rotation,
+            "control_hz": CONTROL_HZ, "servo_hz": SERVO_HZ,
+            "interp_mult": INTERP_MULT, "dataset_key": dataset_key,
+        }
+        saver = RolloutSaver(rollout_dir, run_config)
 
     input("\n>>> Press Enter to START (Ctrl+C to abort) <<<")
 
@@ -363,6 +395,43 @@ def main():
                   f"pos=[{pose_world[0]:.3f}, {pose_world[1]:.3f}, {pose_world[2]:.3f}]  "
                   f"grip={'C' if current_gripper > 0.5 else 'O'}")
 
+            # 6. Save rollout
+            if saver:
+                # Build absolute trajectory for visualization
+                deltas_7d = np.array([action_10d_to_delta7d(a) for a in pred_actions_10d])
+                abs_poses = np.zeros((len(pred_actions_10d), 7), dtype=np.float64)
+                p = np.array(pose_world[:6], dtype=np.float64)
+                for t in range(len(pred_actions_10d)):
+                    p = p + deltas_7d[t, :6].astype(np.float64)
+                    abs_poses[t, :6] = p
+                    abs_poses[t, 6] = deltas_7d[t, 6]
+
+                # Save camera image
+                img_path = saver.dir / "images" / f"step_{step:04d}.jpg"
+                pil_img.save(img_path, quality=90)
+
+                # Save visualization async
+                viz_path = saver.dir / "images" / f"step_{step:04d}_viz.png"
+                saver.submit_viz(
+                    visualize_step, pil_img, pose_world, n_exec, step,
+                    str(viz_path), args.instruction, "sync",
+                    pred_poses=abs_poses,
+                )
+
+                # Save step data
+                saver.save_step({
+                    "step": step,
+                    "wall_time": time.time(),
+                    "pose_world": list(pose_world),
+                    "gripper": current_gripper,
+                    "infer_ms": round(infer_ms, 1),
+                    "exec_ms": round(exec_ms, 1),
+                    "total_ms": round(total_ms, 1),
+                    "n_exec": n_exec,
+                    "pred_normalized": pred_normalized.tolist(),
+                    "pred_actions_10d": pred_actions_10d.tolist(),
+                })
+
             step += 1
 
     except KeyboardInterrupt:
@@ -379,6 +448,8 @@ def main():
         try: gripper_hw.disconnect()
         except Exception: pass
         cam.close()
+        if saver:
+            saver.finalize()
         print(f"Done. Executed {step} inference steps.")
 
 

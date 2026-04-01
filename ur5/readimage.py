@@ -2,7 +2,7 @@ import cv2
 import numpy as np
 import pathlib
 
-DEV = 1                # /dev/video0
+DEV = 0                # /dev/video0
 W, H, FPS = 1920, 1080, 100
 
 

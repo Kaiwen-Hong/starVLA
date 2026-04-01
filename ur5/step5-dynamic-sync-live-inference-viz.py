@@ -38,11 +38,11 @@ from scripts.robo_utils import (
 
 # ── Edit these before running ──────────────────────────────────────
 DEFAULT_CHECKPOINT = (
-    "checkpoints/discreteRTC/0325/checkpoints/"
-    "steps_100000_pytorch_model.pt"
+    "checkpoints/discreteRTC/fastumi_pickandplace_qwenDiscreteDiffusion_329v2/"
+    "checkpoints/steps_20000_pytorch_model.pt"
 )
-INSTRUCTION = "dynamic-324"
-CAMERA_DEV = 1
+INSTRUCTION = "Pick up the purple block and place it on the red area of the board"
+CAMERA_DEV = 0
 ARM = "left"
 # DD-specific
 DECODE_TEMPERATURE = 0.0
