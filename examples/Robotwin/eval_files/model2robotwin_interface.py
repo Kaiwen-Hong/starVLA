@@ -385,5 +385,9 @@ def eval(TASK_ENV, model, observation):
 
     action = model.step(example, step=TASK_ENV.take_action_cnt)
 
+    # Record action trajectory for visualization
+    if hasattr(TASK_ENV, 'action_trajectory'):
+        TASK_ENV.action_trajectory.append(action.tolist() if hasattr(action, 'tolist') else list(action))
+
     # Execute action
     TASK_ENV.take_action(action)

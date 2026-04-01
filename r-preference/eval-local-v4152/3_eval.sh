@@ -107,4 +107,7 @@ python script/eval_policy.py --config "$DEPLOY_YML" \
     --ckpt_setting "$CKPT_SETTING" \
     --seed "$SEED" \
     --policy_name model2robotwin_interface \
-    --policy_ckpt_path "$CKPT_PATH"
+    --policy_ckpt_path "$CKPT_PATH" \
+    --save_as_policy pi05_ee \
+    --exp_idx "${VERSION}w-starvla" \
+    --test_num 150
