@@ -1,0 +1,20 @@
+# v42 joint-space eval config
+# Training data: place_cup_tray (clean1, wp5) + place_stapler_stand (clean1)
+# Action space: 14D joint-space, action_mode: abs
+
+policy_name: model2robotwin_interface
+task_name: null
+task_config: null
+ckpt_setting: null
+seed: null
+instruction_type: unseen
+
+# StarVLA WebSocket client parameters
+host: "127.0.0.1"
+port: 5694
+policy_ckpt_path: "results/Checkpoints/v0320_v42_qwenOFT_finetune_v2/checkpoints/steps_60000_pytorch_model.pt"
+unnorm_key: "new_embodiment"
+action_mode: "abs"
+normalization_mode: "min_max"
+
+test_num: 50

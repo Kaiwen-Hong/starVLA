@@ -152,8 +152,6 @@ from omegaconf import OmegaConf
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-from PIL import Image
-from torchvision import transforms as TF
 
 # Initialize Overwatch =>> Wraps `logging.Logger`
 overwatch = initialize_overwatch(__name__)
@@ -273,6 +271,8 @@ class CrossAttention(nn.Module):
 
 
 def preprocess_images(image_list, target_size, mode='crop'): #  [B，[PLT]]
+    from PIL import Image
+    from torchvision import transforms as TF
     batch_images = []
     shapes = set()
     to_tensor = TF.ToTensor()
