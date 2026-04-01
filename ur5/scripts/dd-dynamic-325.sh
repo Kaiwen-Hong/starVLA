@@ -12,10 +12,10 @@ set -euo pipefail
 # ── Edit these before running ──────────────────────────────
 CHECKPOINT="checkpoints/discreteRTC/0325/checkpoints/steps_100000_pytorch_model.pt"
 INSTRUCTION="dynamic-324"
-CAMERA_DEV=1
+CAMERA_DEV=0
 ARM="left"
-N_ACTIONS=4
-INFERENCE_DELAY=4
+N_ACTIONS=8
+INFERENCE_DELAY=8
 # ───────────────────────────────────────────────────────────
 
 MODE="${1:-rtc}"
