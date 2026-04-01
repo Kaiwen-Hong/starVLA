@@ -106,4 +106,5 @@ python script/eval_policy.py --config "$DEPLOY_YML" \
     --task_config "$TASK_CONFIG" \
     --ckpt_setting "$CKPT_SETTING" \
     --seed "$SEED" \
-    --policy_name model2robotwin_interface
+    --policy_name model2robotwin_interface \
+    --policy_ckpt_path "$CKPT_PATH"
