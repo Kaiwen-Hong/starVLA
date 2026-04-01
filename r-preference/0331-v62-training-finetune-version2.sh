@@ -1,12 +1,12 @@
 #!/usr/bin/env bash
 # ============================================================
-# v51 OFT finetune v2 — Training only (data must be ready)
+# v62 OFT finetune v2 — Training only (data must be ready)
 #
 # From Qwen3-VL-OFT-RoboTwin2-All checkpoint (steps_140000)
 # Framework: QwenOFT (L1 MLP regression), VLM: Qwen3-VL-4B-Instruct
 # Action space: 14D joint-space (not EE)
 #
-# Data: place_cup5_tray1 (clean1, wp4) + place_stapler_stand (clean1)
+# Data: place_cup5_tray5 (clean1, wp5) + place_stapler_stand (clean1)
 #       3 variants, 250 episodes each, 750 total
 #
 # Prerequisite: run 0331-v626151-data-processing.sh first!
@@ -16,7 +16,7 @@
 #     -N 1 --gpus-per-node=4 --cpus-per-task=64 --mem=1440G -t 0-08:00:00
 #
 # Usage:
-#   bash r-preference/0331-v51-training-finetune-version2.sh 2>&1 | tee v51_finetune_v2.log
+#   bash r-preference/0331-v62-training-finetune-version2.sh 2>&1 | tee v62_finetune_v2.log
 # ============================================================
 
 set +u
@@ -32,20 +32,20 @@ cd /net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/starVLA
 LAB_ROOT="/net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen"
 STAR_PYTHON="${LAB_ROOT}/miniforge3/envs/starVLA/bin/python"
 
-LEROBOT_REPO="${LAB_ROOT}/.cache/huggingface/lerobot/custom_v0320_v51_repo"
+LEROBOT_REPO="${LAB_ROOT}/.cache/huggingface/lerobot/custom_v0320_v62_repo"
 
 SPLIT_TASKS=(
-  place_cup5_tray1_clean1
-  place_cup5_tray1_wp4
+  place_cup5_tray5_clean1
+  place_cup5_tray5_wp5
   place_stapler_stand_clean1
 )
 SPLIT_DST="./playground/Datasets/Custom"
 EPISODE_NUM=250
 
 PRETRAINED_CKPT="./checkpoints/Qwen3-VL-OFT-RoboTwin2-All/checkpoints/steps_140000_pytorch_model.pt"
-DATA_MIX="custom_v0320_v51"
-RUN_ID="v0320_v51_qwenOFT_finetune_v2"
-WANDB_PROJECT="starVLA_v51_finetune_v2"
+DATA_MIX="custom_v0320_v62"
+RUN_ID="v0320_v62_qwenOFT_finetune_v2"
+WANDB_PROJECT="starVLA_v62_finetune_v2"
 
 export NCCL_BLOCKING_WAIT=1
 export NCCL_ASYNC_ERROR_HANDLING=1
@@ -65,7 +65,7 @@ echo "GPUs:      ${CUDA_VISIBLE_DEVICES:-all}"
 echo "Python:    $(which python)"
 echo "Torch:     $(python -c 'import torch; print(torch.__version__)')"
 echo "CUDA avail:$(python -c 'import torch; print(torch.cuda.is_available())')"
-echo "Pipeline:  v51 OFT finetune v2 (training only)"
+echo "Pipeline:  v62 OFT finetune v2 (training only)"
 echo "============================================"
 
 # ============================================================================
