@@ -1,19 +1,13 @@
 #!/usr/bin/env python3
 """
-Open-loop evaluation for FastUMI pick-and-place QwenDiscreteDiffusion policy.
-Loads a trained discrete diffusion checkpoint, runs predict_action on the dataset,
+Open-loop evaluation for flow matching (QwenPI) checkpoint.
+
+Loads the trained FM checkpoint, runs predict_action on the dataset,
 and computes MSE / L1 metrics (overall + per-dimension + per-step).
 
-Key differences from QwenPI version:
-  - MaskGIT-style iterative decode (8 steps) with temperature sampling
-  - Actions discretized to 256 bins in [-1, 1]
-  - Supports decode_temperature, choice_temperature, use_simple_max
-
 Usage:
-    python ur5-dd/step1-open_loop_offline_evaluation.py
-    python ur5-dd/step1-open_loop_offline_evaluation.py --use_simple_max
-    python ur5-dd/step1-open_loop_offline_evaluation.py --decode_temperature 0.5 --choice_temperature 0.5
-    python ur5-dd/step1-open_loop_offline_evaluation.py --num_samples 500
+    python ur5n/fm/temp_openloop_eval_v2.py
+    python ur5n/fm/temp_openloop_eval_v2.py --num_samples 500
 """
 
 import argparse
@@ -29,7 +23,7 @@ from torch.utils.data import DataLoader
 from tqdm import tqdm
 
 # ── Repo setup ──────────────────────────────────────────────────────
-REPO_DIR = Path(__file__).resolve().parent.parent
+REPO_DIR = Path(__file__).resolve().parent.parent.parent
 sys.path.insert(0, str(REPO_DIR))
 os.chdir(REPO_DIR)
 
@@ -37,9 +31,17 @@ from starVLA.model.framework.share_tools import read_mode_config, dict_to_namesp
 from starVLA.model.framework import build_framework
 from starVLA.dataloader.lerobot_datasets import get_vla_dataset, collate_fn
 
+# ── Defaults ─────────────────────────────────────────────────────────
+DEFAULT_CHECKPOINT = (
+    "checkpoints/discreteRTC/fastumi_pickandplace_qwenPI_329v2/"
+    "checkpoints/steps_30000_pytorch_model.pt"
+)
+DATA_ROOT_DIR = "/home/kaiwen/Desktop/research/fastumipro-collection/0srarvla-lerobo/starvla/datasets"
+DATA_MIX = "dynamic-329-v2"
+# ───────────────────────────────────────────────────────────────────
+
 
 def _detect_attn_implementation():
-    """Return 'flash_attention_2' if available, else 'sdpa'."""
     try:
         import flash_attn  # noqa: F401
         return "flash_attention_2"
@@ -63,7 +65,6 @@ DIM_GROUPS = {
 
 
 def load_model(checkpoint_path: str):
-    """Load a QwenDiscreteDiffusion model from checkpoint."""
     print(f"Loading model from: {checkpoint_path}")
     t0 = time.time()
 
@@ -82,24 +83,26 @@ def load_model(checkpoint_path: str):
     model.load_state_dict(state_dict, strict=True)
 
     model = model.to("cuda").eval()
+
+    # Fix: QwenPI config may lack image_size — set it so predict_action
+    # resizes inputs to match training resolution.
+    if not getattr(model.config.datasets.vla_data, "image_size", None):
+        model.config.datasets.vla_data.image_size = [224, 224]
+        print("[FIX] Set image_size=[224,224] (was missing from checkpoint config)")
+
     print(f"Model loaded in {time.time() - t0:.1f}s (attn: {attn_impl})")
     print(f"  framework: {config.framework.name}")
-    print(f"  num_bins: {getattr(config.framework.action_model, 'num_bins', 'N/A')}")
-    print(f"  num_inference_steps: {getattr(config.framework.action_model, 'num_inference_steps', 'N/A')}")
+    print(f"  num_inference_timesteps: {getattr(config.framework.action_model, 'num_inference_timesteps', 'N/A')}")
     return model
 
 
-def load_dataset(model, include_state: bool = False, data_root_dir: str = None):
-    """
-    Re-create the training dataset using model's saved config.
-    Optionally override data_root_dir for evaluation on a different path.
-    """
+def load_dataset(model, data_mix: str, include_state: bool = False,
+                 data_root_dir: str = None):
     data_cfg = model.config.datasets.vla_data
+    data_cfg.data_mix = data_mix
     if include_state:
         data_cfg.include_state = True
-
     if data_root_dir:
-        print(f"  Overriding data_root_dir: {data_cfg.data_root_dir} → {data_root_dir}")
         data_cfg.data_root_dir = data_root_dir
 
     print(f"Loading dataset: {data_cfg.data_mix}")
@@ -111,32 +114,26 @@ def load_dataset(model, include_state: bool = False, data_root_dir: str = None):
         dataset,
         batch_size=1,
         shuffle=False,
-        num_workers=2,
+        num_workers=0,
         collate_fn=collate_fn,
     )
     return dataloader
 
 
-def evaluate(model, dataloader, num_samples: int,
-             decode_temperature: float = 0.1,
-             choice_temperature: float = 0.1,
-             use_simple_max: bool = False) -> dict:
-    """
-    Run open-loop evaluation with discrete diffusion model.
+def _valid_mask(gt, rot_slice=slice(3, 9)):
+    """Detect padded timesteps: rotation dims (norm_mode=none) are all zero when padded."""
+    rot = gt[:, rot_slice]
+    return ~np.all(np.abs(rot) < 1e-6, axis=1)
 
-    For each sample:
-      1. Feed (image, lang, [state]) to model.predict_action()
-         with MaskGIT decode temperature parameters
-      2. Compare predicted vs ground-truth normalized actions
-      3. Accumulate MSE and L1 errors
 
-    Returns dict of metrics.
-    """
+def evaluate(model, dataloader, num_samples: int) -> dict:
     all_mse = []
     all_l1 = []
     all_per_dim_mse = []
     all_per_dim_l1 = []
     all_per_step_mse = []
+    n_padded_steps = 0
+    n_total_steps = 0
 
     chunk_len = model.chunk_len
 
@@ -148,17 +145,9 @@ def evaluate(model, dataloader, num_samples: int,
         sample = batch[0]
         gt_actions = np.array(sample["action"], dtype=np.float32)  # [T, 10]
 
-        # Run inference with discrete diffusion kwargs
-        output = model.predict_action(
-            examples=batch,
-            decode_temperature=decode_temperature,
-            choice_temperature=choice_temperature,
-            use_simple_max=use_simple_max,
-        )
-        pred_actions = output["normalized_actions"][0]  # [chunk_len, 10]
-        pred_actions = pred_actions.astype(np.float32)
+        output = model.predict_action(examples=batch)
+        pred_actions = output["normalized_actions"][0].astype(np.float32)
 
-        # Align shapes: GT may have more steps than chunk_len
         if gt_actions.shape[0] > chunk_len:
             gt_actions = gt_actions[-chunk_len:, :]
 
@@ -166,58 +155,63 @@ def evaluate(model, dataloader, num_samples: int,
         pred = pred_actions[:T]
         gt = gt_actions[:T]
 
-        # Overall
-        mse = np.mean((pred - gt) ** 2)
-        l1 = np.mean(np.abs(pred - gt))
+        # Mask out padded timesteps (rotation dims all zero = padding)
+        valid = _valid_mask(gt)
+        n_total_steps += T
+        n_padded_steps += int((~valid).sum())
+
+        if not valid.any():
+            continue
+
+        pred_v = pred[valid]
+        gt_v = gt[valid]
+
+        mse = np.mean((pred_v - gt_v) ** 2)
+        l1 = np.mean(np.abs(pred_v - gt_v))
         all_mse.append(mse)
         all_l1.append(l1)
 
-        # Per-dimension [10]
-        per_dim_mse = np.mean((pred - gt) ** 2, axis=0)
-        per_dim_l1 = np.mean(np.abs(pred - gt), axis=0)
+        per_dim_mse = np.mean((pred_v - gt_v) ** 2, axis=0)
+        per_dim_l1 = np.mean(np.abs(pred_v - gt_v), axis=0)
         all_per_dim_mse.append(per_dim_mse)
         all_per_dim_l1.append(per_dim_l1)
 
-        # Per-step [chunk_len]
-        per_step_mse = np.mean((pred - gt) ** 2, axis=1)
-        all_per_step_mse.append(per_step_mse)
+        # Per-step MSE: use full array but mark padded as NaN
+        step_mse = np.mean((pred - gt) ** 2, axis=1)
+        step_mse[~valid] = np.nan
+        all_per_step_mse.append(step_mse)
 
         count += 1
 
-    # Aggregate
+    per_dim_mse = np.mean(all_per_dim_mse, axis=0)
+    per_dim_l1 = np.mean(all_per_dim_l1, axis=0)
+    per_step = np.nanmean(all_per_step_mse, axis=0)
+
+    print(f"\n  [Padding] {n_padded_steps}/{n_total_steps} timesteps excluded "
+          f"({100*n_padded_steps/max(n_total_steps,1):.1f}%)")
+
     results = {
         "num_samples": count,
         "chunk_len": chunk_len,
-        "decode_temperature": decode_temperature,
-        "choice_temperature": choice_temperature,
-        "use_simple_max": use_simple_max,
+        "padded_steps_excluded": n_padded_steps,
+        "total_steps": n_total_steps,
         "overall_mse": float(np.mean(all_mse)),
         "overall_l1": float(np.mean(all_l1)),
         "overall_mse_std": float(np.std(all_mse)),
         "overall_l1_std": float(np.std(all_l1)),
+        "per_dim_mse": {DIM_LABELS[i]: float(per_dim_mse[i]) for i in range(len(DIM_LABELS))},
+        "per_dim_l1": {DIM_LABELS[i]: float(per_dim_l1[i]) for i in range(len(DIM_LABELS))},
+        "per_step_mse": [float(v) for v in per_step],
     }
-
-    # Per-dimension
-    per_dim_mse = np.mean(all_per_dim_mse, axis=0)
-    per_dim_l1 = np.mean(all_per_dim_l1, axis=0)
-    results["per_dim_mse"] = {DIM_LABELS[i]: float(per_dim_mse[i]) for i in range(len(DIM_LABELS))}
-    results["per_dim_l1"] = {DIM_LABELS[i]: float(per_dim_l1[i]) for i in range(len(DIM_LABELS))}
-
-    # Per-group
     for group_name, slc in DIM_GROUPS.items():
         results[f"mse_{group_name}"] = float(np.mean(per_dim_mse[slc]))
         results[f"l1_{group_name}"] = float(np.mean(per_dim_l1[slc]))
-
-    # Per-step (averaged over all samples and dims)
-    per_step = np.mean(all_per_step_mse, axis=0)
-    results["per_step_mse"] = [float(v) for v in per_step]
 
     return results
 
 
 def print_results(results: dict, checkpoint_name: str = ""):
-    """Pretty-print evaluation results."""
-    header = "Open-Loop Eval Results (Discrete Diffusion)"
+    header = "Open-Loop Eval Results"
     if checkpoint_name:
         header += f" [{checkpoint_name}]"
     print(f"\n{'=' * 60}")
@@ -225,9 +219,6 @@ def print_results(results: dict, checkpoint_name: str = ""):
     print(f"{'=' * 60}")
     print(f"  Samples evaluated : {results['num_samples']}")
     print(f"  Action chunk len  : {results['chunk_len']}")
-    print(f"  decode_temperature: {results['decode_temperature']}")
-    print(f"  choice_temperature: {results['choice_temperature']}")
-    print(f"  use_simple_max    : {results['use_simple_max']}")
     print(f"  Overall MSE       : {results['overall_mse']:.6f} (+/- {results['overall_mse_std']:.6f})")
     print(f"  Overall L1        : {results['overall_l1']:.6f} (+/- {results['overall_l1_std']:.6f})")
 
@@ -253,54 +244,32 @@ def print_results(results: dict, checkpoint_name: str = ""):
 
 def main():
     parser = argparse.ArgumentParser(
-        description="Open-loop eval for FastUMI QwenDiscreteDiffusion policy")
-    parser.add_argument(
-        "--checkpoint", type=str,
-        default="checkpoints/DiscreteRTC/"
-                "fastumi_pickandplace_discrete_diffusion_real_0314_no_state_fixgripper/"
-                "checkpoints/steps_15000_pytorch_model.pt",
-        help="Path to checkpoint .pt file",
-    )
-    parser.add_argument("--num_samples", type=int, default=200,
-                        help="Number of dataset samples to evaluate on (0 = all)")
-    parser.add_argument("--include_state", action="store_true", default=False,
-                        help="Include state in evaluation (default: False for no_state model)")
-    parser.add_argument("--data_root_dir", type=str, default=None,
-                        help="Override data_root_dir from checkpoint config")
+        description="Open-loop eval for flow matching (QwenPI) checkpoint")
+    parser.add_argument("--checkpoint", type=str, default=DEFAULT_CHECKPOINT)
+    parser.add_argument("--data_root_dir", type=str, default=DATA_ROOT_DIR)
+    parser.add_argument("--data_mix", type=str, default=DATA_MIX)
+    parser.add_argument("--num_samples", type=int, default=500)
+    parser.add_argument("--include_state", action="store_true", default=False)
     parser.add_argument("--output", type=str, default=None,
                         help="Path to save results JSON (default: auto in checkpoint dir)")
-
-    # Discrete diffusion specific
-    parser.add_argument("--decode_temperature", type=float, default=0.1,
-                        help="Temperature for MaskGIT decode sampling (default: 0.1)")
-    parser.add_argument("--choice_temperature", type=float, default=0.1,
-                        help="Temperature for token choice in iterative decode (default: 0.1)")
-    parser.add_argument("--use_simple_max", action="store_true", default=False,
-                        help="Use argmax instead of iterative MaskGIT decode (deterministic)")
     args = parser.parse_args()
 
     model = load_model(args.checkpoint)
-    dataloader = load_dataset(model, include_state=args.include_state,
+    dataloader = load_dataset(model, data_mix=args.data_mix,
+                              include_state=args.include_state,
                               data_root_dir=args.data_root_dir)
 
     num_samples = args.num_samples if args.num_samples > 0 else len(dataloader)
-    results = evaluate(
-        model, dataloader, num_samples,
-        decode_temperature=args.decode_temperature,
-        choice_temperature=args.choice_temperature,
-        use_simple_max=args.use_simple_max,
-    )
+    results = evaluate(model, dataloader, num_samples)
 
     ckpt_name = Path(args.checkpoint).stem.replace("_pytorch_model", "")
     print_results(results, ckpt_name)
 
-    # Save results
     if args.output:
         out_path = Path(args.output)
     else:
         run_dir = Path(args.checkpoint).parents[1]
-        temp_suffix = f"_t{args.decode_temperature}" if not args.use_simple_max else "_argmax"
-        out_path = run_dir / f"openloop_eval_{ckpt_name}{temp_suffix}.json"
+        out_path = run_dir / f"openloop_eval_{ckpt_name}.json"
     out_path.parent.mkdir(parents=True, exist_ok=True)
     with open(out_path, "w") as f:
         json.dump(results, f, indent=2)

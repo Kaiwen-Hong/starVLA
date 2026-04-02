@@ -345,26 +345,35 @@ def main():
             pred_normalized = output["normalized_actions"][0].astype(np.float32)
             pred_actions_10d = baseframework.unnormalize_actions(pred_normalized, action_stats)
 
-            # 4. Convert to absolute world-frame waypoints
+            # 4. Convert local-frame actions to absolute world-frame waypoints
+            #    Actions are in EE local frame (inv(base) @ target), so:
+            #      position: world_delta = R_current @ local_delta
+            #      rotation: R_new = R_current @ R_relative
             n_exec = min(args.n_actions, len(pred_actions_10d))
             waypoints = np.zeros((n_exec, 6), dtype=np.float64)
-            pos = current_pos.copy()
+            pos = np.array(current_pos[:3], dtype=np.float64)
+            R_cur = Rotation.from_rotvec(current_pos[3:6]).as_matrix().astype(np.float64)
 
             for i in range(n_exec):
-                delta = action_10d_to_delta7d(pred_actions_10d[i])
-                if args.fix_rotation:
-                    delta[3:6] = 0.0
-                pos = pos + delta[:6]
+                # Local-frame position delta → world frame
+                local_dp = pred_actions_10d[i, :3].astype(np.float64)
+                pos = pos + R_cur @ local_dp
+
+                # Rotation: compose relative rotation
+                if not args.fix_rotation:
+                    R_rel = rot6d_to_mat(pred_actions_10d[i, 3:9])
+                    R_cur = R_cur @ R_rel
 
                 # Safety: clamp z
                 if pos[2] < Z_MIN_WORLD:
                     print(f"  [SAFETY] z clamped: {pos[2]:.4f} -> {Z_MIN_WORLD:.4f}")
                     pos[2] = Z_MIN_WORLD
 
-                waypoints[i] = pos
+                waypoints[i, :3] = pos
+                waypoints[i, 3:6] = Rotation.from_matrix(R_cur).as_rotvec()
 
                 # Handle gripper on first transition
-                new_gripper = float(delta[6])
+                new_gripper = float(pred_actions_10d[i, 9])
                 if (new_gripper > 0.5) != (current_gripper > 0.5):
                     grip_pos = int(new_gripper * 255)
                     label = "CLOSE" if new_gripper > 0.5 else "OPEN"
@@ -393,14 +402,18 @@ def main():
 
             # 6. Save rollout
             if saver:
-                # Build absolute trajectory for visualization
-                deltas_7d = np.array([action_10d_to_delta7d(a) for a in pred_actions_10d])
+                # Build absolute trajectory (local→world transform)
                 abs_poses = np.zeros((len(pred_actions_10d), 7), dtype=np.float64)
-                p = np.array(pose_world[:6], dtype=np.float64)
+                p = np.array(pose_world[:3], dtype=np.float64)
+                R_viz = Rotation.from_rotvec(pose_world[3:6]).as_matrix().astype(np.float64)
                 for t in range(len(pred_actions_10d)):
-                    p = p + deltas_7d[t, :6].astype(np.float64)
-                    abs_poses[t, :6] = p
-                    abs_poses[t, 6] = deltas_7d[t, 6]
+                    local_dp = pred_actions_10d[t, :3].astype(np.float64)
+                    p = p + R_viz @ local_dp
+                    R_rel = rot6d_to_mat(pred_actions_10d[t, 3:9])
+                    R_viz = R_viz @ R_rel
+                    abs_poses[t, :3] = p
+                    abs_poses[t, 3:6] = Rotation.from_matrix(R_viz).as_rotvec()
+                    abs_poses[t, 6] = pred_actions_10d[t, 9]
 
                 # Save camera image
                 img_path = saver.dir / "images" / f"step_{step:04d}.jpg"

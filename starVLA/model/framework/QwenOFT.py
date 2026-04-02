@@ -22,6 +22,7 @@ Note: How to add special tokens to Qwen2.5:
 from typing import List
 from tqdm import tqdm
 from typing import List, Optional, Tuple
+import os
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
@@ -35,6 +36,9 @@ from starVLA.model.tools import FRAMEWORK_REGISTRY
 from deployment.model_server.tools.image_tools import to_pil_preserve
 
 logger = initialize_overwatch(__name__)
+
+# Image token ID for Qwen2.5/Qwen3 VL
+_IMAGE_TOKEN_ID = 151655
 
 # HuggingFace Default / LLaMa-2 IGNORE_INDEX (for labels)
 IGNORE_INDEX = -100
@@ -87,6 +91,18 @@ class Qwenvl_OFT(baseframework):
 
         # L1 损失
         self.l1_loss = nn.L1Loss()
+
+        # Attention capture (controlled by env var)
+        self._save_attention = os.environ.get("STARVLA_SAVE_ATTENTION", "0") == "1"
+        if self._save_attention:
+            self._attn_output_dir = os.environ.get(
+                "STARVLA_ATTENTION_DIR",
+                os.path.join("results", "attention_maps", "default"),
+            )
+            self._attn_num_layers = int(os.environ.get("STARVLA_ATTENTION_LAYERS", "4"))
+            self._attn_step_counter = 0
+            os.makedirs(self._attn_output_dir, exist_ok=True)
+            logger.info(f"Attention capture enabled → {self._attn_output_dir}")
 
     def forward(
         self,
@@ -185,10 +201,12 @@ class Qwenvl_OFT(baseframework):
 
         # Step 1: QWenVL input format
         qwen_inputs = self.qwen_vl_interface.build_qwenvl_inputs(images=batch_images, instructions=instructions)
+
+        capture_attn = self._save_attention
         with torch.autocast("cuda", dtype=torch.bfloat16):
             qwenvl_outputs = self.qwen_vl_interface(
                 **qwen_inputs,
-                output_attentions=False,
+                output_attentions=capture_attn,
                 output_hidden_states=True,
                 return_dict=True,
             )
@@ -202,8 +220,152 @@ class Qwenvl_OFT(baseframework):
             action_queries = self._gather_action_token_embeddings(last_hidden, input_ids, action_token_id=self.action_token_id)  # [B, chunk_len, H]
             pred_actions = self.action_model.predict_action(action_queries)  # (B, chunk_len, action_dim)
 
+        # --- Attention capture ---
+        if capture_attn and qwenvl_outputs.attentions is not None:
+            try:
+                self._process_and_save_attention(
+                    attentions=qwenvl_outputs.attentions,
+                    input_ids=input_ids,
+                    image_grid_thw=qwen_inputs.get("image_grid_thw", None),
+                    raw_images=batch_images,
+                )
+            except Exception as e:
+                logger.warning(f"Attention capture failed at step {self._attn_step_counter}: {e}")
+
         normalized_actions = pred_actions.detach().cpu().numpy()
         return {"normalized_actions": normalized_actions}
+
+    def _process_and_save_attention(
+        self,
+        attentions: Tuple[torch.Tensor, ...],
+        input_ids: torch.Tensor,
+        image_grid_thw: Optional[torch.Tensor],
+        raw_images: List,
+    ) -> None:
+        """
+        Extract, summarize, and save attention data from the last N layers.
+
+        Saves per-step .npz with:
+          - aggregate: per-layer attention proportions from action tokens → {image, text, action}
+          - spatial: per-image spatial attention map (reshaped to grid)
+          - images: raw observation images (for overlay visualization)
+        """
+        num_layers = self._attn_num_layers
+        # attentions: tuple of (B, num_heads, seq_len, seq_len), one per layer
+        total_layers = len(attentions)
+        layer_indices = list(range(max(0, total_layers - num_layers), total_layers))
+
+        ids = input_ids[0]  # first sample in batch
+        seq_len = ids.shape[0]
+
+        # --- Segment token types ---
+        image_mask = (ids == _IMAGE_TOKEN_ID)
+        action_mask = (ids == self.action_token_id)
+        text_mask = ~image_mask & ~action_mask
+
+        image_positions = image_mask.nonzero(as_tuple=False).squeeze(-1)
+        action_positions = action_mask.nonzero(as_tuple=False).squeeze(-1)
+
+        if action_positions.numel() == 0:
+            logger.warning("No action tokens found — skipping attention capture")
+            return
+
+        # --- Aggregate: action→{image, text, action} per layer ---
+        aggregate = {}  # layer_idx -> {"image": float, "text": float, "action": float}
+        for li in layer_indices:
+            # attn shape: (B, num_heads, seq_len, seq_len)
+            attn = attentions[li][0]  # (num_heads, seq_len, seq_len)
+            # Average over heads
+            attn_avg = attn.float().mean(dim=0)  # (seq_len, seq_len)
+            # Rows = action token positions, cols = what they attend to
+            action_attn = attn_avg[action_positions]  # (num_action_tokens, seq_len)
+            # Sum attention to each segment
+            img_attn = action_attn[:, image_mask].sum().item()
+            txt_attn = action_attn[:, text_mask].sum().item()
+            act_attn = action_attn[:, action_mask].sum().item()
+            total = img_attn + txt_attn + act_attn + 1e-12
+            aggregate[f"layer_{li}"] = {
+                "image": img_attn / total,
+                "text": txt_attn / total,
+                "action": act_attn / total,
+            }
+
+        # --- Spatial: per-image attention heatmap ---
+        spatial_maps = []
+        if image_grid_thw is not None and image_positions.numel() > 0:
+            # Use attention from the last layer, averaged over heads
+            last_attn = attentions[layer_indices[-1]][0].float().mean(dim=0)  # (seq_len, seq_len)
+            # action tokens attending to image tokens
+            action_to_image = last_attn[action_positions][:, image_positions]  # (num_act, num_img_tokens)
+            # Average across action tokens
+            avg_img_attn = action_to_image.mean(dim=0).cpu().numpy()  # (num_img_tokens,)
+
+            # Split by image using grid_thw
+            offset = 0
+            for img_idx in range(image_grid_thw.shape[0]):
+                t, h, w = image_grid_thw[img_idx].tolist()
+                t, h, w = int(t), int(h), int(w)
+                # After spatial merge (factor=2), the LLM token grid is:
+                llm_h = h // 2
+                llm_w = w // 2
+                num_tokens = int(t) * llm_h * llm_w
+                if offset + num_tokens > len(avg_img_attn):
+                    break
+                img_attn_slice = avg_img_attn[offset:offset + num_tokens]
+                # Reshape to spatial grid (collapse temporal dim for single images)
+                spatial_map = img_attn_slice.reshape(int(t), llm_h, llm_w)
+                if int(t) == 1:
+                    spatial_map = spatial_map[0]  # (llm_h, llm_w)
+                spatial_maps.append(spatial_map)
+                offset += num_tokens
+
+        # --- Save raw images for overlay ---
+        saved_images = []
+        if raw_images and len(raw_images) > 0:
+            for img in raw_images[0]:  # first sample in batch
+                if isinstance(img, Image.Image):
+                    saved_images.append(np.array(img))
+                elif isinstance(img, np.ndarray):
+                    saved_images.append(img)
+
+        # --- Log one-line summary from last layer ---
+        last_layer_key = f"layer_{layer_indices[-1]}"
+        agg = aggregate[last_layer_key]
+        logger.info(
+            f"[Attn step {self._attn_step_counter}] "
+            f"image={agg['image']:.1%}, text={agg['text']:.1%}, action={agg['action']:.1%}"
+        )
+        # Also print to stdout for visibility
+        print(
+            f"Attn step {self._attn_step_counter}: "
+            f"image={agg['image']:.1%}, text={agg['text']:.1%}, action={agg['action']:.1%}"
+        )
+
+        # --- Save to disk ---
+        save_dict = {
+            "step": self._attn_step_counter,
+        }
+        # Aggregate data
+        for key, vals in aggregate.items():
+            save_dict[f"agg_{key}_image"] = vals["image"]
+            save_dict[f"agg_{key}_text"] = vals["text"]
+            save_dict[f"agg_{key}_action"] = vals["action"]
+        # Spatial maps
+        for i, smap in enumerate(spatial_maps):
+            save_dict[f"spatial_img{i}"] = smap
+        # Raw images
+        for i, img_arr in enumerate(saved_images):
+            save_dict[f"raw_img{i}"] = img_arr
+        # Grid info
+        if image_grid_thw is not None:
+            save_dict["image_grid_thw"] = image_grid_thw.cpu().numpy()
+
+        save_path = os.path.join(
+            self._attn_output_dir,
+            f"step_{self._attn_step_counter:05d}.npz",
+        )
+        np.savez_compressed(save_path, **save_dict)
+        self._attn_step_counter += 1
 
     def _gather_action_token_embeddings(
         self,
