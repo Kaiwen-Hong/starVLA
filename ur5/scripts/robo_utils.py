@@ -68,6 +68,17 @@ def rot6d_to_axisangle(d6: np.ndarray) -> np.ndarray:
     return Rotation.from_matrix(R).as_rotvec().astype(np.float32)
 
 
+def rot6d_to_mat(d6: np.ndarray) -> np.ndarray:
+    """Convert 6D rotation representation to 3x3 rotation matrix (Gram-Schmidt)."""
+    a1 = d6[:3].astype(np.float64)
+    a2 = d6[3:].astype(np.float64)
+    b1 = a1 / np.linalg.norm(a1)
+    b2 = a2 - np.dot(b1, a2) * b1
+    b2 /= np.linalg.norm(b2)
+    b3 = np.cross(b1, b2)
+    return np.stack([b1, b2, b3], axis=0)
+
+
 def axisangle_to_rot6d(rx, ry, rz):
     R = Rotation.from_rotvec([rx, ry, rz]).as_matrix()
     return R[:2, :].flatten().astype(np.float32)
@@ -99,17 +110,34 @@ def actions_10d_to_7d(actions_10d: np.ndarray) -> np.ndarray:
     return out
 
 
-def accumulate_deltas(current_pose_world, deltas_7d):
-    T = deltas_7d.shape[0]
+def accumulate_deltas(current_pose_world, actions_10d):
+    """Convert local-frame 10D actions to absolute world-frame trajectory.
+
+    Actions are in the EE local frame (inv(base) @ target):
+      - position delta is rotated by current EE rotation to world frame
+      - rotation is composed: R_new = R_current @ R_relative
+
+    Args:
+        current_pose_world: [x, y, z, rx, ry, rz] axis-angle world pose
+        actions_10d: (T, 10) unnormalized actions [pos(3), rot6d(6), gripper(1)]
+
+    Returns: (T, 7) absolute world poses [x, y, z, rx, ry, rz, gripper]
+    """
+    T = actions_10d.shape[0]
     poses = np.zeros((T, 7), dtype=np.float64)
     pos = np.array(current_pose_world[:3], dtype=np.float64)
-    rot = np.array(current_pose_world[3:6], dtype=np.float64)
+    R = Rotation.from_rotvec(current_pose_world[3:6]).as_matrix().astype(np.float64)
+
     for t in range(T):
-        pos = pos + deltas_7d[t, :3]
-        rot = rot + deltas_7d[t, 3:6]
+        local_dp = actions_10d[t, :3].astype(np.float64)
+        pos = pos + R @ local_dp
+
+        R_rel = rot6d_to_mat(actions_10d[t, 3:9])
+        R = R @ R_rel
+
         poses[t, :3] = pos
-        poses[t, 3:6] = rot
-        poses[t, 6] = deltas_7d[t, 6]
+        poses[t, 3:6] = Rotation.from_matrix(R).as_rotvec()
+        poses[t, 6] = actions_10d[t, 9]
     return poses
 
 
@@ -227,24 +255,33 @@ def go_home(rtde_c, rtde_r, arm, T_bw, robot_ip):
 
 
 def compute_waypoints(current_pos, actions_10d, n_exec, fix_rotation=True):
-    """Convert delta actions to absolute world-frame waypoints.
+    """Convert local-frame 10D actions to absolute world-frame waypoints.
+
+    Actions are in the EE local frame (inv(base) @ target).
 
     Returns: (waypoints (n_exec, 6), gripper_transitions [(index, value), ...])
     """
     waypoints = np.zeros((n_exec, 6), dtype=np.float64)
     gripper_transitions = []
-    pos = current_pos.copy()
+
+    pos = np.array(current_pos[:3], dtype=np.float64)
+    R = Rotation.from_rotvec(current_pos[3:6]).as_matrix().astype(np.float64)
 
     for i in range(n_exec):
-        delta = action_10d_to_delta7d(actions_10d[i])
-        if fix_rotation:
-            delta[3:6] = 0.0
-        pos = pos + delta[:6]
+        local_dp = actions_10d[i, :3].astype(np.float64)
+        pos = pos + R @ local_dp
+
+        if not fix_rotation:
+            R_rel = rot6d_to_mat(actions_10d[i, 3:9])
+            R = R @ R_rel
+
         if pos[2] < Z_MIN_WORLD:
             print(f"  [SAFETY] z clamped: {pos[2]:.4f} -> {Z_MIN_WORLD:.4f}")
             pos[2] = Z_MIN_WORLD
-        waypoints[i] = pos
-        gripper_transitions.append((i, float(delta[6])))
+
+        waypoints[i, :3] = pos
+        waypoints[i, 3:6] = Rotation.from_matrix(R).as_rotvec()
+        gripper_transitions.append((i, float(actions_10d[i, 9])))
 
     return waypoints, gripper_transitions
 
@@ -358,8 +395,7 @@ def _save_rollout_step(saver, mode, step, wall_time, pose_base, pose_world,
     from scripts.log_utils import visualize_step
 
     if mode == "sync":
-        pred_deltas = actions_10d_to_7d(pred_actions)
-        pred_poses = accumulate_deltas(pose_world, pred_deltas)
+        pred_poses = accumulate_deltas(pose_world, pred_actions)
         viz_path = str(saver.dir / "images" / f"step_{step:04d}_viz.png")
         saver.submit_viz(visualize_step, pil_img.copy(), list(pose_world),
                          n_exec, step, viz_path, instruction, "sync",
@@ -370,8 +406,8 @@ def _save_rollout_step(saver, mode, step, wall_time, pose_base, pose_world,
             n_exec, waypoints, obs_ms, infer_ms, send_ms, exec_ms, wall_ms))
     else:
         exec_actions = baseframework.unnormalize_actions(executing_normalized, action_stats)
-        exec_poses = accumulate_deltas(pose_world, actions_10d_to_7d(exec_actions))
-        new_poses = accumulate_deltas(pose_world, actions_10d_to_7d(current_actions))
+        exec_poses = accumulate_deltas(pose_world, exec_actions)
+        new_poses = accumulate_deltas(pose_world, current_actions)
         viz_path = str(saver.dir / "images" / f"step_{step:04d}_viz.png")
         viz_mode = "rtc" if mode == "rtc" else "async"
         saver.submit_viz(visualize_step, pil_img.copy() if pil_img else None,
