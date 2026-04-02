@@ -2,17 +2,20 @@
 # ============================================================
 # Data processing for v62 + v61 + v51 (joint-space, 14D)
 #
-# Processes all three datasets SEQUENTIALLY to avoid symlink race
-# conditions on the shared place_stapler_stand variant.
+# Processes unique variants ONCE, then assembles per-version
+# training_data dirs via hardlinks to avoid duplicate work.
+#
+# Unique variants (5):
+#   place_cup5_tray5:clean1   (shared by v62, v61)
+#   place_cup5_tray5:wp5      (v62 only)
+#   place_cup5_tray5:wp4      (v61 only)
+#   place_cup5_tray1:clean1   (v51 only)
+#   place_cup5_tray1:wp4      (v51 only)
+#   place_stapler_stand:clean1 (shared by v62, v61, v51)
 #
 # v62: place_cup5_tray5 (clean1, wp5) + place_stapler_stand (clean1) = 750 ep
 # v61: place_cup5_tray5 (clean1, wp4) + place_stapler_stand (clean1) = 750 ep
 # v51: place_cup5_tray1 (clean1, wp4) + place_stapler_stand (clean1) = 750 ep
-#
-# Steps per dataset:
-#   1. Process raw -> joint-space HDF5 (process_data.py, NOT _ee)
-#   2. Generate LeRobot dataset (convert_..._robotwin.py, NOT _ee)
-#   3. Verify episode count = 750
 #
 # After this script finishes, run the training scripts separately:
 #   bash r-preference/0331-v62-training-finetune-version2.sh
@@ -53,95 +56,110 @@ STEP_LOG() {
   echo ""
 }
 
-# -- Helper: process one dataset --
-# Usage: process_dataset <name> <training_data_dir> <variant1> <variant2> ...
-process_dataset() {
+# -- Helper: process a single variant (task:setting) --
+# Outputs to SHARED_POOL/<task>-<setting>-<EPISODE_NUM>/
+# Skips if already complete.
+process_variant() {
+  local POOL_DIR="$1"
+  local ENTRY="$2"
+  local task="${ENTRY%%:*}"
+  local setting="${ENTRY##*:}"
+  local output_name="${task}-${setting}-${EPISODE_NUM}"
+
+  # Already done in pool?
+  if [ -d "${POOL_DIR}/${output_name}" ]; then
+    local count
+    count=$(ls -d "${POOL_DIR}/${output_name}"/episode_* 2>/dev/null | wc -l)
+    if [ "$count" -eq "$EPISODE_NUM" ]; then
+      echo "  OK: ${output_name} (${count} episodes), skipping"
+      return 0
+    else
+      echo "  Partial: ${output_name} (${count}/${EPISODE_NUM}), removing and reprocessing"
+      rm -rf "${POOL_DIR}/${output_name}"
+    fi
+  fi
+
+  # Check processed_data (default output of process_data.py)
+  if [ -d "processed_data/${output_name}" ]; then
+    local pc
+    pc=$(ls -d "processed_data/${output_name}"/episode_* 2>/dev/null | wc -l)
+    if [ "$pc" -eq "$EPISODE_NUM" ]; then
+      echo "  Moving complete processed_data/${output_name} -> pool"
+      mv "processed_data/${output_name}" "${POOL_DIR}/${output_name}"
+      return 0
+    else
+      echo "  Partial processed_data (${pc}/${EPISODE_NUM}), removing"
+      rm -rf "processed_data/${output_name}"
+    fi
+  fi
+
+  # Create symlink for data compat
+  local variant_dir="${task}_${setting}"
+  if [ ! -d "${DATA_CUSTOM}/${variant_dir}" ]; then
+    echo "ERROR: ${DATA_CUSTOM}/${variant_dir} not found"
+    exit 1
+  fi
+  mkdir -p "${DATA_COMPAT}/${task}"
+  if [ ! -e "${DATA_COMPAT}/${task}/${setting}" ]; then
+    ln -s "${DATA_CUSTOM}/${variant_dir}" "${DATA_COMPAT}/${task}/${setting}"
+    echo "  Linked: data/${task}/${setting} -> data_custom_0320/${variant_dir}"
+  fi
+
+  # Process
+  echo "  Processing: ${task} ${setting} ${EPISODE_NUM}"
+  uv run python scripts/process_data.py "$task" "$setting" "$EPISODE_NUM"
+  mv "processed_data/${output_name}" "${POOL_DIR}/${output_name}"
+
+  # Clean up symlink
+  local link="${DATA_COMPAT}/${task}/${setting}"
+  [ -L "$link" ] && rm "$link"
+  rmdir "${DATA_COMPAT}/${task}" 2>/dev/null || true
+}
+
+# -- Helper: assemble a version's training_data dir from pool via hardlinks --
+# Usage: assemble_version <name> <tdata_dir> <pool_dir> <entry1> <entry2> ...
+assemble_version() {
   local NAME="$1"
   local TDATA_DIR="$2"
-  shift 2
-  local VARIANTS=("$@")
+  local POOL_DIR="$3"
+  shift 3
+  local ENTRIES=("$@")
 
-  echo "--- Processing ${NAME}: ${#VARIANTS[@]} variants ---"
-  mkdir -p processed_data "${TDATA_DIR}"
+  echo "--- Assembling ${NAME}: ${#ENTRIES[@]} variants ---"
+  mkdir -p "${TDATA_DIR}"
 
-  # Create symlinks
-  for entry in "${VARIANTS[@]}"; do
-    local task="${entry%%:*}"
-    local setting="${entry##*:}"
-    local variant_dir="${task}_${setting}"
-
-    if [ ! -d "${DATA_CUSTOM}/${variant_dir}" ]; then
-      echo "ERROR: ${DATA_CUSTOM}/${variant_dir} not found"
-      exit 1
-    fi
-
-    mkdir -p "${DATA_COMPAT}/${task}"
-    if [ ! -e "${DATA_COMPAT}/${task}/${setting}" ]; then
-      ln -s "${DATA_CUSTOM}/${variant_dir}" "${DATA_COMPAT}/${task}/${setting}"
-      echo "  Linked: data/${task}/${setting} -> data_custom_0320/${variant_dir}"
-    fi
-  done
-
-  # Process each variant
-  for entry in "${VARIANTS[@]}"; do
+  for entry in "${ENTRIES[@]}"; do
     local task="${entry%%:*}"
     local setting="${entry##*:}"
     local output_name="${task}-${setting}-${EPISODE_NUM}"
 
-    # Check if already done (and complete)
     if [ -d "${TDATA_DIR}/${output_name}" ]; then
-      local actual_count
-      actual_count=$(ls -d "${TDATA_DIR}/${output_name}"/episode_* 2>/dev/null | wc -l)
-      if [ "$actual_count" -eq "$EPISODE_NUM" ]; then
-        echo "  OK: ${output_name} (${actual_count} episodes), skipping"
+      local count
+      count=$(ls -d "${TDATA_DIR}/${output_name}"/episode_* 2>/dev/null | wc -l)
+      if [ "$count" -eq "$EPISODE_NUM" ]; then
+        echo "  OK: ${output_name} already in ${NAME}"
         continue
-      else
-        echo "  Partial: ${output_name} (${actual_count}/${EPISODE_NUM}), removing and reprocessing"
-        rm -rf "${TDATA_DIR}/${output_name}"
       fi
+      rm -rf "${TDATA_DIR}/${output_name}"
     fi
 
-    # Check processed_data
-    if [ -d "processed_data/${output_name}" ]; then
-      local pc
-      pc=$(ls -d "processed_data/${output_name}"/episode_* 2>/dev/null | wc -l)
-      if [ "$pc" -eq "$EPISODE_NUM" ]; then
-        echo "  Moving complete processed_data/${output_name} -> ${TDATA_DIR}/"
-        mv "processed_data/${output_name}" "${TDATA_DIR}/${output_name}"
-        continue
-      else
-        echo "  Partial processed_data (${pc}/${EPISODE_NUM}), removing"
-        rm -rf "processed_data/${output_name}"
-      fi
-    fi
-
-    echo "  Processing: ${task} ${setting} ${EPISODE_NUM}"
-    uv run python scripts/process_data.py "$task" "$setting" "$EPISODE_NUM"
-    mv "processed_data/${output_name}" "${TDATA_DIR}/${output_name}"
+    echo "  Hardlinking: ${output_name} -> ${NAME}"
+    cp -al "${POOL_DIR}/${output_name}" "${TDATA_DIR}/${output_name}"
   done
 
-  # Clean up symlinks
-  for entry in "${VARIANTS[@]}"; do
-    local task="${entry%%:*}"
-    local setting="${entry##*:}"
-    local link="${DATA_COMPAT}/${task}/${setting}"
-    [ -L "$link" ] && rm "$link"
-    rmdir "${DATA_COMPAT}/${task}" 2>/dev/null || true
-  done
-
-  # Verify all variants complete
-  for entry in "${VARIANTS[@]}"; do
+  # Verify
+  for entry in "${ENTRIES[@]}"; do
     local task="${entry%%:*}"
     local setting="${entry##*:}"
     local output_name="${task}-${setting}-${EPISODE_NUM}"
     local count
     count=$(ls -d "${TDATA_DIR}/${output_name}"/episode_* 2>/dev/null | wc -l)
     if [ "$count" -ne "$EPISODE_NUM" ]; then
-      echo "ERROR: ${output_name} has ${count}/${EPISODE_NUM} episodes"
+      echo "ERROR: ${output_name} has ${count}/${EPISODE_NUM} episodes in ${NAME}"
       exit 1
     fi
   done
-  echo "  All ${#VARIANTS[@]} variants verified (${EPISODE_NUM} episodes each)."
+  echo "  ${NAME}: all ${#ENTRIES[@]} variants verified."
 }
 
 # -- Helper: generate LeRobot dataset --
@@ -202,75 +220,76 @@ generate_lerobot() {
 
 echo "============================================"
 echo "Node:      $(hostname)"
-echo "Pipeline:  v62 + v61 + v51 data processing (sequential)"
+echo "Pipeline:  v62 + v61 + v51 data processing (deduplicated)"
 echo "============================================"
 
 cd "${KEMPNER_REPO}/policy/pi05"
 
 # ============================================================================
-# v62: 3 variants, 750 episodes
+# Step 1/3: Process unique variants (5 total, each processed once)
 # ============================================================================
-STEP_LOG "v62: Processing raw -> HDF5 (joint-space)"
+STEP_LOG "Step 1/3: Processing 5 unique variants -> shared pool"
 
-V62_VARIANTS=(
+SHARED_POOL="training_data/_shared_pool"
+mkdir -p processed_data "${SHARED_POOL}"
+
+UNIQUE_VARIANTS=(
   "place_cup5_tray5:clean1"
   "place_cup5_tray5:wp5"
-  "place_stapler_stand:clean1"
-)
-V62_TDATA="training_data/custom_v0320_v62"
-V62_REPO="custom_v0320_v62_repo"
-
-process_dataset "v62" "$V62_TDATA" "${V62_VARIANTS[@]}"
-
-STEP_LOG "v62: Generating LeRobot dataset"
-
-generate_lerobot "v62" "$V62_TDATA" "$V62_REPO" 750
-
-# ============================================================================
-# v61: 3 variants, 750 episodes
-# ============================================================================
-STEP_LOG "v61: Processing raw -> HDF5 (joint-space)"
-
-V61_VARIANTS=(
-  "place_cup5_tray5:clean1"
   "place_cup5_tray5:wp4"
-  "place_stapler_stand:clean1"
-)
-V61_TDATA="training_data/custom_v0320_v61"
-V61_REPO="custom_v0320_v61_repo"
-
-process_dataset "v61" "$V61_TDATA" "${V61_VARIANTS[@]}"
-
-STEP_LOG "v61: Generating LeRobot dataset"
-
-generate_lerobot "v61" "$V61_TDATA" "$V61_REPO" 750
-
-# ============================================================================
-# v51: 3 variants, 750 episodes
-# ============================================================================
-STEP_LOG "v51: Processing raw -> HDF5 (joint-space)"
-
-V51_VARIANTS=(
   "place_cup5_tray1:clean1"
   "place_cup5_tray1:wp4"
   "place_stapler_stand:clean1"
 )
+
+for entry in "${UNIQUE_VARIANTS[@]}"; do
+  process_variant "${SHARED_POOL}" "$entry"
+done
+
+echo ""
+echo "All ${#UNIQUE_VARIANTS[@]} unique variants processed."
+
+# ============================================================================
+# Step 2/3: Assemble per-version training_data dirs + generate LeRobot
+# ============================================================================
+
+# -- v62 --
+STEP_LOG "v62: Assembling training_data + generating LeRobot"
+
+V62_VARIANTS=("place_cup5_tray5:clean1" "place_cup5_tray5:wp5" "place_stapler_stand:clean1")
+V62_TDATA="training_data/custom_v0320_v62"
+V62_REPO="custom_v0320_v62_repo"
+
+assemble_version "v62" "$V62_TDATA" "$SHARED_POOL" "${V62_VARIANTS[@]}"
+generate_lerobot "v62" "$V62_TDATA" "$V62_REPO" 750
+
+# -- v61 --
+STEP_LOG "v61: Assembling training_data + generating LeRobot"
+
+V61_VARIANTS=("place_cup5_tray5:clean1" "place_cup5_tray5:wp4" "place_stapler_stand:clean1")
+V61_TDATA="training_data/custom_v0320_v61"
+V61_REPO="custom_v0320_v61_repo"
+
+assemble_version "v61" "$V61_TDATA" "$SHARED_POOL" "${V61_VARIANTS[@]}"
+generate_lerobot "v61" "$V61_TDATA" "$V61_REPO" 750
+
+# -- v51 --
+STEP_LOG "v51: Assembling training_data + generating LeRobot"
+
+V51_VARIANTS=("place_cup5_tray1:clean1" "place_cup5_tray1:wp4" "place_stapler_stand:clean1")
 V51_TDATA="training_data/custom_v0320_v51"
 V51_REPO="custom_v0320_v51_repo"
 
-process_dataset "v51" "$V51_TDATA" "${V51_VARIANTS[@]}"
-
-STEP_LOG "v51: Generating LeRobot dataset"
-
+assemble_version "v51" "$V51_TDATA" "$SHARED_POOL" "${V51_VARIANTS[@]}"
 generate_lerobot "v51" "$V51_TDATA" "$V51_REPO" 750
 
 # ============================================================================
-# Cleanup intermediate HDF5
+# Step 3/3: Cleanup intermediate HDF5
 # ============================================================================
 STEP_LOG "Cleaning up intermediate HDF5"
 
-rm -rf "$V62_TDATA" "$V61_TDATA" "$V51_TDATA"
-echo "Removed training_data dirs."
+rm -rf "$SHARED_POOL" "$V62_TDATA" "$V61_TDATA" "$V51_TDATA"
+echo "Removed shared pool and training_data dirs."
 
 # ============================================================================
 # Final summary

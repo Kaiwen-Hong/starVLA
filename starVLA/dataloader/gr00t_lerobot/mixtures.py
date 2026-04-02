@@ -496,13 +496,10 @@ DATASET_NAMED_MIXTURES = {
         ("dynamic-324", 1.0, "fastumi"),
     ],
 
-<<<<<<< HEAD
     "dynamic-329": [
         ("dynamic-329", 1.0, "fastumi"),
     ],
 
-=======
->>>>>>> 2f21f6d55279fa08a5c185024fd64bb327bc1d7d
     "dynamic-329-v2": [
         ("dynamic-329-v2", 1.0, "fastumi"),
     ],
@@ -602,6 +599,20 @@ DATASET_NAMED_MIXTURES = {
     "custom_v0320_v62": [
         ("place_cup5_tray5_clean1", 1.0, "robotwin"),
         ("place_cup5_tray5_wp5", 1.0, "robotwin"),
+        ("place_stapler_stand_clean1", 1.0, "robotwin"),
+    ],
+
+    # ── Custom v0320 v71: 3 variants, 14D joint-space (for OFT finetune) ──
+    "custom_v0320_v71": [
+        ("place_cup1_tray5_clean1", 1.0, "robotwin"),
+        ("place_cup1_tray5_wp4", 1.0, "robotwin"),
+        ("place_stapler_stand_clean1", 1.0, "robotwin"),
+    ],
+
+    # ── Custom v0320 v72: 3 variants, 14D joint-space (for OFT finetune) ──
+    "custom_v0320_v72": [
+        ("place_cup1_tray5_clean1", 1.0, "robotwin"),
+        ("place_cup1_tray5_wp5", 1.0, "robotwin"),
         ("place_stapler_stand_clean1", 1.0, "robotwin"),
     ],
 }
