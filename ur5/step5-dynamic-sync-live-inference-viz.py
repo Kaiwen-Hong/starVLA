@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Step 5 (Dynamic-325): Live inference visualization for discrete diffusion.
+Step 5 (Dynamic): Live inference visualization for discrete diffusion.
 
 Interactive: load model + camera + robot once, then press Enter to re-infer.
 Robot does NOT move.
@@ -54,51 +54,105 @@ CHOICE_TEMPERATURE = 0.1
 #  Visualization
 # ═══════════════════════════════════════════════════════════════════
 
-def visualize(world_poses, camera_image, current_ee, step_idx, save_path):
-    """Camera image (left) + absolute x/y/z/gripper (right)."""
+def visualize(world_poses, camera_image, current_ee, step_idx, save_path,
+              raw_normalized=None, raw_unnormalized=None):
+    """Camera image (left) + raw policy output (middle) + absolute world poses (right)."""
     T = world_poses.shape[0]
     ts = np.arange(T) / 20.0
 
-    fig = plt.figure(figsize=(16, 10))
-    gs = GridSpec(4, 2, figure=fig, hspace=0.15, wspace=0.30,
-                  width_ratios=[1, 1.3])
+    n_cols = 2  # image + world
+    if raw_normalized is not None:
+        n_cols += 1
+    if raw_unnormalized is not None:
+        n_cols += 1
 
+    fig = plt.figure(figsize=(6 * n_cols, 10))
+    ratios = [1] + [1.3] * (n_cols - 1)
+    gs = GridSpec(4, n_cols, figure=fig, hspace=0.15, wspace=0.35,
+                  width_ratios=ratios)
+
+    # ── Column 0: Camera image ──
     ax_img = fig.add_subplot(gs[:, 0])
     ax_img.imshow(camera_image)
-    ax_img.set_title("Camera (center-cropped)", fontsize=12, fontweight="bold")
+    ax_img.set_title("Camera", fontsize=12, fontweight="bold")
     ax_img.axis("off")
 
-    dims = [
+    col = 1
+
+    # ── Column: Raw normalized output ([-1,1] / [0,1]) ──
+    if raw_normalized is not None:
+        raw_dims = [
+            (0, "norm pos_x", "#e41a1c"),
+            (1, "norm pos_y", "#377eb8"),
+            (2, "norm pos_z", "#4daf4a"),
+            (9, "norm gripper", "#ff7f00"),
+        ]
+        axes_raw = []
+        for row, (dim_idx, label, color) in enumerate(raw_dims):
+            share = axes_raw[0] if axes_raw else None
+            ax = fig.add_subplot(gs[row, col], sharex=share)
+            axes_raw.append(ax)
+            ax.plot(ts, raw_normalized[:T, dim_idx], "o-", markersize=3, linewidth=1.5, color=color)
+            ax.set_ylabel(label, fontsize=9, fontweight="bold")
+            ax.grid(True, axis="y", alpha=0.3)
+            if row < len(raw_dims) - 1:
+                plt.setp(ax.get_xticklabels(), visible=False)
+            else:
+                ax.set_xlabel("Time (s)", fontsize=9)
+        axes_raw[0].set_title("Raw Normalized", fontsize=11, fontweight="bold")
+        col += 1
+
+    # ── Column: Unnormalized delta actions ──
+    if raw_unnormalized is not None:
+        delta_dims = [
+            (0, "delta pos_x (m)", "#e41a1c"),
+            (1, "delta pos_y (m)", "#377eb8"),
+            (2, "delta pos_z (m)", "#4daf4a"),
+            (9, "gripper", "#ff7f00"),
+        ]
+        axes_delta = []
+        for row, (dim_idx, label, color) in enumerate(delta_dims):
+            share = axes_delta[0] if axes_delta else None
+            ax = fig.add_subplot(gs[row, col], sharex=share)
+            axes_delta.append(ax)
+            ax.plot(ts, raw_unnormalized[:T, dim_idx], "o-", markersize=3, linewidth=1.5, color=color)
+            ax.set_ylabel(label, fontsize=9, fontweight="bold")
+            ax.grid(True, axis="y", alpha=0.3)
+            if row < len(delta_dims) - 1:
+                plt.setp(ax.get_xticklabels(), visible=False)
+            else:
+                ax.set_xlabel("Time (s)", fontsize=9)
+        axes_delta[0].set_title("Unnormalized (10D)", fontsize=11, fontweight="bold")
+        col += 1
+
+    # ── Last column: Absolute world-frame trajectory ──
+    world_dims = [
         (0, "x (world, m)", "#e41a1c", current_ee[0]),
         (1, "y (world, m)", "#377eb8", current_ee[1]),
         (2, "z (world, m)", "#4daf4a", current_ee[2]),
         (6, "gripper",      "#ff7f00", None),
     ]
-
-    axes = []
-    for row, (dim_idx, label, color, start_val) in enumerate(dims):
-        share = axes[0] if axes else None
-        ax = fig.add_subplot(gs[row, 1], sharex=share)
-        axes.append(ax)
-
+    axes_world = []
+    for row, (dim_idx, label, color, start_val) in enumerate(world_dims):
+        share = axes_world[0] if axes_world else None
+        ax = fig.add_subplot(gs[row, col], sharex=share)
+        axes_world.append(ax)
         vals = world_poses[:, dim_idx]
-        ax.plot(ts, vals, "o-", markersize=4, linewidth=1.8, color=color)
+        ax.plot(ts, vals, "o-", markersize=3, linewidth=1.5, color=color)
         if start_val is not None:
             ax.axhline(start_val, color=color, linewidth=1.0, linestyle="--",
                        alpha=0.5, label=f"current={start_val:.4f}")
-            ax.legend(fontsize=8, loc="upper right")
-        for t_val in ts:
-            ax.axvline(t_val, color="gray", linewidth=0.3, alpha=0.2)
-        ax.set_ylabel(label, fontsize=10, fontweight="bold")
+            ax.legend(fontsize=7, loc="upper right")
+        ax.set_ylabel(label, fontsize=9, fontweight="bold")
         ax.grid(True, axis="y", alpha=0.3)
-
-        if row < len(dims) - 1:
+        if row < len(world_dims) - 1:
             plt.setp(ax.get_xticklabels(), visible=False)
         else:
-            ax.set_xlabel("Time (s) — 20Hz", fontsize=10)
+            ax.set_xlabel("Time (s)", fontsize=9)
+    axes_world[0].set_title("World Frame (accumulated)", fontsize=11, fontweight="bold")
 
     fig.suptitle(
-        f'Run {step_idx}: Live Inference (DD Dynamic-325, no movement)\n"{INSTRUCTION}"',
+        f'Run {step_idx}: Live Inference (DD Dynamic, no movement)\n"{INSTRUCTION}"',
         fontsize=13, fontweight="bold", y=0.98)
 
     plt.savefig(save_path, dpi=150, bbox_inches="tight")
@@ -112,7 +166,7 @@ def visualize(world_poses, camera_image, current_ee, step_idx, save_path):
 
 def main():
     parser = argparse.ArgumentParser(
-        description="DD Dynamic-325: live inference viz (no robot movement)")
+        description="DD Dynamic: live inference viz (no robot movement)")
     parser.add_argument("--checkpoint", type=str, default=DEFAULT_CHECKPOINT)
     parser.add_argument("--arm", choices=["left", "right"], default=ARM)
     parser.add_argument("--camera_dev", type=int, default=CAMERA_DEV)
@@ -199,12 +253,12 @@ def main():
             pred_normalized = output["normalized_actions"][0].astype(np.float32)
             pred_actions_10d = baseframework.unnormalize_actions(pred_normalized, action_stats)
 
-            # Convert 10D -> 7D
+            # Convert 10D -> 7D (for display only)
             deltas_7d = actions_10d_to_7d(pred_actions_10d)
 
-            # Print delta actions
+            # Print delta actions (these are in EE LOCAL frame, not world frame)
             print(f"\n{'=' * 82}")
-            print("Delta actions (world frame)  [dx, dy, dz, drx, dry, drz, gripper]")
+            print("Delta actions (EE local frame)  [dx, dy, dz, drx, dry, drz, gripper]")
             print(f"{'=' * 82}")
             labels = ["dx", "dy", "dz", "drx", "dry", "drz", "gripper"]
             print(f"{'step':>4s}  " + "  ".join(f"{l:>9s}" for l in labels))
@@ -215,8 +269,8 @@ def main():
                 print(f"{t:4d}  {a[0]:9.6f}  {a[1]:9.6f}  {a[2]:9.6f}  "
                       f"{a[3]:9.6f}  {a[4]:9.6f}  {a[5]:9.6f}  {g:>9s}")
 
-            # Accumulate -> absolute trajectory
-            world_poses = accumulate_deltas(pose_world, deltas_7d)
+            # Accumulate -> absolute trajectory (local→world transform)
+            world_poses = accumulate_deltas(pose_world, pred_actions_10d)
 
             print(f"\n{'=' * 82}")
             print("Absolute trajectory (world frame)  [x, y, z, rx, ry, rz, gripper]")
@@ -237,7 +291,9 @@ def main():
 
             # Visualize
             save_path = Path("ur5") / f"step5_dynamic_sync_viz_{timestamp}.png"
-            visualize(world_poses, pil_img, pose_world, run_idx, str(save_path))
+            visualize(world_poses, pil_img, pose_world, run_idx, str(save_path),
+                      raw_normalized=pred_normalized,
+                      raw_unnormalized=pred_actions_10d)
 
             run_idx += 1
 
