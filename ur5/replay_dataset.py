@@ -10,7 +10,7 @@ Control modes: EEF (end-effector) or joint.
 # ============ DATA PATH CONFIG (edit here) ============
 DATA_BASE = "/home/kaiwen/Desktop/research/fastumipro-collection/data_collector_opt/DATA"
 # DATA_SESSION = "left_hand_250801DR48FP25002960/pickandplace-314-v2/session_20260314_172507"
-DATA_SESSION = "left_hand_250801DR48FP25002960/pickandplace-314/session_20260314_172507"
+DATA_SESSION = "left_hand_250801DR48FP25002960/dynamic-329-v4/session_20260329_213550"
 DATA_PATH = f"{DATA_BASE}/{DATA_SESSION}"
 # ======================================================
 
