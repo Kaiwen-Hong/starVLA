@@ -6,9 +6,9 @@
 # Each GPU loads its own policy server and runs one evaluation.
 #
 # GPU assignment:
-#   GPU 0 (port 5694): v61 — place_stapler_stand | place_stapler_stand (clean)
+#   GPU 0 (port 5694): v61 — place_stapler_stand | place_stapler_stand_clean1
 #   GPU 1 (port 5695): v61 — place_stapler_stand | place_stapler_stand_wp4
-#   GPU 2 (port 5696): v62 — place_stapler_stand | place_stapler_stand (clean)
+#   GPU 2 (port 5696): v62 — place_stapler_stand | place_stapler_stand_clean1
 #   GPU 3 (port 5697): v62 — place_stapler_stand | place_stapler_stand_wp5
 #
 # Prerequisites:
@@ -56,9 +56,9 @@ declare -A RUN_IDS=(
 # ── 4 eval configs: one per GPU ──────────────────────────────
 # Format: "label|version|task_name|task_config|gpu_id|port"
 EVAL_CONFIGS=(
-    "v61_clean|v61|place_stapler_stand|place_stapler_stand|0|5694"
+    "v61_clean|v61|place_stapler_stand|place_stapler_stand_clean1|0|5694"
     "v61_wp4|v61|place_stapler_stand|place_stapler_stand_wp4|1|5695"
-    "v62_clean|v62|place_stapler_stand|place_stapler_stand|2|5696"
+    "v62_clean|v62|place_stapler_stand|place_stapler_stand_clean1|2|5696"
     "v62_wp5|v62|place_stapler_stand|place_stapler_stand_wp5|3|5697"
 )
 

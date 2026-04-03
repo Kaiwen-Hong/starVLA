@@ -11,11 +11,11 @@
 #
 # Examples:
 #   # v61: place_stapler_stand (clean + wp4)
-#   bash r-preference/eval-local-v6162-vast/3_eval.sh v61 place_stapler_stand place_stapler_stand 0 0
+#   bash r-preference/eval-local-v6162-vast/3_eval.sh v61 place_stapler_stand place_stapler_stand_clean1 0 0
 #   bash r-preference/eval-local-v6162-vast/3_eval.sh v61 place_stapler_stand place_stapler_stand_wp4 0 1
 #
 #   # v62: place_stapler_stand (clean + wp5)
-#   bash r-preference/eval-local-v6162-vast/3_eval.sh v62 place_stapler_stand place_stapler_stand 0 2
+#   bash r-preference/eval-local-v6162-vast/3_eval.sh v62 place_stapler_stand place_stapler_stand_clean1 0 2
 #   bash r-preference/eval-local-v6162-vast/3_eval.sh v62 place_stapler_stand place_stapler_stand_wp5 0 3
 #
 # Environment variables:

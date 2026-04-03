@@ -6,6 +6,13 @@ STAR_PYTHON="/net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/miniforge3/e
 RESULTS="/net/holy-isilon/ifs/rc_labs/ydu_lab/Lab/haonan/kaiwen/starVLA/results/Checkpoints"
 HF_REPO="kaiwen2/prefvla-models"
 
+# Prompt for HF write token
+echo ""
+echo "Enter your HuggingFace WRITE token (from https://huggingface.co/settings/tokens):"
+read -rp "Token: " HF_TOKEN
+export HF_TOKEN
+echo ""
+
 declare -A MODELS=(
   ["v0320_v61_qwenOFT_finetune_v2"]="steps_60000_pytorch_model.pt"
   ["v0320_v62_qwenOFT_finetune_v2"]="steps_60000_pytorch_model.pt"
