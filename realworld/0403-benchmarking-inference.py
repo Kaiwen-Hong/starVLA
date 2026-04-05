@@ -55,8 +55,8 @@ DEFAULT_CHECKPOINT_DD = (
     "checkpoints/steps_20000_pytorch_model.pt"
 )
 # ↑↑↑ Change this to switch between PI and DD ↑↑↑
-# DEFAULT_CHECKPOINT = DEFAULT_CHECKPOINT_DD
-DEFAULT_CHECKPOINT = DEFAULT_CHECKPOINT_PI
+DEFAULT_CHECKPOINT = DEFAULT_CHECKPOINT_DD
+# DEFAULT_CHECKPOINT = DEFAULT_CHECKPOINT_PI
 
 DATA_ROOT_DIR = "/scratch/wangpc/starVLA/playground/Datasets/FastUMI"
 DECODE_TEMPERATURE = 0.0
@@ -254,9 +254,13 @@ def _action_model_predict_dd_timed(am, vl_embs_list, state, timer: CUDATimer,
 # ======================================================================
 
 def _action_model_predict_realtime_pi_timed(am, vl_embs_list, state, timer: CUDATimer,
-                                             prev_action_chunk, inference_delay):
+                                             prev_action_chunk, inference_delay,
+                                             mode="pigdm",
+                                             suffix_length=None,
+                                             prefix_attention_schedule="exp",
+                                             max_guidance_weight=10.0):
     """Inlined LayerwiseFM_ActionHeader.predict_action_realtime with per-step timing."""
-    from starVLA.model.modules.action_model.flow_matching_head.action_encoder import swish
+    from starVLA.model.modules.action_model.LayerwiseFM_ActionHeader import get_prefix_weights
 
     batch_size = vl_embs_list[0].shape[0]
     device = vl_embs_list[0].device
@@ -272,6 +276,50 @@ def _action_model_predict_realtime_pi_timed(am, vl_embs_list, state, timer: CUDA
         dt = 1.0 / num_steps
         state_features = am.state_encoder(state) if state is not None else None
 
+    if mode == "pigdm":
+        if suffix_length is None:
+            suffix_length = inference_delay
+        prefix_attention_end = am.action_horizon - suffix_length
+        weights = get_prefix_weights(
+            inference_delay, prefix_attention_end,
+            am.action_horizon, prefix_attention_schedule, device,
+        )
+        prev = prev_action_chunk.to(dtype)
+
+        for t_step in range(num_steps):
+            with timer.track(f"am_step_{t_step}"):
+                t_cont = t_step / float(num_steps)
+                t_bucket = int(t_cont * am.num_timestep_buckets)
+                timesteps_tensor = torch.full(
+                    (batch_size,), t_bucket, device=device, dtype=torch.long,
+                )
+
+                with torch.enable_grad():
+                    x_t = actions.detach().requires_grad_(True)
+                    v_t = am._forward_velocity(
+                        vl_embs_list, x_t, timesteps_tensor,
+                        state_features, device,
+                    )
+                    x_1_hat = x_t + v_t * (1.0 - t_cont)
+                    error = (prev - x_1_hat) * weights[None, :, None]
+                    pinv_correction = torch.autograd.grad(
+                        x_1_hat, x_t, grad_outputs=error,
+                    )[0]
+
+                t = t_cont
+                inv_r2 = (t ** 2 + (1 - t) ** 2) / ((1 - t) ** 2 + 1e-8)
+                c = (1 - t) / (t + 1e-8)
+                gw = min(c * inv_r2, max_guidance_weight)
+
+                v_corrected = v_t.detach() + gw * pinv_correction.detach()
+                actions = actions.detach() + dt * v_corrected
+
+        return actions
+
+    # simulated_delay mode
+    from starVLA.model.modules.action_model.flow_matching_head.action_encoder import swish
+
+    with timer.track("am_init_sd"):
         prefix_mask = torch.zeros(1, am.action_horizon, 1, device=device, dtype=torch.bool)
         prefix_mask[:, :inference_delay, :] = True
 
@@ -279,10 +327,8 @@ def _action_model_predict_realtime_pi_timed(am, vl_embs_list, state, timer: CUDA
         with timer.track(f"am_step_{t_step}"):
             t_cont = t_step / float(num_steps)
 
-            # RTC core: replace prefix positions with prev chunk
             actions = torch.where(prefix_mask, prev_action_chunk.to(dtype), actions)
 
-            # Per-position timestep buckets
             t_bucket = int(t_cont * am.num_timestep_buckets)
             t_bucket_prefix = int(1.0 * am.num_timestep_buckets) - 1
             timesteps_tensor = torch.full(
@@ -290,7 +336,6 @@ def _action_model_predict_realtime_pi_timed(am, vl_embs_list, state, timer: CUDA
             )
             timesteps_tensor[:, :inference_delay] = t_bucket_prefix
 
-            # Inline action encoder with per-position timesteps
             a_emb = am.action_encoder.layer1(actions)
             tau_emb = am.action_encoder.pos_encoding(timesteps_tensor).to(dtype=a_emb.dtype)
             x_enc = torch.cat([a_emb, tau_emb], dim=-1)
@@ -331,7 +376,8 @@ def _action_model_predict_realtime_pi_timed(am, vl_embs_list, state, timer: CUDA
 
 def _action_model_predict_realtime_dd_timed(am, vl_embs_list, state, timer: CUDATimer,
                                              prev_action_chunk, inference_delay,
-                                             decode_temperature=0.0, choice_temperature=0.1):
+                                             decode_temperature=0.0, choice_temperature=0.1,
+                                             hard_mask=False, execution_horizon=None):
     """Inlined LayerwiseDiscreteDiffusion_ActionHeader.predict_action_realtime with per-step timing."""
     from starVLA.model.modules.action_model.LayerwiseDiscreteDiffusion_ActionHeader import (
         decode_mask_schedule, mask_by_deterministic_lowest, mask_by_random_topk,
@@ -342,16 +388,21 @@ def _action_model_predict_realtime_dd_timed(am, vl_embs_list, state, timer: CUDA
     L = am.seq_len
     deterministic_decode = decode_temperature == 0
     deterministic_choice = choice_temperature == 0
-    inference_delay = min(inference_delay, am.action_horizon)
 
-    # Scale steps proportionally (fixed_steps=False, matching deployment)
-    num_steps = max(1, int(am.num_inference_steps * inference_delay / am.action_horizon))
+    if execution_horizon is None:
+        execution_horizon = inference_delay
+    execution_horizon = min(execution_horizon, am.action_horizon)
+
+    if hard_mask:
+        prefix_length = inference_delay
+    else:
+        prefix_length = am.action_horizon - execution_horizon
 
     with timer.track("am_init"):
         prefix_bins = am.binning.encode(prev_action_chunk)
         prefix_mask = (
             torch.arange(am.action_horizon, device=device)[None, :, None]
-            < inference_delay
+            < prefix_length
         ).expand(B, am.action_horizon, am.action_dim)
 
         cur_seqs = torch.where(
@@ -359,12 +410,11 @@ def _action_model_predict_realtime_dd_timed(am, vl_embs_list, state, timer: CUDA
             prefix_bins,
             torch.full_like(prefix_bins, am.mask_token_id),
         )
-        unknown_init = torch.full(
-            (B,),
-            (am.action_horizon - inference_delay) * am.action_dim,
-            dtype=torch.long,
-            device=device,
-        )
+
+        # Count actual masked tokens
+        num_unknown_tokens = (cur_seqs == am.mask_token_id).sum(dim=(1, 2))
+        unknown_init = num_unknown_tokens
+        num_steps = max(1, int(am.num_inference_steps * num_unknown_tokens.max().item() / L))
 
         state_feat = None
         if state is not None and am.state_encoder is not None:
@@ -570,15 +620,18 @@ def _timed_predict_realtime_pi(model, examples, timer: CUDATimer,
         np.array(prev_action_chunk_normalized)
     ).to(vl_embs_list[-1].device, dtype=torch.float32)
 
+    rtc_mode = kwargs.get("rtc_mode", "pigdm")
+
     with torch.autocast("cuda", dtype=torch.float32):
         pred_actions = _action_model_predict_realtime_pi_timed(
             model.action_model, vl_embs_list, state, timer,
             prev_action_chunk=prev_chunk_t,
             inference_delay=inference_delay,
+            mode=rtc_mode,
         )
 
     with timer.track("to_numpy"):
-        normalized_actions = pred_actions.detach().cpu().numpy()
+        normalized_actions = pred_actions.detach().float().cpu().numpy()
 
     return {"normalized_actions": normalized_actions}
 
@@ -596,6 +649,8 @@ def _timed_predict_realtime_dd(model, examples, timer: CUDATimer,
         np.array(prev_action_chunk_normalized)
     ).to(vl_embs_list[-1].device, dtype=torch.float32)
 
+    hard_mask = kwargs.get("hard_mask", False)
+
     with torch.autocast("cuda", dtype=torch.float32):
         pred_actions = _action_model_predict_realtime_dd_timed(
             model.action_model, vl_embs_list, state, timer,
@@ -603,6 +658,7 @@ def _timed_predict_realtime_dd(model, examples, timer: CUDATimer,
             inference_delay=inference_delay,
             decode_temperature=decode_temperature,
             choice_temperature=choice_temperature,
+            hard_mask=hard_mask,
         )
 
     with timer.track("to_numpy"):
@@ -724,7 +780,7 @@ def benchmark(model, framework_type, dataloader, num_samples, warmup,
 
             torch.cuda.synchronize()
             t0 = time.perf_counter()
-            with torch.inference_mode():
+            with torch.no_grad():
                 result = fn_realtime(
                     model, batch, cur_timer,
                     prev_action_chunk_normalized=prev_actions,
@@ -914,6 +970,9 @@ def main():
                         help="Override number of inference steps (default: 8)")
     parser.add_argument("--inference_delay", type=int, default=0,
                         help="RTC prefix length. 0=predict_action only, N=realtime with N prefix steps")
+    parser.add_argument("--rtc_mode", type=str, default="pigdm",
+                        choices=["pigdm", "simulated_delay"],
+                        help="RTC mode for PI: pigdm (default) or simulated_delay")
     parser.add_argument("--output", type=str, default=None)
     args = parser.parse_args()
 
@@ -937,6 +996,7 @@ def main():
         decode_temperature=args.decode_temperature,
         choice_temperature=args.choice_temperature,
         use_simple_max=args.use_simple_max,
+        rtc_mode=args.rtc_mode,
     )
 
     results = benchmark(
@@ -948,6 +1008,7 @@ def main():
     )
 
     # Add metadata
+    results["rtc_mode"] = args.rtc_mode
     results["checkpoint"] = args.checkpoint
     results["gpu"] = torch.cuda.get_device_name(0) if torch.cuda.is_available() else "N/A"
     results["gpu_memory_allocated_mb"] = round(torch.cuda.memory_allocated() / 1024**2, 1)

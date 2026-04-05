@@ -450,12 +450,18 @@ class LayerwiseFlowmatchingActionHead(nn.Module):
         prev_action_chunk: torch.Tensor = None,
         inference_delay: int = 1,
         mode: str = "pigdm",
-        prefix_attention_horizon: int | None = None,
+        suffix_length: int | None = None,
         prefix_attention_schedule: str = "exp",
         max_guidance_weight: float = 10.0,
     ) -> torch.Tensor:
         """
         RTC-aware flow-matching inference.
+
+        Prefix weight schedule over the action horizon H:
+            positions  0..d-1        : weight = 1   (known prefix)
+            positions  d..H-s-1      : weight decays (transition zone)
+            positions  H-s..H-1      : weight = 0   (fully free suffix)
+        where d = inference_delay, s = suffix_length.
 
         Modes:
             "pigdm": Pseudo-Inverse Guided Diffusion (default). Uses
@@ -472,12 +478,13 @@ class LayerwiseFlowmatchingActionHead(nn.Module):
             state: optional state tensor (B, 1, state_dim).
             prev_action_chunk: (B, action_horizon, action_dim) normalised
                 actions from the previous prediction.
-            inference_delay: number of leading timesteps to fix as prefix.
+            inference_delay: number of leading timesteps to fix as prefix (d).
             mode: "pigdm" or "simulated_delay".
-            prefix_attention_horizon: how far prefix influence extends
-                (default: action_horizon). Only used in pigdm mode.
-            prefix_attention_schedule: weight schedule for prefix ("exp",
-                "linear", "ones", "zeros"). Only used in pigdm mode.
+            suffix_length: number of trailing timesteps with weight 0 (s).
+                Defaults to inference_delay (so d positions known,
+                d positions fully free at the end).
+            prefix_attention_schedule: weight schedule for transition zone
+                ("exp", "linear", "ones", "zeros"). Only used in pigdm.
             max_guidance_weight: maximum ΠGDM guidance weight.
 
         Returns:
@@ -503,11 +510,12 @@ class LayerwiseFlowmatchingActionHead(nn.Module):
 
         if mode == "pigdm":
             # ── ΠGDM: pseudo-inverse guided diffusion ──
-            if prefix_attention_horizon is None:
-                prefix_attention_horizon = self.action_horizon
+            if suffix_length is None:
+                suffix_length = inference_delay
+            prefix_attention_end = self.action_horizon - suffix_length
 
             weights = get_prefix_weights(
-                inference_delay, prefix_attention_horizon,
+                inference_delay, prefix_attention_end,
                 self.action_horizon, prefix_attention_schedule, device,
             )  # (action_horizon,)
             prev = prev_action_chunk.to(dtype)

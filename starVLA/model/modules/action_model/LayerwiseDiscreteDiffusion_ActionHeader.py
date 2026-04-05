@@ -337,25 +337,34 @@ class LayerwiseDiscreteDiffusionActionHead(nn.Module):
         state=None,
         prev_action_chunk: torch.Tensor | None = None,
         inference_delay: int = 1,
+        execution_horizon: int | None = None,
         choice_temperature: float = 0.1,
         decode_temperature: float = 1.0,
         fixed_steps: bool = False,
-        hard_mask: bool = True,
+        hard_mask: bool = False,
         early_stop: bool = False,
     ) -> torch.Tensor:
         """
-        RTC-aware MaskGIT decode: prefix the first `inference_delay` timesteps
-        with the (still-being-executed) actions from the previous chunk so the
-        iterative unmasking only needs to fill the remaining positions.
+        RTC-aware MaskGIT decode.
+
+        The previous chunk's un-executed actions become the known prefix:
+            prefix_length = action_horizon - execution_horizon
+        Only the last `execution_horizon` positions need to be generated.
+
+        Schedule over action horizon H with execution_horizon s:
+            positions  0 .. H-s-1   : known prefix (from prev chunk)
+            positions  H-s .. H-1   : masked, to be generated
 
         Args:
-            prev_action_chunk: (B, T, action_dim) continuous actions from the
-                previous prediction.  If None or inference_delay <= 0, falls
-                back to standard predict_action.
-            inference_delay: number of leading timesteps to treat as known prefix.
+            prev_action_chunk: (B, T, action_dim) continuous actions from
+                the previous prediction.
+            inference_delay: number of actions executed between predictions.
+                Used as fallback for execution_horizon if not provided.
+            execution_horizon: number of new positions to generate (s).
+                Defaults to inference_delay.
             fixed_steps: if True, always use self.num_inference_steps;
-                if False (default), scale steps proportionally to the number
-                of tokens that need to be generated.
+                if False (default), scale steps proportionally to the
+                fraction of tokens that need to be generated.
         """
         if prev_action_chunk is None or inference_delay <= 0:
             return self.predict_action(
@@ -369,38 +378,38 @@ class LayerwiseDiscreteDiffusionActionHead(nn.Module):
         L = self.seq_len
         deterministic_decode = decode_temperature == 0
         deterministic_choice = choice_temperature == 0
-        inference_delay = min(inference_delay, self.action_horizon)
 
-        if fixed_steps:
-            num_steps = self.num_inference_steps
+        if execution_horizon is None:
+            execution_horizon = inference_delay
+        execution_horizon = min(execution_horizon, self.action_horizon)
+
+        if hard_mask:
+            prefix_length = inference_delay
         else:
-            num_steps = max(1, int(self.num_inference_steps * inference_delay / self.action_horizon))
+            prefix_length = self.action_horizon - execution_horizon
 
         # Encode the prefix into bin indices
         prefix_bins = self.binning.encode(prev_action_chunk)
-        if hard_mask:
-            prefix_mask = (
-                torch.arange(self.action_horizon, device=device)[None, :, None]
-                < inference_delay # This is the hard mask, where only the inference delay actions are not masked
-            ).expand(B, self.action_horizon, self.action_dim)
-        else:
-            # This is the soft mask, where the first chunk_size - inference_delay actions are masked
-            prefix_mask = (
-                torch.arange(self.action_horizon, device=device)[None, :, None]
-                < (self.action_horizon - inference_delay)
-            ).expand(B, self.action_horizon, self.action_dim)
+        prefix_mask = (
+            torch.arange(self.action_horizon, device=device)[None, :, None]
+            < prefix_length
+        ).expand(B, self.action_horizon, self.action_dim)
 
         cur_seqs = torch.where(
             prefix_mask,
             prefix_bins,
             torch.full_like(prefix_bins, self.mask_token_id),
         )
-        unknown_init = torch.full(
-            (B,),
-            (self.action_horizon - inference_delay) * self.action_dim,
-            dtype=torch.long,
-            device=device,
-        )
+
+        # Count actual masked tokens from cur_seqs
+        num_unknown_tokens = (cur_seqs == self.mask_token_id).sum(dim=(1, 2))  # (B,)
+        unknown_init = num_unknown_tokens
+        if fixed_steps:
+            num_steps = self.num_inference_steps
+        else:
+            # Use the max across the batch to determine step count
+            num_steps = max(1, int(self.num_inference_steps * num_unknown_tokens.max().item() / L))
+        
 
         state_feat = None
         if state is not None and self.state_encoder is not None:
@@ -460,9 +469,9 @@ class LayerwiseDiscreteDiffusionActionHead(nn.Module):
                 torch.where(action_mask, self.mask_token_id, sampled),
             )
 
-            # if the first d + s actions in the cur_seqs are all unmasked, early stop
+            # Early stop if all non-prefix positions are unmasked
             if early_stop:
-                if cur_seqs[:, :inference_delay + step_idx, :].all(dim=-1).all():
+                if (cur_seqs[:, prefix_length:, :] != self.mask_token_id).all():
                     break
 
         return self.binning.decode(cur_seqs)
