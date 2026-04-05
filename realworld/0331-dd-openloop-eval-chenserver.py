@@ -41,7 +41,7 @@ from starVLA.dataloader.lerobot_datasets import get_vla_dataset, collate_fn
 
 # ── Defaults ─────────────────────────────────────────────────────────
 DEFAULT_CHECKPOINT = (
-    "/scratch/wangpc/starVLA/results/Checkpoints/fastumi_pickandplace_qwenDiscreteDiffusion_329v2/"
+    "/scratch/wangpc/starVLA/results/Checkpoints/fastumi_pickandplace_qwenDiscreteDiffusion_329v4/"
     "checkpoints/steps_20000_pytorch_model.pt"
 )
 DATA_ROOT_DIR = "/scratch/wangpc/starVLA/playground/Datasets/FastUMI"

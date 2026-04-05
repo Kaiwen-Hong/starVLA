@@ -512,6 +512,14 @@ DATASET_NAMED_MIXTURES = {
         ("dynamic-329-v4", 1.0, "fastumi"),
     ],
 
+    "dynamic-0403-0-pick_to_moved": [
+        ("dynamic-0403-0-pick_to_moved", 1.0, "fastumi"),
+    ],
+
+    "dynamic-0403-1-pick_from_moved": [
+        ("dynamic-0403-1-pick_from_moved", 1.0, "fastumi"),
+    ],
+
     # Debug subset: just 1 FastUMI task
     "fastumi_task1": [
         ("pickandplace_vla", 1.0, "fastumi"),

@@ -7,6 +7,8 @@
 from dataclasses import dataclass, field
 
 import torch
+import math
+
 import torch.nn.functional as F
 from torch import nn
 from torch.distributions import Beta
@@ -212,6 +214,35 @@ class FlowmatchingActionHeadConfig(PretrainedConfig):
 DiTConfig = {"num_layers": 36, "input_embedding_dim": 2048, "attention_head_dim": 64, "num_attention_heads": 32} # default for qwen2.5-vl
 
 
+def get_prefix_weights(
+    start: int, end: int, total: int, schedule: str, device: torch.device,
+) -> torch.Tensor:
+    """Compute prefix attention weights for ΠGDM guidance.
+
+    With start=2, end=6, total=10:
+      1  1  4/5 3/5 2/5 1/5 0  0  0  0
+             ^              ^
+           start           end
+    `start` (inclusive) is where the chunk starts being allowed to change.
+    `end` (exclusive) is where the chunk stops attending to the prefix.
+    """
+    start = min(start, end)
+    positions = torch.arange(total, device=device, dtype=torch.float32)
+
+    if schedule == "ones":
+        w = torch.ones(total, device=device)
+    elif schedule == "zeros":
+        w = (positions < start).float()
+    elif schedule in ("linear", "exp"):
+        w = ((start - 1 - positions) / (end - start + 1) + 1).clamp(0, 1)
+        if schedule == "exp":
+            w = w * torch.expm1(w) / (math.e - 1)
+    else:
+        raise ValueError(f"Invalid schedule: {schedule}")
+
+    return torch.where(positions >= end, torch.zeros_like(w), w)
+
+
 class LayerwiseFlowmatchingActionHead(nn.Module):
     def __init__(
         self,
@@ -382,22 +413,59 @@ class LayerwiseFlowmatchingActionHead(nn.Module):
             actions = actions + dt * pred_velocity
         return actions
 
-    @torch.no_grad()
+    def _forward_velocity(self, vl_embs_list, actions, timesteps, state_features, device):
+        """Single forward pass returning predicted velocity."""
+        B = actions.shape[0]
+        action_features = self.action_encoder(actions, timesteps)
+
+        if self.config.add_pos_embed:
+            pos_ids = torch.arange(action_features.shape[1], dtype=torch.long, device=device)
+            pos_embs = self.position_embedding(pos_ids).unsqueeze(0)
+            action_features = action_features + pos_embs
+
+        future_tokens = self.future_tokens.weight.unsqueeze(0).expand(B, -1, -1)
+        sa_embs = (
+            torch.cat((state_features, future_tokens, action_features), dim=1)
+            if state_features is not None
+            else torch.cat((future_tokens, action_features), dim=1)
+        )
+
+        temb = self.model.timestep_encoder(timesteps)
+
+        model_output = sa_embs
+        for layer_idx, layer in enumerate(self.model.transformer_blocks):
+            model_output = layer(
+                hidden_states=model_output,
+                encoder_hidden_states=vl_embs_list[layer_idx],
+                temb=temb,
+            )
+
+        pred = self.action_decoder(model_output)
+        return pred[:, -self.action_horizon:]
+
     def predict_action_realtime(
         self,
         vl_embs_list: list,
         state: torch.Tensor = None,
         prev_action_chunk: torch.Tensor = None,
         inference_delay: int = 1,
+        mode: str = "pigdm",
+        prefix_attention_horizon: int | None = None,
+        prefix_attention_schedule: str = "exp",
+        max_guidance_weight: float = 10.0,
     ) -> torch.Tensor:
         """
         RTC-aware flow-matching inference.
 
-        Implements the "simulated delay" technique from the RTC paper:
-        for the first `inference_delay` timesteps of the action chunk,
-        replace the noisy actions with the previous chunk's (already denoised)
-        actions and set their flow time to 1.0.  The remaining positions start
-        from noise at t=0 and are denoised normally via Euler integration.
+        Modes:
+            "pigdm": Pseudo-Inverse Guided Diffusion (default). Uses
+                VJP-based correction to guide generation towards
+                consistency with the known prefix. Works without
+                special training. Costs ~2x per step (forward + VJP).
+                Ref: model.py realtime_action (pinv_corrected_velocity).
+            "simulated_delay": Naive replace-and-denoise with per-position
+                timesteps. Requires model trained with simulated delay
+                loss. Single forward per step.
 
         Args:
             vl_embs_list: layer-wise VL embeddings, list of (B, seq, D).
@@ -405,6 +473,12 @@ class LayerwiseFlowmatchingActionHead(nn.Module):
             prev_action_chunk: (B, action_horizon, action_dim) normalised
                 actions from the previous prediction.
             inference_delay: number of leading timesteps to fix as prefix.
+            mode: "pigdm" or "simulated_delay".
+            prefix_attention_horizon: how far prefix influence extends
+                (default: action_horizon). Only used in pigdm mode.
+            prefix_attention_schedule: weight schedule for prefix ("exp",
+                "linear", "ones", "zeros"). Only used in pigdm mode.
+            max_guidance_weight: maximum ΠGDM guidance weight.
 
         Returns:
             actions: (B, action_horizon, action_dim) predicted actions.
@@ -416,92 +490,130 @@ class LayerwiseFlowmatchingActionHead(nn.Module):
         device = vl_embs_list[0].device
         dtype = vl_embs_list[0].dtype
 
-        # Start from noise
+        num_steps = self.num_inference_timesteps
+        dt = 1.0 / num_steps
+
         actions = torch.randn(
             size=(batch_size, self.action_horizon, self.action_dim),
             dtype=dtype,
             device=device,
         )
 
-        num_steps = self.num_inference_timesteps
-        dt = 1.0 / num_steps
-
         state_features = self.state_encoder(state) if state is not None else None
 
-        # Build a per-timestep mask: True for prefix positions
-        # mask shape: (1, action_horizon, 1) for broadcasting
-        prefix_mask = torch.zeros(1, self.action_horizon, 1, device=device, dtype=torch.bool)
-        prefix_mask[:, :inference_delay, :] = True
+        if mode == "pigdm":
+            # ── ΠGDM: pseudo-inverse guided diffusion ──
+            if prefix_attention_horizon is None:
+                prefix_attention_horizon = self.action_horizon
 
-        for t_step in range(num_steps):
-            t_cont = t_step / float(num_steps)
+            weights = get_prefix_weights(
+                inference_delay, prefix_attention_horizon,
+                self.action_horizon, prefix_attention_schedule, device,
+            )  # (action_horizon,)
+            prev = prev_action_chunk.to(dtype)
 
-            # --- RTC core: replace prefix positions with prev chunk at t=1 ---
-            actions = torch.where(prefix_mask, prev_action_chunk.to(dtype), actions)
-
-            # Build per-position time: prefix gets 1.0, rest gets current t
-            # time shape: (B, action_horizon)
-            time_per_pos = torch.full(
-                (batch_size, self.action_horizon), t_cont, device=device, dtype=torch.long
-            )
-            # For discretised bucket index:
-            t_bucket = int(t_cont * self.num_timestep_buckets)
-            t_bucket_prefix = int(1.0 * self.num_timestep_buckets) - 1  # bucket for t=1
-            timesteps_tensor = torch.full(
-                (batch_size, self.action_horizon), t_bucket, device=device, dtype=torch.long
-            )
-            timesteps_tensor[:, :inference_delay] = t_bucket_prefix
-
-            # --- Encode actions with per-position timesteps ---
-            # ActionEncoder expects timesteps of shape (B,) and replicates.
-            # We need per-position timesteps, so we call it differently.
-            # Inline the encoder logic with per-position time:
-            B, T, _ = actions.shape
-            a_emb = self.action_encoder.layer1(actions)
-            # timesteps_tensor is (B, T) already — use positional encoding directly
-            tau_emb = self.action_encoder.pos_encoding(timesteps_tensor).to(dtype=a_emb.dtype)
-            x_enc = torch.cat([a_emb, tau_emb], dim=-1)
-            x_enc = swish(self.action_encoder.layer2(x_enc))
-            action_features = self.action_encoder.layer3(x_enc)
-
-            # Maybe add position embedding
-            if self.config.add_pos_embed:
-                pos_ids = torch.arange(action_features.shape[1], dtype=torch.long, device=device)
-                pos_embs = self.position_embedding(pos_ids).unsqueeze(0)
-                action_features = action_features + pos_embs
-
-            future_tokens = self.future_tokens.weight.unsqueeze(0).expand(batch_size, -1, -1)
-            sa_embs = (
-                torch.cat((state_features, future_tokens, action_features), dim=1)
-                if state_features is not None
-                else torch.cat((future_tokens, action_features), dim=1)
-            )
-
-            # Timestep embedding for DiT: use the non-prefix time
-            temb_tensor = torch.full(
-                (batch_size,), t_bucket, device=device, dtype=torch.long
-            )
-            temb = self.model.timestep_encoder(temb_tensor)
-
-            # Layerwise cross-attention
-            model_output = sa_embs
-            for layer_idx, layer in enumerate(self.model.transformer_blocks):
-                model_output = layer(
-                    hidden_states=model_output,
-                    encoder_hidden_states=vl_embs_list[layer_idx],
-                    temb=temb,
+            for t_step in range(num_steps):
+                t_cont = t_step / float(num_steps)
+                t_bucket = int(t_cont * self.num_timestep_buckets)
+                timesteps_tensor = torch.full(
+                    (batch_size,), t_bucket, device=device, dtype=torch.long,
                 )
 
-            pred = self.action_decoder(model_output)
-            pred_velocity = pred[:, -self.action_horizon:]
+                with torch.enable_grad():
+                    x_t = actions.detach().requires_grad_(True)
+                    v_t = self._forward_velocity(
+                        vl_embs_list, x_t, timesteps_tensor,
+                        state_features, device,
+                    )
+                    # Predicted clean sample from current state
+                    x_1_hat = x_t + v_t * (1.0 - t_cont)
+                    # Weighted error between prediction and known prefix
+                    error = (prev - x_1_hat) * weights[None, :, None]
+                    # VJP: J^T @ error, where J = d(x_1_hat)/d(x_t)
+                    pinv_correction = torch.autograd.grad(
+                        x_1_hat, x_t, grad_outputs=error,
+                    )[0]
 
-            # Euler step — only update non-prefix positions
-            actions = actions + dt * pred_velocity
-            # Re-clamp prefix to prev chunk (will be done at start of next iter,
-            # but also ensure final output has correct prefix)
-            actions = torch.where(prefix_mask, prev_action_chunk.to(dtype), actions)
+                # Guidance weight schedule from ΠGDM paper
+                t = t_cont
+                inv_r2 = (t ** 2 + (1 - t) ** 2) / ((1 - t) ** 2 + 1e-8)
+                c = (1 - t) / (t + 1e-8)
+                gw = min(c * inv_r2, max_guidance_weight)
 
-        return actions
+                v_corrected = v_t.detach() + gw * pinv_correction.detach()
+                actions = actions.detach() + dt * v_corrected
+
+            return actions
+
+        # ── simulated_delay mode ──
+        with torch.no_grad():
+            prefix_mask = torch.zeros(
+                1, self.action_horizon, 1, device=device, dtype=torch.bool,
+            )
+            prefix_mask[:, :inference_delay, :] = True
+
+            for t_step in range(num_steps):
+                t_cont = t_step / float(num_steps)
+
+                actions = torch.where(
+                    prefix_mask, prev_action_chunk.to(dtype), actions,
+                )
+
+                t_bucket = int(t_cont * self.num_timestep_buckets)
+                t_bucket_prefix = int(1.0 * self.num_timestep_buckets) - 1
+                timesteps_tensor = torch.full(
+                    (batch_size, self.action_horizon),
+                    t_bucket, device=device, dtype=torch.long,
+                )
+                timesteps_tensor[:, :inference_delay] = t_bucket_prefix
+
+                # Inline action encoder with per-position timesteps
+                a_emb = self.action_encoder.layer1(actions)
+                tau_emb = self.action_encoder.pos_encoding(
+                    timesteps_tensor,
+                ).to(dtype=a_emb.dtype)
+                x_enc = torch.cat([a_emb, tau_emb], dim=-1)
+                x_enc = swish(self.action_encoder.layer2(x_enc))
+                action_features = self.action_encoder.layer3(x_enc)
+
+                if self.config.add_pos_embed:
+                    pos_ids = torch.arange(
+                        action_features.shape[1], dtype=torch.long, device=device,
+                    )
+                    pos_embs = self.position_embedding(pos_ids).unsqueeze(0)
+                    action_features = action_features + pos_embs
+
+                future_tokens = self.future_tokens.weight.unsqueeze(0).expand(
+                    batch_size, -1, -1,
+                )
+                sa_embs = (
+                    torch.cat((state_features, future_tokens, action_features), dim=1)
+                    if state_features is not None
+                    else torch.cat((future_tokens, action_features), dim=1)
+                )
+
+                temb_tensor = torch.full(
+                    (batch_size,), t_bucket, device=device, dtype=torch.long,
+                )
+                temb = self.model.timestep_encoder(temb_tensor)
+
+                model_output = sa_embs
+                for layer_idx, layer in enumerate(self.model.transformer_blocks):
+                    model_output = layer(
+                        hidden_states=model_output,
+                        encoder_hidden_states=vl_embs_list[layer_idx],
+                        temb=temb,
+                    )
+
+                pred = self.action_decoder(model_output)
+                pred_velocity = pred[:, -self.action_horizon:]
+
+                actions = actions + dt * pred_velocity
+                actions = torch.where(
+                    prefix_mask, prev_action_chunk.to(dtype), actions,
+                )
+
+            return actions
 
     @property
     def device(self):
