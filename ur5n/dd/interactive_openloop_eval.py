@@ -109,7 +109,7 @@ class RealCamera:
             ok, raw = self.cap.read()
             if ok:
                 with self._frame_lock:
-                    self._latest_raw = raw
+                    self._latest_raw = raw.copy()
 
     def grab_rgb(self) -> np.ndarray | None:
         with self._frame_lock:

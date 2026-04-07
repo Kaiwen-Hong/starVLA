@@ -56,6 +56,14 @@ DEFAULT_CHECKPOINT = (
     "checkpoints/discreteRTC/fastumi_pickandplace_qwenDiscreteDiffusion_329v4/"
     "checkpoints/steps_20000_pytorch_model.pt"
 )
+
+
+
+# DEFAULT_CHECKPOINT = (
+#     "checkpoints/discreteRTC/fastumi_pickandplace_qwenDiscreteDiffusion_0403_0_pick_to_moved/"
+#     "checkpoints/steps_30000_pytorch_model.pt"
+# )
+
 DEFAULT_INSTRUCTION = "Pick up the purple block and place it on the red area of the board"
 DECODE_TEMPERATURE = 0.0
 CHOICE_TEMPERATURE = 0.1
@@ -117,7 +125,7 @@ class RealCamera:
             ok, raw = self.cap.read()
             if ok:
                 with self._frame_lock:
-                    self._latest_raw = raw
+                    self._latest_raw = raw.copy()
 
     def grab_rgb(self):
         with self._frame_lock:

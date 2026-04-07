@@ -174,7 +174,7 @@ class RealCamera:
             ok, raw = self.cap.read()
             if ok:
                 with self._frame_lock:
-                    self._latest_raw = raw
+                    self._latest_raw = raw.copy()
 
     def grab_rgb(self):
         with self._frame_lock:
@@ -670,8 +670,8 @@ def main():
                 # Safety clamps (world frame)
                 pos[1] = max(pos[1], Y_MIN_WORLD)
                 pos[2] = np.clip(pos[2], Z_MIN_WORLD, Z_MAX_WORLD)
-                # Board zone: y in [-0.4276, -0.2931] has obstacles, enforce z > 0.125
-                if -0.4276 <= pos[1] <= -0.2931:
+                # Board zone: y in [-0.4276, 0.2931] has obstacles, enforce z > 0.125
+                if -0.4276 <= pos[1] <= 0.2931:
                     pos[2] = max(pos[2], 0.125)
 
                 waypoints[i, :3] = pos
@@ -776,7 +776,7 @@ def main():
                 traj_world[:, 1] = np.maximum(traj_world[:, 1], Y_MIN_WORLD)
                 traj_world[:, 2] = np.clip(traj_world[:, 2], Z_MIN_WORLD, Z_MAX_WORLD)
                 # Board zone constraint
-                in_board = (traj_world[:, 1] >= -0.4276) & (traj_world[:, 1] <= -0.2931)
+                in_board = (traj_world[:, 1] >= -0.4276) & (traj_world[:, 1] <= 0.2931)
                 traj_world[in_board, 2] = np.maximum(traj_world[in_board, 2], 0.125)
 
                 traj_base = traj_world.copy()
