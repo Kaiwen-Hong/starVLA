@@ -57,10 +57,19 @@ from starVLA.model.framework.base_framework import baseframework
 import modular_policy
 
 # ── Defaults ─────────────────────────────────────────────────────────
+# DEFAULT_CHECKPOINT = (
+#     "checkpoints/discreteRTC/fastumi_pickandplace_qwenDiscreteDiffusion_329v4/"
+#     "checkpoints/steps_20000_pytorch_model.pt"
+# )
+
+
+
 DEFAULT_CHECKPOINT = (
-    "checkpoints/discreteRTC/fastumi_pickandplace_qwenDiscreteDiffusion_329v4/"
-    "checkpoints/steps_20000_pytorch_model.pt"
+    "checkpoints/discreteRTC/fastumi_pickandplace_qwenDiscreteDiffusion_0403_0_pick_to_moved/"
+    "checkpoints/steps_30000_pytorch_model.pt"
 )
+
+
 DEFAULT_INSTRUCTION = "Pick up the purple block and place it on the red area of the board"
 DECODE_TEMPERATURE = 0.0
 CHOICE_TEMPERATURE = 0.1
@@ -105,6 +114,14 @@ for _arm, _pose in _HOME_SLAM.items():
 # ═══════════════════════════════════════════════════════════════════
 
 class RealCamera:
+    """V4L2 camera with background reader thread for low-latency grabs.
+
+    A daemon thread continuously reads frames so the V4L2 buffer never goes
+    stale.  grab_pil() returns the latest frame instantly (decode + crop only,
+    no flush needed).  Typical latency: ~13ms vs ~420ms with the old flush(5)
+    approach.
+    """
+
     def __init__(self, dev=0, width=1920, height=1080, fps=30):
         self.dev = dev
         self.W = width
@@ -123,20 +140,30 @@ class RealCamera:
             pass
         print(f"[Camera] /dev/video{dev} opened, {width}x{height}@{fps}fps")
 
+        # Background reader thread — keeps latest raw frame always fresh
+        self._latest_raw = None
+        self._frame_lock = threading.Lock()
+        self._running = True
+        self._reader_thread = threading.Thread(target=self._reader_loop, daemon=True)
+        self._reader_thread.start()
+
+    def _reader_loop(self):
+        while self._running:
+            ok, raw = self.cap.read()
+            if ok:
+                with self._frame_lock:
+                    self._latest_raw = raw
+
     def grab_rgb(self):
-        ok, raw = self.cap.read()
-        if not ok:
+        with self._frame_lock:
+            raw = self._latest_raw
+        if raw is None:
             return None
         yuv = np.ascontiguousarray(raw).reshape(self.H * 3 // 2, self.W)
         bgr = cv2.cvtColor(yuv, cv2.COLOR_YUV2BGR_I420)
         return cv2.cvtColor(bgr, cv2.COLOR_BGR2RGB)
 
-    def flush(self, n=5):
-        for _ in range(n):
-            self.cap.read()
-
     def grab_pil(self):
-        self.flush()
         rgb = self.grab_rgb()
         if rgb is None:
             return None
@@ -146,6 +173,8 @@ class RealCamera:
         return Image.fromarray(rgb[top:top + s, left:left + s])
 
     def close(self):
+        self._running = False
+        self._reader_thread.join(timeout=2.0)
         self.cap.release()
 
 
@@ -355,6 +384,7 @@ def compute_waypoints(start_pose_world, actions_10d, n_exec, fix_rotation,
 
         reached_target = (args.if_release_when_reach_temp
                           and current_gripper > 0.5
+                          and gripper_state['object_grasped']
                           and pos[1] >= args.release_y_threshold)
 
         if reached_target and new_gripper <= 0.5:
@@ -367,6 +397,7 @@ def compute_waypoints(start_pose_world, actions_10d, n_exec, fix_rotation,
             break
         elif (args.if_grasped_not_release
               and current_gripper > 0.5
+              and gripper_state['object_grasped']
               and new_gripper <= 0.5):
             pass  # keep closed, not at target yet
         elif (new_gripper > 0.5) != (current_gripper > 0.5):
@@ -400,7 +431,7 @@ class ServoRunner:
 
     def __init__(self, rtde_c, T_bw, gripper_hw, rtde_r=None,
                  grasp_trick=False, grasp_z_threshold=0.036,
-                 gripper_state=None):
+                 grasp_detect_threshold=200, gripper_state=None):
         self._rtde_c = rtde_c
         self._T_bw = T_bw
         self._gripper_hw = gripper_hw
@@ -413,6 +444,7 @@ class ServoRunner:
         self._rtde_r = rtde_r
         self._grasp_trick = grasp_trick
         self._grasp_z_threshold = grasp_z_threshold
+        self._grasp_detect_threshold = grasp_detect_threshold
         self._gripper_state = gripper_state  # shared dict, for state sync
         self._buffer = collections.deque()
         self._lock = threading.Lock()
@@ -587,6 +619,25 @@ class ServoRunner:
                 print(f"  Gripper -> {label} (pos={grip_pos})")
                 self._gripper_hw.move(grip_pos, 255, 150)
                 last_pos = grip_pos
+
+                # Verify actual grasp after closing
+                if grip_pos > 127 and self._gripper_state is not None:
+                    actual_pos = self._gripper_hw.get_current_position()
+                    if actual_pos < self._grasp_detect_threshold:
+                        self._gripper_state['object_grasped'] = True
+                        print(f"  [GRASP_DETECT] Object grasped "
+                              f"(pos={actual_pos} < {self._grasp_detect_threshold})")
+                    else:
+                        self._gripper_state['object_grasped'] = False
+                        self._gripper_state['current'] = 0.0
+                        self._gripper_state['chunks_since_grasp'] = None
+                        print(f"  [GRASP_DETECT] Empty grasp "
+                              f"(pos={actual_pos} >= {self._grasp_detect_threshold}), "
+                              f"re-opening gripper")
+                        self._gripper_hw.move(0, 255, 150)
+                        last_pos = 0
+                elif grip_pos <= 127 and self._gripper_state is not None:
+                    self._gripper_state['object_grasped'] = False
 
 
 # ═══════════════════════════════════════════════════════════════════
@@ -881,6 +932,14 @@ def main():
     parser.add_argument("--decode_temperature", type=float, default=DECODE_TEMPERATURE)
     parser.add_argument("--choice_temperature", type=float, default=CHOICE_TEMPERATURE)
     parser.add_argument("--use_simple_max", action="store_true", default=False)
+    parser.add_argument("--fixed_steps", action="store_true", default=False,
+                        help="Use fixed inference steps instead of scaling by mask ratio")
+    parser.add_argument("--hard_mask", action="store_true", default=False,
+                        help="RTC prefix uses hard mask (prefix_length=inference_delay) "
+                             "instead of soft (action_horizon - execution_horizon)")
+    parser.add_argument("--early_stop", action="store_true", default=False,
+                        help="Stop MaskGIT decode early when all non-prefix positions "
+                             "are unmasked")
     parser.add_argument("--fix_rotation", action="store_true", default=True)
     parser.add_argument("--no_fix_rotation", dest="fix_rotation",
                         action="store_false")
@@ -897,6 +956,9 @@ def main():
     parser.add_argument("--no_release_when_reach", dest="if_release_when_reach_temp",
                         action="store_false")
     parser.add_argument("--release_y_threshold", type=float, default=-0.318)
+    parser.add_argument("--grasp_detect_threshold", type=int, default=200,
+                        help="Gripper position threshold to confirm actual grasp "
+                             "(0-255, empty close ~230, default 200)")
     parser.add_argument("--if_grasp_trick", action="store_true", default=True)
     parser.add_argument("--no_grasp_trick", dest="if_grasp_trick",
                         action="store_false")
@@ -921,6 +983,10 @@ def main():
         decode_temperature=args.decode_temperature,
         choice_temperature=args.choice_temperature,
         use_simple_max=args.use_simple_max,
+        execution_horizon=args.n_actions,
+        fixed_steps=args.fixed_steps,
+        hard_mask=args.hard_mask,
+        early_stop=args.early_stop,
     )
 
     # ── Connect to robot ─────────────────────────────────────────────
@@ -940,10 +1006,9 @@ def main():
     # ── Open camera ──────────────────────────────────────────────────
     print(f"Opening camera /dev/video{args.camera_dev}...")
     cam = RealCamera(dev=args.camera_dev)
-    print("Warming up camera (2s)...")
-    t_warm = time.monotonic() + 2.0
-    while time.monotonic() < t_warm:
-        cam.grab_rgb()
+    print("Waiting for first frame from background reader...")
+    while cam.grab_rgb() is None:
+        time.sleep(0.05)
     print("Camera ready.")
 
     # ── Go home ──────────────────────────────────────────────────────
@@ -953,6 +1018,7 @@ def main():
     # ── Shared gripper state (mutable, accessed by inferencer) ───────
     gripper_state = {
         'current': 0.0,
+        'object_grasped': False,
         'chunks_since_grasp': None,
         'task_finished': False,
     }
@@ -1037,6 +1103,7 @@ def main():
     servo = ServoRunner(rtde_c, T_bw, gripper_hw, rtde_r=rtde_r,
                         grasp_trick=args.if_grasp_trick,
                         grasp_z_threshold=args.grasp_z_threshold,
+                        grasp_detect_threshold=args.grasp_detect_threshold,
                         gripper_state=gripper_state)
     servo.push_waypoints(current_pos, waypoints_init, grip_cmds_init)
 

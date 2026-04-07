@@ -26,6 +26,7 @@ import sys
 import os
 import time
 import argparse
+import threading
 from pathlib import Path
 
 import numpy as np
@@ -72,7 +73,7 @@ ROBOT_IPS = {'left': '192.168.0.3', 'right': '192.168.0.2'}
 # ═══════════════════════════════════════════════════════════════════
 
 class RealCamera:
-    """Capture frames from USB camera (V4L2) for inference."""
+    """V4L2 camera with background reader thread for low-latency grabs."""
 
     def __init__(self, dev: int = 0, width: int = 1920, height: int = 1080, fps: int = 30):
         self.dev = dev
@@ -97,22 +98,29 @@ class RealCamera:
         fcc = "".join([chr((fcc_int >> (8 * i)) & 0xFF) for i in range(4)])
         print(f"[Camera] /dev/video{dev} opened, FOURCC={fcc}, {width}x{height}@{fps}fps")
 
+        self._latest_raw = None
+        self._frame_lock = threading.Lock()
+        self._running = True
+        self._reader_thread = threading.Thread(target=self._reader_loop, daemon=True)
+        self._reader_thread.start()
+
+    def _reader_loop(self):
+        while self._running:
+            ok, raw = self.cap.read()
+            if ok:
+                with self._frame_lock:
+                    self._latest_raw = raw
+
     def grab_rgb(self) -> np.ndarray | None:
-        ok, raw = self.cap.read()
-        if not ok:
+        with self._frame_lock:
+            raw = self._latest_raw
+        if raw is None:
             return None
         yuv = np.ascontiguousarray(raw).reshape(self.H * 3 // 2, self.W)
         bgr = cv2.cvtColor(yuv, cv2.COLOR_YUV2BGR_I420)
-        rgb = cv2.cvtColor(bgr, cv2.COLOR_BGR2RGB)
-        return rgb
-
-    def flush(self, n: int = 5):
-        """Read and discard n frames to drain stale V4L2 buffers."""
-        for _ in range(n):
-            self.cap.read()
+        return cv2.cvtColor(bgr, cv2.COLOR_BGR2RGB)
 
     def grab_pil(self) -> Image.Image | None:
-        self.flush()  # discard stale buffered frames
         rgb = self.grab_rgb()
         if rgb is None:
             return None
@@ -120,6 +128,8 @@ class RealCamera:
         return Image.fromarray(cropped)
 
     def close(self):
+        self._running = False
+        self._reader_thread.join(timeout=2.0)
         self.cap.release()
 
 
@@ -437,10 +447,9 @@ def main():
     # 3. Open camera (one-time, kept open)
     print(f"\nOpening camera /dev/video{args.camera_dev}...")
     cam = RealCamera(dev=args.camera_dev)
-    print("Warming up camera (2s)...")
-    t_warm = time.monotonic() + 2.0
-    while time.monotonic() < t_warm:
-        cam.grab_rgb()
+    print("Waiting for first frame from background reader...")
+    while cam.grab_rgb() is None:
+        time.sleep(0.05)
     print("Camera ready.\n")
 
     # 4. Create output directory (per-session subfolder)

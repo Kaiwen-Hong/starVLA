@@ -10,6 +10,7 @@ import os
 import click
 import numpy as np
 from rtde_receive import RTDEReceiveInterface
+from robotiq_gripper import RobotiqGripper
 import modular_policy
 
 ROBOT_IPS = {
@@ -62,6 +63,14 @@ def main(arm):
     print(f"  {[round(x, 6) for x in joints]}")
     print(f"\nJoint angles (deg):")
     print(f"  {[round(x * 57.2958, 2) for x in joints]}")
+
+    # Read gripper position
+    gripper = RobotiqGripper()
+    gripper.connect(robot_ip, 63352)
+    gripper_pos = gripper.get_current_position()
+    gripper.disconnect()
+
+    print(f"\nGripper position: {gripper_pos} / 255 ({gripper_pos / 255 * 100:.1f}% closed)")
 
     print(f"\n# World frame pose for gohome_ee.py:")
     print(f"'{arm}': {[round(x, 4) for x in pose_world]},")

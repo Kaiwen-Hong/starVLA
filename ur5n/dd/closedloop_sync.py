@@ -25,6 +25,7 @@ import os
 import time
 import json
 import argparse
+import threading
 from pathlib import Path
 
 import numpy as np
@@ -49,10 +50,17 @@ from starVLA.model.framework.base_framework import baseframework
 import modular_policy
 
 # ── Defaults ─────────────────────────────────────────────────────────
+# DEFAULT_CHECKPOINT = (
+#     "checkpoints/discreteRTC/fastumi_pickandplace_qwenDiscreteDiffusion_329v4/"
+#     "checkpoints/steps_20000_pytorch_model.pt"
+# )
+
 DEFAULT_CHECKPOINT = (
-    "checkpoints/discreteRTC/fastumi_pickandplace_qwenDiscreteDiffusion_329v4/"
-    "checkpoints/steps_20000_pytorch_model.pt"
+    "checkpoints/discreteRTC/fastumi_pickandplace_qwenDiscreteDiffusion_0403_0_pick_to_moved/"
+    "checkpoints/steps_30000_pytorch_model.pt"
 )
+
+
 DEFAULT_INSTRUCTION = "Pick up the purple block and place it on the red area of the board"
 DECODE_TEMPERATURE = 0.0
 CHOICE_TEMPERATURE = 0.1
@@ -135,6 +143,8 @@ for _arm, _pose in _HOME_SLAM.items():
 # ═══════════════════════════════════════════════════════════════════
 
 class RealCamera:
+    """V4L2 camera with background reader thread for low-latency grabs."""
+
     def __init__(self, dev=0, width=1920, height=1080, fps=30):
         self.dev = dev
         self.W = width
@@ -153,20 +163,29 @@ class RealCamera:
             pass
         print(f"[Camera] /dev/video{dev} opened, {width}x{height}@{fps}fps")
 
+        self._latest_raw = None
+        self._frame_lock = threading.Lock()
+        self._running = True
+        self._reader_thread = threading.Thread(target=self._reader_loop, daemon=True)
+        self._reader_thread.start()
+
+    def _reader_loop(self):
+        while self._running:
+            ok, raw = self.cap.read()
+            if ok:
+                with self._frame_lock:
+                    self._latest_raw = raw
+
     def grab_rgb(self):
-        ok, raw = self.cap.read()
-        if not ok:
+        with self._frame_lock:
+            raw = self._latest_raw
+        if raw is None:
             return None
         yuv = np.ascontiguousarray(raw).reshape(self.H * 3 // 2, self.W)
         bgr = cv2.cvtColor(yuv, cv2.COLOR_YUV2BGR_I420)
         return cv2.cvtColor(bgr, cv2.COLOR_BGR2RGB)
 
-    def flush(self, n=5):
-        for _ in range(n):
-            self.cap.read()
-
     def grab_pil(self):
-        self.flush()
         rgb = self.grab_rgb()
         if rgb is None:
             return None
@@ -176,6 +195,8 @@ class RealCamera:
         return Image.fromarray(rgb[top:top + s, left:left + s])
 
     def close(self):
+        self._running = False
+        self._reader_thread.join(timeout=2.0)
         self.cap.release()
 
 
@@ -472,6 +493,9 @@ def main():
                         help="Disable auto-release at target zone")
     parser.add_argument("--release_y_threshold", type=float, default=-0.338,
                         help="Y world-frame threshold for allowing release (default: -0.338)")
+    parser.add_argument("--grasp_detect_threshold", type=int, default=200,
+                        help="Gripper position threshold to confirm actual grasp "
+                             "(0-255, empty close ~230, default 200)")
     parser.add_argument("--if_grasp_trick", action="store_true", default=True,
                         help="Only allow gripper close when z < grasp_z_threshold (default: True)")
     parser.add_argument("--no_grasp_trick", dest="if_grasp_trick",
@@ -520,10 +544,9 @@ def main():
     # ── Open camera ──────────────────────────────────────────────────
     print(f"Opening camera /dev/video{args.camera_dev}...")
     cam = RealCamera(dev=args.camera_dev)
-    print("Warming up camera (2s)...")
-    t_warm = time.monotonic() + 2.0
-    while time.monotonic() < t_warm:
-        cam.grab_rgb()
+    print("Waiting for first frame from background reader...")
+    while cam.grab_rgb() is None:
+        time.sleep(0.05)
     print("Camera ready.")
 
     # ── Go home ──────────────────────────────────────────────────────
@@ -579,6 +602,7 @@ def main():
     # ── Control loop ─────────────────────────────────────────────────
     step = 0
     chunks_since_grasp = None  # None = not yet grasped
+    object_grasped = False
     try:
         while args.max_steps == 0 or step < args.max_steps:
             loop_t0 = time.monotonic()
@@ -663,6 +687,7 @@ def main():
                 #   Once it actually releases, the task is considered done → exit.
                 reached_target = (args.if_release_when_reach_temp
                                   and current_gripper > 0.5
+                                  and object_grasped
                                   and pos[1] >= args.release_y_threshold)
 
                 if reached_target and new_gripper <= 0.5:
@@ -670,12 +695,16 @@ def main():
                     print(f"  Gripper -> RELEASE at target (y={pos[1]:.4f} >= {args.release_y_threshold})")
                     gripper_hw.move(0, 255, 150)
                     current_gripper = 0.0
+                    object_grasped = False
                     # Execute remaining waypoints up to this point, then exit
                     n_exec = i + 1
                     waypoints = waypoints[:n_exec]
                     task_finished = True
                     break
-                elif args.if_grasped_not_release and current_gripper > 0.5 and new_gripper <= 0.5:
+                elif (args.if_grasped_not_release
+                      and current_gripper > 0.5
+                      and object_grasped
+                      and new_gripper <= 0.5):
                     pass  # keep closed, not at target yet
                 elif (new_gripper > 0.5) != (current_gripper > 0.5):
                     # if_grasp_trick: only allow closing when z is low enough
@@ -689,9 +718,28 @@ def main():
                     print(f"  Gripper -> {label} (pos={grip_pos})")
                     gripper_hw.move(grip_pos, 255, 150)
                     current_gripper = new_gripper
+
+                    # Verify actual grasp after closing
+                    if new_gripper > 0.5:
+                        actual_pos = gripper_hw.get_current_position()
+                        if actual_pos < args.grasp_detect_threshold:
+                            object_grasped = True
+                            print(f"  [GRASP_DETECT] Object grasped "
+                                  f"(pos={actual_pos} < {args.grasp_detect_threshold})")
+                        else:
+                            object_grasped = False
+                            current_gripper = 0.0
+                            chunks_since_grasp = None
+                            print(f"  [GRASP_DETECT] Empty grasp "
+                                  f"(pos={actual_pos} >= {args.grasp_detect_threshold}), "
+                                  f"re-opening gripper")
+                            gripper_hw.move(0, 255, 150)
+                    else:
+                        object_grasped = False
+
                     # Start post-grasp counter on first close
                     if (args.if_grasp_delay_temp_solution
-                            and new_gripper > 0.5
+                            and object_grasped
                             and chunks_since_grasp is None):
                         chunks_since_grasp = 0
 

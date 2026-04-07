@@ -24,6 +24,7 @@ import os
 import time
 import json
 import argparse
+import threading
 from pathlib import Path
 
 import numpy as np
@@ -85,6 +86,8 @@ DIM_LABELS_10D = [
 # ═══════════════════════════════════════════════════════════════════
 
 class RealCamera:
+    """V4L2 camera with background reader thread for low-latency grabs."""
+
     def __init__(self, dev=0, width=1920, height=1080, fps=30):
         self.dev = dev
         self.W = width
@@ -103,20 +106,29 @@ class RealCamera:
             pass
         print(f"[Camera] /dev/video{dev} opened, {width}x{height}@{fps}fps")
 
+        self._latest_raw = None
+        self._frame_lock = threading.Lock()
+        self._running = True
+        self._reader_thread = threading.Thread(target=self._reader_loop, daemon=True)
+        self._reader_thread.start()
+
+    def _reader_loop(self):
+        while self._running:
+            ok, raw = self.cap.read()
+            if ok:
+                with self._frame_lock:
+                    self._latest_raw = raw
+
     def grab_rgb(self):
-        ok, raw = self.cap.read()
-        if not ok:
+        with self._frame_lock:
+            raw = self._latest_raw
+        if raw is None:
             return None
         yuv = np.ascontiguousarray(raw).reshape(self.H * 3 // 2, self.W)
         bgr = cv2.cvtColor(yuv, cv2.COLOR_YUV2BGR_I420)
         return cv2.cvtColor(bgr, cv2.COLOR_BGR2RGB)
 
-    def flush(self, n=5):
-        for _ in range(n):
-            self.cap.read()
-
     def grab_pil(self):
-        self.flush()
         rgb = self.grab_rgb()
         if rgb is None:
             return None
@@ -126,6 +138,8 @@ class RealCamera:
         return Image.fromarray(rgb[top:top + s, left:left + s])
 
     def close(self):
+        self._running = False
+        self._reader_thread.join(timeout=2.0)
         self.cap.release()
 
 
@@ -542,10 +556,9 @@ def main():
     # 5. Open camera
     print(f"Opening camera /dev/video{args.camera_dev}...")
     cam = RealCamera(dev=args.camera_dev)
-    print("Warming up camera (2s)...")
-    t_warm = time.monotonic() + 2.0
-    while time.monotonic() < t_warm:
-        cam.grab_rgb()
+    print("Waiting for first frame from background reader...")
+    while cam.grab_rgb() is None:
+        time.sleep(0.05)
     print("Camera ready.")
 
     # 6. Create output directory
