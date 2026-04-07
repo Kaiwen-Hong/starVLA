@@ -62,18 +62,18 @@ from starVLA.model.framework.base_framework import baseframework
 
 import modular_policy
 
-# ── Defaults ─────────────────────────────────────────────────────────
-DEFAULT_CHECKPOINT = (
-    "checkpoints/discreteRTC/fastumi_pickandplace_qwenDiscreteDiffusion_329v4/"
-    "checkpoints/steps_20000_pytorch_model.pt"
-)
-
-
-
+# # ── Defaults ─────────────────────────────────────────────────────────
 # DEFAULT_CHECKPOINT = (
-#     "checkpoints/discreteRTC/fastumi_pickandplace_qwenDiscreteDiffusion_0403_0_pick_to_moved/"
-#     "checkpoints/steps_30000_pytorch_model.pt"
+#     "checkpoints/discreteRTC/fastumi_pickandplace_qwenDiscreteDiffusion_329v4/"
+#     "checkpoints/steps_20000_pytorch_model.pt"
 # )
+
+
+
+DEFAULT_CHECKPOINT = (
+    "checkpoints/discreteRTC/fastumi_pickandplace_qwenDiscreteDiffusion_0403_0_pick_to_moved/"
+    "checkpoints/steps_30000_pytorch_model.pt"
+)
 
 
 DEFAULT_INSTRUCTION = "Pick up the purple block and place it on the red area of the board"
@@ -380,7 +380,7 @@ def compute_waypoints(start_pose_world, actions_10d, n_exec, fix_rotation,
         pos[2] = np.clip(pos[2], Z_MIN_WORLD, Z_MAX_WORLD)
         # Board zone: obstacles in y ∈ [-0.4276, 0.2931], enforce z > 
         if -0.4276 <= pos[1] <= 0.2931:
-            pos[2] = max(pos[2], )
+            pos[2] = max(pos[2], 0.125)
 
         waypoints[i, :3] = pos
         waypoints[i, 3:6] = rot
@@ -437,7 +437,8 @@ class ServoRunner:
 
     def __init__(self, rtde_c, T_bw, gripper_hw, rtde_r=None,
                  grasp_trick=False, grasp_z_threshold=0.036,
-                 grasp_detect_threshold=200, gripper_state=None):
+                 grasp_detect_threshold=200, gripper_state=None,
+                 systematically_x_offset=0.0):
         self._rtde_c = rtde_c
         self._T_bw = T_bw
         self._gripper_hw = gripper_hw
@@ -452,6 +453,7 @@ class ServoRunner:
         self._grasp_z_threshold = grasp_z_threshold
         self._grasp_detect_threshold = grasp_detect_threshold
         self._gripper_state = gripper_state  # shared dict, for state sync
+        self._x_offset = systematically_x_offset
         self._buffer = collections.deque()
         self._lock = threading.Lock()
         self._running = False
@@ -575,6 +577,7 @@ class ServoRunner:
                     p[2] = max(p[2], 0.125)
 
                 target_base = world_to_base(self._last_pose.tolist(), self._T_bw)
+                target_base[0] += self._x_offset
                 self._rtde_c.servoL(target_base, 0, 0, servo_dt, 0.2, 200)
 
             precise_wait(t_next)
@@ -1018,6 +1021,9 @@ def main():
     parser.add_argument("--no_grasp_trick", dest="if_grasp_trick",
                         action="store_false")
     parser.add_argument("--grasp_z_threshold", type=float, default=0.04)
+    parser.add_argument("--systematically_x_offset", type=float, default=0.00,
+                        help="Constant x offset (meters) applied to every servoL command "
+                             "(default: -0.02, i.e. robot always 2cm in -x from policy)")
     parser.add_argument("--save_rollout", action="store_true", default=False)
     parser.add_argument("--no_save_rollout", dest="save_rollout",
                         action="store_false")
@@ -1159,7 +1165,8 @@ def main():
                         grasp_trick=args.if_grasp_trick,
                         grasp_z_threshold=args.grasp_z_threshold,
                         grasp_detect_threshold=args.grasp_detect_threshold,
-                        gripper_state=gripper_state)
+                        gripper_state=gripper_state,
+                        systematically_x_offset=args.systematically_x_offset)
     servo.push_waypoints(current_pos, waypoints_init, grip_cmds_init)
 
     # ═════════════════════════════════════════════════════════════════
