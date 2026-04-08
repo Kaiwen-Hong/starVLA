@@ -23,6 +23,7 @@
 #   AR_ROOT        -- ar-research-kempner repo path (default: /home/user/ar-research-kempner)
 #   PORT           -- policy server port (default: 5694)
 #   STEP           -- checkpoint step (default: 60000)
+#   TEST_NUM       -- number of evaluation episodes (default: 50)
 # ============================================================
 set -euo pipefail
 
@@ -36,6 +37,7 @@ STARVLA_ROOT="${STARVLA_ROOT:-/home/user/starVLA}"
 AR_ROOT="${AR_ROOT:-/home/user/ar-research-kempner}"
 PORT="${PORT:-5694}"
 STEP="${STEP:-60000}"
+TEST_NUM="${TEST_NUM:-50}"
 
 # Map version to run_id
 declare -A RUN_IDS=(
@@ -97,4 +99,4 @@ python script/eval_policy.py --config "$DEPLOY_YML" \
     --policy_ckpt_path "$CKPT_PATH" \
     --save_as_policy pi05_ee \
     --exp_idx "${VERSION}w-starvla" \
-    --test_num 50
+    --test_num "$TEST_NUM"

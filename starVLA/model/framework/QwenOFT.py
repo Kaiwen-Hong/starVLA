@@ -102,7 +102,9 @@ class Qwenvl_OFT(baseframework):
             self._attn_num_layers = int(os.environ.get("STARVLA_ATTENTION_LAYERS", "4"))
             self._attn_step_counter = 0
             os.makedirs(self._attn_output_dir, exist_ok=True)
-            logger.info(f"Attention capture enabled → {self._attn_output_dir}")
+            # sdpa does not support output_attentions; switch to eager
+            self.qwen_vl_interface.model.set_attn_implementation("eager")
+            logger.info(f"Attention capture enabled → {self._attn_output_dir} (attn_impl → eager)")
 
     def forward(
         self,
@@ -272,6 +274,7 @@ class Qwenvl_OFT(baseframework):
 
         # --- Aggregate: action→{image, text, action} per layer ---
         aggregate = {}  # layer_idx -> {"image": float, "text": float, "action": float}
+        per_act_aggregate = {}  # layer_idx -> {"image": (num_act,), ...}
         for li in layer_indices:
             # attn shape: (B, num_heads, seq_len, seq_len)
             attn = attentions[li][0]  # (num_heads, seq_len, seq_len)
@@ -279,10 +282,22 @@ class Qwenvl_OFT(baseframework):
             attn_avg = attn.float().mean(dim=0)  # (seq_len, seq_len)
             # Rows = action token positions, cols = what they attend to
             action_attn = attn_avg[action_positions]  # (num_action_tokens, seq_len)
-            # Sum attention to each segment
-            img_attn = action_attn[:, image_mask].sum().item()
-            txt_attn = action_attn[:, text_mask].sum().item()
-            act_attn = action_attn[:, action_mask].sum().item()
+
+            # Per-action-token proportions
+            img_per_act = action_attn[:, image_mask].sum(dim=1)  # (num_action_tokens,)
+            txt_per_act = action_attn[:, text_mask].sum(dim=1)
+            act_per_act = action_attn[:, action_mask].sum(dim=1)
+            total_per_act = img_per_act + txt_per_act + act_per_act + 1e-12
+            per_act_aggregate[f"layer_{li}"] = {
+                "image": (img_per_act / total_per_act).cpu().numpy(),
+                "text": (txt_per_act / total_per_act).cpu().numpy(),
+                "action": (act_per_act / total_per_act).cpu().numpy(),
+            }
+
+            # Global aggregate (backward compatible)
+            img_attn = img_per_act.sum().item()
+            txt_attn = txt_per_act.sum().item()
+            act_attn = act_per_act.sum().item()
             total = img_attn + txt_attn + act_attn + 1e-12
             aggregate[f"layer_{li}"] = {
                 "image": img_attn / total,
@@ -292,13 +307,17 @@ class Qwenvl_OFT(baseframework):
 
         # --- Spatial: per-image attention heatmap ---
         spatial_maps = []
+        per_act_spatial_maps = []
         if image_grid_thw is not None and image_positions.numel() > 0:
             # Use attention from the last layer, averaged over heads
             last_attn = attentions[layer_indices[-1]][0].float().mean(dim=0)  # (seq_len, seq_len)
             # action tokens attending to image tokens
             action_to_image = last_attn[action_positions][:, image_positions]  # (num_act, num_img_tokens)
-            # Average across action tokens
+            num_act = action_to_image.shape[0]
+            # Average across action tokens (backward compatible)
             avg_img_attn = action_to_image.mean(dim=0).cpu().numpy()  # (num_img_tokens,)
+            # Keep per-action-token attention for fine-grained visualization
+            per_act_img_attn = action_to_image.cpu().numpy()  # (num_act, num_img_tokens)
 
             # Split by image using grid_thw
             offset = 0
@@ -311,12 +330,21 @@ class Qwenvl_OFT(baseframework):
                 num_tokens = int(t) * llm_h * llm_w
                 if offset + num_tokens > len(avg_img_attn):
                     break
+
+                # Averaged spatial map (backward compatible)
                 img_attn_slice = avg_img_attn[offset:offset + num_tokens]
-                # Reshape to spatial grid (collapse temporal dim for single images)
                 spatial_map = img_attn_slice.reshape(int(t), llm_h, llm_w)
                 if int(t) == 1:
                     spatial_map = spatial_map[0]  # (llm_h, llm_w)
                 spatial_maps.append(spatial_map)
+
+                # Per-action-token spatial maps
+                per_act_slice = per_act_img_attn[:, offset:offset + num_tokens]
+                per_act_spatial = per_act_slice.reshape(num_act, int(t), llm_h, llm_w)
+                if int(t) == 1:
+                    per_act_spatial = per_act_spatial[:, 0, :, :]  # (num_act, llm_h, llm_w)
+                per_act_spatial_maps.append(per_act_spatial)
+
                 offset += num_tokens
 
         # --- Save raw images for overlay ---
@@ -353,6 +381,14 @@ class Qwenvl_OFT(baseframework):
         # Spatial maps
         for i, smap in enumerate(spatial_maps):
             save_dict[f"spatial_img{i}"] = smap
+        # Per-action-token aggregate
+        for key, vals in per_act_aggregate.items():
+            save_dict[f"per_act_agg_{key}_image"] = vals["image"]
+            save_dict[f"per_act_agg_{key}_text"] = vals["text"]
+            save_dict[f"per_act_agg_{key}_action"] = vals["action"]
+        # Per-action-token spatial maps
+        for i, smap in enumerate(per_act_spatial_maps):
+            save_dict[f"per_act_spatial_img{i}"] = smap
         # Raw images
         for i, img_arr in enumerate(saved_images):
             save_dict[f"raw_img{i}"] = img_arr

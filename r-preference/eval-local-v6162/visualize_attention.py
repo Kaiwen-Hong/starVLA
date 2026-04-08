@@ -137,7 +137,12 @@ def plot_attention_over_time(layers: dict, output_path: str):
 
 
 def plot_spatial_heatmaps(data: list[dict], output_path: str, max_timesteps: int = 6):
-    """Overlay spatial attention heatmaps on observation images."""
+    """Overlay spatial attention heatmaps on observation images.
+
+    Layout: for each camera, two rows — raw image on top, heatmap overlay below.
+    """
+    from PIL import Image as PILImage
+
     # Pick representative timesteps (evenly spaced)
     total = len(data)
     if total <= max_timesteps:
@@ -154,9 +159,11 @@ def plot_spatial_heatmaps(data: list[dict], output_path: str, max_timesteps: int
 
     camera_names = ["Head Camera", "Left Camera", "Right Camera"]
 
+    # 2 rows per camera: raw image + heatmap overlay
+    num_rows = num_images * 2
     fig, axes = plt.subplots(
-        num_images, len(indices),
-        figsize=(3.5 * len(indices), 3.5 * num_images),
+        num_rows, len(indices),
+        figsize=(3.5 * len(indices), 3.0 * num_rows),
         squeeze=False,
     )
 
@@ -164,47 +171,57 @@ def plot_spatial_heatmaps(data: list[dict], output_path: str, max_timesteps: int
         entry = data[step_idx]
         step_num = int(entry.get("step", step_idx))
 
-        for row in range(num_images):
-            ax = axes[row, col]
-            spatial_key = f"spatial_img{row}"
-            raw_key = f"raw_img{row}"
+        for cam_idx in range(num_images):
+            raw_row = cam_idx * 2
+            heat_row = cam_idx * 2 + 1
+            ax_raw = axes[raw_row, col]
+            ax_heat = axes[heat_row, col]
+            spatial_key = f"spatial_img{cam_idx}"
+            raw_key = f"raw_img{cam_idx}"
 
             if spatial_key not in entry:
-                ax.axis("off")
+                ax_raw.axis("off")
+                ax_heat.axis("off")
                 continue
 
             spatial_map = entry[spatial_key]  # (h, w) or (t, h, w)
             if spatial_map.ndim == 3:
                 spatial_map = spatial_map[0]
 
-            # Show raw image if available
+            # Raw image row
             if raw_key in entry:
                 raw_img = entry[raw_key]
-                ax.imshow(raw_img)
-                # Resize spatial map to image dimensions for overlay
-                from PIL import Image as PILImage
+                ax_raw.imshow(raw_img)
                 h_img, w_img = raw_img.shape[:2]
+
+                # Heatmap overlay row
+                ax_heat.imshow(raw_img)
                 spatial_resized = np.array(
                     PILImage.fromarray(
                         ((spatial_map - spatial_map.min()) / (spatial_map.max() - spatial_map.min() + 1e-8) * 255).astype(np.uint8)
                     ).resize((w_img, h_img), PILImage.BILINEAR)
                 ).astype(float) / 255.0
-                ax.imshow(spatial_resized, cmap="jet", alpha=0.45, vmin=0, vmax=1)
+                ax_heat.imshow(spatial_resized, cmap="jet", alpha=0.45, vmin=0, vmax=1)
             else:
-                im = ax.imshow(spatial_map, cmap="jet")
-                divider = make_axes_locatable(ax)
+                ax_raw.axis("off")
+                im = ax_heat.imshow(spatial_map, cmap="jet")
+                divider = make_axes_locatable(ax_heat)
                 cax = divider.append_axes("right", size="5%", pad=0.05)
                 plt.colorbar(im, cax=cax)
 
+            # Labels
             if col == 0:
-                cam_name = camera_names[row] if row < len(camera_names) else f"Image {row}"
-                ax.set_ylabel(cam_name, fontsize=11)
-            if row == 0:
-                ax.set_title(f"Step {step_num}", fontsize=10)
-            ax.set_xticks([])
-            ax.set_yticks([])
+                cam_name = camera_names[cam_idx] if cam_idx < len(camera_names) else f"Image {cam_idx}"
+                ax_raw.set_ylabel(f"{cam_name}\n(raw)", fontsize=10)
+                ax_heat.set_ylabel(f"{cam_name}\n(attention)", fontsize=10)
+            if cam_idx == 0 and col >= 0:
+                ax_raw.set_title(f"Step {step_num}", fontsize=10)
+            ax_raw.set_xticks([])
+            ax_raw.set_yticks([])
+            ax_heat.set_xticks([])
+            ax_heat.set_yticks([])
 
-    fig.suptitle("Spatial Attention Heatmaps (Action → Image Tokens)", fontsize=13, y=1.02)
+    fig.suptitle("Spatial Attention Heatmaps (Action → Image Tokens)", fontsize=13, y=1.01)
     fig.tight_layout()
     fig.savefig(output_path, dpi=150, bbox_inches="tight")
     plt.close(fig)

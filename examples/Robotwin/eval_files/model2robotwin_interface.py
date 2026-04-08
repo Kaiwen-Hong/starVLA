@@ -1,6 +1,7 @@
 import collections
 import logging
 import math
+import os
 import time
 from dataclasses import dataclass
 from pathlib import Path
@@ -365,8 +366,9 @@ def reset_model(model):
 
 
 def eval(TASK_ENV, model, observation):
-    # Get instruction
-    instruction = TASK_ENV.get_instruction()
+    # Get instruction (allow override for attention ablation experiments)
+    instruction_override = os.environ.get("STARVLA_INSTRUCTION_OVERRIDE", "")
+    instruction = instruction_override if instruction_override else TASK_ENV.get_instruction()
 
     # Prepare images
     head_img = observation["observation"]["head_camera"]["rgb"]

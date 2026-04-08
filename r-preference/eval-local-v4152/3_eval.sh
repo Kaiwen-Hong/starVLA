@@ -110,4 +110,4 @@ python script/eval_policy.py --config "$DEPLOY_YML" \
     --policy_ckpt_path "$CKPT_PATH" \
     --save_as_policy pi05_ee \
     --exp_idx "${VERSION}w-starvla" \
-    --test_num 75
+    --test_num "${TEST_NUM:-150}"
