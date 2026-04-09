@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """
-RTC (Real-Time Chunking) closed-loop control with discrete diffusion — v3.
+RTC (Real-Time Chunking) closed-loop control with discrete diffusion — v4.
 
-v3 corrects the RTC cycle to match the model's prev_action_chunk interface
-(see Inferencer docstring and rtc_v3_cycle.md for full details).
+v4 fixes the init phase to push (inference_delay + n_actions) actions
+and enforces L = 2A (see rtc_v4_cycle.md for full details).
 
 Architecture:
 
@@ -844,126 +844,230 @@ class Inferencer:
 #  Visualization
 # ═══════════════════════════════════════════════════════════════════
 
-def visualize_step(traj_world, traj_base, camera_image,
-                   current_world, current_base, n_exec,
-                   step, save_path, instruction, prev_chunk_delta=None):
-    """Camera + prev chunk deltas + world trajectory + base trajectory.
+def compute_consistency_metrics(result, inference_delay):
+    """Per-dimension MAE between prev_action_chunk and output[0:A] (normalized).
 
-    prev_chunk_delta: (chunk_len, 7) accumulated deltas from origin, or None.
+    Returns dict with keys like 'dx_fix', 'dx_guide', etc.
     """
-    T = traj_world.shape[0]
-    ts = np.arange(T) / 20.0
+    prev = result.prev_norm
+    out = result.normalized[:len(prev)]
+    D = inference_delay
+    metrics = {}
+    for nd, name in [(0, "dx"), (1, "dy"), (2, "dz"), (9, "grip")]:
+        pv, ov = prev[:, nd], out[:, nd]
+        metrics[f"{name}_fix"] = float(np.mean(np.abs(pv[:D] - ov[:D])))
+        metrics[f"{name}_guide"] = float(np.mean(np.abs(pv[D:] - ov[D:])))
+    return metrics
 
-    has_prev = prev_chunk_delta is not None
-    n_cols = 4 if has_prev else 3
-    width_ratios = [1, 1.2, 1.2, 1.2] if has_prev else [1, 1.2, 1.2]
 
-    fig = plt.figure(figsize=(28 if has_prev else 22, 12))
-    gs = GridSpec(4, n_cols, figure=fig, hspace=0.15, wspace=0.35,
-                  width_ratios=width_ratios)
+def visualize_rtc_debug(result, pose_world, step, save_path, instruction,
+                        n_actions, inference_delay, chunk_len, fix_rotation):
+    """RTC debug visualization.
 
-    ax_img = fig.add_subplot(gs[:, 0])
-    ax_img.imshow(camera_image)
-    ax_img.set_title("Camera (center-cropped)", fontsize=12, fontweight="bold")
-    ax_img.axis("off")
+    Layout (4 rows x 3 cols):
+      Col 0: camera (rows 0-1) + step info (rows 2-3)
+      Col 1: consistency — prev_action_chunk vs output[0:A] (normalized)
+      Col 2: predicted world-frame trajectory (accumulated deltas)
 
-    dims = [
-        (0, "x", "#e41a1c", current_world[0], current_base[0]),
-        (1, "y", "#377eb8", current_world[1], current_base[1]),
-        (2, "z", "#4daf4a", current_world[2], current_base[2]),
-        (6, "gripper", "#ff7f00", None, None),
-    ]
+    Consistency: hard-fixed [0:D] should match exactly;
+    soft-guided [D:A] may diverge.
+    """
+    A = n_actions
+    D = inference_delay
+    L = chunk_len
 
-    # Column for prev chunk deltas (from origin)
-    if has_prev:
-        T_prev = prev_chunk_delta.shape[0]
-        ts_prev = np.arange(T_prev) / 20.0
-        axes_prev = []
-        for row, (dim_idx, name, color, _, _) in enumerate(dims):
-            share_p = axes_prev[0] if axes_prev else None
-            ax_p = fig.add_subplot(gs[row, 1], sharex=share_p)
-            axes_prev.append(ax_p)
+    output_norm = result.normalized       # (L, action_dim)
+    prev_norm = result.prev_norm          # (L-A, action_dim)
+    output_10d = result.actions_10d       # (L, 10)
 
-            vals = prev_chunk_delta[:, dim_idx]
-            ax_p.plot(ts_prev, vals, "o-", markersize=3, linewidth=1.5,
-                      color=color, alpha=0.8)
-            ax_p.set_ylabel(f"Δ{name}", fontsize=9, fontweight="bold")
-            ax_p.grid(True, axis="y", alpha=0.3)
-            if row == 0:
-                ax_p.set_title("PREV CHUNK (delta from 0)",
-                               fontsize=11, fontweight="bold")
-            if row < len(dims) - 1:
-                plt.setp(ax_p.get_xticklabels(), visible=False)
-            else:
-                ax_p.set_xlabel("Time (s)", fontsize=9)
+    deltas_7d = actions_10d_to_7d(output_10d)
+    if fix_rotation:
+        deltas_7d[:, 3:6] = 0.0
+    traj = accumulate_deltas(pose_world, deltas_7d)  # (L, 7)
 
-    # World frame column
-    col_w = 2 if has_prev else 1
-    col_b = 3 if has_prev else 2
+    fig = plt.figure(figsize=(24, 14))
+    gs_fig = GridSpec(4, 3, figure=fig, hspace=0.28, wspace=0.30,
+                      width_ratios=[1, 1.3, 1.3])
 
-    axes_w, axes_b = [], []
-    for row, (dim_idx, name, color, sw, sb) in enumerate(dims):
-        share_w = axes_w[0] if axes_w else None
-        ax_w = fig.add_subplot(gs[row, col_w], sharex=share_w)
-        axes_w.append(ax_w)
+    # Camera (rows 0-1, col 0)
+    ax_cam = fig.add_subplot(gs_fig[0:2, 0])
+    ax_cam.imshow(result.camera_image)
+    ax_cam.set_title("Camera", fontsize=11, fontweight="bold")
+    ax_cam.axis("off")
 
-        vals_w = traj_world[:, dim_idx]
-        ax_w.plot(ts[:n_exec], vals_w[:n_exec], "o-", markersize=4,
-                  linewidth=2.0, color=color)
-        if n_exec < T:
-            ax_w.plot(ts[n_exec - 1:], vals_w[n_exec - 1:], "o--",
-                      markersize=3, linewidth=1.2, color=color, alpha=0.4)
-        if sw is not None:
-            ax_w.axhline(sw, color=color, linewidth=0.8, linestyle=":",
-                         alpha=0.4, label=f"now={sw:.4f}")
-            ax_w.legend(fontsize=7, loc="upper right")
-        if n_exec < T:
-            ax_w.axvline(ts[n_exec - 1], color="black", linewidth=1.0,
-                         linestyle=":", alpha=0.5)
-        ax_w.set_ylabel(f"{name} (world)", fontsize=9, fontweight="bold")
-        ax_w.grid(True, axis="y", alpha=0.3)
+    # Info (rows 2-3, col 0)
+    ax_info = fig.add_subplot(gs_fig[2:4, 0])
+    ax_info.axis("off")
+    info = (
+        f"Step {step}\n"
+        f"L={L}  A={A}  D={D}\n"
+        f"obs={result.obs_ms:.0f}ms  infer={result.infer_ms:.0f}ms\n"
+        f"pushed={result.n_pushed}\n\n"
+        f"Pose (world):\n"
+        f"  x={pose_world[0]:.4f}\n"
+        f"  y={pose_world[1]:.4f}\n"
+        f"  z={pose_world[2]:.4f}\n\n"
+        f"\"{instruction[:60]}\""
+    )
+    ax_info.text(0.05, 0.95, info, transform=ax_info.transAxes,
+                 fontsize=10, va="top", fontfamily="monospace",
+                 bbox=dict(boxstyle="round", facecolor="wheat", alpha=0.5))
+
+    norm_dims = [(0, "dx"), (1, "dy"), (2, "dz"), (9, "grip")]
+    traj_dims = [(0, "x"), (1, "y"), (2, "z"), (6, "grip")]
+    colors = ["#e41a1c", "#377eb8", "#4daf4a", "#ff7f00"]
+
+    n_prev = len(prev_norm)
+
+    for row, ((nd, nname), (td, tname), color) in enumerate(
+            zip(norm_dims, traj_dims, colors)):
+
+        # ── Col 1: Consistency ──────────────────────────────────────
+        ax_c = fig.add_subplot(gs_fig[row, 1])
+        idx = np.arange(n_prev)
+        pv = prev_norm[:, nd]
+        ov = output_norm[:n_prev, nd]
+
+        ax_c.axvspan(-0.5, D - 0.5, alpha=0.15, color="green")
+        ax_c.axvspan(D - 0.5, n_prev - 0.5, alpha=0.10, color="gold")
+        ax_c.plot(idx, pv, "o--", color="gray", ms=4, lw=1.5,
+                  label="prev", alpha=0.8)
+        ax_c.plot(idx, ov, "s-", color=color, ms=4, lw=2.0,
+                  label="output")
+
+        mae_fix = float(np.mean(np.abs(pv[:D] - ov[:D])))
+        mae_guide = float(np.mean(np.abs(pv[D:] - ov[D:]))) if n_prev > D else 0.0
+
+        ax_c.set_ylabel(nname, fontsize=10, fontweight="bold")
         if row == 0:
-            ax_w.set_title("WORLD FRAME", fontsize=11, fontweight="bold")
-        if row < len(dims) - 1:
-            plt.setp(ax_w.get_xticklabels(), visible=False)
+            ax_c.set_title(
+                "CONSISTENCY  (prev vs output)\n"
+                "green=hard-fixed   gold=soft-guided",
+                fontsize=10, fontweight="bold")
+            ax_c.legend(fontsize=8, loc="upper right")
+        ax_c.text(0.5, 0.02,
+                  f"fix MAE={mae_fix:.4f}  guide MAE={mae_guide:.4f}",
+                  transform=ax_c.transAxes, fontsize=8, ha="center",
+                  color="dimgray")
+        ax_c.grid(True, alpha=0.3)
+        if row < 3:
+            plt.setp(ax_c.get_xticklabels(), visible=False)
         else:
-            ax_w.set_xlabel("Time (s)  solid=exec  dashed=pred", fontsize=9)
+            ax_c.set_xlabel("Action index", fontsize=9)
 
-        share_b = axes_b[0] if axes_b else None
-        ax_b = fig.add_subplot(gs[row, col_b], sharex=share_b)
-        axes_b.append(ax_b)
+        # ── Col 2: Trajectory ───────────────────────────────────────
+        ax_t = fig.add_subplot(gs_fig[row, 2])
+        tidx = np.arange(L)
+        vals = traj[:, td]
 
-        vals_b = traj_base[:, dim_idx]
-        ax_b.plot(ts[:n_exec], vals_b[:n_exec], "o-", markersize=4,
-                  linewidth=2.0, color=color)
-        if n_exec < T:
-            ax_b.plot(ts[n_exec - 1:], vals_b[n_exec - 1:], "o--",
-                      markersize=3, linewidth=1.2, color=color, alpha=0.4)
-        if sb is not None:
-            ax_b.axhline(sb, color=color, linewidth=0.8, linestyle=":",
-                         alpha=0.4, label=f"now={sb:.4f}")
-            ax_b.legend(fontsize=7, loc="upper right")
-        if n_exec < T:
-            ax_b.axvline(ts[n_exec - 1], color="black", linewidth=1.0,
-                         linestyle=":", alpha=0.5)
-        ax_b.set_ylabel(f"{name} (base)", fontsize=9, fontweight="bold")
-        ax_b.grid(True, axis="y", alpha=0.3)
+        ax_t.axvspan(-0.5, D - 0.5, alpha=0.12, color="lightgray",
+                     label="prefix [0:D)")
+        ax_t.axvspan(D - 0.5, D + A - 0.5, alpha=0.18, color="palegreen",
+                     label="exec [D:D+A)")
+        ax_t.axvspan(D + A - 0.5, L - 0.5, alpha=0.10, color="lightyellow",
+                     label="future [D+A:L)")
+        ax_t.plot(tidx, vals, "o-", color=color, ms=4, lw=2.0)
+
+        if td < 6:
+            ax_t.axhline(pose_world[td], color="black", lw=0.8, ls=":",
+                         alpha=0.5, label=f"now={pose_world[td]:.4f}")
+        ax_t.axvline(D, color="black", lw=0.5, ls="--", alpha=0.3)
+        ax_t.axvline(D + A, color="black", lw=0.5, ls="--", alpha=0.3)
+
+        ax_t.set_ylabel(f"{tname} (world)", fontsize=10, fontweight="bold")
+        ax_t.grid(True, alpha=0.3)
         if row == 0:
-            ax_b.set_title("ROBOT (BASE) FRAME", fontsize=11, fontweight="bold")
-        if row < len(dims) - 1:
-            plt.setp(ax_b.get_xticklabels(), visible=False)
+            ax_t.set_title("PREDICTED TRAJECTORY (world)",
+                           fontsize=10, fontweight="bold")
+            ax_t.legend(fontsize=7, loc="upper right", ncol=2)
+        if row < 3:
+            plt.setp(ax_t.get_xticklabels(), visible=False)
         else:
-            ax_b.set_xlabel("Time (s)  solid=exec  dashed=pred", fontsize=9)
+            ax_t.set_xlabel("Action index", fontsize=9)
 
-    cw = current_world
-    cb = current_base
-    fig.suptitle(
-        f'Closed-Loop RTC (DD) — Step {step}\n'
-        f'"{instruction}"\n'
-        f'World: [{cw[0]:.4f}, {cw[1]:.4f}, {cw[2]:.4f}, {cw[3]:.4f}, {cw[4]:.4f}, {cw[5]:.4f}]\n'
-        f'Base:  [{cb[0]:.4f}, {cb[1]:.4f}, {cb[2]:.4f}, {cb[3]:.4f}, {cb[4]:.4f}, {cb[5]:.4f}]',
-        fontsize=10, fontweight="bold", y=1.0, va="bottom")
+    fig.suptitle(f"RTC Debug — Step {step}",
+                 fontsize=14, fontweight="bold", y=1.01)
+    plt.savefig(save_path, dpi=120, bbox_inches="tight")
+    plt.close(fig)
 
+
+def visualize_rtc_summary(consistency_log, infer_times, pose_log, save_path):
+    """Summary plot for entire RTC rollout.
+
+    Layout (3 rows x 2 cols):
+      (0,0) fixed-region MAE   (0,1) guided-region MAE
+      (1,0) robot xyz           (1,1) inference timing
+      (2,0) top-down x-y path   (2,1) z + gripper
+    """
+    steps = np.arange(1, len(consistency_log) + 1)
+    dim_names = ["dx", "dy", "dz", "grip"]
+    dim_colors = ["#e41a1c", "#377eb8", "#4daf4a", "#ff7f00"]
+
+    fig, axes = plt.subplots(3, 2, figsize=(16, 14))
+    fig.suptitle("RTC Rollout Summary", fontsize=14, fontweight="bold")
+
+    # (0,0) Fixed MAE
+    ax = axes[0, 0]
+    for name, color in zip(dim_names, dim_colors):
+        ax.plot(steps, [m[f"{name}_fix"] for m in consistency_log],
+                "-", color=color, lw=1.5, label=name, alpha=0.8)
+    ax.set_ylabel("MAE")
+    ax.set_title("Consistency — Hard-Fixed [0:D]", fontweight="bold")
+    ax.legend(fontsize=8); ax.grid(True, alpha=0.3)
+
+    # (0,1) Guided MAE
+    ax = axes[0, 1]
+    for name, color in zip(dim_names, dim_colors):
+        ax.plot(steps, [m[f"{name}_guide"] for m in consistency_log],
+                "-", color=color, lw=1.5, label=name, alpha=0.8)
+    ax.set_ylabel("MAE")
+    ax.set_title("Consistency — Soft-Guided [D:A]", fontweight="bold")
+    ax.legend(fontsize=8); ax.grid(True, alpha=0.3)
+
+    # (1,0) Robot xyz
+    ax = axes[1, 0]
+    if pose_log:
+        for d, name, color in [(0, "x", "#e41a1c"), (1, "y", "#377eb8"),
+                                (2, "z", "#4daf4a")]:
+            ax.plot(steps[:len(pose_log)], [p[d] for p in pose_log],
+                    "-", lw=1.5, color=color, label=name, alpha=0.8)
+    ax.set_ylabel("Position (world)")
+    ax.set_title("Robot Position", fontweight="bold")
+    ax.legend(fontsize=8); ax.grid(True, alpha=0.3)
+
+    # (1,1) Inference timing
+    ax = axes[1, 1]
+    arr = np.array(infer_times)
+    ax.plot(steps[:len(arr)], arr, "o-", ms=2, lw=1, color="#984ea3")
+    ax.axhline(arr.mean(), color="red", ls="--", lw=1, alpha=0.5,
+               label=f"mean={arr.mean():.0f}ms")
+    ax.set_ylabel("ms")
+    ax.set_title("Inference Time", fontweight="bold")
+    ax.legend(fontsize=8); ax.grid(True, alpha=0.3)
+
+    # (2,0) Top-down trajectory
+    ax = axes[2, 0]
+    if pose_log:
+        xs = [p[0] for p in pose_log]
+        ys = [p[1] for p in pose_log]
+        ax.plot(xs, ys, "o-", ms=3, lw=1.5, color="#377eb8", alpha=0.7)
+        ax.plot(xs[0], ys[0], "^", ms=10, color="green", label="start")
+        ax.plot(xs[-1], ys[-1], "v", ms=10, color="red", label="end")
+        ax.set_xlabel("x (world)"); ax.set_ylabel("y (world)")
+        ax.set_title("Top-Down Trajectory", fontweight="bold")
+        ax.legend(fontsize=8); ax.set_aspect("equal")
+    ax.grid(True, alpha=0.3)
+
+    # (2,1) z + gripper
+    ax = axes[2, 1]
+    if pose_log:
+        ax.plot(steps[:len(pose_log)], [p[2] for p in pose_log],
+                "-", lw=1.5, color="#4daf4a", label="z")
+    ax.set_xlabel("Step"); ax.set_ylabel("z (world)")
+    ax.set_title("Z Position", fontweight="bold")
+    ax.legend(fontsize=8); ax.grid(True, alpha=0.3)
+
+    plt.tight_layout()
     plt.savefig(save_path, dpi=120, bbox_inches="tight")
     plt.close(fig)
 
@@ -980,7 +1084,7 @@ def main():
     parser.add_argument("--camera_dev", type=int, default=0)
     parser.add_argument("--instruction", type=str, default=DEFAULT_INSTRUCTION)
     parser.add_argument("--n_actions", type=int, default=8,
-                        help="Number of actions to execute per inference cycle")
+                        help="Actions per cycle (must satisfy chunk_len == 2 * n_actions)")
     parser.add_argument("--inference_delay", type=int, default=4,
                         help="RTC prefix length (default: 4)")
     parser.add_argument("--n_actions_after_grasp", type=int, default=16,
@@ -995,7 +1099,7 @@ def main():
     parser.add_argument("--use_simple_max", action="store_true", default=False)
     parser.add_argument("--fixed_steps", action="store_true", default=False,
                         help="Use fixed inference steps instead of scaling by mask ratio")
-    parser.add_argument("--hard_mask", action="store_true", default=False,
+    parser.add_argument("--hard_mask", action="store_true", default=True,
                         help="RTC prefix uses hard mask (prefix_length=inference_delay) "
                              "instead of soft (action_horizon - execution_horizon)")
     parser.add_argument("--early_stop", action="store_true", default=False,
@@ -1026,7 +1130,7 @@ def main():
     parser.add_argument("--grasp_z_threshold", type=float, default=0.04)
     parser.add_argument("--systematically_x_offset", type=float, default=0.00,
                         help="Constant x offset (meters) applied to every servoL command")
-    parser.add_argument("--save_rollout", action="store_true", default=False)
+    parser.add_argument("--save_rollout", action="store_true", default=True)
     parser.add_argument("--no_save_rollout", dest="save_rollout",
                         action="store_false")
     args = parser.parse_args()
@@ -1041,6 +1145,12 @@ def main():
     action_stats = norm_stats[dataset_key]["action"]
     print(f"Norm stats: dataset='{dataset_key}', "
           f"modes={action_stats.get('norm_modes', 'legacy')}")
+
+    assert args.n_actions + args.inference_delay <= chunk_len, (
+        f"n_actions ({args.n_actions}) + inference_delay ({args.inference_delay}) "
+        f"must be <= chunk_len ({chunk_len})")
+    assert args.inference_delay <= args.n_actions, (
+        f"inference_delay ({args.inference_delay}) must be <= n_actions ({args.n_actions})")
 
     infer_kwargs = dict(
         decode_temperature=args.decode_temperature,
@@ -1192,6 +1302,8 @@ def main():
     # ═════════════════════════════════════════════════════════════════
 
     infer_times = []
+    consistency_log = []
+    pose_log = []
     step = 0
     try:
         while args.max_steps == 0 or step < args.max_steps:
@@ -1211,9 +1323,17 @@ def main():
             pose_world = base_to_world(pose_base, T_bw)
             infer_times.append(result.infer_ms)
 
+            # Consistency metrics (always computed for monitoring)
+            metrics = compute_consistency_metrics(result, args.inference_delay)
+            consistency_log.append(metrics)
+            pose_log.append(list(pose_world))
+
             buf_len = servo.buffer_len
+            fix_mae = np.mean([metrics[f"{d}_fix"] for d in ["dx","dy","dz"]])
+            guide_mae = np.mean([metrics[f"{d}_guide"] for d in ["dx","dy","dz"]])
             suffix = (f"  delay={result.actual_delay}  "
-                      f"pushed={result.n_pushed}  buf={buf_len}")
+                      f"pushed={result.n_pushed}  buf={buf_len}  "
+                      f"fix={fix_mae:.4f}  guide={guide_mae:.4f}")
             if servo.starve_count > 0:
                 suffix += f"  starved={servo.starve_count}"
 
@@ -1230,37 +1350,11 @@ def main():
                     img_path = rollout_dir / "images" / f"step_{step:04d}.jpg"
                     result.camera_image.save(str(img_path), quality=90)
 
-                all_deltas_7d = actions_10d_to_7d(result.actions_10d)
-                if args.fix_rotation:
-                    all_deltas_7d[:, 3:6] = 0.0
-                traj_world = accumulate_deltas(pose_world, all_deltas_7d)
-                traj_world[:, 1] = np.maximum(traj_world[:, 1], Y_MIN_WORLD)
-                traj_world[:, 2] = np.clip(traj_world[:, 2], Z_MIN_WORLD, Z_MAX_WORLD)
-                in_board = ((traj_world[:, 1] >= -0.4276)
-                            & (traj_world[:, 1] <= 0.2931))
-                traj_world[in_board, 2] = np.maximum(
-                    traj_world[in_board, 2], 0.125)
-
-                traj_base = traj_world.copy()
-                traj_base[:, 0] -= T_bw[0, 3]
-                traj_base[:, 1] -= T_bw[1, 3]
-                traj_base[:, 2] -= T_bw[2, 3]
-
-                # Compute prev chunk delta trajectory (from origin)
-                prev_chunk_delta = None
-                if result.prev_unnorm_10d is not None:
-                    prev_deltas_7d = actions_10d_to_7d(result.prev_unnorm_10d)
-                    if args.fix_rotation:
-                        prev_deltas_7d[:, 3:6] = 0.0
-                    origin = [0.0] * 6
-                    prev_chunk_delta = accumulate_deltas(origin, prev_deltas_7d)
-
                 viz_path = rollout_dir / "images" / f"step_{step:04d}_viz.png"
-                visualize_step(
-                    traj_world, traj_base, result.camera_image,
-                    pose_world, list(pose_base), result.n_pushed,
-                    step, str(viz_path), args.instruction,
-                    prev_chunk_delta=prev_chunk_delta)
+                visualize_rtc_debug(
+                    result, pose_world, step, str(viz_path),
+                    args.instruction, args.n_actions, args.inference_delay,
+                    chunk_len, args.fix_rotation)
 
                 log_entry = {
                     "step": step,
@@ -1273,6 +1367,7 @@ def main():
                     "actual_delay": result.actual_delay,
                     "obs_ms": round(result.obs_ms, 1),
                     "infer_ms": round(result.infer_ms, 1),
+                    "consistency": metrics,
                     "image_file": f"images/step_{step:04d}.jpg",
                     "viz_file": f"images/step_{step:04d}_viz.png",
                 }
@@ -1311,6 +1406,12 @@ def main():
                 json.dump(rollout_log, f, indent=2)
             print(f"Rollout saved: {rollout_dir}")
             print(f"  {len(rollout_log)} steps")
+
+            if consistency_log:
+                visualize_rtc_summary(
+                    consistency_log, infer_times, pose_log,
+                    str(rollout_dir / "summary.png"))
+                print(f"  Summary plot: {rollout_dir / 'summary.png'}")
 
         if infer_times:
             arr = np.array(infer_times)

@@ -456,7 +456,7 @@ def main():
     parser.add_argument("--arm", choices=["left", "right"], default="left")
     parser.add_argument("--camera_dev", type=int, default=0)
     parser.add_argument("--instruction", type=str, default=DEFAULT_INSTRUCTION)
-    parser.add_argument("--n_actions", type=int, default=8,
+    parser.add_argument("--n_actions", type=int, default=16,
                         help="Number of predicted actions to execute per inference")
     parser.add_argument("--n_actions_after_grasp", type=int, default=16,
                         help="Number of actions to execute for the first N chunks after grasping")
