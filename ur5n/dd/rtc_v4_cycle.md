@@ -1,4 +1,4 @@
-# RTC v3 Inference-Execution Cycle
+# RTC v4 Inference-Execution Cycle
 
 ## Parameters
 
@@ -29,24 +29,21 @@
 1. `predict_action` (standard, no prefix) -> 16 actions
 2. Push `output[0 : inference_delay + n_actions]` = `[0:12]` to servo
 3. `prev_action_chunk` <- `output[n_actions:]` = `output[8:16]` (8 actions)
-4. `exec_start` = `inference_delay` = 4
+4. `exec_start` = 0
 
 ## Steady-State Cycle (uniform, including first cycle)
 
-```
-Servo buffer: |====consumed====|==remaining==|
-              exec_start        trigger_t     exec_done
-              |--- (n-d) ------|--- d --------|
-```
+Inference triggers every `n_actions`. The servo keeps executing buffered
+actions during inference (`inference_delay` actions remain as buffer).
 
-1. **Trigger**: when servo has only `inference_delay` actions remaining
-   - `trigger_t = exec_start + (n_actions - inference_delay)`
-   - At this point, `prev_action_chunk[0:inference_delay]` = the `inference_delay` actions still in servo
+1. **Trigger**: wait for `action_t = exec_start + n_actions`
+   - At this point, `inference_delay` actions remain in servo
+   - `prev_action_chunk[0:inference_delay]` = the actions still in servo
 2. **Capture**: grab camera image
 3. **Infer**: `predict_action_realtime(prev_action_chunk)` -> 16 new actions
+   (servo keeps executing during inference)
 4. **Push**: `output[inference_delay : inference_delay + n_actions]` = `[4:12]` to servo
-   - Standard: push after servo finishes current window (buffer empty)
-   - Optimization: if inference finishes early, push immediately (appends seamlessly)
+   - Push immediately after inference — servo buffer handles seamless splicing
 5. **Update prev**: `prev_action_chunk` <- `output[n_actions:]` = `output[8:16]`
 6. **Advance**: `exec_start += n_actions`
 
@@ -68,20 +65,19 @@ output:  [0:4]  [4:8]  [8:12]  [12:16]
 
 ```
 Init:  predict_action -> output[0:16]
-       Push output[0:12] to servo, exec_start=inference_delay=4
+       Push output[0:12] to servo, exec_start=0
        prev = output[8:16]
 
 Cycle 1:
-  trigger_t = 4 + (8-4) = 8   (when 8 of 12 consumed, 4 remain)
+  trigger_t = 0 + 8 = 8    (8 of 12 consumed, 4 remain)
   infer with prev = output[8:16]
   -> new_output[0:16]
-  exec_done = 4 + 8 = 12      (all 12 init actions consumed)
-  push new_output[4:12]
+  push new_output[4:12]     (servo appends to remaining buffer)
   prev = new_output[8:16]
-  exec_start = 12
+  exec_start = 8
 
 Cycle 2:
-  trigger_t = 12 + (8-4) = 16
+  trigger_t = 8 + 8 = 16   (8 more consumed, 4 remain)
   infer with prev = new_output[8:16]
   -> ...same pattern...
 ```

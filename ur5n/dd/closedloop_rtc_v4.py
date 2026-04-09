@@ -683,19 +683,15 @@ class Inferencer:
     Cycle (chunk_len=16, n_actions=8, inference_delay=4):
 
       Init (main): predict_action → 16 actions, push [0:12] to servo.
-                   prev_action_chunk ← output[8:16].  exec_start = 4.
+                   prev_action_chunk ← output[8:16].
 
-      Every cycle (uniform, including the first):
-        1. Trigger when inference_delay (4) actions remain in servo
-           → action_t = exec_start + (n_actions - inference_delay).
+      Every cycle (triggers every n_actions):
+        1. Wait for servo to consume n_actions since last trigger.
         2. Camera capture.
         3. predict_action_realtime(prev_action_chunk) → 16 new actions.
-        4. Wait for exec window to complete (or push early if inference
-           finishes before servo exhausts its buffer).
-        5. Push output[inference_delay : inference_delay + n_actions]
-           = output[4:12] to servo.
-        6. prev_action_chunk ← output[n_actions:] = output[8:16].
-        7. exec_start += n_actions.
+           (servo executes remaining buffered actions during inference)
+        4. Push output[4:12] to servo immediately.
+        5. prev_action_chunk ← output[n_actions:] = output[8:16].
     """
 
     def __init__(self, model, cam, servo, n_actions, inference_delay,
@@ -744,19 +740,16 @@ class Inferencer:
             return
 
         prev_action_chunk = self._current_normalized  # (chunk_len - n_actions, action_dim)
-        # exec_start_t: servo.action_t value when current execution window began.
-        # Init pushed [0:inference_delay+n_actions]; the first execution window
-        # effectively starts at inference_delay so trigger_t = n_actions.
-        exec_start_t = self._inference_delay
+        n_consumed = 0  # total actions consumed by servo
 
         while self._running:
-            # ── 1. Trigger when inference_delay actions remain ───────
-            trigger_t = exec_start_t + (self._n_actions - self._inference_delay)
-            self._servo.wait_for_action_t(trigger_t, timeout=30.0)
+            # ── 1. Wait for servo to consume the next n_actions ─────
+            n_consumed += self._n_actions
+            self._servo.wait_for_action_t(n_consumed, timeout=30.0)
             if not self._running:
                 break
 
-            # ── 2. Camera capture ────────────────────────────────────
+            # ── 2. Camera capture ───────────────────────────────────
             t0 = time.monotonic()
             pil_img = self._cam.grab_pil()
             while pil_img is None:
@@ -794,13 +787,8 @@ class Inferencer:
             new_actions_10d = baseframework.unnormalize_actions(
                 new_normalized, self._action_stats)
 
-            # ── 5. Wait for current execution window to complete ─────
-            exec_done_t = exec_start_t + self._n_actions
-            self._servo.wait_for_action_t(exec_done_t, timeout=30.0)
-            if not self._running:
-                break
-
-            # ── 6. Push output[inference_delay : inference_delay + n_actions]
+            # ── 5. Push output[inference_delay : inference_delay + n_actions]
+            #    Servo nearly out of actions after inference; push immediately.
             free_start = self._inference_delay
             free_end = free_start + self._n_actions
             free_actions = new_actions_10d[free_start:free_end]
@@ -824,15 +812,11 @@ class Inferencer:
 
             self._servo.push_waypoints(start_pos, waypoints, gripper_cmds)
 
-            # ── 7. Update prev_action_chunk for next cycle ───────────
+            # ── 6. Update prev_action_chunk for next cycle ───────────
             # Next prev = output[n_actions:] (chunk_len - n_actions actions).
-            # prev[0:inference_delay] = last actions still in servo → fixed.
-            # prev[inference_delay:] = beyond pushed window → guidance.
             prev_action_chunk = new_normalized[self._n_actions:]
 
-            exec_start_t = exec_done_t
-
-            # ── 8. Post result for main loop ─────────────────────────
+            # ── 7. Post result for main loop ─────────────────────────
             self._result_queue.put(
                 InferenceResult(new_normalized, new_actions_10d, pil_img,
                                 obs_ms, infer_ms, self._inference_delay,
