@@ -691,7 +691,7 @@ class Inferencer:
         3. predict_action_realtime(prev_action_chunk) → 16 new actions.
            (servo executes remaining buffered actions during inference)
         4. Push output[4:12] to servo immediately.
-        5. prev_action_chunk ← output[0:8] (first chunk_len - n_actions).
+        5. prev_action_chunk ← output[8:16] (last chunk_len - n_actions).
     """
 
     def __init__(self, model, cam, servo, n_actions, inference_delay,
@@ -813,8 +813,8 @@ class Inferencer:
             self._servo.push_waypoints(start_pos, waypoints, gripper_cmds)
 
             # ── 6. Update prev_action_chunk for next cycle ───────────
-            # Next prev = first (chunk_len - n_actions) actions of output.
-            prev_action_chunk = new_normalized[:self._chunk_len - self._n_actions]
+            # Next prev = last (chunk_len - n_actions) actions of output.
+            prev_action_chunk = new_normalized[self._n_actions:]
 
             n_consumed += self._n_actions
 
