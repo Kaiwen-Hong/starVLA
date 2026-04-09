@@ -64,8 +64,7 @@ for model in "${MODELS[@]}"; do
 
         echo "  Downloading: ${file}..."
         huggingface-cli download "$HF_REPO" "$hf_path" \
-            --local-dir "/tmp/hf_download_tmp" \
-            --quiet
+            --local-dir "/tmp/hf_download_tmp"
         mkdir -p "$(dirname "$local_path")"
         mv "/tmp/hf_download_tmp/${hf_path}" "$local_path"
         echo "  Done: ${file}"

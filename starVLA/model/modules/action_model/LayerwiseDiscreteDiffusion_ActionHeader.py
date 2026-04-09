@@ -388,6 +388,16 @@ class LayerwiseDiscreteDiffusionActionHead(nn.Module):
         else:
             prefix_length = self.action_horizon - execution_horizon
 
+        # Pad prev_action_chunk to action_horizon if shorter (right-pad with zeros;
+        # padded positions fall under prefix_mask=False and get replaced by mask_token).
+        T_prev = prev_action_chunk.shape[1]
+        if T_prev < self.action_horizon:
+            pad = torch.zeros(
+                B, self.action_horizon - T_prev, prev_action_chunk.shape[2],
+                device=device, dtype=prev_action_chunk.dtype,
+            )
+            prev_action_chunk = torch.cat([prev_action_chunk, pad], dim=1)
+
         # Encode the prefix into bin indices
         prefix_bins = self.binning.encode(prev_action_chunk)
         prefix_mask = (

@@ -100,11 +100,15 @@ class Qwenvl_OFT(baseframework):
                 os.path.join("results", "attention_maps", "default"),
             )
             self._attn_num_layers = int(os.environ.get("STARVLA_ATTENTION_LAYERS", "4"))
+            self._attn_save_interval = int(os.environ.get("STARVLA_ATTENTION_INTERVAL", "1"))
             self._attn_step_counter = 0
             os.makedirs(self._attn_output_dir, exist_ok=True)
             # sdpa does not support output_attentions; switch to eager
             self.qwen_vl_interface.model.set_attn_implementation("eager")
-            logger.info(f"Attention capture enabled → {self._attn_output_dir} (attn_impl → eager)")
+            logger.info(
+                f"Attention capture enabled → {self._attn_output_dir} "
+                f"(interval={self._attn_save_interval}, attn_impl → eager)"
+            )
 
     def forward(
         self,
@@ -204,7 +208,11 @@ class Qwenvl_OFT(baseframework):
         # Step 1: QWenVL input format
         qwen_inputs = self.qwen_vl_interface.build_qwenvl_inputs(images=batch_images, instructions=instructions)
 
-        capture_attn = self._save_attention
+        # Only request attention tensors on steps we will actually save
+        capture_attn = (
+            self._save_attention
+            and self._attn_step_counter % self._attn_save_interval == 0
+        )
         with torch.autocast("cuda", dtype=torch.bfloat16):
             qwenvl_outputs = self.qwen_vl_interface(
                 **qwen_inputs,
@@ -233,6 +241,9 @@ class Qwenvl_OFT(baseframework):
                 )
             except Exception as e:
                 logger.warning(f"Attention capture failed at step {self._attn_step_counter}: {e}")
+        # Always increment counter (even when not saving) so interval tracking works
+        if self._save_attention:
+            self._attn_step_counter += 1
 
         normalized_actions = pred_actions.detach().cpu().numpy()
         return {"normalized_actions": normalized_actions}
@@ -347,6 +358,24 @@ class Qwenvl_OFT(baseframework):
 
                 offset += num_tokens
 
+        # --- Per-text-token attention (for word-level analysis) ---
+        text_token_attention = None
+        text_token_words = None
+        text_positions = text_mask.nonzero(as_tuple=False).squeeze(-1)
+        if text_positions.numel() > 0:
+            last_attn = attentions[layer_indices[-1]][0].float().mean(dim=0)
+            # action tokens → each text token: (num_act, num_text_tokens)
+            action_to_text = last_attn[action_positions][:, text_positions]
+            # Average across action tokens → (num_text_tokens,)
+            text_token_attention = action_to_text.mean(dim=0).cpu().numpy()
+            # Decode each text token to its word/subword
+            text_ids = ids[text_positions].cpu().tolist()
+            tokenizer = self.qwen_vl_interface.processor.tokenizer
+            text_token_words = np.array(
+                [tokenizer.decode([tid]) for tid in text_ids],
+                dtype=object,
+            )
+
         # --- Save raw images for overlay ---
         saved_images = []
         if raw_images and len(raw_images) > 0:
@@ -392,6 +421,10 @@ class Qwenvl_OFT(baseframework):
         # Raw images
         for i, img_arr in enumerate(saved_images):
             save_dict[f"raw_img{i}"] = img_arr
+        # Per-text-token attention
+        if text_token_attention is not None:
+            save_dict["text_token_attention"] = text_token_attention
+            save_dict["text_token_words"] = text_token_words
         # Grid info
         if image_grid_thw is not None:
             save_dict["image_grid_thw"] = image_grid_thw.cpu().numpy()
@@ -401,7 +434,6 @@ class Qwenvl_OFT(baseframework):
             f"step_{self._attn_step_counter:05d}.npz",
         )
         np.savez_compressed(save_path, **save_dict)
-        self._attn_step_counter += 1
 
     def _gather_action_token_embeddings(
         self,
