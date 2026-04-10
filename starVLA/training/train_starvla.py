@@ -241,12 +241,29 @@ class VLATrainer(TrainerUtils):
             if isinstance(self.config, AccessTrackedConfig):
                 logger.info("📊 Saving accessed configuration...")
                 output_dir = Path(self.config.output_dir)
-                self.config.save_accessed_config(output_dir / "config.yaml", use_original_values=False)
+                config_path = output_dir / "config.yaml"
+                self.config.save_accessed_config(config_path, use_original_values=False)
+                self._scrub_secrets_from_config(config_path)
                 logger.info("✅ Configuration files saved")
 
             self._upload_to_hf(checkpoint_path)
+            self._upload_aux_files_to_hf()
 
         self.accelerator.wait_for_everyone()
+
+    def _scrub_secrets_from_config(self, config_path):
+        """Remove secrets (e.g. hf_token) from a saved config.yaml in place."""
+        try:
+            cfg_on_disk = OmegaConf.load(config_path)
+            changed = False
+            for key in ("hf_token",):
+                if key in cfg_on_disk:
+                    del cfg_on_disk[key]
+                    changed = True
+            if changed:
+                OmegaConf.save(cfg_on_disk, config_path)
+        except Exception as e:
+            logger.warning(f"⚠️ Failed to scrub secrets from {config_path}: {e}")
 
     def _upload_to_hf(self, checkpoint_path):
         """Upload a saved checkpoint to HuggingFace Hub."""
@@ -275,6 +292,30 @@ class VLATrainer(TrainerUtils):
             logger.info(f"✅ Uploaded {filename} to {hf_repo_id}/{path_in_repo}")
         except Exception as e:
             logger.warning(f"⚠️ HF upload failed: {e}")
+
+    def _upload_aux_files_to_hf(self):
+        """Upload config.yaml, dataset_statistics.json, summary.jsonl to HuggingFace Hub."""
+        hf_repo_id = getattr(self.config, "hf_repo_id", None)
+        hf_token = getattr(self.config, "hf_token", None)
+        if not hf_repo_id or not hf_token:
+            return
+
+        output_dir = Path(self.config.output_dir)
+        api = HfApi(token=hf_token)
+        for filename in ("config.yaml", "dataset_statistics.json", "summary.jsonl"):
+            local_path = output_dir / filename
+            if not local_path.exists():
+                continue
+            try:
+                api.upload_file(
+                    path_or_fileobj=str(local_path),
+                    path_in_repo=f"{self.config.run_id}/{filename}",
+                    repo_id=hf_repo_id,
+                    repo_type="model",
+                )
+                logger.info(f"✅ Uploaded {filename} to {hf_repo_id}/{self.config.run_id}/{filename}")
+            except Exception as e:
+                logger.warning(f"⚠️ HF upload of {filename} failed: {e}")
 
     def _log_metrics(self, metrics):
         """Record training metrics."""
@@ -429,6 +470,8 @@ class VLATrainer(TrainerUtils):
                     logger.info(f"✅ Uploaded final model to {hf_repo_id}/{self.config.run_id}/final_model")
                 except Exception as e:
                     logger.warning(f"⚠️ HF upload of final model failed: {e}")
+
+            self._upload_aux_files_to_hf()
 
         if self.accelerator.is_main_process:
             wandb.finish()
