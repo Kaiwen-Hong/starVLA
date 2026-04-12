@@ -56,12 +56,12 @@ import modular_policy
 # )
 
 DEFAULT_CHECKPOINT = (
-    "checkpoints/discreteRTC/fastumi_pickandplace_qwenDiscreteDiffusion_0409_0_pick_to_moved_filtered/"
+    "checkpoints/discreteRTC/fastumi_pickandplace_qwenDiscreteDiffusion_0403_1_pick_from_moved/"
     "checkpoints/steps_30000_pytorch_model.pt"
 )
 
 
-DEFAULT_INSTRUCTION = "Pick up the purple block and place it on the red area of the board"
+DEFAULT_INSTRUCTION = "Pick up the purple block to the pan"
 DECODE_TEMPERATURE = 0.0
 CHOICE_TEMPERATURE = 0.1
 
@@ -84,6 +84,19 @@ SERVO_HZ = CONTROL_HZ * INTERP_MULT  # 100Hz
 Y_MIN_WORLD = -0.50
 Z_MIN_WORLD = 0.03
 Z_MAX_WORLD = 0.30
+
+# ── Turntable zone (task: pick from rotating turntable → place on static pan) ──
+# Turntable occupies y in [TURNTABLE_Y_MIN, TURNTABLE_Y_MAX]. Three regimes:
+#   1. Not grasped, over turntable:
+#        z >= TURNTABLE_SURFACE_Z  (allow descent to reach object on turntable)
+#   2. Grasped, still over turntable:
+#        z >= TURNTABLE_LIFT_Z     (lift to clear turntable obstacles)
+#   3. Grasped, y < TURNTABLE_Y_MIN (off turntable, heading to static pan):
+#        only the global Y_MIN_WORLD / Z_MIN_WORLD clamps apply.
+TURNTABLE_Y_MIN = -0.4276
+TURNTABLE_Y_MAX = 0.2931
+TURNTABLE_SURFACE_Z = 0.101398
+TURNTABLE_LIFT_Z = 0.125
 
 # ── Robot config ─────────────────────────────────────────────────────
 _extrinsics_dir = os.path.join(
@@ -127,7 +140,7 @@ def slam_to_gripper_rotation(rotvec):
 
 # Raw poses from SLAM file (rotation in SLAM device frame)
 _HOME_SLAM = {
-    'left': [0.25666, -0.428459, 0.185173, 2.130869, 0.107971, -2.304919, 1],
+    'left': [0.253835, -0.315847, 0.230922, 2.130869, 0.107971, -2.304919, 1],
     'right': [-0.1, -0.3, 0.25, 2.2419, -2.1984, 0.0166, 1],
 }
 
@@ -474,8 +487,8 @@ def main():
                         action="store_false",
                         help="Enable rotation control from policy")
     parser.add_argument("--if_grasped_not_release", action="store_true",
-                        default=True,
-                        help="Once gripper closes, keep it closed (default: True)")
+                        default=False,
+                        help="Once gripper closes, keep it closed (default: False for pick-from-turntable task)")
     parser.add_argument("--allow_release", dest="if_grasped_not_release",
                         action="store_false",
                         help="Allow gripper to re-open after grasping")
@@ -486,8 +499,8 @@ def main():
                         action="store_false",
                         help="Disable post-grasp extended execution")
     parser.add_argument("--if_release_when_reach_temp", action="store_true",
-                        default=True,
-                        help="Allow release when y >= release_y_threshold, then exit (default: True)")
+                        default=False,
+                        help="Allow release when y >= release_y_threshold, then exit (default: False for pick-from-turntable task)")
     parser.add_argument("--no_release_when_reach", dest="if_release_when_reach_temp",
                         action="store_false",
                         help="Disable auto-release at target zone")
@@ -501,9 +514,12 @@ def main():
     parser.add_argument("--no_grasp_trick", dest="if_grasp_trick",
                         action="store_false",
                         help="Allow gripper close at any height")
-    parser.add_argument("--grasp_z_threshold", type=float, default=0.036,
-                        help="Z world-frame threshold below which grasping is allowed (default: 0.036)")
-    parser.add_argument("--save_rollout", action="store_true", default=False)
+    parser.add_argument("--grasp_z_threshold", type=float, default=0.117,
+                        help="Z world-frame threshold below which grasping is allowed. "
+                             "For pick-from-turntable: turntable surface is at "
+                             "TURNTABLE_SURFACE_Z=0.101, so 0.117 gives a ~1.6cm grasp "
+                             "window above the surface (default: 0.117)")
+    parser.add_argument("--save_rollout", action="store_true", default=True)
     parser.add_argument("--no_save_rollout", dest="save_rollout",
                         action="store_false")
     args = parser.parse_args()
@@ -555,11 +571,16 @@ def main():
         current_gripper = 0.0
 
     # ── Rollout saving ───────────────────────────────────────────────
+    # NOTE: rollouts go under ur5n/2dd/rollouts (this script lives in 2dd/).
+    # The original dd/closedloop_sync.py hardcodes ur5n/dd/rollouts; don't
+    # mix them — each task directory owns its own rollout history so we can
+    # tell pick-from-static (dd) and pick-from-turntable (2dd) apart at a
+    # glance.
     rollout_log = []
     rollout_dir = None
     if args.save_rollout:
         ts = time.strftime("%Y%m%d_%H%M%S")
-        rollout_dir = Path("ur5n/dd/rollouts") / f"sync_{ts}"
+        rollout_dir = Path("ur5n/2dd/rollouts") / f"sync_{ts}"
         rollout_dir.mkdir(parents=True, exist_ok=True)
         (rollout_dir / "images").mkdir(exist_ok=True)
         print(f"Rollout: {rollout_dir}")
@@ -575,6 +596,16 @@ def main():
             "servo_hz": SERVO_HZ,
             "y_min_world": Y_MIN_WORLD,
             "z_bounds_world": [Z_MIN_WORLD, Z_MAX_WORLD],
+            # Turntable zone (pick-from-turntable task) — logged so rollouts
+            # are self-describing and we can retroactively reconstruct
+            # which z-floor was active during each cycle.
+            "turntable_y_range": [TURNTABLE_Y_MIN, TURNTABLE_Y_MAX],
+            "turntable_surface_z": TURNTABLE_SURFACE_Z,
+            "turntable_lift_z": TURNTABLE_LIFT_Z,
+            "if_grasp_trick": args.if_grasp_trick,
+            "grasp_z_threshold": args.grasp_z_threshold,
+            "if_grasped_not_release": args.if_grasped_not_release,
+            "if_release_when_reach_temp": args.if_release_when_reach_temp,
             "fix_rotation": args.fix_rotation,
             "decode_temperature": args.decode_temperature,
             "choice_temperature": args.choice_temperature,
@@ -603,6 +634,14 @@ def main():
     step = 0
     chunks_since_grasp = None  # None = not yet grasped
     object_grasped = False
+
+    # Sticky latch for turntable z-floor. See long comment inside the loop
+    # where it is consulted; tl;dr: once we have ever successfully grasped
+    # something while over the turntable, keep the z-floor at TURNTABLE_LIFT_Z
+    # until we physically leave the turntable y-range — even if the policy
+    # transiently re-opens the gripper. This prevents a "close → open → re-descend"
+    # oscillation from driving the EE back down onto the turntable surface.
+    has_ever_grasped_in_turntable = False
     try:
         while args.max_steps == 0 or step < args.max_steps:
             loop_t0 = time.monotonic()
@@ -611,6 +650,18 @@ def main():
             pose_base = rtde_r.getActualTCPPose()
             pose_world = base_to_world(pose_base, T_bw)
             current_pos = np.array(pose_world, dtype=np.float64)
+
+            # Reset the sticky turntable-grasp latch when the robot has
+            # physically left the turntable y-range. Rationale: the latch
+            # only exists to stop the EE from re-descending inside the
+            # turntable after a successful grasp. Once we've carried the
+            # object out (y < TURNTABLE_Y_MIN, on the static-pan side), the
+            # latch has done its job; if the arm re-enters the turntable
+            # later (e.g. a second pick attempt), we want to start fresh
+            # with "not yet grasped" → floor = TURNTABLE_SURFACE_Z so the
+            # EE can descend to the new object.
+            if not (TURNTABLE_Y_MIN <= current_pos[1] <= TURNTABLE_Y_MAX):
+                has_ever_grasped_in_turntable = False
 
             # 2. Grab camera frame
             pil_img = cam.grab_pil()
@@ -670,9 +721,26 @@ def main():
                 # Safety clamps (world frame)
                 pos[1] = max(pos[1], Y_MIN_WORLD)
                 pos[2] = np.clip(pos[2], Z_MIN_WORLD, Z_MAX_WORLD)
-                # Board zone: y in [-0.4276, 0.2931] has obstacles, enforce z > 0.125
-                if -0.4276 <= pos[1] <= 0.2931:
-                    pos[2] = max(pos[2], 0.125)
+                # Turntable zone (pick-from-turntable task):
+                #   not yet grasped → floor = TURNTABLE_SURFACE_Z
+                #     (allow EE to descend and reach the object surface)
+                #   ever grasped in turntable → floor = TURNTABLE_LIFT_Z
+                #     (lift above turntable obstacles and KEEP it lifted)
+                #
+                # We consult the STICKY `has_ever_grasped_in_turntable`
+                # instead of the instantaneous `object_grasped` on purpose.
+                # If we used `object_grasped`, a transient policy open-cmd
+                # over the turntable would flip the floor back down to
+                # TURNTABLE_SURFACE_Z and the EE could re-descend onto the
+                # turntable surface — causing a close/open/re-descend
+                # oscillation. The sticky latch is reset once the EE has
+                # physically left the turntable y-range (see latch reset
+                # near the start of the cycle).
+                if TURNTABLE_Y_MIN <= pos[1] <= TURNTABLE_Y_MAX:
+                    if has_ever_grasped_in_turntable:
+                        pos[2] = max(pos[2], TURNTABLE_LIFT_Z)
+                    else:
+                        pos[2] = max(pos[2], TURNTABLE_SURFACE_Z)
 
                 waypoints[i, :3] = pos
                 waypoints[i, 3:6] = rot
@@ -707,15 +775,46 @@ def main():
                       and new_gripper <= 0.5):
                     pass  # keep closed, not at target yet
                 elif (new_gripper > 0.5) != (current_gripper > 0.5):
-                    # if_grasp_trick: only allow closing when z is low enough
-                    # (near table surface), prevents premature grasping in mid-air
+                    # if_grasp_trick: only allow closing when the EE is
+                    # ALREADY physically low enough at the start of this
+                    # cycle.
+                    #
+                    # Subtlety (BUG FIXED 2026-04-10): gripper_hw.move() below
+                    # is sent IMMEDIATELY inline during waypoint generation —
+                    # before the interp/exec phase actually servos the arm
+                    # through `waypoints`. At the moment the close command
+                    # fires over the network, the robot is still at
+                    # `current_pos` (the cycle-start pose from
+                    # getActualTCPPose), NOT at `pos[i]` which is just a
+                    # predicted future waypoint.
+                    #
+                    # Original code checked `pos[2] >= threshold`, which
+                    # was wrong: `pos[2]` is an accumulated-delta waypoint
+                    # that may predict a dip below threshold later in the
+                    # chunk — but that dip hasn't been executed yet. The
+                    # physical robot is still at current_pos and could be
+                    # well above threshold, causing premature grasps.
+                    # Observed example: cycle started at phys_z=0.148 but
+                    # the grasp still fired because waypoint[i]_z was low.
+                    #
+                    # Fix: gate on `current_pos[2]` (the physical z). Grasp
+                    # only fires once a prior cycle's exec has ALREADY
+                    # moved the EE into the [TURNTABLE_SURFACE_Z, threshold]
+                    # window.
                     if (args.if_grasp_trick
                             and new_gripper > 0.5
-                            and pos[2] >= args.grasp_z_threshold):
+                            and current_pos[2] >= args.grasp_z_threshold):
+                        print(f"  [GRASP_TRICK] skip CLOSE: "
+                              f"phys_z={current_pos[2]:.4f} >= "
+                              f"thr={args.grasp_z_threshold:.4f}  "
+                              f"(waypoint[{i}]_z={pos[2]:.4f})")
                         continue  # too high, skip close command
                     grip_pos = int(new_gripper * 255)
                     label = "CLOSE" if new_gripper > 0.5 else "OPEN"
-                    print(f"  Gripper -> {label} (pos={grip_pos})")
+                    print(f"  Gripper -> {label} (pos={grip_pos})  "
+                          f"[phys_z={current_pos[2]:.4f}, "
+                          f"wp[{i}]_z={pos[2]:.4f}, "
+                          f"thr={args.grasp_z_threshold:.4f}]")
                     gripper_hw.move(grip_pos, 255, 150)
                     current_gripper = new_gripper
 
@@ -724,6 +823,13 @@ def main():
                         actual_pos = gripper_hw.get_current_position()
                         if actual_pos < args.grasp_detect_threshold:
                             object_grasped = True
+                            # STICKY LATCH: if this successful grasp happened
+                            # while the EE was over the turntable, remember it
+                            # so the z-floor stays at TURNTABLE_LIFT_Z for the
+                            # rest of the turntable traversal — even if the
+                            # policy later opens the gripper in mid-air.
+                            if TURNTABLE_Y_MIN <= pos[1] <= TURNTABLE_Y_MAX:
+                                has_ever_grasped_in_turntable = True
                             print(f"  [GRASP_DETECT] Object grasped "
                                   f"(pos={actual_pos} < {args.grasp_detect_threshold})")
                         else:
@@ -775,9 +881,16 @@ def main():
                 # Safety clamps for viz (match execution clamps)
                 traj_world[:, 1] = np.maximum(traj_world[:, 1], Y_MIN_WORLD)
                 traj_world[:, 2] = np.clip(traj_world[:, 2], Z_MIN_WORLD, Z_MAX_WORLD)
-                # Board zone constraint
-                in_board = (traj_world[:, 1] >= -0.4276) & (traj_world[:, 1] <= 0.2931)
-                traj_world[in_board, 2] = np.maximum(traj_world[in_board, 2], 0.125)
+                # Turntable zone constraint — uses the sticky latch so the
+                # visualized trajectory matches what executeion actually enforces.
+                # Approximation: a single floor value is applied to the whole
+                # chunk based on the latch state at the START of the cycle.
+                in_turntable = ((traj_world[:, 1] >= TURNTABLE_Y_MIN)
+                                & (traj_world[:, 1] <= TURNTABLE_Y_MAX))
+                z_floor_viz = (TURNTABLE_LIFT_Z
+                               if has_ever_grasped_in_turntable
+                               else TURNTABLE_SURFACE_Z)
+                traj_world[in_turntable, 2] = np.maximum(traj_world[in_turntable, 2], z_floor_viz)
 
                 traj_base = traj_world.copy()
                 traj_base[:, 0] -= T_bw[0, 3]

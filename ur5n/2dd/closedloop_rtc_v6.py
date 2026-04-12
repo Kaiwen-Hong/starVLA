@@ -1,11 +1,33 @@
 #!/usr/bin/env python3
 """
-RTC (Real-Time Chunking) closed-loop control with discrete diffusion — v4.
+RTC (Real-Time Chunking) closed-loop control with discrete diffusion — v6,
+pick-from-turntable variant (ur5n/2dd/).
 
-v4 fixes the init phase to push (inference_delay + n_actions) actions
-and enforces L = 2A (see rtc_v4_cycle.md for full details).
+Task: pick an object off a ROTATING turntable and place it on a STATIC pan.
+This is the inverse of the dd/ variant (which picks from a static pan onto
+a rotating turntable).
 
-Architecture:
+Differences from ur5n/dd/closedloop_rtc_v6.py:
+  - New checkpoint (pick_from_moved)
+  - Home pose moved to the turntable side
+  - Turntable-zone z-floor (TURNTABLE_* constants): lets the EE descend to
+    the turntable surface before grasping, and sticky-latches to a higher
+    lift floor after a successful in-zone grasp
+  - Gripper locks (if_grasped_not_release, if_release_when_reach_temp)
+    default OFF — the sticky z-floor already protects against re-descent,
+    so the policy is trusted to drive the gripper freely
+  - grasp_z_threshold raised from 0.04 → 0.117 to match the turntable
+    surface height
+  - Rollouts go under ur5n/2dd/rollouts/ (not ur5n/dd/)
+
+v6 interactive episode loop:
+  - Press Enter          → run the policy again immediately
+  - Type 'h' + Enter     → move arm to home position, then prompt again
+  - Type 'q' + Enter     → (mid-episode) abort: open gripper, return home,
+                            then drop into the post-episode prompt
+  - Press Ctrl+C         → full shutdown
+
+Architecture (unchanged from dd/v6):
 
   ServoRunner thread:  100Hz continuous servoL from buffer, action_t counter,
                         tail_pose for seamless splicing, separate gripper thread.
@@ -16,18 +38,12 @@ Architecture:
                         output[n_actions:].
   Main thread:         Logging, gripper trick post-processing, early-stop.
 
-vs v2 (closedloop_rtc_v2.py):
-  - prev_action_chunk is (chunk_len - n_actions) actions, not zero-padded chunk_len
-  - Free actions are output[inference_delay : inference_delay + n_actions]
-  - Next prev = output[n_actions:] (not shifted/zero-padded)
-  - Uniform trigger timing: always when inference_delay actions remain
-
 Robot WILL move. Use Ctrl+C to stop.
 
 Usage:
-    python ur5n/dd/closedloop_rtc_v3.py
-    python ur5n/dd/closedloop_rtc_v3.py --n_actions 8 --inference_delay 4
-    python ur5n/dd/closedloop_rtc_v3.py --instruction "pick up the block"
+    python ur5n/2dd/closedloop_rtc_v6.py
+    python ur5n/2dd/closedloop_rtc_v6.py --n_actions 8 --inference_delay 4
+    python ur5n/2dd/closedloop_rtc_v6.py --instruction "pick up the block"
 """
 
 import sys
@@ -38,6 +54,7 @@ import argparse
 import collections
 import threading
 import queue
+import select
 from pathlib import Path
 
 import numpy as np
@@ -62,21 +79,13 @@ from starVLA.model.framework.base_framework import baseframework
 
 import modular_policy
 
-# # ── Defaults ─────────────────────────────────────────────────────────
-# DEFAULT_CHECKPOINT = (
-#     "checkpoints/discreteRTC/fastumi_pickandplace_qwenDiscreteDiffusion_329v4/"
-#     "checkpoints/steps_20000_pytorch_model.pt"
-# )
-
-
-
 DEFAULT_CHECKPOINT = (
-    "checkpoints/discreteRTC/fastumi_pickandplace_qwenDiscreteDiffusion_0409_0_pick_to_moved_filtered/"
+    "checkpoints/discreteRTC/fastumi_pickandplace_qwenDiscreteDiffusion_0403_1_pick_from_moved/"
     "checkpoints/steps_30000_pytorch_model.pt"
 )
 
 
-DEFAULT_INSTRUCTION = "Pick up the purple block and place it on the red area of the board"
+DEFAULT_INSTRUCTION = "Pick up the purple block to the pan"
 DECODE_TEMPERATURE = 0.0
 CHOICE_TEMPERATURE = 0.1
 
@@ -88,6 +97,38 @@ SERVO_HZ = CONTROL_HZ * INTERP_MULT  # 100Hz
 Y_MIN_WORLD = -0.50
 Z_MIN_WORLD = 0.03
 Z_MAX_WORLD = 0.30
+
+# ── Turntable zone (task: pick from rotating turntable → place on static pan) ──
+# Turntable occupies y in [TURNTABLE_Y_MIN, TURNTABLE_Y_MAX]. Three regimes:
+#   1. Not yet grasped, over turntable:
+#        z >= TURNTABLE_SURFACE_Z  (allow descent to reach object on turntable)
+#   2. Ever-grasped-in-turntable (sticky), still over turntable:
+#        z >= TURNTABLE_LIFT_Z     (lift above turntable obstacles, kept lifted)
+#   3. Off turntable (y < TURNTABLE_Y_MIN, heading to static pan):
+#        only the global Y_MIN_WORLD / Z_MIN_WORLD clamps apply.
+#
+# The "sticky" latch lives in gripper_state['has_ever_grasped_in_turntable']
+# and is reset only when the EE physically leaves the turntable y-range.
+# See compute_waypoints() and ServoRunner._loop() for how it is consulted,
+# and ServoRunner._gripper_loop() for where it is set on successful grasp.
+TURNTABLE_Y_MIN = -0.4276
+TURNTABLE_Y_MAX = 0.2931
+TURNTABLE_SURFACE_Z = 0.101398
+TURNTABLE_LIFT_Z = 0.125
+
+# Snap-grasp z. When the policy predicts "close gripper" AND the EE is
+# physically over the turntable, the ServoRunner pauses the servo stream,
+# does a blocking moveL straight down to this z (keeping current xy), closes
+# the gripper, waits for the fingers to settle, then resumes servo from the
+# new position. This fixes a timing bug where gripper_hw.move() would fire
+# asynchronously during a streaming servoL — the robot kept moving (often
+# rising into the lift portion of the predicted chunk) while the fingers
+# were closing, so the grasp happened at an unpredictable z above the
+# intended grasp point. Hardcoding the z eliminates that race.
+#
+# 0.102 sits just above TURNTABLE_SURFACE_Z (0.101398) so the fingers close
+# flush against the turntable surface without pressing into it.
+HARDCODED_GRASP_Z = 0.102
 
 # ── Robot config ─────────────────────────────────────────────────────
 _extrinsics_dir = os.path.join(
@@ -106,9 +147,7 @@ def slam_to_gripper_rotation(rotvec):
     return Rot.from_matrix(R).as_rotvec()
 
 _HOME_SLAM = {
-    # 'left': [0.155666, -0.428459, 0.185173, 2.130869, 0.107971, -2.304919, 1],
-    'left': [0.25666, -0.428459, 0.185173, 2.130869, 0.107971, -2.304919, 1],
-
+    'left': [0.253835, -0.315847, 0.230922, 2.130869, 0.107971, -2.304919, 1],
     'right': [-0.1, -0.3, 0.25, 2.2419, -2.1984, 0.0166, 1],
 }
 HOME_POSES_WORLD = {}
@@ -122,13 +161,7 @@ for _arm, _pose in _HOME_SLAM.items():
 # ═══════════════════════════════════════════════════════════════════
 
 class RealCamera:
-    """V4L2 camera with background reader thread for low-latency grabs.
-
-    A daemon thread continuously reads frames so the V4L2 buffer never goes
-    stale.  grab_pil() returns the latest frame instantly (decode + crop only,
-    no flush needed).  Typical latency: ~13ms vs ~420ms with the old flush(5)
-    approach.
-    """
+    """V4L2 camera with background reader thread for low-latency grabs."""
 
     def __init__(self, dev=0, width=1920, height=1080, fps=30):
         self.dev = dev
@@ -148,7 +181,6 @@ class RealCamera:
             pass
         print(f"[Camera] /dev/video{dev} opened, {width}x{height}@{fps}fps")
 
-        # Background reader thread — keeps latest raw frame always fresh
         self._latest_raw = None
         self._frame_lock = threading.Lock()
         self._running = True
@@ -248,6 +280,39 @@ def accumulate_deltas(current_pose_world, deltas_7d):
 
 
 # ═══════════════════════════════════════════════════════════════════
+#  Interactive abort (mid-episode "q")
+# ═══════════════════════════════════════════════════════════════════
+
+def poll_user_abort():
+    """Non-blocking stdin check for a user abort command.
+
+    Line-buffered (the user types `q` + Enter). Returns True if any
+    line containing 'q' was read, False otherwise. Other lines are
+    silently discarded so they do not pile up in the buffer.
+
+    Note: uses select.select with timeout=0 so it never blocks. If
+    stdin is not readable (e.g. when piping), select just returns
+    an empty list and the function returns False every time —
+    abort simply won't work in that environment, which is fine.
+    """
+    try:
+        ready, _, _ = select.select([sys.stdin], [], [], 0)
+    except (ValueError, OSError):
+        # stdin closed or not selectable (e.g. pytest capture)
+        return False
+    if not ready:
+        return False
+    try:
+        line = sys.stdin.readline()
+    except Exception:
+        return False
+    if not line:
+        return False
+    cmd = line.strip().lower()
+    return cmd == 'q' or cmd == 'quit'
+
+
+# ═══════════════════════════════════════════════════════════════════
 #  Interpolation & timing
 # ═══════════════════════════════════════════════════════════════════
 
@@ -336,28 +401,6 @@ def go_home(rtde_c, rtde_r, arm, T_bw, robot_ip):
 
 def compute_waypoints(start_pose_world, actions_10d, n_exec, fix_rotation,
                       gripper_state, args):
-    """Convert 10D actions to 6D world-frame waypoints with safety clamps.
-
-    Gripper trick decisions are embedded here so they happen per-waypoint.
-
-    Args:
-        start_pose_world: (6,) array [x,y,z,rx,ry,rz] — starting pose.
-            In RTC mode this should be the servo tail_pose (end of buffer)
-            so new waypoints splice seamlessly onto pending motion.
-        actions_10d: (T, 10) denormalized actions.
-        n_exec: number of actions to convert.
-        fix_rotation: zero out rotation deltas.
-        gripper_state: dict with mutable state:
-            'current': float (0=open, 1=closed)
-            'chunks_since_grasp': int or None
-            'task_finished': bool
-        args: parsed CLI args (for gripper thresholds).
-
-    Returns:
-        waypoints: (n_exec, 6) world-frame poses
-        gripper_cmds: list of (index, float_value) for transitions to execute
-        n_exec: possibly trimmed if task_finished early
-    """
     waypoints = np.zeros((n_exec, 6), dtype=np.float64)
     gripper_cmds = []
 
@@ -380,14 +423,21 @@ def compute_waypoints(start_pose_world, actions_10d, n_exec, fix_rotation,
         # Safety clamps (world frame)
         pos[1] = max(pos[1], Y_MIN_WORLD)
         pos[2] = np.clip(pos[2], Z_MIN_WORLD, Z_MAX_WORLD)
-        # Board zone: obstacles in y ∈ [-0.4276, 0.2931], enforce z > 
-        if -0.4276 <= pos[1] <= 0.2931:
-            pos[2] = max(pos[2], 0.125)
+        # Turntable zone (pick-from-turntable task). We consult the STICKY
+        # flag `has_ever_grasped_in_turntable` — not the instantaneous
+        # `object_grasped` — to avoid a "close → open → re-descend"
+        # oscillation: once we've ever successfully grasped in the turntable
+        # zone, keep the floor at TURNTABLE_LIFT_Z until the EE physically
+        # leaves the zone (the latch is reset in ServoRunner._loop).
+        if TURNTABLE_Y_MIN <= pos[1] <= TURNTABLE_Y_MAX:
+            if gripper_state.get('has_ever_grasped_in_turntable', False):
+                pos[2] = max(pos[2], TURNTABLE_LIFT_Z)
+            else:
+                pos[2] = max(pos[2], TURNTABLE_SURFACE_Z)
 
         waypoints[i, :3] = pos
         waypoints[i, 3:6] = rot
 
-        # ── Gripper decision ────────────────────────────────────────
         new_gripper = float(delta[6])
 
         reached_target = (args.if_release_when_reach_temp
@@ -396,7 +446,6 @@ def compute_waypoints(start_pose_world, actions_10d, n_exec, fix_rotation,
                           and pos[1] >= args.release_y_threshold)
 
         if reached_target and new_gripper <= 0.5:
-            # At target zone, policy says open → release and finish
             gripper_cmds.append((i, 0.0))
             current_gripper = 0.0
             actual_n = i + 1
@@ -409,17 +458,8 @@ def compute_waypoints(start_pose_world, actions_10d, n_exec, fix_rotation,
               and new_gripper <= 0.5):
             pass  # keep closed, not at target yet
         elif (new_gripper > 0.5) != (current_gripper > 0.5):
-            # [MOD] grasp_trick z-check moved to ServoRunner._gripper_loop
-            # so it uses actual robot z instead of planned waypoint z.
-            # REVERT: uncomment the block below and remove the check in
-            # ServoRunner._gripper_loop to restore original behavior.
-            # if (args.if_grasp_trick
-            #         and new_gripper > 0.5
-            #         and pos[2] >= args.grasp_z_threshold):
-            #     continue  # too high, skip close command
             gripper_cmds.append((i, new_gripper))
             current_gripper = new_gripper
-            # Start post-grasp counter on first close
             if (args.if_grasp_delay_temp_solution
                     and new_gripper > 0.5
                     and gripper_state['chunks_since_grasp'] is None):
@@ -431,7 +471,7 @@ def compute_waypoints(start_pose_world, actions_10d, n_exec, fix_rotation,
 
 
 # ═══════════════════════════════════════════════════════════════════
-#  ServoRunner — continuous 100Hz servo (from servo_v2 pattern)
+#  ServoRunner — continuous 100Hz servo
 # ═══════════════════════════════════════════════════════════════════
 
 class ServoRunner:
@@ -440,37 +480,40 @@ class ServoRunner:
     def __init__(self, rtde_c, T_bw, gripper_hw, rtde_r=None,
                  grasp_trick=False, grasp_z_threshold=0.036,
                  grasp_detect_threshold=200, gripper_state=None,
-                 systematically_x_offset=0.0):
+                 systematically_x_offset=0.0,
+                 hardcoded_grasp_z=HARDCODED_GRASP_Z,
+                 grasp_settle_s=0.3):
         self._rtde_c = rtde_c
         self._T_bw = T_bw
         self._gripper_hw = gripper_hw
-        # [MOD] grasp_trick moved from compute_waypoints to _gripper_loop
-        # so the z check uses the actual robot pose at execution time,
-        # not the planned waypoint z during inference. To revert: remove
-        # rtde_r/grasp_trick/grasp_z_threshold/gripper_state here and in
-        # _gripper_loop, and restore the check in compute_waypoints
-        # (search "REVERT").
         self._rtde_r = rtde_r
+        # grasp_trick / grasp_z_threshold are LEGACY kwargs from the dd/
+        # variant — retained so call sites don't break, but this file uses
+        # the snap-grasp mechanism instead (see _do_turntable_grasp).
         self._grasp_trick = grasp_trick
         self._grasp_z_threshold = grasp_z_threshold
         self._grasp_detect_threshold = grasp_detect_threshold
-        self._gripper_state = gripper_state  # shared dict, for state sync
+        self._gripper_state = gripper_state
         self._x_offset = systematically_x_offset
+        self._hardcoded_grasp_z = hardcoded_grasp_z
+        self._grasp_settle_s = grasp_settle_s
         self._buffer = collections.deque()
         self._lock = threading.Lock()
         self._running = False
         self._thread = None
         self._last_pose = None
         self._starve_count = 0
-        # 20Hz action counter
         self._action_t = 0
         self._sub_step = 0
         self._action_cond = threading.Condition()
-        # Gripper thread
         self._pending_grip = None
         self._grip_lock = threading.Lock()
         self._grip_event = threading.Event()
         self._grip_thread = None
+        # Hold flag: when True, _loop pauses (does NOT pop buffer or call
+        # servoL). Used by _do_turntable_grasp so it can safely run a
+        # blocking moveL without fighting the streaming servo.
+        self._hold = False
 
     def start(self, initial_pose_world):
         self._last_pose = np.array(initial_pose_world[:6], dtype=np.float64)
@@ -522,7 +565,6 @@ class ServoRunner:
 
     @property
     def tail_pose(self):
-        """Last pose in buffer (future position) for seamless waypoint splicing."""
         with self._lock:
             if self._buffer:
                 return np.array(self._buffer[-1], dtype=np.float64)
@@ -548,6 +590,19 @@ class ServoRunner:
         t_next = time.monotonic() + servo_dt
 
         while self._running:
+            # Hold gate: when _do_turntable_grasp is running a blocking
+            # moveL, we must not call servoL in parallel (would fight the
+            # motion mode). Skip buffer consumption and servoL entirely
+            # while held; just pace the loop so we wake up promptly once
+            # the hold is released.
+            if self._hold:
+                precise_wait(t_next)
+                t_next += servo_dt
+                now = time.monotonic()
+                if t_next < now - servo_dt:
+                    t_next = now + servo_dt
+                continue
+
             pose = None
             with self._lock:
                 if self._buffer:
@@ -565,18 +620,25 @@ class ServoRunner:
                         self._action_cond.notify_all()
 
             if self._last_pose is not None:
-                # [TEMP] Execution-time safety clamp in world frame.
-                # The primary clamp is in compute_waypoints (planning time),
-                # but async RTC can let unclamped poses slip through because
-                # waypoints are planned from tail_pose which may diverge from
-                # actual robot state. This is a redundant guard.
-                # To remove: delete this block; compute_waypoints clamp is
-                # the canonical source.
                 p = self._last_pose
                 p[1] = max(p[1], Y_MIN_WORLD)
                 p[2] = np.clip(p[2], Z_MIN_WORLD, Z_MAX_WORLD)
-                if -0.4276 <= p[1] <= 0.2931:
-                    p[2] = max(p[2], 0.125)
+                # Turntable zone clamp (must mirror compute_waypoints).
+                # Consult the sticky latch from gripper_state. Also: once
+                # the servo target leaves the turntable y-range, reset
+                # the sticky flag so a subsequent re-entry starts fresh
+                # with "not yet grasped → floor = surface" semantics.
+                in_turntable_zone = (TURNTABLE_Y_MIN <= p[1] <= TURNTABLE_Y_MAX)
+                if in_turntable_zone:
+                    if (self._gripper_state is not None
+                            and self._gripper_state.get(
+                                'has_ever_grasped_in_turntable', False)):
+                        p[2] = max(p[2], TURNTABLE_LIFT_Z)
+                    else:
+                        p[2] = max(p[2], TURNTABLE_SURFACE_Z)
+                else:
+                    if self._gripper_state is not None:
+                        self._gripper_state['has_ever_grasped_in_turntable'] = False
 
                 target_base = world_to_base(self._last_pose.tolist(), self._T_bw)
                 target_base[0] += self._x_offset
@@ -585,12 +647,23 @@ class ServoRunner:
             precise_wait(t_next)
             t_next += servo_dt
 
-            # Timing guard: reset if fell behind to prevent burst catch-up
             now = time.monotonic()
             if t_next < now - servo_dt:
                 t_next = now + servo_dt
 
     def _gripper_loop(self):
+        """Asynchronous gripper dispatcher.
+
+        On CLOSE while over the turntable: runs the snap-grasp sequence
+        (see _do_turntable_grasp). Outside the turntable y-range, a CLOSE
+        is skipped with a warning — grasping only makes sense over the
+        turntable for this task, and a naked close-in-place during servo
+        streaming would hit the old timing bug.
+
+        OPEN commands are fired in place without pausing the servo; the
+        robot continues tracking the Inferencer's planned trajectory while
+        the fingers release.
+        """
         last_pos = None
         while self._running:
             self._grip_event.wait(timeout=1.0)
@@ -602,57 +675,172 @@ class ServoRunner:
                 cmd = self._pending_grip
                 self._pending_grip = None
 
-            if cmd is not None and cmd[0] != last_pos:
-                grip_pos, label = cmd
+            if cmd is None or cmd[0] == last_pos:
+                continue
 
-                # [MOD] grasp_trick: check ACTUAL robot z before closing.
-                # Previously this was in compute_waypoints using planned z.
-                # Now we read the real RTDE pose at execution time.
-                # To REVERT: remove this block and restore the check in
-                # compute_waypoints (search "REVERT" in that function).
-                if (self._grasp_trick
-                        and grip_pos > 127
-                        and self._rtde_r is not None):
-                    actual_base = self._rtde_r.getActualTCPPose()
-                    actual_world = base_to_world(actual_base, self._T_bw)
-                    actual_z = actual_world[2]
-                    if actual_z >= self._grasp_z_threshold:
-                        print(f"  [GRASP_TRICK] Skipping CLOSE: "
-                              f"actual z={actual_z:.4f} >= "
-                              f"threshold={self._grasp_z_threshold:.4f}")
-                        # [MOD] Reset shared state so compute_waypoints
-                        # can issue CLOSE again on the next cycle.
-                        if self._gripper_state is not None:
-                            self._gripper_state['current'] = 0.0
-                            self._gripper_state['chunks_since_grasp'] = None
-                        continue
+            grip_pos, label = cmd
 
-                print(f"  Gripper -> {label} (pos={grip_pos})")
-                self._gripper_hw.move(grip_pos, 255, 150)
-                last_pos = grip_pos
+            if grip_pos > 127:
+                # ── CLOSE path ────────────────────────────────────────
+                # Only snap-grasp over the turntable; otherwise skip.
+                if self._rtde_r is None:
+                    print("  [GRASP_SKIP] CLOSE requested but no rtde_r to "
+                          "read position — ignoring")
+                    continue
 
-                # Verify actual grasp after closing
-                if grip_pos > 127 and self._gripper_state is not None:
-                    actual_pos = self._gripper_hw.get_current_position()
-                    if actual_pos < self._grasp_detect_threshold:
-                        self._gripper_state['object_grasped'] = True
-                        print(f"  [GRASP_DETECT] Object grasped "
-                              f"(pos={actual_pos} < {self._grasp_detect_threshold})")
-                    else:
-                        self._gripper_state['object_grasped'] = False
+                cur_base = self._rtde_r.getActualTCPPose()
+                cur_world = base_to_world(cur_base, self._T_bw)
+                in_turntable = (TURNTABLE_Y_MIN <= cur_world[1] <= TURNTABLE_Y_MAX)
+
+                if not in_turntable:
+                    print(f"  [GRASP_SKIP] CLOSE requested outside turntable "
+                          f"(y={cur_world[1]:.4f} not in "
+                          f"[{TURNTABLE_Y_MIN}, {TURNTABLE_Y_MAX}]), ignoring — "
+                          f"grasping is only safe over the turntable for this task")
+                    if self._gripper_state is not None:
                         self._gripper_state['current'] = 0.0
                         self._gripper_state['chunks_since_grasp'] = None
-                        print(f"  [GRASP_DETECT] Empty grasp "
-                              f"(pos={actual_pos} >= {self._grasp_detect_threshold}), "
-                              f"re-opening gripper")
-                        self._gripper_hw.move(0, 255, 150)
-                        last_pos = 0
-                elif grip_pos <= 127 and self._gripper_state is not None:
+                    continue
+
+                # Safe to snap-grasp. Run the blocking sequence; it will
+                # pause the servo, moveL down to HARDCODED_GRASP_Z, close,
+                # detect, and flush the stale buffer.
+                self._do_turntable_grasp(cur_base, cur_world)
+                last_pos = grip_pos
+            else:
+                # ── OPEN path ─────────────────────────────────────────
+                # Fire in place; no servo pause needed.
+                print(f"  Gripper -> OPEN (pos={grip_pos})")
+                self._gripper_hw.move(grip_pos, 255, 150)
+                last_pos = grip_pos
+                if self._gripper_state is not None:
                     self._gripper_state['object_grasped'] = False
+                    self._gripper_state['current'] = 0.0
+                    self._gripper_state['chunks_since_grasp'] = None
+
+    def _do_turntable_grasp(self, cur_base, cur_world):
+        """Blocking snap-grasp sequence executed inside _gripper_loop.
+
+        Fixes the bug where gripper_hw.move() fires asynchronously during
+        a streaming servoL — the robot kept advancing through the buffered
+        waypoints while the fingers were closing, so the grasp happened
+        well above the intended z.
+
+        Sequence:
+          1. Set _hold = True to pause _loop (so it stops calling servoL).
+          2. servoStop()  → exit streaming mode.
+          3. moveL to (cur_x_base, cur_y_base, HARDCODED_GRASP_Z - T_bw.z).
+             Only the z is overridden; xy stays where the policy drove us.
+          4. gripper_hw.move(close).
+          5. time.sleep(settle) so fingers physically close.
+          6. Read gripper position → grasp detection → update gripper_state
+             (object_grasped + sticky turntable latch).
+          7. Flush the stale servo buffer: everything queued by the chunk
+             that spawned this close cmd is now relative to a stale z and
+             must be discarded. Reset _last_pose from the post-grasp
+             physical pose.
+          8. Advance _action_t by the number of flushed actions + any
+             partial sub_step. This unblocks the Inferencer's
+             wait_for_action_t so it can push the next chunk (which, on the
+             next cycle, will see tail_pose at the snap z and plan the lift).
+          9. Clear _hold → _loop resumes. Buffer is empty, so _loop idles
+             at _last_pose (now at the snap z with the object grasped) until
+             the Inferencer pushes the next chunk.
+        """
+        print(f"  [GRASP_SNAP] Start: current z={cur_world[2]:.4f}, "
+              f"target z={self._hardcoded_grasp_z:.4f}  "
+              f"(y={cur_world[1]:.4f})")
+
+        # 1. Pause _loop. Sleep a little so _loop has at least one tick
+        #    to notice the flag and stop calling servoL.
+        self._hold = True
+        time.sleep(0.03)
+
+        # 2. Exit servo streaming mode so moveL can take over.
+        try:
+            self._rtde_c.servoStop()
+        except Exception:
+            pass
+
+        # 3. Build moveL target: same xy (base-frame, as rtde_r gave us),
+        #    override z to snap height in base frame.
+        target_base = list(cur_base)
+        target_base[2] = self._hardcoded_grasp_z - self._T_bw[2, 3]
+
+        # Only bother moving if we're not already at/below the snap z.
+        dz = cur_world[2] - self._hardcoded_grasp_z
+        if dz > 0.001:
+            print(f"  [GRASP_SNAP] moveL  Δz={dz:.4f}  (descending)")
+            try:
+                self._rtde_c.moveL(target_base, 0.2, 0.5)
+            except Exception as e:
+                print(f"  [GRASP_SNAP] moveL failed: {e}  — aborting snap, "
+                      f"falling back to in-place close")
+        else:
+            print(f"  [GRASP_SNAP] already at/below target z "
+                  f"(Δz={dz:.4f}), skipping moveL")
+
+        # 4. Close gripper.
+        print(f"  Gripper -> CLOSE (snap, pos=255)")
+        self._gripper_hw.move(255, 255, 150)
+
+        # 5. Wait for fingers to physically settle.
+        time.sleep(self._grasp_settle_s)
+
+        # 6. Grasp detection + sticky latch.
+        actual_grip = self._gripper_hw.get_current_position()
+        if actual_grip < self._grasp_detect_threshold:
+            if self._gripper_state is not None:
+                self._gripper_state['object_grasped'] = True
+                self._gripper_state['current'] = 1.0
+                # We only enter _do_turntable_grasp from the in-turntable
+                # branch above, so we KNOW the grasp happened in-zone.
+                self._gripper_state['has_ever_grasped_in_turntable'] = True
+            print(f"  [GRASP_DETECT] Object grasped "
+                  f"(pos={actual_grip} < {self._grasp_detect_threshold})")
+        else:
+            if self._gripper_state is not None:
+                self._gripper_state['object_grasped'] = False
+                self._gripper_state['current'] = 0.0
+                self._gripper_state['chunks_since_grasp'] = None
+            print(f"  [GRASP_DETECT] Empty grasp "
+                  f"(pos={actual_grip} >= {self._grasp_detect_threshold}), "
+                  f"re-opening gripper")
+            self._gripper_hw.move(0, 255, 150)
+
+        # 7. Flush stale buffer and refresh _last_pose from physical.
+        #    NOTE: the `_x_offset` is added by _loop when computing the
+        #    servoL target (target_base[0] += _x_offset). To keep
+        #    _last_pose in the same "ideal" frame that buffered waypoints
+        #    use, we subtract _x_offset from the physical world x here.
+        new_base = self._rtde_r.getActualTCPPose()
+        new_world = base_to_world(list(new_base), self._T_bw)
+        new_world[0] -= self._x_offset
+
+        with self._lock:
+            n_flushed_interp = len(self._buffer)
+            self._buffer.clear()
+            self._last_pose = np.array(new_world, dtype=np.float64)
+
+        # 8. Advance action_t so the Inferencer's wait_for_action_t unblocks.
+        #    Every flushed buffered action would have bumped action_t by 1.
+        #    Plus the partial action currently in progress (sub_step > 0).
+        with self._action_cond:
+            actions_flushed = n_flushed_interp // INTERP_MULT
+            if self._sub_step > 0:
+                actions_flushed += 1
+                self._sub_step = 0
+            self._action_t += actions_flushed
+            self._action_cond.notify_all()
+
+        # 9. Resume _loop.
+        self._hold = False
+        print(f"  [GRASP_SNAP] Done. Flushed {n_flushed_interp} interp pts "
+              f"({actions_flushed} actions); action_t -> {self._action_t}")
 
 
 # ═══════════════════════════════════════════════════════════════════
-#  Inferencer — cadence-aware RTC inference (from inferencer_v2 pattern)
+#  Inferencer — cadence-aware RTC inference
 # ═══════════════════════════════════════════════════════════════════
 
 class InferenceResult:
@@ -676,26 +864,6 @@ class InferenceResult:
 
 
 class Inferencer:
-    """Cadence-aware RTC inference worker — v3.
-
-    prev_action_chunk: (chunk_len - n_actions) actions fed to
-    predict_action_realtime.  First inference_delay positions are
-    hard-fixed; the rest are soft guidance.
-
-    Cycle (chunk_len=16, n_actions=8, inference_delay=4):
-
-      Init (main): predict_action → 16 actions, push [0:4] to servo.
-                   prev_action_chunk ← output[0:8].
-
-      Every cycle (starts at t=0, then every n_actions):
-        1. Wait for servo to consume n_actions (skip on first cycle).
-        2. Camera capture.
-        3. predict_action_realtime(prev_action_chunk) → 16 new actions.
-           (servo executes remaining buffered actions during inference)
-        4. Push output[4:12] to servo immediately.
-        5. prev_action_chunk ← output[8:16] (last chunk_len - n_actions).
-    """
-
     def __init__(self, model, cam, servo, n_actions, inference_delay,
                  instruction, infer_kwargs, action_stats, fix_rotation,
                  gripper_state, args, chunk_len):
@@ -722,7 +890,6 @@ class Inferencer:
         self._thread.start()
 
     def start(self, initial_normalized):
-        """Call after init inference + servo start."""
         self._current_normalized = initial_normalized.copy()
         self._started.set()
 
@@ -741,17 +908,15 @@ class Inferencer:
         if not self._running:
             return
 
-        prev_action_chunk = self._current_normalized  # (chunk_len - n_actions, action_dim)
-        n_consumed = 0  # total actions consumed by servo
+        prev_action_chunk = self._current_normalized
+        n_consumed = 0
 
         while self._running:
-            # ── 1. Wait for servo to consume n_actions (skip first cycle) ─
             if n_consumed > 0:
                 self._servo.wait_for_action_t(n_consumed, timeout=30.0)
                 if not self._running:
                     break
 
-            # ── 2. Camera capture ───────────────────────────────────
             t0 = time.monotonic()
             pil_img = self._cam.grab_pil()
             while pil_img is None:
@@ -760,12 +925,10 @@ class Inferencer:
                 pil_img = self._cam.grab_pil()
             obs_ms = (time.monotonic() - t0) * 1000
 
-            # Save prev for logging/visualization
             prev_norm_save = prev_action_chunk.copy()
             prev_unnorm_10d = baseframework.unnormalize_actions(
                 prev_norm_save, self._action_stats)
 
-            # ── 3. Model inference with RTC prefix ───────────────────
             example = {"image": [pil_img], "lang": self._instruction}
             prev_norm_batch = prev_action_chunk[np.newaxis, ...]
 
@@ -784,19 +947,15 @@ class Inferencer:
             end_evt.synchronize()
             infer_ms = start_evt.elapsed_time(end_evt)
 
-            # ── 4. Denormalize ───────────────────────────────────────
             new_normalized = out["normalized_actions"][0].astype(np.float32)
             new_actions_10d = baseframework.unnormalize_actions(
                 new_normalized, self._action_stats)
 
-            # ── 5. Push output[inference_delay : inference_delay + n_actions]
-            #    Servo nearly out of actions after inference; push immediately.
             free_start = self._inference_delay
             free_end = free_start + self._n_actions
             free_actions = new_actions_10d[free_start:free_end]
             n_push = len(free_actions)
 
-            # Post-grasp extended execution
             gs = self._gripper_state
             if (self._args.if_grasp_delay_temp_solution
                     and gs['chunks_since_grasp'] is not None
@@ -814,13 +973,9 @@ class Inferencer:
 
             self._servo.push_waypoints(start_pos, waypoints, gripper_cmds)
 
-            # ── 6. Update prev_action_chunk for next cycle ───────────
-            # Next prev = last (chunk_len - n_actions) actions of output.
             prev_action_chunk = new_normalized[self._n_actions:]
-
             n_consumed += self._n_actions
 
-            # ── 7. Post result for main loop ─────────────────────────
             self._result_queue.put(
                 InferenceResult(new_normalized, new_actions_10d, pil_img,
                                 obs_ms, infer_ms, self._inference_delay,
@@ -833,10 +988,6 @@ class Inferencer:
 # ═══════════════════════════════════════════════════════════════════
 
 def compute_consistency_metrics(result, inference_delay):
-    """Per-dimension MAE between prev_action_chunk and output[0:A] (normalized).
-
-    Returns dict with keys like 'dx_fix', 'dx_guide', etc.
-    """
     prev = result.prev_norm
     out = result.normalized[:len(prev)]
     D = inference_delay
@@ -850,40 +1001,28 @@ def compute_consistency_metrics(result, inference_delay):
 
 def visualize_rtc_debug(result, pose_world, step, save_path, instruction,
                         n_actions, inference_delay, chunk_len, fix_rotation):
-    """RTC debug visualization.
-
-    Layout (4 rows x 3 cols):
-      Col 0: camera (rows 0-1) + step info (rows 2-3)
-      Col 1: consistency — prev_action_chunk vs output[0:A] (normalized)
-      Col 2: predicted world-frame trajectory (accumulated deltas)
-
-    Consistency: hard-fixed [0:D] should match exactly;
-    soft-guided [D:A] may diverge.
-    """
     A = n_actions
     D = inference_delay
     L = chunk_len
 
-    output_norm = result.normalized       # (L, action_dim)
-    prev_norm = result.prev_norm          # (L-A, action_dim)
-    output_10d = result.actions_10d       # (L, 10)
+    output_norm = result.normalized
+    prev_norm = result.prev_norm
+    output_10d = result.actions_10d
 
     deltas_7d = actions_10d_to_7d(output_10d)
     if fix_rotation:
         deltas_7d[:, 3:6] = 0.0
-    traj = accumulate_deltas(pose_world, deltas_7d)  # (L, 7)
+    traj = accumulate_deltas(pose_world, deltas_7d)
 
     fig = plt.figure(figsize=(24, 14))
     gs_fig = GridSpec(4, 3, figure=fig, hspace=0.28, wspace=0.30,
                       width_ratios=[1, 1.3, 1.3])
 
-    # Camera (rows 0-1, col 0)
     ax_cam = fig.add_subplot(gs_fig[0:2, 0])
     ax_cam.imshow(result.camera_image)
     ax_cam.set_title("Camera", fontsize=11, fontweight="bold")
     ax_cam.axis("off")
 
-    # Info (rows 2-3, col 0)
     ax_info = fig.add_subplot(gs_fig[2:4, 0])
     ax_info.axis("off")
     info = (
@@ -910,7 +1049,6 @@ def visualize_rtc_debug(result, pose_world, step, save_path, instruction,
     for row, ((nd, nname), (td, tname), color) in enumerate(
             zip(norm_dims, traj_dims, colors)):
 
-        # ── Col 1: Consistency ──────────────────────────────────────
         ax_c = fig.add_subplot(gs_fig[row, 1])
         idx = np.arange(n_prev)
         pv = prev_norm[:, nd]
@@ -943,7 +1081,6 @@ def visualize_rtc_debug(result, pose_world, step, save_path, instruction,
         else:
             ax_c.set_xlabel("Action index", fontsize=9)
 
-        # ── Col 2: Trajectory ───────────────────────────────────────
         ax_t = fig.add_subplot(gs_fig[row, 2])
         tidx = np.arange(L)
         vals = traj[:, td]
@@ -980,13 +1117,6 @@ def visualize_rtc_debug(result, pose_world, step, save_path, instruction,
 
 
 def visualize_rtc_summary(consistency_log, infer_times, pose_log, save_path):
-    """Summary plot for entire RTC rollout.
-
-    Layout (3 rows x 2 cols):
-      (0,0) fixed-region MAE   (0,1) guided-region MAE
-      (1,0) robot xyz           (1,1) inference timing
-      (2,0) top-down x-y path   (2,1) z + gripper
-    """
     steps = np.arange(1, len(consistency_log) + 1)
     dim_names = ["dx", "dy", "dz", "grip"]
     dim_colors = ["#e41a1c", "#377eb8", "#4daf4a", "#ff7f00"]
@@ -994,7 +1124,6 @@ def visualize_rtc_summary(consistency_log, infer_times, pose_log, save_path):
     fig, axes = plt.subplots(3, 2, figsize=(16, 14))
     fig.suptitle("RTC Rollout Summary", fontsize=14, fontweight="bold")
 
-    # (0,0) Fixed MAE
     ax = axes[0, 0]
     for name, color in zip(dim_names, dim_colors):
         ax.plot(steps, [m[f"{name}_fix"] for m in consistency_log],
@@ -1003,7 +1132,6 @@ def visualize_rtc_summary(consistency_log, infer_times, pose_log, save_path):
     ax.set_title("Consistency — Hard-Fixed [0:D]", fontweight="bold")
     ax.legend(fontsize=8); ax.grid(True, alpha=0.3)
 
-    # (0,1) Guided MAE
     ax = axes[0, 1]
     for name, color in zip(dim_names, dim_colors):
         ax.plot(steps, [m[f"{name}_guide"] for m in consistency_log],
@@ -1012,7 +1140,6 @@ def visualize_rtc_summary(consistency_log, infer_times, pose_log, save_path):
     ax.set_title("Consistency — Soft-Guided [D:A]", fontweight="bold")
     ax.legend(fontsize=8); ax.grid(True, alpha=0.3)
 
-    # (1,0) Robot xyz
     ax = axes[1, 0]
     if pose_log:
         for d, name, color in [(0, "x", "#e41a1c"), (1, "y", "#377eb8"),
@@ -1023,7 +1150,6 @@ def visualize_rtc_summary(consistency_log, infer_times, pose_log, save_path):
     ax.set_title("Robot Position", fontweight="bold")
     ax.legend(fontsize=8); ax.grid(True, alpha=0.3)
 
-    # (1,1) Inference timing
     ax = axes[1, 1]
     arr = np.array(infer_times)
     ax.plot(steps[:len(arr)], arr, "o-", ms=2, lw=1, color="#984ea3")
@@ -1033,7 +1159,6 @@ def visualize_rtc_summary(consistency_log, infer_times, pose_log, save_path):
     ax.set_title("Inference Time", fontweight="bold")
     ax.legend(fontsize=8); ax.grid(True, alpha=0.3)
 
-    # (2,0) Top-down trajectory
     ax = axes[2, 0]
     if pose_log:
         xs = [p[0] for p in pose_log]
@@ -1046,7 +1171,6 @@ def visualize_rtc_summary(consistency_log, infer_times, pose_log, save_path):
         ax.legend(fontsize=8); ax.set_aspect("equal")
     ax.grid(True, alpha=0.3)
 
-    # (2,1) z + gripper
     ax = axes[2, 1]
     if pose_log:
         ax.plot(steps[:len(pose_log)], [p[2] for p in pose_log],
@@ -1061,72 +1185,386 @@ def visualize_rtc_summary(consistency_log, infer_times, pose_log, save_path):
 
 
 # ═══════════════════════════════════════════════════════════════════
+#  Single episode execution
+# ═══════════════════════════════════════════════════════════════════
+
+def run_episode(model, cam, rtde_c, rtde_r, gripper_hw, T_bw,
+                args, infer_kwargs, action_stats, chunk_len, episode_num):
+    """Run one closed-loop episode. Returns (infer_times, consistency_log, pose_log, step)."""
+
+    robot_ip = ROBOT_IPS[args.arm]
+
+    print(f"\n{'─' * 60}")
+    print(f"  Episode {episode_num}")
+    print(f"  [HINT] Type 'q' + Enter at any time to abort this episode,")
+    print(f"         open the gripper, return home, and wait for Enter.")
+    print(f"{'─' * 60}")
+
+    # Fresh gripper state for each episode
+    gripper_state = {
+        'current': 0.0,
+        'object_grasped': False,
+        'chunks_since_grasp': None,
+        'task_finished': False,
+        # Sticky latch for turntable z-floor: once we have ever successfully
+        # grasped in the turntable zone, keep floor at TURNTABLE_LIFT_Z until
+        # the EE physically leaves the zone. Reset in ServoRunner._loop.
+        'has_ever_grasped_in_turntable': False,
+    }
+
+    # Rollout saving setup
+    # NOTE: rollouts go under ur5n/2dd/rollouts (this script lives in 2dd/).
+    # Don't mix with ur5n/dd/rollouts — each task directory owns its own
+    # rollout history so pick-from-static (dd) and pick-from-turntable
+    # (2dd) are clearly separated.
+    rollout_log = []
+    rollout_dir = None
+    if args.save_rollout:
+        ts = time.strftime("%Y%m%d_%H%M%S")
+        rollout_dir = Path("ur5n/2dd/rollouts") / f"rtc_{ts}_ep{episode_num}"
+        rollout_dir.mkdir(parents=True, exist_ok=True)
+        (rollout_dir / "images").mkdir(exist_ok=True)
+        print(f"Rollout: {rollout_dir}")
+
+        run_config = {
+            "mode": "rtc",
+            "episode": episode_num,
+            "checkpoint": args.checkpoint,
+            "instruction": args.instruction,
+            "arm": args.arm,
+            "n_actions": args.n_actions,
+            "inference_delay": args.inference_delay,
+            "max_steps": args.max_steps,
+            "chunk_len": chunk_len,
+            "control_hz": CONTROL_HZ,
+            "servo_hz": SERVO_HZ,
+            "y_min_world": Y_MIN_WORLD,
+            "z_bounds_world": [Z_MIN_WORLD, Z_MAX_WORLD],
+            # Turntable zone (pick-from-turntable task) — logged so rollouts
+            # are self-describing.
+            "turntable_y_range": [TURNTABLE_Y_MIN, TURNTABLE_Y_MAX],
+            "turntable_surface_z": TURNTABLE_SURFACE_Z,
+            "turntable_lift_z": TURNTABLE_LIFT_Z,
+            "if_grasp_trick": args.if_grasp_trick,
+            "grasp_z_threshold": args.grasp_z_threshold,
+            "hardcoded_grasp_z": args.hardcoded_grasp_z,
+            "grasp_settle_s": args.grasp_settle_s,
+            "if_grasped_not_release": args.if_grasped_not_release,
+            "if_release_when_reach_temp": args.if_release_when_reach_temp,
+            "fix_rotation": args.fix_rotation,
+            "decode_temperature": args.decode_temperature,
+            "choice_temperature": args.choice_temperature,
+        }
+        with open(rollout_dir / "config.json", "w") as f:
+            json.dump(run_config, f, indent=2)
+
+    # ── Step 0: synchronous initial inference (no prefix) ────────────
+    pose_base = rtde_r.getActualTCPPose()
+    pose_world = base_to_world(pose_base, T_bw)
+    current_pos = np.array(pose_world, dtype=np.float64)
+
+    pil_img = cam.grab_pil()
+    while pil_img is None:
+        pil_img = cam.grab_pil()
+
+    example = {"image": [pil_img], "lang": args.instruction}
+    t_infer = time.monotonic()
+    output = model.predict_action(examples=[example], **infer_kwargs)
+    init_infer_ms = (time.monotonic() - t_infer) * 1000
+    print(f"[init] inference={init_infer_ms:.0f}ms (sync, no prefix)")
+
+    current_normalized = output["normalized_actions"][0].astype(np.float32)
+    current_actions_10d = baseframework.unnormalize_actions(
+        current_normalized, action_stats)
+
+    n_init = min(args.inference_delay, len(current_actions_10d))
+    waypoints_init, grip_cmds_init, n_init = compute_waypoints(
+        current_pos, current_actions_10d, n_init, args.fix_rotation,
+        gripper_state, args)
+
+    servo = ServoRunner(rtde_c, T_bw, gripper_hw, rtde_r=rtde_r,
+                        grasp_trick=args.if_grasp_trick,
+                        grasp_z_threshold=args.grasp_z_threshold,
+                        grasp_detect_threshold=args.grasp_detect_threshold,
+                        gripper_state=gripper_state,
+                        systematically_x_offset=args.systematically_x_offset,
+                        hardcoded_grasp_z=args.hardcoded_grasp_z,
+                        grasp_settle_s=args.grasp_settle_s)
+    servo.push_waypoints(current_pos, waypoints_init, grip_cmds_init)
+    servo.start(current_pos)
+
+    inferencer = Inferencer(
+        model, cam, servo, args.n_actions, args.inference_delay,
+        args.instruction, infer_kwargs, action_stats, args.fix_rotation,
+        gripper_state, args, chunk_len=chunk_len)
+    init_prev_chunk = current_normalized[:chunk_len - args.n_actions]
+    inferencer.start(init_prev_chunk)
+
+    # ── Main logging loop ─────────────────────────────────────────────
+    infer_times = []
+    consistency_log = []
+    pose_log = []
+    step = 0
+    aborted = False  # set by poll_user_abort() — triggers home-reset teardown
+    try:
+        while args.max_steps == 0 or step < args.max_steps:
+            # Non-blocking stdin poll: user typed "q" + Enter?
+            # Polled once per wait_result cycle (~200ms), so abort latency
+            # is bounded by the timeout below.
+            if poll_user_abort():
+                print("\n>>> [ABORT] 'q' received — stopping episode, "
+                      "opening gripper, returning home.")
+                aborted = True
+                break
+
+            # Short timeout so abort polling stays responsive even when
+            # no inference result is available.
+            result = inferencer.wait_result(timeout=0.2)
+            if result is None:
+                continue
+
+            step += 1
+
+            if gripper_state['task_finished']:
+                print("\n>>> Task finished! Object released at target. <<<")
+                break
+
+            pose_base = rtde_r.getActualTCPPose()
+            pose_world = base_to_world(pose_base, T_bw)
+            infer_times.append(result.infer_ms)
+
+            metrics = compute_consistency_metrics(result, args.inference_delay)
+            consistency_log.append(metrics)
+            pose_log.append(list(pose_world))
+
+            buf_len = servo.buffer_len
+            fix_mae = np.mean([metrics[f"{d}_fix"] for d in ["dx", "dy", "dz"]])
+            guide_mae = np.mean([metrics[f"{d}_guide"] for d in ["dx", "dy", "dz"]])
+            suffix = (f"  delay={result.actual_delay}  "
+                      f"pushed={result.n_pushed}  buf={buf_len}  "
+                      f"fix={fix_mae:.4f}  guide={guide_mae:.4f}")
+            if servo.starve_count > 0:
+                suffix += f"  starved={servo.starve_count}"
+
+            print(f"[step {step:4d}]  "
+                  f"obs={result.obs_ms:5.0f}ms  infer={result.infer_ms:5.0f}ms  "
+                  f"pos=[{pose_world[0]:.3f}, {pose_world[1]:.3f}, "
+                  f"{pose_world[2]:.3f}]  "
+                  f"grip={'C' if gripper_state['current'] > 0.5 else 'O'}"
+                  f"{suffix}")
+
+            if args.save_rollout and rollout_dir is not None:
+                if result.camera_image is not None:
+                    img_path = rollout_dir / "images" / f"step_{step:04d}.jpg"
+                    result.camera_image.save(str(img_path), quality=90)
+
+                viz_path = rollout_dir / "images" / f"step_{step:04d}_viz.png"
+                visualize_rtc_debug(
+                    result, pose_world, step, str(viz_path),
+                    args.instruction, args.n_actions, args.inference_delay,
+                    chunk_len, args.fix_rotation)
+
+                log_entry = {
+                    "step": step,
+                    "wall_time": time.time(),
+                    "ee_pose_world": list(pose_world),
+                    "ee_pose_base": list(pose_base),
+                    "gripper": gripper_state['current'],
+                    "pred_actions_10d": result.actions_10d.tolist(),
+                    "n_pushed": result.n_pushed,
+                    "actual_delay": result.actual_delay,
+                    "obs_ms": round(result.obs_ms, 1),
+                    "infer_ms": round(result.infer_ms, 1),
+                    "consistency": metrics,
+                    "image_file": f"images/step_{step:04d}.jpg",
+                    "viz_file": f"images/step_{step:04d}_viz.png",
+                }
+                if result.prev_norm is not None:
+                    log_entry["prev_norm"] = result.prev_norm.tolist()
+                if result.prev_unnorm_10d is not None:
+                    log_entry["prev_unnorm_10d"] = result.prev_unnorm_10d.tolist()
+                rollout_log.append(log_entry)
+
+    except KeyboardInterrupt:
+        # Propagate so the outer loop can shut down cleanly
+        inferencer.stop()
+        servo.stop()
+        try:
+            rtde_c.servoStop()
+        except Exception:
+            pass
+        try:
+            rtde_c.stopScript()
+        except Exception:
+            pass
+        raise
+
+    # ── Episode teardown (normal finish or user abort) ───────────────
+    # NOTE: servo.stop() joins _gripper_loop, which means any in-flight
+    # _do_turntable_grasp sequence (moveL + close + settle, ~1.5s worst
+    # case) finishes first. So a 'q' mid-grasp is delayed until the grasp
+    # completes — this is intentional; an interrupted grasp would leave
+    # the gripper half-closed.
+    inferencer.stop()
+    servo.stop()
+    try:
+        rtde_c.servoStop()
+    except Exception:
+        pass
+    try:
+        rtde_c.stopScript()
+    except Exception:
+        pass
+
+    # Abort-path reset: open the gripper and drive the arm back to home.
+    # Runs BEFORE rollout save so the log still reflects the episode as
+    # the user abandoned it (partial). go_home's moveJ is blocking and
+    # cannot be interrupted — the user has to wait for it to finish.
+    if aborted:
+        print(">>> [ABORT] Opening gripper...")
+        try:
+            gripper_hw.move(0, 255, 150)
+            time.sleep(0.3)
+        except Exception as e:
+            print(f"  warning: gripper open failed: {e}")
+        print(">>> [ABORT] Returning to home pose (moveJ, blocking)...")
+        try:
+            go_home(rtde_c, rtde_r, args.arm, T_bw, robot_ip)
+        except Exception as e:
+            print(f"  warning: go_home failed: {e}")
+        print(">>> [ABORT] Reset complete. Use the post-episode prompt to "
+              "run again (Enter) or quit (Ctrl+C).")
+
+    # Save rollout
+    if args.save_rollout and rollout_dir is not None and rollout_log:
+        with open(rollout_dir / "rollout.json", "w") as f:
+            json.dump(rollout_log, f, indent=2)
+        print(f"Rollout saved: {rollout_dir}  ({len(rollout_log)} steps)")
+
+        if consistency_log:
+            visualize_rtc_summary(
+                consistency_log, infer_times, pose_log,
+                str(rollout_dir / "summary.png"))
+            print(f"  Summary plot: {rollout_dir / 'summary.png'}")
+
+    if infer_times:
+        arr = np.array(infer_times)
+        print(f"\nInference timing ({len(arr)} cycles):  "
+              f"mean={arr.mean():.0f}ms  std={arr.std():.0f}ms  "
+              f"min={arr.min():.0f}ms  max={arr.max():.0f}ms  "
+              f"median={np.median(arr):.0f}ms")
+
+    print(f"Episode {episode_num} done. Executed {step} inference steps.")
+    return infer_times, consistency_log, pose_log, step
+
+
+# ═══════════════════════════════════════════════════════════════════
 #  Main
 # ═══════════════════════════════════════════════════════════════════
 
 def main():
     parser = argparse.ArgumentParser(
-        description="RTC closed-loop control with discrete diffusion")
+        description="RTC closed-loop control with discrete diffusion (v6 — interactive loop)")
     parser.add_argument("--checkpoint", type=str, default=DEFAULT_CHECKPOINT)
     parser.add_argument("--arm", choices=["left", "right"], default="left")
     parser.add_argument("--camera_dev", type=int, default=0)
     parser.add_argument("--instruction", type=str, default=DEFAULT_INSTRUCTION)
-    parser.add_argument("--n_actions", type=int, default=8,
-                        help="Actions per cycle (must satisfy chunk_len == 2 * n_actions)")
-    parser.add_argument("--inference_delay", type=int, default=4,
-                        help="RTC prefix length (default: 4)")
-    parser.add_argument("--n_actions_after_grasp", type=int, default=16,
-                        help="Actions per chunk for first N chunks after grasping")
-    parser.add_argument("--n_chunks_after_grasp", type=int, default=2,
-                        help="How many chunks to use n_actions_after_grasp")
+    parser.add_argument("--n_actions", type=int, default=4)
+    parser.add_argument("--inference_delay", type=int, default=4)
+    parser.add_argument("--n_actions_after_grasp", type=int, default=16)
+    parser.add_argument("--n_chunks_after_grasp", type=int, default=2)
     parser.add_argument("--max_steps", type=int, default=0,
-                        help="Max inference steps (0=unlimited, Ctrl+C to stop)")
+                        help="Max inference steps per episode (0=unlimited, Ctrl+C to stop)")
     parser.add_argument("--no_go_home", action="store_true", default=False)
     parser.add_argument("--decode_temperature", type=float, default=DECODE_TEMPERATURE)
     parser.add_argument("--choice_temperature", type=float, default=CHOICE_TEMPERATURE)
     parser.add_argument("--use_simple_max", action="store_true", default=False)
-    parser.add_argument("--fixed_steps", action="store_true", default=False,
-                        help="Use fixed inference steps instead of scaling by mask ratio")
-    parser.add_argument("--hard_mask", action="store_true", default=True,
-                        help="RTC prefix uses hard mask (prefix_length=inference_delay) "
-                             "instead of soft (action_horizon - execution_horizon)")
-    parser.add_argument("--early_stop", action="store_true", default=False,
-                        help="Stop MaskGIT decode early when all non-prefix positions "
-                             "are unmasked")
+    parser.add_argument("--fixed_steps", action="store_true", default=False)
+    parser.add_argument("--hard_mask", action="store_true", default=True) ##
+    parser.add_argument("--early_stop", action="store_true", default=False) ##
     parser.add_argument("--fix_rotation", action="store_true", default=True)
     parser.add_argument("--no_fix_rotation", dest="fix_rotation",
                         action="store_false")
+    # Pick-from-turntable task: gripper lock defaults are flipped off.
+    # The turntable sticky z-floor latch (see TURNTABLE_* constants) already
+    # protects against re-descent after a grasp, so we let the policy drive
+    # the gripper freely — no artificial "don't release until target y".
     parser.add_argument("--if_grasped_not_release", action="store_true",
-                        default=True)
+                        default=False,
+                        help="Once gripper closes, keep it closed "
+                             "(default: False for pick-from-turntable task)")
     parser.add_argument("--allow_release", dest="if_grasped_not_release",
                         action="store_false")
     parser.add_argument("--if_grasp_delay_temp_solution", action="store_true",
-                        default=True)
+                        default=False)
     parser.add_argument("--no_grasp_delay", dest="if_grasp_delay_temp_solution",
                         action="store_false")
     parser.add_argument("--if_release_when_reach_temp", action="store_true",
-                        default=True)
+                        default=False,
+                        help="Allow release when y >= release_y_threshold, then "
+                             "exit (default: False for pick-from-turntable task)")
     parser.add_argument("--no_release_when_reach", dest="if_release_when_reach_temp",
                         action="store_false")
     parser.add_argument("--release_y_threshold", type=float, default=-0.318)
-    parser.add_argument("--grasp_detect_threshold", type=int, default=200,
-                        help="Gripper position threshold to confirm actual grasp "
-                             "(0-255, empty close ~230, default 200)")
+    parser.add_argument("--grasp_detect_threshold", type=int, default=200)
+    # --- Legacy grasp_trick flags (kept for CLI compat, largely unused) ---
+    # In this 2dd variant, close commands over the turntable are handled by
+    # the snap-grasp sequence (see ServoRunner._do_turntable_grasp): the
+    # servo pauses, the arm moveL's to HARDCODED_GRASP_Z, the gripper
+    # closes, then servo resumes. grasp_z_threshold is NOT used by the snap
+    # path; the snap z is set by --hardcoded_grasp_z below.
     parser.add_argument("--if_grasp_trick", action="store_true", default=True)
     parser.add_argument("--no_grasp_trick", dest="if_grasp_trick",
                         action="store_false")
-    parser.add_argument("--grasp_z_threshold", type=float, default=0.04)
-    parser.add_argument("--systematically_x_offset", type=float, default=0.00,
-                        help="Constant x offset (meters) applied to every servoL command")
-    parser.add_argument("--save_rollout", action="store_true", default=True)
+    parser.add_argument("--grasp_z_threshold", type=float, default=0.117,
+                        help="LEGACY — unused by the snap-grasp path in 2dd/v6. "
+                             "Kept for CLI backward compatibility.")
+    # --- Snap-grasp parameters ---
+    parser.add_argument("--hardcoded_grasp_z", type=float,
+                        default=HARDCODED_GRASP_Z,
+                        help="Snap-grasp target z in world frame. When policy "
+                             "predicts close AND the EE is over the turntable, "
+                             "the servo pauses and moveL's down to this z "
+                             "(keeping current xy) before closing the gripper. "
+                             "(default: 0.102, just above TURNTABLE_SURFACE_Z=0.101)")
+    parser.add_argument("--grasp_settle_s", type=float, default=0.3,
+                        help="Seconds to wait after sending gripper close for "
+                             "fingers to physically settle before reading grasp "
+                             "detection (default: 0.3)")
+    parser.add_argument("--systematically_x_offset", type=float, default=0.00)
+    # Default is False — pass --save_rollout to enable. When enabled,
+    # rollouts go under ur5n/2dd/rollouts/rtc_<ts>_ep<N>/.
+    parser.add_argument("--save_rollout", action="store_true", default=False)
     parser.add_argument("--no_save_rollout", dest="save_rollout",
                         action="store_false")
+    # ── Inference server (split from this script to avoid the ~30s
+    # model-load cost on every iteration). Default ON: start
+    # `python ur5n/2dd/inference_server.py` in another terminal first,
+    # then this script connects via Unix socket and proxies all
+    # predict_action* calls to it. Pass --no_use_server for the legacy
+    # in-process load.
+    parser.add_argument("--use_server", action="store_true", default=True,
+                        help="Connect to inference_server.py over a Unix "
+                             "socket instead of loading the model in-process. "
+                             "(default: True — start the server first)")
+    parser.add_argument("--no_use_server", dest="use_server",
+                        action="store_false",
+                        help="Load the model in-process (legacy ~30s startup)")
+    parser.add_argument("--server_socket", type=str,
+                        default="/tmp/starvla_infer.sock")
     args = parser.parse_args()
 
     T_bw = BASE_IN_WORLD[args.arm]
 
-    # ── Load model ───────────────────────────────────────────────────
-    model = load_model(args.checkpoint)
+    # ── Load model (in-process or remote via inference_server.py) ────
+    if args.use_server:
+        from remote_model import RemoteModel
+        model = RemoteModel(args.server_socket)
+        # The server owns the checkpoint path; reflect it in args so
+        # rollout configs identify the actual model in use.
+        args.checkpoint = model.checkpoint_path
+    else:
+        model = load_model(args.checkpoint)
     chunk_len = model.chunk_len
     norm_stats = model.norm_stats
     dataset_key = list(norm_stats.keys())[0]
@@ -1172,52 +1610,13 @@ def main():
         time.sleep(0.05)
     print("Camera ready.")
 
-    # ── Go home ──────────────────────────────────────────────────────
+    # ── Go home (once at startup) ────────────────────────────────────
     if not args.no_go_home:
         go_home(rtde_c, rtde_r, args.arm, T_bw, robot_ip)
 
-    # ── Shared gripper state (mutable, accessed by inferencer) ───────
-    gripper_state = {
-        'current': 0.0,
-        'object_grasped': False,
-        'chunks_since_grasp': None,
-        'task_finished': False,
-    }
-
-    # ── Rollout saving ───────────────────────────────────────────────
-    rollout_log = []
-    rollout_dir = None
-    if args.save_rollout:
-        ts = time.strftime("%Y%m%d_%H%M%S")
-        rollout_dir = Path("ur5n/dd/rollouts") / f"rtc_{ts}"
-        rollout_dir.mkdir(parents=True, exist_ok=True)
-        (rollout_dir / "images").mkdir(exist_ok=True)
-        print(f"Rollout: {rollout_dir}")
-
-        run_config = {
-            "mode": "rtc",
-            "checkpoint": args.checkpoint,
-            "instruction": args.instruction,
-            "arm": args.arm,
-            "n_actions": args.n_actions,
-            "inference_delay": args.inference_delay,
-            "max_steps": args.max_steps,
-            "chunk_len": chunk_len,
-            "control_hz": CONTROL_HZ,
-            "servo_hz": SERVO_HZ,
-            "y_min_world": Y_MIN_WORLD,
-            "z_bounds_world": [Z_MIN_WORLD, Z_MAX_WORLD],
-            "fix_rotation": args.fix_rotation,
-            "decode_temperature": args.decode_temperature,
-            "choice_temperature": args.choice_temperature,
-            "dataset_key": dataset_key,
-        }
-        with open(rollout_dir / "config.json", "w") as f:
-            json.dump(run_config, f, indent=2)
-
     # ── Print config ─────────────────────────────────────────────────
     print(f"\n{'=' * 60}")
-    print(f"  Closed-Loop RTC (Discrete Diffusion)")
+    print(f"  Closed-Loop RTC (Discrete Diffusion) — v6")
     print(f"  Arm:              {args.arm}")
     print(f"  Instruction:      \"{args.instruction}\"")
     print(f"  n_actions:        {args.n_actions}")
@@ -1230,184 +1629,35 @@ def main():
     print(f"  Max steps:        {'unlimited' if args.max_steps == 0 else args.max_steps}")
     print(f"  Save rollout:     {args.save_rollout}")
     print(f"{'=' * 60}")
+    print(f"\n  During an episode:")
+    print(f"    Type 'q' + Enter  → abort, open gripper, return home, wait")
+    print(f"    Ctrl+C            → full shutdown")
+    print(f"\n  After each episode:")
+    print(f"    Press Enter       → run policy again")
+    print(f"    Type 'h' + Enter  → go to home position first")
+    print(f"    Ctrl+C            → quit")
+    print(f"{'=' * 60}")
 
     input("\n>>> Press Enter to START (Ctrl+C to abort) <<<")
 
-    # ═════════════════════════════════════════════════════════════════
-    #  Step 0: synchronous initial inference (no prefix)
-    # ═════════════════════════════════════════════════════════════════
-
-    pose_base = rtde_r.getActualTCPPose()
-    pose_world = base_to_world(pose_base, T_bw)
-    current_pos = np.array(pose_world, dtype=np.float64)
-
-    pil_img = cam.grab_pil()
-    while pil_img is None:
-        pil_img = cam.grab_pil()
-
-    example = {"image": [pil_img], "lang": args.instruction}
-    t_infer = time.monotonic()
-    output = model.predict_action(examples=[example], **infer_kwargs)
-    init_infer_ms = (time.monotonic() - t_infer) * 1000
-    print(f"[init] inference={init_infer_ms:.0f}ms (sync, no prefix)")
-
-    current_normalized = output["normalized_actions"][0].astype(np.float32)
-    current_actions_10d = baseframework.unnormalize_actions(
-        current_normalized, action_stats)
-
-    # Push first inference_delay actions into servo buffer.
-    # Inferencer starts immediately at t=0, then every n_actions.
-    n_init = min(args.inference_delay, len(current_actions_10d))
-    waypoints_init, grip_cmds_init, n_init = compute_waypoints(
-        current_pos, current_actions_10d, n_init, args.fix_rotation,
-        gripper_state, args)
-
-    servo = ServoRunner(rtde_c, T_bw, gripper_hw, rtde_r=rtde_r,
-                        grasp_trick=args.if_grasp_trick,
-                        grasp_z_threshold=args.grasp_z_threshold,
-                        grasp_detect_threshold=args.grasp_detect_threshold,
-                        gripper_state=gripper_state,
-                        systematically_x_offset=args.systematically_x_offset)
-    servo.push_waypoints(current_pos, waypoints_init, grip_cmds_init)
-
-    # ═════════════════════════════════════════════════════════════════
-    #  Start servo, then inferencer (triggers when inference_delay remain)
-    # ═════════════════════════════════════════════════════════════════
-
-    servo.start(current_pos)
-
-    inferencer = Inferencer(
-        model, cam, servo, args.n_actions, args.inference_delay,
-        args.instruction, infer_kwargs, action_stats, args.fix_rotation,
-        gripper_state, args, chunk_len=chunk_len)
-    # prev_action_chunk = init output[n_actions:] (chunk_len - n_actions actions)
-    init_prev_chunk = current_normalized[:chunk_len-args.n_actions]
-    inferencer.start(init_prev_chunk)
-
-    # ═════════════════════════════════════════════════════════════════
-    #  Main loop: logging + early-stop (both daemon threads run autonomously)
-    # ═════════════════════════════════════════════════════════════════
-
-    infer_times = []
-    consistency_log = []
-    pose_log = []
-    step = 0
     try:
-        while args.max_steps == 0 or step < args.max_steps:
-            result = inferencer.wait_result(timeout=60.0)
-            if result is None:
-                continue
-
-            step += 1
-
-            # ── Check task finished (set by compute_waypoints) ───────
-            if gripper_state['task_finished']:
-                print("\n>>> Task finished! Object released at target. <<<")
-                break
-
-            # ── Logging ──────────────────────────────────────────────
-            pose_base = rtde_r.getActualTCPPose()
-            pose_world = base_to_world(pose_base, T_bw)
-            infer_times.append(result.infer_ms)
-
-            # Consistency metrics (always computed for monitoring)
-            metrics = compute_consistency_metrics(result, args.inference_delay)
-            consistency_log.append(metrics)
-            pose_log.append(list(pose_world))
-
-            buf_len = servo.buffer_len
-            fix_mae = np.mean([metrics[f"{d}_fix"] for d in ["dx","dy","dz"]])
-            guide_mae = np.mean([metrics[f"{d}_guide"] for d in ["dx","dy","dz"]])
-            suffix = (f"  delay={result.actual_delay}  "
-                      f"pushed={result.n_pushed}  buf={buf_len}  "
-                      f"fix={fix_mae:.4f}  guide={guide_mae:.4f}")
-            if servo.starve_count > 0:
-                suffix += f"  starved={servo.starve_count}"
-
-            print(f"[step {step:4d}]  "
-                  f"obs={result.obs_ms:5.0f}ms  infer={result.infer_ms:5.0f}ms  "
-                  f"pos=[{pose_world[0]:.3f}, {pose_world[1]:.3f}, "
-                  f"{pose_world[2]:.3f}]  "
-                  f"grip={'C' if gripper_state['current'] > 0.5 else 'O'}"
-                  f"{suffix}")
-
-            # ── Save rollout (optional) ──────────────────────────────
-            if args.save_rollout and rollout_dir is not None:
-                if result.camera_image is not None:
-                    img_path = rollout_dir / "images" / f"step_{step:04d}.jpg"
-                    result.camera_image.save(str(img_path), quality=90)
-
-                viz_path = rollout_dir / "images" / f"step_{step:04d}_viz.png"
-                visualize_rtc_debug(
-                    result, pose_world, step, str(viz_path),
-                    args.instruction, args.n_actions, args.inference_delay,
-                    chunk_len, args.fix_rotation)
-
-                log_entry = {
-                    "step": step,
-                    "wall_time": time.time(),
-                    "ee_pose_world": list(pose_world),
-                    "ee_pose_base": list(pose_base),
-                    "gripper": gripper_state['current'],
-                    "pred_actions_10d": result.actions_10d.tolist(),
-                    "n_pushed": result.n_pushed,
-                    "actual_delay": result.actual_delay,
-                    "obs_ms": round(result.obs_ms, 1),
-                    "infer_ms": round(result.infer_ms, 1),
-                    "consistency": metrics,
-                    "image_file": f"images/step_{step:04d}.jpg",
-                    "viz_file": f"images/step_{step:04d}_viz.png",
-                }
-                if result.prev_norm is not None:
-                    log_entry["prev_norm"] = result.prev_norm.tolist()
-                if result.prev_unnorm_10d is not None:
-                    log_entry["prev_unnorm_10d"] = result.prev_unnorm_10d.tolist()
-                rollout_log.append(log_entry)
-
+        run_episode(model, cam, rtde_c, rtde_r, gripper_hw, T_bw,
+                    args, infer_kwargs, action_stats, chunk_len, episode_num=1)
     except KeyboardInterrupt:
         print("\n\nStopped by user (Ctrl+C)")
-    except Exception as e:
-        print(f"\n[ERROR] {e}")
-        raise
     finally:
-        inferencer.stop()
-        servo.stop()
-
         print("Cleaning up...")
-        try:
-            rtde_c.servoStop()
-        except Exception:
-            pass
-        try:
-            rtde_c.stopScript()
-        except Exception:
-            pass
         try:
             gripper_hw.disconnect()
         except Exception:
             pass
         cam.close()
-
-        if args.save_rollout and rollout_dir is not None and rollout_log:
-            with open(rollout_dir / "rollout.json", "w") as f:
-                json.dump(rollout_log, f, indent=2)
-            print(f"Rollout saved: {rollout_dir}")
-            print(f"  {len(rollout_log)} steps")
-
-            if consistency_log:
-                visualize_rtc_summary(
-                    consistency_log, infer_times, pose_log,
-                    str(rollout_dir / "summary.png"))
-                print(f"  Summary plot: {rollout_dir / 'summary.png'}")
-
-        if infer_times:
-            arr = np.array(infer_times)
-            print(f"\nInference timing ({len(arr)} cycles):")
-            print(f"  mean={arr.mean():.0f}ms  std={arr.std():.0f}ms  "
-                  f"min={arr.min():.0f}ms  max={arr.max():.0f}ms  "
-                  f"median={np.median(arr):.0f}ms")
-
-        print(f"Done. Executed {step} inference steps.")
+        if hasattr(model, 'close'):
+            try:
+                model.close()
+            except Exception:
+                pass
+        print("Shutdown complete.")
 
 
 if __name__ == "__main__":
