@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Sync closed-loop control with discrete diffusion.
+Sync closed-loop control with flow matching (QwenPI).
 
 Receding-horizon loop:
   1. Read EE pose + grab camera frame
@@ -15,9 +15,9 @@ Safety:
   - Rotation fixed by default (--no_fix_rotation to enable)
 
 Usage:
-    python ur5n/dd/closedloop_sync.py
-    python ur5n/dd/closedloop_sync.py --n_actions 8
-    python ur5n/dd/closedloop_sync.py --instruction "pick up the block"
+    python ur5n/2fm/closedloop_sync.py
+    python ur5n/2fm/closedloop_sync.py --n_actions 8
+    python ur5n/2fm/closedloop_sync.py --instruction "pick up the block"
 """
 
 import sys
@@ -50,20 +50,13 @@ from starVLA.model.framework.base_framework import baseframework
 import modular_policy
 
 # ── Defaults ─────────────────────────────────────────────────────────
-# DEFAULT_CHECKPOINT = (
-#     "checkpoints/discreteRTC/fastumi_pickandplace_qwenDiscreteDiffusion_329v4/"
-#     "checkpoints/steps_20000_pytorch_model.pt"
-# )
-
 DEFAULT_CHECKPOINT = (
-    "checkpoints/discreteRTC/fastumi_pickandplace_qwenPI_0403_1_pick_from_moved/"
+    "results/Checkpoints/fastumi_pickandplace_qwenPI_0403_1_pick_from_moved/"
     "checkpoints/steps_30000_pytorch_model.pt"
 )
 
 
 DEFAULT_INSTRUCTION = "Pick up the purple block to the pan"
-DECODE_TEMPERATURE = 0.0
-CHOICE_TEMPERATURE = 0.1
 
 CONTROL_HZ = 20
 INTERP_MULT = 5
@@ -464,7 +457,7 @@ def visualize_step(traj_world, traj_base, camera_image,
 
 def main():
     parser = argparse.ArgumentParser(
-        description="Sync closed-loop control with discrete diffusion")
+        description="Sync closed-loop control with flow matching / QwenPI")
     parser.add_argument("--checkpoint", type=str, default=DEFAULT_CHECKPOINT)
     parser.add_argument("--arm", choices=["left", "right"], default="left")
     parser.add_argument("--camera_dev", type=int, default=0)
@@ -478,9 +471,6 @@ def main():
     parser.add_argument("--max_steps", type=int, default=0,
                         help="Max inference steps (0=unlimited, Ctrl+C to stop)")
     parser.add_argument("--no_go_home", action="store_true", default=False)
-    parser.add_argument("--decode_temperature", type=float, default=DECODE_TEMPERATURE)
-    parser.add_argument("--choice_temperature", type=float, default=CHOICE_TEMPERATURE)
-    parser.add_argument("--use_simple_max", action="store_true", default=False)
     parser.add_argument("--fix_rotation", action="store_true", default=True,
                         help="Zero out rotation deltas (default: True)")
     parser.add_argument("--no_fix_rotation", dest="fix_rotation",
@@ -536,9 +526,6 @@ def main():
     print(f"Norm stats: dataset='{dataset_key}', "
           f"modes={action_stats.get('norm_modes', 'legacy')}")
 
-    # Flow-matching (QwenPI): predict_action ignores discrete-diffusion-
-    # specific kwargs (decode/choice_temperature, use_simple_max). Pass an
-    # empty dict so nothing DD-specific leaks through.
     infer_kwargs = {}
 
     # ── Connect to robot ─────────────────────────────────────────────
@@ -570,16 +557,15 @@ def main():
         current_gripper = 0.0
 
     # ── Rollout saving ───────────────────────────────────────────────
-    # NOTE: rollouts go under ur5n/2dd/rollouts (this script lives in 2dd/).
-    # The original dd/closedloop_sync.py hardcodes ur5n/dd/rollouts; don't
-    # mix them — each task directory owns its own rollout history so we can
-    # tell pick-from-static (dd) and pick-from-turntable (2dd) apart at a
-    # glance.
+    # NOTE: rollouts go under ur5n/2fm/rollouts (this script lives in 2fm/).
+    # Don't mix with ur5n/2dd/rollouts — each task directory owns its own
+    # rollout history so the discrete-diffusion (2dd) and flow-matching
+    # (2fm) variants are clearly separated.
     rollout_log = []
     rollout_dir = None
     if args.save_rollout:
         ts = time.strftime("%Y%m%d_%H%M%S")
-        rollout_dir = Path("ur5n/2dd/rollouts") / f"sync_{ts}"
+        rollout_dir = Path("ur5n/2fm/rollouts") / f"sync_{ts}"
         rollout_dir.mkdir(parents=True, exist_ok=True)
         (rollout_dir / "images").mkdir(exist_ok=True)
         print(f"Rollout: {rollout_dir}")
@@ -606,8 +592,6 @@ def main():
             "if_grasped_not_release": args.if_grasped_not_release,
             "if_release_when_reach_temp": args.if_release_when_reach_temp,
             "fix_rotation": args.fix_rotation,
-            "decode_temperature": args.decode_temperature,
-            "choice_temperature": args.choice_temperature,
             "dataset_key": dataset_key,
         }
         with open(rollout_dir / "config.json", "w") as f:
@@ -615,7 +599,7 @@ def main():
 
     # ── Print config ─────────────────────────────────────────────────
     print(f"\n{'=' * 60}")
-    print(f"  Closed-Loop Sync (Discrete Diffusion)")
+    print(f"  Closed-Loop Sync (Flow Matching / QwenPI)")
     print(f"  Arm:             {args.arm}")
     print(f"  Instruction:     \"{args.instruction}\"")
     print(f"  n_actions:       {args.n_actions}")

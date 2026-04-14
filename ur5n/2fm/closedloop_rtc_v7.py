@@ -1,7 +1,10 @@
 #!/usr/bin/env python3
 """
-RTC (Real-Time Chunking) closed-loop control with discrete diffusion — v7,
-pick-from-turntable variant (ur5n/2dd/).
+RTC (Real-Time Chunking) closed-loop control with flow matching (QwenPI) — v7,
+pick-from-turntable variant (ur5n/2fm/).
+
+Continuous counterpart to ur5n/2dd/closedloop_rtc_v7.py; only the model is
+swapped from discrete diffusion to flow matching / QwenPI.
 
 Task: pick an object off a ROTATING turntable and place it on a STATIC pan.
 
@@ -36,9 +39,9 @@ Architecture (unchanged from v6):
 Robot WILL move. Use Ctrl+C to stop.
 
 Usage:
-    python ur5n/2dd/closedloop_rtc_v7.py
-    python ur5n/2dd/closedloop_rtc_v7.py --n_actions 8 --inference_delay 4
-    python ur5n/2dd/closedloop_rtc_v7.py --instruction "pick up the block"
+    python ur5n/2fm/closedloop_rtc_v7.py
+    python ur5n/2fm/closedloop_rtc_v7.py --n_actions 8 --inference_delay 4
+    python ur5n/2fm/closedloop_rtc_v7.py --instruction "pick up the block"
 """
 
 import sys
@@ -69,14 +72,12 @@ from starVLA.model.framework.base_framework import baseframework
 import modular_policy
 
 DEFAULT_CHECKPOINT = (
-    "checkpoints/discreteRTC/fastumi_pickandplace_qwenPI_0403_1_pick_from_moved/"
+    "results/Checkpoints/fastumi_pickandplace_qwenPI_0403_1_pick_from_moved/"
     "checkpoints/steps_30000_pytorch_model.pt"
 )
 
 
 DEFAULT_INSTRUCTION = "Pick up the purple block to the pan"
-DECODE_TEMPERATURE = 0.0
-CHOICE_TEMPERATURE = 0.1
 
 CONTROL_HZ = 20
 INTERP_MULT = 5
@@ -749,8 +750,8 @@ class ServoRunner:
                   f"(Δz={dz:.4f}), skipping moveL")
 
         # 4. Close gripper.
-        print(f"  Gripper -> CLOSE (snap, pos=255)")
-        self._gripper_hw.move(255, 255, 150)
+        print(f"  Gripper -> CLOSE (snap, pos=255, force=255)")
+        self._gripper_hw.move(255, 255, 255)
 
         # 5. Wait for fingers to physically settle.
         time.sleep(self._grasp_settle_s)
@@ -899,21 +900,6 @@ class Inferencer:
 
             example = {"image": [pil_img], "lang": self._instruction}
             prev_norm_batch = prev_action_chunk[np.newaxis, ...]
-
-            # FM's predict_action_realtime requires prev of full chunk_len
-            # (DD pads internally; FM does not). The ΠGDM weight schedule
-            # assigns weight=0 to the last `suffix_length` positions (default
-            # = inference_delay), so zero-padding there is harmless when
-            # n_actions == inference_delay (suffix zone == missing prev).
-            T_prev = prev_norm_batch.shape[1]
-            if T_prev < self._chunk_len:
-                pad = np.zeros(
-                    (prev_norm_batch.shape[0],
-                     self._chunk_len - T_prev,
-                     prev_norm_batch.shape[2]),
-                    dtype=prev_norm_batch.dtype,
-                )
-                prev_norm_batch = np.concatenate([prev_norm_batch, pad], axis=1)
 
             start_evt = torch.cuda.Event(enable_timing=True)
             end_evt = torch.cuda.Event(enable_timing=True)
@@ -1111,7 +1097,7 @@ def run_episode(model, cam, rtde_c, rtde_r, gripper_hw, T_bw,
 
 def main():
     parser = argparse.ArgumentParser(
-        description="RTC closed-loop control with discrete diffusion (v6 — interactive loop)")
+        description="RTC closed-loop control with flow matching / QwenPI (v7 — single-shot)")
     parser.add_argument("--checkpoint", type=str, default=DEFAULT_CHECKPOINT)
     parser.add_argument("--arm", choices=["left", "right"], default="left")
     parser.add_argument("--camera_dev", type=int, default=0)
@@ -1123,12 +1109,6 @@ def main():
     parser.add_argument("--max_steps", type=int, default=0,
                         help="Max inference steps per episode (0=unlimited, Ctrl+C to stop)")
     parser.add_argument("--no_go_home", action="store_true", default=False)
-    parser.add_argument("--decode_temperature", type=float, default=DECODE_TEMPERATURE)
-    parser.add_argument("--choice_temperature", type=float, default=CHOICE_TEMPERATURE)
-    parser.add_argument("--use_simple_max", action="store_true", default=False)
-    parser.add_argument("--fixed_steps", action="store_true", default=False)
-    parser.add_argument("--hard_mask", action="store_true", default=True) ##
-    parser.add_argument("--early_stop", action="store_true", default=False) ##
     parser.add_argument("--fix_rotation", action="store_true", default=True)
     parser.add_argument("--no_fix_rotation", dest="fix_rotation",
                         action="store_false")
@@ -1155,7 +1135,7 @@ def main():
     parser.add_argument("--release_y_threshold", type=float, default=-0.318)
     parser.add_argument("--grasp_detect_threshold", type=int, default=200)
     # --- Legacy grasp_trick flags (kept for CLI compat, largely unused) ---
-    # In this 2dd variant, close commands over the turntable are handled by
+    # In this 2fm variant, close commands over the turntable are handled by
     # the snap-grasp sequence (see ServoRunner._do_turntable_grasp): the
     # servo pauses, the arm moveL's to HARDCODED_GRASP_Z, the gripper
     # closes, then servo resumes. grasp_z_threshold is NOT used by the snap
@@ -1164,7 +1144,7 @@ def main():
     parser.add_argument("--no_grasp_trick", dest="if_grasp_trick",
                         action="store_false")
     parser.add_argument("--grasp_z_threshold", type=float, default=0.117,
-                        help="LEGACY — unused by the snap-grasp path in 2dd/v6. "
+                        help="LEGACY — unused by the snap-grasp path in 2fm/v7. "
                              "Kept for CLI backward compatibility.")
     # --- Snap-grasp parameters ---
     parser.add_argument("--hardcoded_grasp_z", type=float,
@@ -1181,7 +1161,7 @@ def main():
     parser.add_argument("--systematically_x_offset", type=float, default=0.00)
     # ── Inference server (split from this script to avoid the ~30s
     # model-load cost on every iteration). Default ON: start
-    # `python ur5n/2dd/inference_server.py` in another terminal first,
+    # `python ur5n/2fm/inference_server.py` in another terminal first,
     # then this script connects via Unix socket and proxies all
     # predict_action* calls to it. Pass --no_use_server for the legacy
     # in-process load.
@@ -1193,7 +1173,7 @@ def main():
                         action="store_false",
                         help="Load the model in-process (legacy ~30s startup)")
     parser.add_argument("--server_socket", type=str,
-                        default="/tmp/starvla_infer.sock")
+                        default="/tmp/starvla_infer_2fm.sock")
     args = parser.parse_args()
 
     T_bw = BASE_IN_WORLD[args.arm]
@@ -1218,10 +1198,6 @@ def main():
     assert args.inference_delay <= args.n_actions, (
         f"inference_delay ({args.inference_delay}) must be <= n_actions ({args.n_actions})")
 
-    # Flow-matching (QwenPI): predict_action / predict_action_realtime
-    # ignore discrete-diffusion-specific kwargs (decode/choice_temperature,
-    # use_simple_max, fixed_steps, hard_mask, early_stop, execution_horizon).
-    # Pass an empty dict so nothing DD-specific leaks through.
     infer_kwargs = {}
 
     # ── Connect to robot ─────────────────────────────────────────────
@@ -1252,7 +1228,7 @@ def main():
 
     # ── Print config ─────────────────────────────────────────────────
     print(f"\n{'=' * 60}")
-    print(f"  Closed-Loop RTC (Discrete Diffusion) — v7")
+    print(f"  Closed-Loop RTC (Flow Matching / QwenPI) — v7")
     print(f"  Arm:              {args.arm}")
     print(f"  Instruction:      \"{args.instruction}\"")
     print(f"  n_actions:        {args.n_actions}")
@@ -1270,6 +1246,10 @@ def main():
     print(f"{'=' * 60}\n")
 
     try:
+        try:
+            input("\nPress ENTER to start the episode (Ctrl+C to abort)... ")
+        except EOFError:
+            pass
         run_episode(model, cam, rtde_c, rtde_r, gripper_hw, T_bw,
                     args, infer_kwargs, action_stats, chunk_len,
                     episode_num=1)

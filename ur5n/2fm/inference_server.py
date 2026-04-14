@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-StarVLA inference server.
+StarVLA inference server (2fm/ — flow matching / QwenPI variant).
 
 Loads the model once into GPU memory and serves predict_action /
 predict_action_realtime requests over a Unix-domain socket. Pair with
@@ -12,13 +12,16 @@ client-side code: keep the server running in one terminal, edit and re-run
 the closed-loop script in another. The model stays warm in GPU memory
 across many client runs.
 
+Default socket is /tmp/starvla_infer_2fm.sock so this server can run side
+by side with the 2dd/ server (which uses /tmp/starvla_infer.sock).
+
 Usage:
     # Terminal 1 — start the server (load once, leave running)
     python ur5n/2fm/inference_server.py
-    # optional: --checkpoint <path>  --socket /tmp/starvla_infer.sock
+    # optional: --checkpoint <path>  --socket /tmp/starvla_infer_2fm.sock
 
     # Terminal 2 — run the closed-loop script (defaults to --use_server)
-    python ur5n/2fm/closedloop_rtc_v7.py
+    python ur5n/2fm/closedloop_rtc_v6.py
 
 Wire format (pickle over multiprocessing.connection):
     request:  {'cmd': 'info'}
@@ -55,10 +58,10 @@ from starVLA.model.framework.share_tools import read_mode_config, dict_to_namesp
 from starVLA.model.framework import build_framework
 
 DEFAULT_CHECKPOINT = (
-    "checkpoints/discreteRTC/fastumi_pickandplace_qwenPI_0403_1_pick_from_moved/"
+    "results/Checkpoints/fastumi_pickandplace_qwenPI_0403_1_pick_from_moved/"
     "checkpoints/steps_30000_pytorch_model.pt"
 )
-DEFAULT_SOCKET = "/tmp/starvla_infer.sock"
+DEFAULT_SOCKET = "/tmp/starvla_infer_2fm.sock"
 AUTHKEY = b'starvla'
 
 
@@ -202,7 +205,8 @@ def serve(socket_path, checkpoint_path):
 
 def main():
     parser = argparse.ArgumentParser(
-        description="StarVLA inference server (load model once, serve over IPC)")
+        description="StarVLA inference server — 2fm/ flow matching (QwenPI) "
+                    "variant (load model once, serve over IPC)")
     parser.add_argument("--checkpoint", type=str, default=DEFAULT_CHECKPOINT)
     parser.add_argument("--socket", type=str, default=DEFAULT_SOCKET,
                         help=f"Unix socket path (default: {DEFAULT_SOCKET})")
