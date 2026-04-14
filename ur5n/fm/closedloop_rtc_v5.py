@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """
-RTC (Real-Time Chunking) closed-loop control with flow matching (QwenPI) — v5.
+RTC (Real-Time Chunking) closed-loop control with discrete diffusion — v4.
 
-v5 fixes the init phase to push only inference_delay actions
-and uses uniform cycle timing (see DD rtc_v5 for full details).
+v4 fixes the init phase to push (inference_delay + n_actions) actions
+and enforces L = 2A (see rtc_v4_cycle.md for full details).
 
 Architecture:
 
@@ -25,9 +25,9 @@ vs v2 (closedloop_rtc_v2.py):
 Robot WILL move. Use Ctrl+C to stop.
 
 Usage:
-    python ur5n/fm/closedloop_rtc_v5.py
-    python ur5n/fm/closedloop_rtc_v5.py --n_actions 8 --inference_delay 4
-    python ur5n/fm/closedloop_rtc_v5.py --instruction "pick up the block"
+    python ur5n/dd/closedloop_rtc_v3.py
+    python ur5n/dd/closedloop_rtc_v3.py --n_actions 8 --inference_delay 4
+    python ur5n/dd/closedloop_rtc_v3.py --instruction "pick up the block"
 """
 
 import sys
@@ -71,12 +71,15 @@ import modular_policy
 
 
 DEFAULT_CHECKPOINT = (
-    "checkpoints/discreteRTC/fastumi_pickandplace_qwenPI_329v4/"
-    "checkpoints/steps_15000_pytorch_model.pt"
+    "checkpoints/discreteRTC/fastumi_pickandplace_qwenDiscreteDiffusion_0409_0_pick_to_moved_filtered/"
+    "checkpoints/steps_30000_pytorch_model.pt"
 )
 
 
 DEFAULT_INSTRUCTION = "Pick up the purple block and place it on the red area of the board"
+DECODE_TEMPERATURE = 0.0
+CHOICE_TEMPERATURE = 0.1
+
 CONTROL_HZ = 20
 INTERP_MULT = 5
 SERVO_HZ = CONTROL_HZ * INTERP_MULT  # 100Hz
@@ -1063,7 +1066,7 @@ def visualize_rtc_summary(consistency_log, infer_times, pose_log, save_path):
 
 def main():
     parser = argparse.ArgumentParser(
-        description="RTC closed-loop control with flow matching (QwenPI)")
+        description="RTC closed-loop control with discrete diffusion")
     parser.add_argument("--checkpoint", type=str, default=DEFAULT_CHECKPOINT)
     parser.add_argument("--arm", choices=["left", "right"], default="left")
     parser.add_argument("--camera_dev", type=int, default=0)
@@ -1079,6 +1082,17 @@ def main():
     parser.add_argument("--max_steps", type=int, default=0,
                         help="Max inference steps (0=unlimited, Ctrl+C to stop)")
     parser.add_argument("--no_go_home", action="store_true", default=False)
+    parser.add_argument("--decode_temperature", type=float, default=DECODE_TEMPERATURE)
+    parser.add_argument("--choice_temperature", type=float, default=CHOICE_TEMPERATURE)
+    parser.add_argument("--use_simple_max", action="store_true", default=False)
+    parser.add_argument("--fixed_steps", action="store_true", default=False,
+                        help="Use fixed inference steps instead of scaling by mask ratio")
+    parser.add_argument("--hard_mask", action="store_true", default=True,
+                        help="RTC prefix uses hard mask (prefix_length=inference_delay) "
+                             "instead of soft (action_horizon - execution_horizon)")
+    parser.add_argument("--early_stop", action="store_true", default=False,
+                        help="Stop MaskGIT decode early when all non-prefix positions "
+                             "are unmasked")
     parser.add_argument("--fix_rotation", action="store_true", default=True)
     parser.add_argument("--no_fix_rotation", dest="fix_rotation",
                         action="store_false")
@@ -1126,7 +1140,15 @@ def main():
     assert args.inference_delay <= args.n_actions, (
         f"inference_delay ({args.inference_delay}) must be <= n_actions ({args.n_actions})")
 
-    infer_kwargs = {}  # FM has no temperature/masking params
+    infer_kwargs = dict(
+        decode_temperature=args.decode_temperature,
+        choice_temperature=args.choice_temperature,
+        use_simple_max=args.use_simple_max,
+        execution_horizon=args.n_actions,
+        fixed_steps=args.fixed_steps,
+        hard_mask=args.hard_mask,
+        early_stop=args.early_stop,
+    )
 
     # ── Connect to robot ─────────────────────────────────────────────
     from rtde_control import RTDEControlInterface
@@ -1167,7 +1189,7 @@ def main():
     rollout_dir = None
     if args.save_rollout:
         ts = time.strftime("%Y%m%d_%H%M%S")
-        rollout_dir = Path("ur5n/fm/rollouts") / f"rtc_{ts}"
+        rollout_dir = Path("ur5n/dd/rollouts") / f"rtc_{ts}"
         rollout_dir.mkdir(parents=True, exist_ok=True)
         (rollout_dir / "images").mkdir(exist_ok=True)
         print(f"Rollout: {rollout_dir}")
@@ -1186,6 +1208,8 @@ def main():
             "y_min_world": Y_MIN_WORLD,
             "z_bounds_world": [Z_MIN_WORLD, Z_MAX_WORLD],
             "fix_rotation": args.fix_rotation,
+            "decode_temperature": args.decode_temperature,
+            "choice_temperature": args.choice_temperature,
             "dataset_key": dataset_key,
         }
         with open(rollout_dir / "config.json", "w") as f:
@@ -1193,7 +1217,7 @@ def main():
 
     # ── Print config ─────────────────────────────────────────────────
     print(f"\n{'=' * 60}")
-    print(f"  Closed-Loop RTC (Flow Matching / QwenPI)")
+    print(f"  Closed-Loop RTC (Discrete Diffusion)")
     print(f"  Arm:              {args.arm}")
     print(f"  Instruction:      \"{args.instruction}\"")
     print(f"  n_actions:        {args.n_actions}")

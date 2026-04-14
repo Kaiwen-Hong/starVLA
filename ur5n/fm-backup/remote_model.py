@@ -9,9 +9,9 @@ closedloop_rtc_v6.py. Run inference_server.py once in another terminal;
 this client connects, fetches metadata (chunk_len, norm_stats, checkpoint
 path), and proxies inference calls.
 
-Used by ur5n/dd/closedloop_rtc_v6.py when --use_server is enabled (default).
-The dd-side server defaults to /tmp/starvla_infer_dd.sock so it can run
-side by side with the 2dd-side server (/tmp/starvla_infer.sock).
+Used by ur5n/fm/closedloop_rtc_v6.py when --use_server is enabled (default).
+The fm-side server defaults to /tmp/starvla_infer_fm.sock so it can run
+side by side with the dd-side server (/tmp/starvla_infer_dd.sock).
 """
 
 import threading
@@ -48,7 +48,7 @@ class RemoteModel:
         except (FileNotFoundError, ConnectionRefusedError) as e:
             raise RuntimeError(
                 f"Could not connect to inference server at {socket_path}: {e}\n"
-                f"  Start it first:  python ur5n/dd/inference_server.py"
+                f"  Start it first:  python ur5n/fm/inference_server.py"
             ) from e
 
         # Fetch metadata so the rest of the script doesn't need the model

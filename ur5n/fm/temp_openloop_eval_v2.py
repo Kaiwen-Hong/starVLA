@@ -1,13 +1,13 @@
 #!/usr/bin/env python3
 """
-Open-loop evaluation for flow matching (QwenPI) checkpoint.
+Open-loop evaluation for dynamic-329-v2 discrete diffusion checkpoint.
 
-Loads the trained FM checkpoint, runs predict_action on the dataset,
+Loads the trained DD 329v2 checkpoint, runs predict_action on the dynamic-329-v2 dataset,
 and computes MSE / L1 metrics (overall + per-dimension + per-step).
 
 Usage:
-    python ur5n/fm/temp_openloop_eval_v2.py
-    python ur5n/fm/temp_openloop_eval_v2.py --num_samples 500
+    python ur5n/dd/temp_openloop_eval_v2.py
+    python ur5n/dd/temp_openloop_eval_v2.py --num_samples 500
 """
 
 import argparse
@@ -33,11 +33,13 @@ from starVLA.dataloader.lerobot_datasets import get_vla_dataset, collate_fn
 
 # ── Defaults ─────────────────────────────────────────────────────────
 DEFAULT_CHECKPOINT = (
-    "checkpoints/discreteRTC/fastumi_pickandplace_qwenPI_329v2/"
-    "checkpoints/steps_30000_pytorch_model.pt"
+    "checkpoints/discreteRTC/fastumi_pickandplace_qwenDiscreteDiffusion_329v2/"
+    "checkpoints/steps_20000_pytorch_model.pt"
 )
 DATA_ROOT_DIR = "/home/kaiwen/Desktop/research/fastumipro-collection/0srarvla-lerobo/starvla/datasets"
 DATA_MIX = "dynamic-329-v2"
+DECODE_TEMPERATURE = 0.0
+CHOICE_TEMPERATURE = 0.1
 # ───────────────────────────────────────────────────────────────────
 
 
@@ -83,16 +85,9 @@ def load_model(checkpoint_path: str):
     model.load_state_dict(state_dict, strict=True)
 
     model = model.to("cuda").eval()
-
-    # Fix: QwenPI config may lack image_size — set it so predict_action
-    # resizes inputs to match training resolution.
-    if not getattr(model.config.datasets.vla_data, "image_size", None):
-        model.config.datasets.vla_data.image_size = [224, 224]
-        print("[FIX] Set image_size=[224,224] (was missing from checkpoint config)")
-
     print(f"Model loaded in {time.time() - t0:.1f}s (attn: {attn_impl})")
-    print(f"  framework: {config.framework.name}")
-    print(f"  num_inference_timesteps: {getattr(config.framework.action_model, 'num_inference_timesteps', 'N/A')}")
+    print(f"  num_bins: {getattr(config.framework.action_model, 'num_bins', 'N/A')}")
+    print(f"  num_inference_steps: {getattr(config.framework.action_model, 'num_inference_steps', 'N/A')}")
     return model
 
 
@@ -126,7 +121,7 @@ def _valid_mask(gt, rot_slice=slice(3, 9)):
     return ~np.all(np.abs(rot) < 1e-6, axis=1)
 
 
-def evaluate(model, dataloader, num_samples: int) -> dict:
+def evaluate(model, dataloader, num_samples: int, infer_kwargs: dict) -> dict:
     all_mse = []
     all_l1 = []
     all_per_dim_mse = []
@@ -145,7 +140,7 @@ def evaluate(model, dataloader, num_samples: int) -> dict:
         sample = batch[0]
         gt_actions = np.array(sample["action"], dtype=np.float32)  # [T, 10]
 
-        output = model.predict_action(examples=batch)
+        output = model.predict_action(examples=batch, **infer_kwargs)
         pred_actions = output["normalized_actions"][0].astype(np.float32)
 
         if gt_actions.shape[0] > chunk_len:
@@ -244,12 +239,15 @@ def print_results(results: dict, checkpoint_name: str = ""):
 
 def main():
     parser = argparse.ArgumentParser(
-        description="Open-loop eval for flow matching (QwenPI) checkpoint")
+        description="Open-loop eval for dynamic-329-v3 DD checkpoint")
     parser.add_argument("--checkpoint", type=str, default=DEFAULT_CHECKPOINT)
     parser.add_argument("--data_root_dir", type=str, default=DATA_ROOT_DIR)
     parser.add_argument("--data_mix", type=str, default=DATA_MIX)
     parser.add_argument("--num_samples", type=int, default=500)
     parser.add_argument("--include_state", action="store_true", default=False)
+    parser.add_argument("--decode_temperature", type=float, default=DECODE_TEMPERATURE)
+    parser.add_argument("--choice_temperature", type=float, default=CHOICE_TEMPERATURE)
+    parser.add_argument("--use_simple_max", action="store_true", default=False)
     parser.add_argument("--output", type=str, default=None,
                         help="Path to save results JSON (default: auto in checkpoint dir)")
     args = parser.parse_args()
@@ -259,8 +257,14 @@ def main():
                               include_state=args.include_state,
                               data_root_dir=args.data_root_dir)
 
+    infer_kwargs = dict(
+        decode_temperature=args.decode_temperature,
+        choice_temperature=args.choice_temperature,
+        use_simple_max=args.use_simple_max,
+    )
+
     num_samples = args.num_samples if args.num_samples > 0 else len(dataloader)
-    results = evaluate(model, dataloader, num_samples)
+    results = evaluate(model, dataloader, num_samples, infer_kwargs)
 
     ckpt_name = Path(args.checkpoint).stem.replace("_pytorch_model", "")
     print_results(results, ckpt_name)

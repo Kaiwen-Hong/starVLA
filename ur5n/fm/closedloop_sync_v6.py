@@ -1,23 +1,34 @@
 #!/usr/bin/env python3
 """
-Sync closed-loop control with discrete diffusion.
+Sync closed-loop control with discrete diffusion — v6 (tricks backport).
 
-Receding-horizon loop:
+Same blocking sync execution model as closedloop_sync.py:
   1. Read EE pose + grab camera frame
-  2. Run model inference → predicted action chunk (chunk_len, 10)
-  3. Execute first n_actions via interpolated servoL at 100Hz
+  2. Run model inference (predict_action, no RTC prefix)
+  3. Execute first n_actions via interpolated servoL at 100Hz (blocking)
   4. Repeat from step 1
+
+v6 additions backported from closedloop_rtc_v6.py:
+  - Configurable board zone (--board_zone_y_min/y_max/z_min) instead of
+    hard-coded -0.4276/0.2931/0.125
+  - --tricks_release_z_constraint: only honor policy release when z is
+    below this threshold (prevents mid-air drops)
+  - --systematically_x_offset: constant x offset applied at servoL time
+    (compensates for systematic calibration bias)
+  - --use_server: connect to inference_server.py over a Unix socket
+    instead of loading the model in-process (~30s startup saved)
+
+No RTC — single predict_action per loop, no prev_action_chunk.
 
 Robot WILL move. Use Ctrl+C to stop.
 
-Safety:
-  - XYZ clamping (world frame, derived from dataset q01/q99 + margin)
-  - Rotation fixed by default (--no_fix_rotation to enable)
-
 Usage:
-    python ur5n/dd/closedloop_sync.py
-    python ur5n/dd/closedloop_sync.py --n_actions 8
-    python ur5n/dd/closedloop_sync.py --instruction "pick up the block"
+    # Terminal 1: start inference server
+    python ur5n/dd/inference_server.py
+
+    # Terminal 2:
+    python ur5n/dd/closedloop_sync_v6.py
+    python ur5n/dd/closedloop_sync_v6.py --n_actions 8
 """
 
 import sys
@@ -503,16 +514,49 @@ def main():
                         help="Allow gripper close at any height")
     parser.add_argument("--grasp_z_threshold", type=float, default=0.036,
                         help="Z world-frame threshold below which grasping is allowed (default: 0.036)")
+    # ── v6 backport: configurable board zone ─────────────────────────
+    parser.add_argument("--board_zone_y_min", type=float, default=-0.4276,
+                        help="World-frame y_min of the board obstacle zone (default: -0.4276)")
+    parser.add_argument("--board_zone_y_max", type=float, default=0.2931,
+                        help="World-frame y_max of the board obstacle zone (default: 0.2931)")
+    parser.add_argument("--board_zone_z_min", type=float, default=0.125,
+                        help="World-frame z_min enforced inside the board zone (default: 0.125)")
+    # ── v6 backport: release-z constraint ────────────────────────────
+    parser.add_argument("--tricks_release_z_constraint", type=float, default=0.13,
+                        help="Only honor policy release when z <= this value "
+                             "(prevents mid-air drops). Pass --no_tricks_release_z_constraint to disable.")
+    parser.add_argument("--no_tricks_release_z_constraint",
+                        dest="tricks_release_z_constraint",
+                        action="store_const", const=None)
+    # ── v6 backport: systematic x offset ─────────────────────────────
+    parser.add_argument("--systematically_x_offset", type=float, default=0.00,
+                        help="Constant x offset (base frame) applied to servoL "
+                             "target to compensate for calibration bias (default: 0.0)")
     parser.add_argument("--save_rollout", action="store_true", default=False)
     parser.add_argument("--no_save_rollout", dest="save_rollout",
                         action="store_false")
+    # ── v6 backport: inference server ────────────────────────────────
+    parser.add_argument("--use_server", action="store_true", default=True,
+                        help="Connect to inference_server.py over a Unix "
+                             "socket instead of loading the model in-process. "
+                             "(default: True — start the server first)")
+    parser.add_argument("--no_use_server", dest="use_server",
+                        action="store_false",
+                        help="Load the model in-process (legacy ~30s startup)")
+    parser.add_argument("--server_socket", type=str,
+                        default="/tmp/starvla_infer_dd.sock")
     args = parser.parse_args()
 
     T_bw = BASE_IN_WORLD[args.arm]
     servo_dt = 1.0 / SERVO_HZ
 
-    # ── Load model ───────────────────────────────────────────────────
-    model = load_model(args.checkpoint)
+    # ── Load model (in-process or remote via inference_server.py) ────
+    if args.use_server:
+        from remote_model import RemoteModel
+        model = RemoteModel(args.server_socket)
+        args.checkpoint = model.checkpoint_path
+    else:
+        model = load_model(args.checkpoint)
     chunk_len = model.chunk_len
     norm_stats = model.norm_stats
     dataset_key = list(norm_stats.keys())[0]
@@ -559,12 +603,13 @@ def main():
     rollout_dir = None
     if args.save_rollout:
         ts = time.strftime("%Y%m%d_%H%M%S")
-        rollout_dir = Path("ur5n/dd/rollouts") / f"sync_{ts}"
+        rollout_dir = Path("ur5n/dd/rollouts") / f"sync_v6_{ts}"
         rollout_dir.mkdir(parents=True, exist_ok=True)
         (rollout_dir / "images").mkdir(exist_ok=True)
         print(f"Rollout: {rollout_dir}")
 
         run_config = {
+            "mode": "sync_v6",
             "checkpoint": args.checkpoint,
             "instruction": args.instruction,
             "arm": args.arm,
@@ -575,6 +620,11 @@ def main():
             "servo_hz": SERVO_HZ,
             "y_min_world": Y_MIN_WORLD,
             "z_bounds_world": [Z_MIN_WORLD, Z_MAX_WORLD],
+            "board_zone_y_min": args.board_zone_y_min,
+            "board_zone_y_max": args.board_zone_y_max,
+            "board_zone_z_min": args.board_zone_z_min,
+            "tricks_release_z_constraint": args.tricks_release_z_constraint,
+            "systematically_x_offset": args.systematically_x_offset,
             "fix_rotation": args.fix_rotation,
             "decode_temperature": args.decode_temperature,
             "choice_temperature": args.choice_temperature,
@@ -585,7 +635,7 @@ def main():
 
     # ── Print config ─────────────────────────────────────────────────
     print(f"\n{'=' * 60}")
-    print(f"  Closed-Loop Sync (Discrete Diffusion)")
+    print(f"  Closed-Loop Sync v6 (Discrete Diffusion, no RTC)")
     print(f"  Arm:             {args.arm}")
     print(f"  Instruction:     \"{args.instruction}\"")
     print(f"  n_actions:       {args.n_actions}")
@@ -593,7 +643,13 @@ def main():
     print(f"  Servo:           {CONTROL_HZ}Hz x {INTERP_MULT} = {SERVO_HZ}Hz")
     print(f"  Safety:          y > {Y_MIN_WORLD:.2f}, "
           f"z in [{Z_MIN_WORLD:.3f}, {Z_MAX_WORLD:.2f}]")
+    print(f"  Board zone:      y in [{args.board_zone_y_min:.4f}, "
+          f"{args.board_zone_y_max:.4f}] → z >= {args.board_zone_z_min:.3f}")
+    print(f"  Release z cap:   {args.tricks_release_z_constraint}")
+    print(f"  x offset:        {args.systematically_x_offset:+.4f}")
     print(f"  fix_rotation:    {args.fix_rotation}")
+    print(f"  Use server:      {args.use_server}"
+          f"{' (' + args.server_socket + ')' if args.use_server else ''}")
     print(f"  Max steps:       {'unlimited' if args.max_steps == 0 else args.max_steps}")
     print(f"{'=' * 60}")
 
@@ -670,9 +726,9 @@ def main():
                 # Safety clamps (world frame)
                 pos[1] = max(pos[1], Y_MIN_WORLD)
                 pos[2] = np.clip(pos[2], Z_MIN_WORLD, Z_MAX_WORLD)
-                # Board zone: y in [-0.4276, 0.2931] has obstacles, enforce z > 0.125
-                if -0.4276 <= pos[1] <= 0.2931:
-                    pos[2] = max(pos[2], 0.125)
+                # Board zone (v6 backport: configurable)
+                if args.board_zone_y_min <= pos[1] <= args.board_zone_y_max:
+                    pos[2] = max(pos[2], args.board_zone_z_min)
 
                 waypoints[i, :3] = pos
                 waypoints[i, 3:6] = rot
@@ -685,10 +741,14 @@ def main():
                 #   target zone (y >= release_y_threshold), lift the grasped_not_release
                 #   lock so the policy can open the gripper to place the object.
                 #   Once it actually releases, the task is considered done → exit.
+                # v6 backport: also require pos[2] below tricks_release_z_constraint
+                # (when set) so the robot can't drop the object mid-air.
                 reached_target = (args.if_release_when_reach_temp
                                   and current_gripper > 0.5
                                   and object_grasped
-                                  and pos[1] >= args.release_y_threshold)
+                                  and pos[1] >= args.release_y_threshold
+                                  and (args.tricks_release_z_constraint is None
+                                       or pos[2] <= args.tricks_release_z_constraint))
 
                 if reached_target and new_gripper <= 0.5:
                     # At target zone, policy says open → release and finish
@@ -749,6 +809,7 @@ def main():
             t_exec_start = time.monotonic()
             for i, pose_w in enumerate(interp):
                 target_base = world_to_base(pose_w.tolist(), T_bw)
+                target_base[0] += args.systematically_x_offset
                 rtde_c.servoL(target_base, 0, 0, servo_dt, 0.2, 200)
                 precise_wait(t_exec_start + (i + 1) * servo_dt)
             rtde_c.servoStop()
@@ -775,9 +836,11 @@ def main():
                 # Safety clamps for viz (match execution clamps)
                 traj_world[:, 1] = np.maximum(traj_world[:, 1], Y_MIN_WORLD)
                 traj_world[:, 2] = np.clip(traj_world[:, 2], Z_MIN_WORLD, Z_MAX_WORLD)
-                # Board zone constraint
-                in_board = (traj_world[:, 1] >= -0.4276) & (traj_world[:, 1] <= 0.2931)
-                traj_world[in_board, 2] = np.maximum(traj_world[in_board, 2], 0.125)
+                # Board zone constraint (v6 backport: configurable)
+                in_board = ((traj_world[:, 1] >= args.board_zone_y_min)
+                            & (traj_world[:, 1] <= args.board_zone_y_max))
+                traj_world[in_board, 2] = np.maximum(traj_world[in_board, 2],
+                                                     args.board_zone_z_min)
 
                 traj_base = traj_world.copy()
                 traj_base[:, 0] -= T_bw[0, 3]
@@ -832,6 +895,11 @@ def main():
         except Exception:
             pass
         cam.close()
+        if hasattr(model, 'close'):
+            try:
+                model.close()
+            except Exception:
+                pass
 
         if args.save_rollout and rollout_dir is not None and rollout_log:
             with open(rollout_dir / "rollout.json", "w") as f:

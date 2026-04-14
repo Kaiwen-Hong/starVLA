@@ -497,6 +497,14 @@ class LayerwiseFlowmatchingActionHead(nn.Module):
         device = vl_embs_list[0].device
         dtype = vl_embs_list[0].dtype
 
+        T_prev = prev_action_chunk.shape[1]
+        if T_prev < self.action_horizon:
+            pad = torch.zeros(
+                batch_size, self.action_horizon - T_prev, prev_action_chunk.shape[2],
+                device=device, dtype=prev_action_chunk.dtype,
+            )
+            prev_action_chunk = torch.cat([prev_action_chunk, pad], dim=1)
+
         num_steps = self.num_inference_timesteps
         dt = 1.0 / num_steps
 

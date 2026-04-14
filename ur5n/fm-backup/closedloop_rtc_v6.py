@@ -1,12 +1,11 @@
 #!/usr/bin/env python3
 """
-RTC (Real-Time Chunking) closed-loop control with discrete diffusion — v6.
+RTC (Real-Time Chunking) closed-loop control with flow matching (QwenPI) — v6.
 
-v6 adds an interactive episode loop: after each execution the program does
-NOT exit.  Instead it waits for keyboard input:
-  - Press Enter          → run the policy again immediately
-  - Type 'h' + Enter     → move arm to home position, then prompt again
-  - Press Ctrl+C (or 'q')→ full shutdown
+Continuous counterpart to ur5n/dd/closedloop_rtc_v6.py.  Robot-side logic
+(ServoRunner, gripper tricks, safety clamps, compute_waypoints, run_episode)
+is identical; only the model is swapped from discrete diffusion to flow
+matching / QwenPI.
 
 Architecture:
 
@@ -22,9 +21,9 @@ Architecture:
 Robot WILL move. Use Ctrl+C to stop.
 
 Usage:
-    python ur5n/dd/closedloop_rtc_v6.py
-    python ur5n/dd/closedloop_rtc_v6.py --n_actions 8 --inference_delay 4
-    python ur5n/dd/closedloop_rtc_v6.py --instruction "pick up the block"
+    python ur5n/fm/closedloop_rtc_v6.py
+    python ur5n/fm/closedloop_rtc_v6.py --n_actions 8 --inference_delay 4
+    python ur5n/fm/closedloop_rtc_v6.py --instruction "pick up the block"
 """
 
 import sys
@@ -60,14 +59,12 @@ from starVLA.model.framework.base_framework import baseframework
 import modular_policy
 
 DEFAULT_CHECKPOINT = (
-    "checkpoints/discreteRTC/fastumi_pickandplace_qwenDiscreteDiffusion_0409_0_pick_to_moved_filtered/"
+    "checkpoints/discreteRTC/fastumi_pickandplace_qwenPI_0409_0_pick_to_moved_filtered/"
     "checkpoints/steps_30000_pytorch_model.pt"
 )
 
 
 DEFAULT_INSTRUCTION = "Pick up the purple block and place it on the red area of the board"
-DECODE_TEMPERATURE = 0.0
-CHOICE_TEMPERATURE = 0.1
 
 CONTROL_HZ = 20
 INTERP_MULT = 5
@@ -95,8 +92,7 @@ def slam_to_gripper_rotation(rotvec):
     return Rot.from_matrix(R).as_rotvec()
 
 _HOME_SLAM = {
-    # 'left': [0.25666, -0.428459, 0.185173, 2.130869, 0.107971, -2.304919, 1],
-    'left': [0.266716, -0.498155, 0.234938, 2.257823, 0.107971, -2.304919, 1],
+    'left': [0.25666, -0.428459, 0.185173, 2.130869, 0.107971, -2.304919, 1],
     'right': [-0.1, -0.3, 0.25, 2.2419, -2.1984, 0.0166, 1],
 }
 HOME_POSES_WORLD = {}
@@ -699,6 +695,21 @@ class Inferencer:
             example = {"image": [pil_img], "lang": self._instruction}
             prev_norm_batch = prev_action_chunk[np.newaxis, ...]
 
+            # FM's predict_action_realtime requires prev of full chunk_len
+            # (DD pads internally; FM does not).  The ΠGDM weight schedule
+            # assigns weight=0 to the last `suffix_length` positions (default
+            # = inference_delay), so zero-padding there is harmless when
+            # n_actions == inference_delay (suffix zone == missing prev).
+            T_prev = prev_norm_batch.shape[1]
+            if T_prev < self._chunk_len:
+                pad = np.zeros(
+                    (prev_norm_batch.shape[0],
+                     self._chunk_len - T_prev,
+                     prev_norm_batch.shape[2]),
+                    dtype=prev_norm_batch.dtype,
+                )
+                prev_norm_batch = np.concatenate([prev_norm_batch, pad], axis=1)
+
             start_evt = torch.cuda.Event(enable_timing=True)
             end_evt = torch.cuda.Event(enable_timing=True)
             start_evt.record()
@@ -976,7 +987,7 @@ def run_episode(model, cam, rtde_c, rtde_r, gripper_hw, T_bw,
     rollout_dir = None
     if args.save_rollout:
         ts = time.strftime("%Y%m%d_%H%M%S")
-        rollout_dir = Path("ur5n/dd/rollouts") / f"rtc_{ts}_ep{episode_num}"
+        rollout_dir = Path("ur5n/fm/rollouts") / f"rtc_{ts}_ep{episode_num}"
         rollout_dir.mkdir(parents=True, exist_ok=True)
         (rollout_dir / "images").mkdir(exist_ok=True)
         print(f"Rollout: {rollout_dir}")
@@ -996,8 +1007,6 @@ def run_episode(model, cam, rtde_c, rtde_r, gripper_hw, T_bw,
             "y_min_world": Y_MIN_WORLD,
             "z_bounds_world": [Z_MIN_WORLD, Z_MAX_WORLD],
             "fix_rotation": args.fix_rotation,
-            "decode_temperature": args.decode_temperature,
-            "choice_temperature": args.choice_temperature,
         }
         with open(rollout_dir / "config.json", "w") as f:
             json.dump(run_config, f, indent=2)
@@ -1176,24 +1185,18 @@ def run_episode(model, cam, rtde_c, rtde_r, gripper_hw, T_bw,
 
 def main():
     parser = argparse.ArgumentParser(
-        description="RTC closed-loop control with discrete diffusion (v6 — interactive loop)")
+        description="RTC closed-loop control with flow matching / QwenPI (v6)")
     parser.add_argument("--checkpoint", type=str, default=DEFAULT_CHECKPOINT)
     parser.add_argument("--arm", choices=["left", "right"], default="left")
     parser.add_argument("--camera_dev", type=int, default=0)
     parser.add_argument("--instruction", type=str, default=DEFAULT_INSTRUCTION)
-    parser.add_argument("--n_actions", type=int, default=4)
-    parser.add_argument("--inference_delay", type=int, default=4)
+    parser.add_argument("--n_actions", type=int, default=5)
+    parser.add_argument("--inference_delay", type=int, default=5)
     parser.add_argument("--n_actions_after_grasp", type=int, default=16)
     parser.add_argument("--n_chunks_after_grasp", type=int, default=2)
     parser.add_argument("--max_steps", type=int, default=0,
                         help="Max inference steps per episode (0=unlimited, Ctrl+C to stop)")
     parser.add_argument("--no_go_home", action="store_true", default=False)
-    parser.add_argument("--decode_temperature", type=float, default=DECODE_TEMPERATURE)
-    parser.add_argument("--choice_temperature", type=float, default=CHOICE_TEMPERATURE)
-    parser.add_argument("--use_simple_max", action="store_true", default=False)
-    parser.add_argument("--fixed_steps", action="store_true", default=False)
-    parser.add_argument("--hard_mask", action="store_true", default=True) ##
-    parser.add_argument("--early_stop", action="store_true", default=False) ##
     parser.add_argument("--fix_rotation", action="store_true", default=True)
     parser.add_argument("--no_fix_rotation", dest="fix_rotation",
                         action="store_false")
@@ -1210,7 +1213,7 @@ def main():
     parser.add_argument("--no_release_when_reach", dest="if_release_when_reach_temp",
                         action="store_false")
     parser.add_argument("--release_y_threshold", type=float, default=-0.318)
-    parser.add_argument("--tricks_release_z_constraint", type=float, default=0.13,
+    parser.add_argument("--tricks_release_z_constraint", type=float, default=0.12,
                         help="Only release if z <= this value. Pass 'none' to disable.")
     parser.add_argument("--no_tricks_release_z_constraint",
                         dest="tricks_release_z_constraint",
@@ -1228,7 +1231,7 @@ def main():
     parser.add_argument("--save_rollout", action="store_true", default=False)
     # ── Inference server (split from this script to avoid the ~30s
     # model-load cost on every iteration). Default ON: start
-    # `python ur5n/dd/inference_server.py` in another terminal first,
+    # `python ur5n/fm/inference_server.py` in another terminal first,
     # then this script connects via Unix socket and proxies all
     # predict_action* calls to it. Pass --no_use_server for the legacy
     # in-process load.
@@ -1240,7 +1243,7 @@ def main():
                         action="store_false",
                         help="Load the model in-process (legacy ~30s startup)")
     parser.add_argument("--server_socket", type=str,
-                        default="/tmp/starvla_infer_dd.sock")
+                        default="/tmp/starvla_infer_fm.sock")
     args = parser.parse_args()
 
     T_bw = BASE_IN_WORLD[args.arm]
@@ -1267,15 +1270,8 @@ def main():
     assert args.inference_delay <= args.n_actions, (
         f"inference_delay ({args.inference_delay}) must be <= n_actions ({args.n_actions})")
 
-    infer_kwargs = dict(
-        decode_temperature=args.decode_temperature,
-        choice_temperature=args.choice_temperature,
-        use_simple_max=args.use_simple_max,
-        execution_horizon=args.n_actions,
-        fixed_steps=args.fixed_steps,
-        hard_mask=args.hard_mask,
-        early_stop=args.early_stop,
-    )
+    # Flow matching has no decode/choice temperature or masking knobs.
+    infer_kwargs = {}
 
     # ── Connect to robot ─────────────────────────────────────────────
     from rtde_control import RTDEControlInterface
@@ -1305,7 +1301,7 @@ def main():
 
     # ── Print config ─────────────────────────────────────────────────
     print(f"\n{'=' * 60}")
-    print(f"  Closed-Loop RTC (Discrete Diffusion) — v6")
+    print(f"  Closed-Loop RTC (Flow Matching / QwenPI) — v6")
     print(f"  Arm:              {args.arm}")
     print(f"  Instruction:      \"{args.instruction}\"")
     print(f"  n_actions:        {args.n_actions}")
@@ -1317,11 +1313,6 @@ def main():
     print(f"  fix_rotation:     {args.fix_rotation}")
     print(f"  Max steps:        {'unlimited' if args.max_steps == 0 else args.max_steps}")
     print(f"  Save rollout:     {args.save_rollout}")
-    print(f"{'=' * 60}")
-    print(f"\n  After each episode:")
-    print(f"    Press Enter       → run policy again")
-    print(f"    Type 'h' + Enter  → go to home position first")
-    print(f"    Ctrl+C            → quit")
     print(f"{'=' * 60}")
 
     input("\n>>> Press Enter to START (Ctrl+C to abort) <<<")

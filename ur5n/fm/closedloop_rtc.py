@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-RTC (Real-Time Chunking) closed-loop control with flow matching (QwenPI).
+RTC (Real-Time Chunking) closed-loop control with discrete diffusion.
 
 Architecture (borrowed from ur5/scripts/servo_v2 + inferencer_v2 patterns):
 
@@ -11,15 +11,17 @@ Architecture (borrowed from ur5/scripts/servo_v2 + inferencer_v2 patterns):
                         predict_action_realtime, pushes free actions to servo.
   Main thread:         Logging, gripper trick post-processing, early-stop.
 
-Based on ur5n/dd/closedloop_rtc.py — identical robot control, safety clamps,
-and gripper tricks; adapted for QwenPI (no temperature params, image_size fix).
+vs closedloop_sync.py:
+  - Inference overlaps with execution (hides latency)
+  - No servoStop between chunks (gap-free motion)
+  - RTC prefix conditioning for temporal consistency
 
 Robot WILL move. Use Ctrl+C to stop.
 
 Usage:
-    python ur5n/fm/closedloop_rtc.py
-    python ur5n/fm/closedloop_rtc.py --n_actions 8 --inference_delay 4
-    python ur5n/fm/closedloop_rtc.py --instruction "pick up the block"
+    python ur5n/dd/closedloop_rtc.py
+    python ur5n/dd/closedloop_rtc.py --n_actions 8 --inference_delay 8
+    python ur5n/dd/closedloop_rtc.py --instruction "pick up the block"
 """
 
 import sys
@@ -56,10 +58,21 @@ import modular_policy
 
 # ── Defaults ─────────────────────────────────────────────────────────
 DEFAULT_CHECKPOINT = (
-    "checkpoints/discreteRTC/fastumi_pickandplace_qwenPI_329v4/"
-    "checkpoints/steps_15000_pytorch_model.pt"
+    "checkpoints/discreteRTC/fastumi_pickandplace_qwenDiscreteDiffusion_329v4/"
+    "checkpoints/steps_20000_pytorch_model.pt"
 )
+
+
+
+# DEFAULT_CHECKPOINT = (
+#     "checkpoints/discreteRTC/fastumi_pickandplace_qwenDiscreteDiffusion_0403_0_pick_to_moved/"
+#     "checkpoints/steps_30000_pytorch_model.pt"
+# )
+
+
 DEFAULT_INSTRUCTION = "Pick up the purple block and place it on the red area of the board"
+DECODE_TEMPERATURE = 0.0
+CHOICE_TEMPERATURE = 0.1
 
 CONTROL_HZ = 20
 INTERP_MULT = 5
@@ -101,6 +114,14 @@ for _arm, _pose in _HOME_SLAM.items():
 # ═══════════════════════════════════════════════════════════════════
 
 class RealCamera:
+    """V4L2 camera with background reader thread for low-latency grabs.
+
+    A daemon thread continuously reads frames so the V4L2 buffer never goes
+    stale.  grab_pil() returns the latest frame instantly (decode + crop only,
+    no flush needed).  Typical latency: ~13ms vs ~420ms with the old flush(5)
+    approach.
+    """
+
     def __init__(self, dev=0, width=1920, height=1080, fps=30):
         self.dev = dev
         self.W = width
@@ -119,20 +140,30 @@ class RealCamera:
             pass
         print(f"[Camera] /dev/video{dev} opened, {width}x{height}@{fps}fps")
 
+        # Background reader thread — keeps latest raw frame always fresh
+        self._latest_raw = None
+        self._frame_lock = threading.Lock()
+        self._running = True
+        self._reader_thread = threading.Thread(target=self._reader_loop, daemon=True)
+        self._reader_thread.start()
+
+    def _reader_loop(self):
+        while self._running:
+            ok, raw = self.cap.read()
+            if ok:
+                with self._frame_lock:
+                    self._latest_raw = raw.copy()
+
     def grab_rgb(self):
-        ok, raw = self.cap.read()
-        if not ok:
+        with self._frame_lock:
+            raw = self._latest_raw
+        if raw is None:
             return None
         yuv = np.ascontiguousarray(raw).reshape(self.H * 3 // 2, self.W)
         bgr = cv2.cvtColor(yuv, cv2.COLOR_YUV2BGR_I420)
         return cv2.cvtColor(bgr, cv2.COLOR_BGR2RGB)
 
-    def flush(self, n=5):
-        for _ in range(n):
-            self.cap.read()
-
     def grab_pil(self):
-        self.flush()
         rgb = self.grab_rgb()
         if rgb is None:
             return None
@@ -142,6 +173,8 @@ class RealCamera:
         return Image.fromarray(rgb[top:top + s, left:left + s])
 
     def close(self):
+        self._running = False
+        self._reader_thread.join(timeout=2.0)
         self.cap.release()
 
 
@@ -231,7 +264,7 @@ def precise_wait(t_end, slack=0.001):
 
 
 # ═══════════════════════════════════════════════════════════════════
-#  Model loading (QwenPI / Flow Matching)
+#  Model loading
 # ═══════════════════════════════════════════════════════════════════
 
 def _detect_attn():
@@ -257,16 +290,11 @@ def load_model(checkpoint_path):
     model.load_state_dict(state_dict, strict=True)
     model = model.to("cuda").eval()
 
-    # QwenPI checkpoint may lack image_size — set it so predict_action
-    # resizes inputs to match training resolution.
     if not getattr(config.datasets.vla_data, "image_size", None):
         config.datasets.vla_data.image_size = [224, 224]
         print("[FIX] Set image_size=[224,224]")
 
     print(f"Model loaded in {time.time() - t0:.1f}s  chunk_len={model.chunk_len}")
-    print(f"  framework: {config.framework.name}")
-    nit = getattr(config.framework.action_model, 'num_inference_timesteps', 'N/A')
-    print(f"  num_inference_timesteps: {nit}")
     return model
 
 
@@ -344,9 +372,9 @@ def compute_waypoints(start_pose_world, actions_10d, n_exec, fix_rotation,
         # Safety clamps (world frame)
         pos[1] = max(pos[1], Y_MIN_WORLD)
         pos[2] = np.clip(pos[2], Z_MIN_WORLD, Z_MAX_WORLD)
-        # Board zone: obstacles in y ∈ [-0.4276, -0.2931], enforce z > 0.125
-        if -0.4276 <= pos[1] <= -0.2931:
-            pos[2] = max(pos[2], 0.125)
+        # Board zone: obstacles in y ∈ [-0.4276, 0.2931], enforce z > 
+        if -0.4276 <= pos[1] <= 0.2931:
+            pos[2] = max(pos[2], )
 
         waypoints[i, :3] = pos
         waypoints[i, 3:6] = rot
@@ -356,6 +384,7 @@ def compute_waypoints(start_pose_world, actions_10d, n_exec, fix_rotation,
 
         reached_target = (args.if_release_when_reach_temp
                           and current_gripper > 0.5
+                          and gripper_state['object_grasped']
                           and pos[1] >= args.release_y_threshold)
 
         if reached_target and new_gripper <= 0.5:
@@ -368,6 +397,7 @@ def compute_waypoints(start_pose_world, actions_10d, n_exec, fix_rotation,
             break
         elif (args.if_grasped_not_release
               and current_gripper > 0.5
+              and gripper_state['object_grasped']
               and new_gripper <= 0.5):
             pass  # keep closed, not at target yet
         elif (new_gripper > 0.5) != (current_gripper > 0.5):
@@ -401,7 +431,7 @@ class ServoRunner:
 
     def __init__(self, rtde_c, T_bw, gripper_hw, rtde_r=None,
                  grasp_trick=False, grasp_z_threshold=0.036,
-                 gripper_state=None):
+                 grasp_detect_threshold=200, gripper_state=None):
         self._rtde_c = rtde_c
         self._T_bw = T_bw
         self._gripper_hw = gripper_hw
@@ -414,6 +444,7 @@ class ServoRunner:
         self._rtde_r = rtde_r
         self._grasp_trick = grasp_trick
         self._grasp_z_threshold = grasp_z_threshold
+        self._grasp_detect_threshold = grasp_detect_threshold
         self._gripper_state = gripper_state  # shared dict, for state sync
         self._buffer = collections.deque()
         self._lock = threading.Lock()
@@ -534,7 +565,7 @@ class ServoRunner:
                 p = self._last_pose
                 p[1] = max(p[1], Y_MIN_WORLD)
                 p[2] = np.clip(p[2], Z_MIN_WORLD, Z_MAX_WORLD)
-                if -0.4276 <= p[1] <= -0.2931:
+                if -0.4276 <= p[1] <= 0.2931:
                     p[2] = max(p[2], 0.125)
 
                 target_base = world_to_base(self._last_pose.tolist(), self._T_bw)
@@ -589,6 +620,25 @@ class ServoRunner:
                 self._gripper_hw.move(grip_pos, 255, 150)
                 last_pos = grip_pos
 
+                # Verify actual grasp after closing
+                if grip_pos > 127 and self._gripper_state is not None:
+                    actual_pos = self._gripper_hw.get_current_position()
+                    if actual_pos < self._grasp_detect_threshold:
+                        self._gripper_state['object_grasped'] = True
+                        print(f"  [GRASP_DETECT] Object grasped "
+                              f"(pos={actual_pos} < {self._grasp_detect_threshold})")
+                    else:
+                        self._gripper_state['object_grasped'] = False
+                        self._gripper_state['current'] = 0.0
+                        self._gripper_state['chunks_since_grasp'] = None
+                        print(f"  [GRASP_DETECT] Empty grasp "
+                              f"(pos={actual_pos} >= {self._grasp_detect_threshold}), "
+                              f"re-opening gripper")
+                        self._gripper_hw.move(0, 255, 150)
+                        last_pos = 0
+                elif grip_pos <= 127 and self._gripper_state is not None:
+                    self._gripper_state['object_grasped'] = False
+
 
 # ═══════════════════════════════════════════════════════════════════
 #  Inferencer — cadence-aware RTC inference (from inferencer_v2 pattern)
@@ -597,10 +647,11 @@ class ServoRunner:
 class InferenceResult:
     __slots__ = ("normalized", "actions_10d", "camera_image",
                  "obs_ms", "infer_ms", "actual_delay", "n_pushed",
-                 "waypoints")
+                 "waypoints", "prev_norm", "prev_unnorm_10d")
 
     def __init__(self, normalized, actions_10d, camera_image,
-                 obs_ms, infer_ms, actual_delay, n_pushed, waypoints):
+                 obs_ms, infer_ms, actual_delay, n_pushed, waypoints,
+                 prev_norm, prev_unnorm_10d):
         self.normalized = normalized
         self.actions_10d = actions_10d
         self.camera_image = camera_image
@@ -609,6 +660,8 @@ class InferenceResult:
         self.actual_delay = actual_delay
         self.n_pushed = n_pushed
         self.waypoints = waypoints
+        self.prev_norm = prev_norm
+        self.prev_unnorm_10d = prev_unnorm_10d
 
 
 class Inferencer:
@@ -701,6 +754,15 @@ class Inferencer:
                 pil_img = self._cam.grab_pil()
             obs_ms = (time.monotonic() - t0) * 1000
 
+            # 2b. Unnormalize prev_norm_batch for saving/visualization
+            if prev_norm_batch is not None:
+                prev_norm_save = prev_norm_batch[0].copy()  # (chunk_len, 10)
+                prev_unnorm_10d = baseframework.unnormalize_actions(
+                    prev_norm_save, self._action_stats)
+            else:
+                prev_norm_save = None
+                prev_unnorm_10d = None
+
             # 3. Model inference
             example = {"image": [pil_img], "lang": self._instruction}
 
@@ -760,7 +822,7 @@ class Inferencer:
             self._result_queue.put(
                 InferenceResult(new_normalized, new_actions_10d, pil_img,
                                 obs_ms, infer_ms, actual_delay, actual_n,
-                                waypoints))
+                                waypoints, prev_norm_save, prev_unnorm_10d))
 
 
 # ═══════════════════════════════════════════════════════════════════
@@ -769,14 +831,21 @@ class Inferencer:
 
 def visualize_step(traj_world, traj_base, camera_image,
                    current_world, current_base, n_exec,
-                   step, save_path, instruction):
-    """Camera (left) + world trajectory (mid) + base trajectory (right)."""
+                   step, save_path, instruction, prev_chunk_delta=None):
+    """Camera + prev chunk deltas + world trajectory + base trajectory.
+
+    prev_chunk_delta: (chunk_len, 7) accumulated deltas from origin, or None.
+    """
     T = traj_world.shape[0]
     ts = np.arange(T) / 20.0
 
-    fig = plt.figure(figsize=(22, 12))
-    gs = GridSpec(4, 3, figure=fig, hspace=0.15, wspace=0.35,
-                  width_ratios=[1, 1.2, 1.2])
+    has_prev = prev_chunk_delta is not None
+    n_cols = 4 if has_prev else 3
+    width_ratios = [1, 1.2, 1.2, 1.2] if has_prev else [1, 1.2, 1.2]
+
+    fig = plt.figure(figsize=(28 if has_prev else 22, 12))
+    gs = GridSpec(4, n_cols, figure=fig, hspace=0.15, wspace=0.35,
+                  width_ratios=width_ratios)
 
     ax_img = fig.add_subplot(gs[:, 0])
     ax_img.imshow(camera_image)
@@ -790,10 +859,37 @@ def visualize_step(traj_world, traj_base, camera_image,
         (6, "gripper", "#ff7f00", None, None),
     ]
 
+    # Column for prev chunk deltas (from origin)
+    if has_prev:
+        T_prev = prev_chunk_delta.shape[0]
+        ts_prev = np.arange(T_prev) / 20.0
+        axes_prev = []
+        for row, (dim_idx, name, color, _, _) in enumerate(dims):
+            share_p = axes_prev[0] if axes_prev else None
+            ax_p = fig.add_subplot(gs[row, 1], sharex=share_p)
+            axes_prev.append(ax_p)
+
+            vals = prev_chunk_delta[:, dim_idx]
+            ax_p.plot(ts_prev, vals, "o-", markersize=3, linewidth=1.5,
+                      color=color, alpha=0.8)
+            ax_p.set_ylabel(f"Δ{name}", fontsize=9, fontweight="bold")
+            ax_p.grid(True, axis="y", alpha=0.3)
+            if row == 0:
+                ax_p.set_title("PREV CHUNK (delta from 0)",
+                               fontsize=11, fontweight="bold")
+            if row < len(dims) - 1:
+                plt.setp(ax_p.get_xticklabels(), visible=False)
+            else:
+                ax_p.set_xlabel("Time (s)", fontsize=9)
+
+    # World frame column
+    col_w = 2 if has_prev else 1
+    col_b = 3 if has_prev else 2
+
     axes_w, axes_b = [], []
     for row, (dim_idx, name, color, sw, sb) in enumerate(dims):
         share_w = axes_w[0] if axes_w else None
-        ax_w = fig.add_subplot(gs[row, 1], sharex=share_w)
+        ax_w = fig.add_subplot(gs[row, col_w], sharex=share_w)
         axes_w.append(ax_w)
 
         vals_w = traj_world[:, dim_idx]
@@ -819,7 +915,7 @@ def visualize_step(traj_world, traj_base, camera_image,
             ax_w.set_xlabel("Time (s)  solid=exec  dashed=pred", fontsize=9)
 
         share_b = axes_b[0] if axes_b else None
-        ax_b = fig.add_subplot(gs[row, 2], sharex=share_b)
+        ax_b = fig.add_subplot(gs[row, col_b], sharex=share_b)
         axes_b.append(ax_b)
 
         vals_b = traj_base[:, dim_idx]
@@ -847,7 +943,7 @@ def visualize_step(traj_world, traj_base, camera_image,
     cw = current_world
     cb = current_base
     fig.suptitle(
-        f'Closed-Loop RTC (FM) — Step {step}\n'
+        f'Closed-Loop RTC (DD) — Step {step}\n'
         f'"{instruction}"\n'
         f'World: [{cw[0]:.4f}, {cw[1]:.4f}, {cw[2]:.4f}, {cw[3]:.4f}, {cw[4]:.4f}, {cw[5]:.4f}]\n'
         f'Base:  [{cb[0]:.4f}, {cb[1]:.4f}, {cb[2]:.4f}, {cb[3]:.4f}, {cb[4]:.4f}, {cb[5]:.4f}]',
@@ -863,7 +959,7 @@ def visualize_step(traj_world, traj_base, camera_image,
 
 def main():
     parser = argparse.ArgumentParser(
-        description="RTC closed-loop control with flow matching (QwenPI)")
+        description="RTC closed-loop control with discrete diffusion")
     parser.add_argument("--checkpoint", type=str, default=DEFAULT_CHECKPOINT)
     parser.add_argument("--arm", choices=["left", "right"], default="left")
     parser.add_argument("--camera_dev", type=int, default=0)
@@ -879,6 +975,17 @@ def main():
     parser.add_argument("--max_steps", type=int, default=0,
                         help="Max inference steps (0=unlimited, Ctrl+C to stop)")
     parser.add_argument("--no_go_home", action="store_true", default=False)
+    parser.add_argument("--decode_temperature", type=float, default=DECODE_TEMPERATURE)
+    parser.add_argument("--choice_temperature", type=float, default=CHOICE_TEMPERATURE)
+    parser.add_argument("--use_simple_max", action="store_true", default=False)
+    parser.add_argument("--fixed_steps", action="store_true", default=False,
+                        help="Use fixed inference steps instead of scaling by mask ratio")
+    parser.add_argument("--hard_mask", action="store_true", default=False,
+                        help="RTC prefix uses hard mask (prefix_length=inference_delay) "
+                             "instead of soft (action_horizon - execution_horizon)")
+    parser.add_argument("--early_stop", action="store_true", default=False,
+                        help="Stop MaskGIT decode early when all non-prefix positions "
+                             "are unmasked")
     parser.add_argument("--fix_rotation", action="store_true", default=True)
     parser.add_argument("--no_fix_rotation", dest="fix_rotation",
                         action="store_false")
@@ -895,6 +1002,9 @@ def main():
     parser.add_argument("--no_release_when_reach", dest="if_release_when_reach_temp",
                         action="store_false")
     parser.add_argument("--release_y_threshold", type=float, default=-0.318)
+    parser.add_argument("--grasp_detect_threshold", type=int, default=200,
+                        help="Gripper position threshold to confirm actual grasp "
+                             "(0-255, empty close ~230, default 200)")
     parser.add_argument("--if_grasp_trick", action="store_true", default=True)
     parser.add_argument("--no_grasp_trick", dest="if_grasp_trick",
                         action="store_false")
@@ -915,7 +1025,15 @@ def main():
     print(f"Norm stats: dataset='{dataset_key}', "
           f"modes={action_stats.get('norm_modes', 'legacy')}")
 
-    infer_kwargs = {}  # FM has no temperature params
+    infer_kwargs = dict(
+        decode_temperature=args.decode_temperature,
+        choice_temperature=args.choice_temperature,
+        use_simple_max=args.use_simple_max,
+        execution_horizon=args.n_actions,
+        fixed_steps=args.fixed_steps,
+        hard_mask=args.hard_mask,
+        early_stop=args.early_stop,
+    )
 
     # ── Connect to robot ─────────────────────────────────────────────
     from rtde_control import RTDEControlInterface
@@ -934,10 +1052,9 @@ def main():
     # ── Open camera ──────────────────────────────────────────────────
     print(f"Opening camera /dev/video{args.camera_dev}...")
     cam = RealCamera(dev=args.camera_dev)
-    print("Warming up camera (2s)...")
-    t_warm = time.monotonic() + 2.0
-    while time.monotonic() < t_warm:
-        cam.grab_rgb()
+    print("Waiting for first frame from background reader...")
+    while cam.grab_rgb() is None:
+        time.sleep(0.05)
     print("Camera ready.")
 
     # ── Go home ──────────────────────────────────────────────────────
@@ -947,6 +1064,7 @@ def main():
     # ── Shared gripper state (mutable, accessed by inferencer) ───────
     gripper_state = {
         'current': 0.0,
+        'object_grasped': False,
         'chunks_since_grasp': None,
         'task_finished': False,
     }
@@ -956,7 +1074,7 @@ def main():
     rollout_dir = None
     if args.save_rollout:
         ts = time.strftime("%Y%m%d_%H%M%S")
-        rollout_dir = Path("ur5n/fm/rollouts") / f"rtc_{ts}"
+        rollout_dir = Path("ur5n/dd/rollouts") / f"rtc_{ts}"
         rollout_dir.mkdir(parents=True, exist_ok=True)
         (rollout_dir / "images").mkdir(exist_ok=True)
         print(f"Rollout: {rollout_dir}")
@@ -975,6 +1093,8 @@ def main():
             "y_min_world": Y_MIN_WORLD,
             "z_bounds_world": [Z_MIN_WORLD, Z_MAX_WORLD],
             "fix_rotation": args.fix_rotation,
+            "decode_temperature": args.decode_temperature,
+            "choice_temperature": args.choice_temperature,
             "dataset_key": dataset_key,
         }
         with open(rollout_dir / "config.json", "w") as f:
@@ -982,7 +1102,7 @@ def main():
 
     # ── Print config ─────────────────────────────────────────────────
     print(f"\n{'=' * 60}")
-    print(f"  Closed-Loop RTC (Flow Matching / QwenPI)")
+    print(f"  Closed-Loop RTC (Discrete Diffusion)")
     print(f"  Arm:              {args.arm}")
     print(f"  Instruction:      \"{args.instruction}\"")
     print(f"  n_actions:        {args.n_actions}")
@@ -1029,6 +1149,7 @@ def main():
     servo = ServoRunner(rtde_c, T_bw, gripper_hw, rtde_r=rtde_r,
                         grasp_trick=args.if_grasp_trick,
                         grasp_z_threshold=args.grasp_z_threshold,
+                        grasp_detect_threshold=args.grasp_detect_threshold,
                         gripper_state=gripper_state)
     servo.push_waypoints(current_pos, waypoints_init, grip_cmds_init)
 
@@ -1094,7 +1215,7 @@ def main():
                 traj_world[:, 1] = np.maximum(traj_world[:, 1], Y_MIN_WORLD)
                 traj_world[:, 2] = np.clip(traj_world[:, 2], Z_MIN_WORLD, Z_MAX_WORLD)
                 in_board = ((traj_world[:, 1] >= -0.4276)
-                            & (traj_world[:, 1] <= -0.2931))
+                            & (traj_world[:, 1] <= 0.2931))
                 traj_world[in_board, 2] = np.maximum(
                     traj_world[in_board, 2], 0.125)
 
@@ -1103,13 +1224,23 @@ def main():
                 traj_base[:, 1] -= T_bw[1, 3]
                 traj_base[:, 2] -= T_bw[2, 3]
 
+                # Compute prev chunk delta trajectory (from origin)
+                prev_chunk_delta = None
+                if result.prev_unnorm_10d is not None:
+                    prev_deltas_7d = actions_10d_to_7d(result.prev_unnorm_10d)
+                    if args.fix_rotation:
+                        prev_deltas_7d[:, 3:6] = 0.0
+                    origin = [0.0] * 6
+                    prev_chunk_delta = accumulate_deltas(origin, prev_deltas_7d)
+
                 viz_path = rollout_dir / "images" / f"step_{step:04d}_viz.png"
                 visualize_step(
                     traj_world, traj_base, result.camera_image,
                     pose_world, list(pose_base), result.n_pushed,
-                    step, str(viz_path), args.instruction)
+                    step, str(viz_path), args.instruction,
+                    prev_chunk_delta=prev_chunk_delta)
 
-                rollout_log.append({
+                log_entry = {
                     "step": step,
                     "wall_time": time.time(),
                     "ee_pose_world": list(pose_world),
@@ -1122,7 +1253,12 @@ def main():
                     "infer_ms": round(result.infer_ms, 1),
                     "image_file": f"images/step_{step:04d}.jpg",
                     "viz_file": f"images/step_{step:04d}_viz.png",
-                })
+                }
+                if result.prev_norm is not None:
+                    log_entry["prev_norm"] = result.prev_norm.tolist()
+                if result.prev_unnorm_10d is not None:
+                    log_entry["prev_unnorm_10d"] = result.prev_unnorm_10d.tolist()
+                rollout_log.append(log_entry)
 
     except KeyboardInterrupt:
         print("\n\nStopped by user (Ctrl+C)")

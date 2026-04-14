@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Sync closed-loop control with discrete diffusion.
+Sync closed-loop control with flow matching (QwenPI).
 
 Receding-horizon loop:
   1. Read EE pose + grab camera frame
@@ -8,16 +8,15 @@ Receding-horizon loop:
   3. Execute first n_actions via interpolated servoL at 100Hz
   4. Repeat from step 1
 
+Based on ur5n/dd/closedloop_sync.py — identical robot control, safety clamps,
+and gripper tricks; adapted for QwenPI (no temperature params, image_size fix).
+
 Robot WILL move. Use Ctrl+C to stop.
 
-Safety:
-  - XYZ clamping (world frame, derived from dataset q01/q99 + margin)
-  - Rotation fixed by default (--no_fix_rotation to enable)
-
 Usage:
-    python ur5n/dd/closedloop_sync.py
-    python ur5n/dd/closedloop_sync.py --n_actions 8
-    python ur5n/dd/closedloop_sync.py --instruction "pick up the block"
+    python ur5n/fm/closedloop_sync.py
+    python ur5n/fm/closedloop_sync.py --n_actions 8
+    python ur5n/fm/closedloop_sync.py --instruction "pick up the block"
 """
 
 import sys
@@ -25,7 +24,6 @@ import os
 import time
 import json
 import argparse
-import threading
 from pathlib import Path
 
 import numpy as np
@@ -50,37 +48,17 @@ from starVLA.model.framework.base_framework import baseframework
 import modular_policy
 
 # ── Defaults ─────────────────────────────────────────────────────────
-# DEFAULT_CHECKPOINT = (
-#     "checkpoints/discreteRTC/fastumi_pickandplace_qwenDiscreteDiffusion_329v4/"
-#     "checkpoints/steps_20000_pytorch_model.pt"
-# )
-
 DEFAULT_CHECKPOINT = (
-    "checkpoints/discreteRTC/fastumi_pickandplace_qwenDiscreteDiffusion_0409_0_pick_to_moved_filtered/"
-    "checkpoints/steps_30000_pytorch_model.pt"
+    "checkpoints/discreteRTC/fastumi_pickandplace_qwenPI_329v4/"
+    "checkpoints/steps_15000_pytorch_model.pt"
 )
-
-
 DEFAULT_INSTRUCTION = "Pick up the purple block and place it on the red area of the board"
-DECODE_TEMPERATURE = 0.0
-CHOICE_TEMPERATURE = 0.1
 
 CONTROL_HZ = 20
 INTERP_MULT = 5
 SERVO_HZ = CONTROL_HZ * INTERP_MULT  # 100Hz
+
 # Safety clamp bounds in world frame (meters).
-#
-# World↔base conversion (left arm, R_bw = I, pure translation):
-#   pos_world = pos_base + [0.80, -0.22, 0.02]
-#   pos_base  = pos_world - [0.80, -0.22, 0.02]
-#
-# So these world-frame clamps correspond to base-frame clamps:
-#   y_world > -0.50  →  y_base > -0.50 + 0.22 = -0.28
-#   z_world >  0.03  →  z_base >  0.03 - 0.02 =  0.01
-#   z_world <  0.30  →  z_base <  0.30 - 0.02 =  0.28
-#
-# BUG HISTORY: Y_MIN_WORLD was 0.05 but actual y ~ -0.428. The clamp
-# (y < 0.05 → y = 0.05) would jerk the robot +0.48m every step.
 Y_MIN_WORLD = -0.50
 Z_MIN_WORLD = 0.03
 Z_MAX_WORLD = 0.30
@@ -95,43 +73,16 @@ BASE_IN_WORLD = {
 ROBOT_IPS = {'left': '192.168.0.3', 'right': '192.168.0.2'}
 
 # ── SLAM → gripper rotation correction ──────────────────────────────
-#
-# The home poses below come from the SLAM trajectory file
-# (slam_raw_pose_worldframe_downsampled.txt). The SLAM tracker is
-# mounted on the gripper but its local axes differ from the gripper's:
-#
-#   SLAM device axes:   x_slam, y_slam, z_slam
-#   Gripper axes:        x_grip = z_slam
-#                        y_grip = x_slam
-#                        z_grip = y_slam
-#
-# So:  R_gripper = R_slam @ T_SLAM_GRIPPER^T
-#      where T_SLAM_GRIPPER^T = [[0,0,1],[1,0,0],[0,1,0]]
-#
-# If we skip this correction and send the raw SLAM rotation to the UR5,
-# the robot will orient its gripper to match the SLAM device's axes
-# instead of the intended gripper orientation — the end-effector will
-# point in the wrong direction.
-#
-# The replay_dataset.py script (load_session, line 131-134) applies the
-# same correction when replaying raw SLAM trajectories on the robot.
-# Position (x,y,z) is unaffected — it's already in world frame.
-# ─────────────────────────────────────────────────────────────────────
 
 def slam_to_gripper_rotation(rotvec):
-    """Correct SLAM device rotation to UR5 gripper rotation."""
-    T_inv = np.array([[0, 0, 1], [1, 0, 0], [0, 1, 0]])  # T_SLAM_GRIPPER^T
+    T_inv = np.array([[0, 0, 1], [1, 0, 0], [0, 1, 0]])
     R = Rot.from_rotvec(rotvec).as_matrix() @ T_inv
     return Rot.from_matrix(R).as_rotvec()
 
-
-# Raw poses from SLAM file (rotation in SLAM device frame)
 _HOME_SLAM = {
-    'left': [0.25666, -0.428459, 0.185173, 2.130869, 0.107971, -2.304919, 1],
+    'left': [0.155666, -0.428459, 0.185173, 2.130869, 0.107971, -2.304919, 1],
     'right': [-0.1, -0.3, 0.25, 2.2419, -2.1984, 0.0166, 1],
 }
-
-# Convert to gripper frame for UR5
 HOME_POSES_WORLD = {}
 for _arm, _pose in _HOME_SLAM.items():
     _rot_corrected = slam_to_gripper_rotation(np.array(_pose[3:6]))
@@ -143,8 +94,6 @@ for _arm, _pose in _HOME_SLAM.items():
 # ═══════════════════════════════════════════════════════════════════
 
 class RealCamera:
-    """V4L2 camera with background reader thread for low-latency grabs."""
-
     def __init__(self, dev=0, width=1920, height=1080, fps=30):
         self.dev = dev
         self.W = width
@@ -163,29 +112,20 @@ class RealCamera:
             pass
         print(f"[Camera] /dev/video{dev} opened, {width}x{height}@{fps}fps")
 
-        self._latest_raw = None
-        self._frame_lock = threading.Lock()
-        self._running = True
-        self._reader_thread = threading.Thread(target=self._reader_loop, daemon=True)
-        self._reader_thread.start()
-
-    def _reader_loop(self):
-        while self._running:
-            ok, raw = self.cap.read()
-            if ok:
-                with self._frame_lock:
-                    self._latest_raw = raw.copy()
-
     def grab_rgb(self):
-        with self._frame_lock:
-            raw = self._latest_raw
-        if raw is None:
+        ok, raw = self.cap.read()
+        if not ok:
             return None
         yuv = np.ascontiguousarray(raw).reshape(self.H * 3 // 2, self.W)
         bgr = cv2.cvtColor(yuv, cv2.COLOR_YUV2BGR_I420)
         return cv2.cvtColor(bgr, cv2.COLOR_BGR2RGB)
 
+    def flush(self, n=5):
+        for _ in range(n):
+            self.cap.read()
+
     def grab_pil(self):
+        self.flush()
         rgb = self.grab_rgb()
         if rgb is None:
             return None
@@ -195,8 +135,6 @@ class RealCamera:
         return Image.fromarray(rgb[top:top + s, left:left + s])
 
     def close(self):
-        self._running = False
-        self._reader_thread.join(timeout=2.0)
         self.cap.release()
 
 
@@ -232,7 +170,6 @@ def rot6d_to_axisangle(d6):
 
 
 def action_10d_to_delta7d(action_10d):
-    """Single 10D action → 7D delta [dx,dy,dz,drx,dry,drz,gripper]."""
     delta = np.zeros(7, dtype=np.float32)
     delta[:3] = action_10d[:3]
     delta[3:6] = rot6d_to_axisangle(action_10d[3:9])
@@ -287,7 +224,7 @@ def precise_wait(t_end, slack=0.001):
 
 
 # ═══════════════════════════════════════════════════════════════════
-#  Model loading
+#  Model loading (QwenPI / Flow Matching)
 # ═══════════════════════════════════════════════════════════════════
 
 def _detect_attn():
@@ -315,11 +252,16 @@ def load_model(checkpoint_path):
     model.load_state_dict(state_dict, strict=True)
     model = model.to("cuda").eval()
 
+    # QwenPI checkpoint may lack image_size — set it so predict_action
+    # resizes inputs to match training resolution.
     if not getattr(config.datasets.vla_data, "image_size", None):
         config.datasets.vla_data.image_size = [224, 224]
         print("[FIX] Set image_size=[224,224]")
 
     print(f"Model loaded in {time.time() - t0:.1f}s  chunk_len={model.chunk_len}")
+    print(f"  framework: {config.framework.name}")
+    nit = getattr(config.framework.action_model, 'num_inference_timesteps', 'N/A')
+    print(f"  num_inference_timesteps: {nit}")
     return model
 
 
@@ -354,8 +296,6 @@ def go_home(rtde_c, rtde_r, arm, T_bw, robot_ip):
 def visualize_step(traj_world, traj_base, camera_image,
                    current_world, current_base, n_exec,
                    step, save_path, instruction):
-    """Camera (left) + world trajectory (mid) + base trajectory (right).
-    Solid = executed, dashed = predicted-only."""
     T = traj_world.shape[0]
     ts = np.arange(T) / 20.0
 
@@ -375,10 +315,8 @@ def visualize_step(traj_world, traj_base, camera_image,
         (6, "gripper", "#ff7f00", None, None),
     ]
 
-    axes_w = []
-    axes_b = []
+    axes_w, axes_b = [], []
     for row, (dim_idx, name, color, sw, sb) in enumerate(dims):
-        # World frame column
         share_w = axes_w[0] if axes_w else None
         ax_w = fig.add_subplot(gs[row, 1], sharex=share_w)
         axes_w.append(ax_w)
@@ -405,7 +343,6 @@ def visualize_step(traj_world, traj_base, camera_image,
         else:
             ax_w.set_xlabel("Time (s)  solid=exec  dashed=pred", fontsize=9)
 
-        # Base frame column
         share_b = axes_b[0] if axes_b else None
         ax_b = fig.add_subplot(gs[row, 2], sharex=share_b)
         axes_b.append(ax_b)
@@ -435,7 +372,7 @@ def visualize_step(traj_world, traj_base, camera_image,
     cw = current_world
     cb = current_base
     fig.suptitle(
-        f'Closed-Loop Sync (DD) — Step {step}\n'
+        f'Closed-Loop Sync (FM) — Step {step}\n'
         f'"{instruction}"\n'
         f'World: [{cw[0]:.4f}, {cw[1]:.4f}, {cw[2]:.4f}, {cw[3]:.4f}, {cw[4]:.4f}, {cw[5]:.4f}]\n'
         f'Base:  [{cb[0]:.4f}, {cb[1]:.4f}, {cb[2]:.4f}, {cb[3]:.4f}, {cb[4]:.4f}, {cb[5]:.4f}]',
@@ -451,58 +388,40 @@ def visualize_step(traj_world, traj_base, camera_image,
 
 def main():
     parser = argparse.ArgumentParser(
-        description="Sync closed-loop control with discrete diffusion")
+        description="Sync closed-loop control with flow matching (QwenPI)")
     parser.add_argument("--checkpoint", type=str, default=DEFAULT_CHECKPOINT)
     parser.add_argument("--arm", choices=["left", "right"], default="left")
     parser.add_argument("--camera_dev", type=int, default=0)
     parser.add_argument("--instruction", type=str, default=DEFAULT_INSTRUCTION)
-    parser.add_argument("--n_actions", type=int, default=16,
+    parser.add_argument("--n_actions", type=int, default=8,
                         help="Number of predicted actions to execute per inference")
     parser.add_argument("--n_actions_after_grasp", type=int, default=16,
-                        help="Number of actions to execute for the first N chunks after grasping")
+                        help="Actions per chunk for first N chunks after grasping")
     parser.add_argument("--n_chunks_after_grasp", type=int, default=2,
-                        help="How many chunks to use n_actions_after_grasp (default: 2)")
+                        help="How many chunks to use n_actions_after_grasp")
     parser.add_argument("--max_steps", type=int, default=0,
                         help="Max inference steps (0=unlimited, Ctrl+C to stop)")
     parser.add_argument("--no_go_home", action="store_true", default=False)
-    parser.add_argument("--decode_temperature", type=float, default=DECODE_TEMPERATURE)
-    parser.add_argument("--choice_temperature", type=float, default=CHOICE_TEMPERATURE)
-    parser.add_argument("--use_simple_max", action="store_true", default=False)
-    parser.add_argument("--fix_rotation", action="store_true", default=True,
-                        help="Zero out rotation deltas (default: True)")
+    parser.add_argument("--fix_rotation", action="store_true", default=True)
     parser.add_argument("--no_fix_rotation", dest="fix_rotation",
-                        action="store_false",
-                        help="Enable rotation control from policy")
+                        action="store_false")
     parser.add_argument("--if_grasped_not_release", action="store_true",
-                        default=True,
-                        help="Once gripper closes, keep it closed (default: True)")
+                        default=True)
     parser.add_argument("--allow_release", dest="if_grasped_not_release",
-                        action="store_false",
-                        help="Allow gripper to re-open after grasping")
+                        action="store_false")
     parser.add_argument("--if_grasp_delay_temp_solution", action="store_true",
-                        default=False,
-                        help="Use more actions for N chunks after grasping (default: True)")
+                        default=True)
     parser.add_argument("--no_grasp_delay", dest="if_grasp_delay_temp_solution",
-                        action="store_false",
-                        help="Disable post-grasp extended execution")
+                        action="store_false")
     parser.add_argument("--if_release_when_reach_temp", action="store_true",
-                        default=True,
-                        help="Allow release when y >= release_y_threshold, then exit (default: True)")
+                        default=True)
     parser.add_argument("--no_release_when_reach", dest="if_release_when_reach_temp",
-                        action="store_false",
-                        help="Disable auto-release at target zone")
-    parser.add_argument("--release_y_threshold", type=float, default=-0.338,
-                        help="Y world-frame threshold for allowing release (default: -0.338)")
-    parser.add_argument("--grasp_detect_threshold", type=int, default=200,
-                        help="Gripper position threshold to confirm actual grasp "
-                             "(0-255, empty close ~230, default 200)")
-    parser.add_argument("--if_grasp_trick", action="store_true", default=True,
-                        help="Only allow gripper close when z < grasp_z_threshold (default: True)")
+                        action="store_false")
+    parser.add_argument("--release_y_threshold", type=float, default=-0.318)
+    parser.add_argument("--if_grasp_trick", action="store_true", default=True)
     parser.add_argument("--no_grasp_trick", dest="if_grasp_trick",
-                        action="store_false",
-                        help="Allow gripper close at any height")
-    parser.add_argument("--grasp_z_threshold", type=float, default=0.036,
-                        help="Z world-frame threshold below which grasping is allowed (default: 0.036)")
+                        action="store_false")
+    parser.add_argument("--grasp_z_threshold", type=float, default=0.04)
     parser.add_argument("--save_rollout", action="store_true", default=False)
     parser.add_argument("--no_save_rollout", dest="save_rollout",
                         action="store_false")
@@ -519,12 +438,6 @@ def main():
     action_stats = norm_stats[dataset_key]["action"]
     print(f"Norm stats: dataset='{dataset_key}', "
           f"modes={action_stats.get('norm_modes', 'legacy')}")
-
-    infer_kwargs = dict(
-        decode_temperature=args.decode_temperature,
-        choice_temperature=args.choice_temperature,
-        use_simple_max=args.use_simple_max,
-    )
 
     # ── Connect to robot ─────────────────────────────────────────────
     from rtde_control import RTDEControlInterface
@@ -544,9 +457,10 @@ def main():
     # ── Open camera ──────────────────────────────────────────────────
     print(f"Opening camera /dev/video{args.camera_dev}...")
     cam = RealCamera(dev=args.camera_dev)
-    print("Waiting for first frame from background reader...")
-    while cam.grab_rgb() is None:
-        time.sleep(0.05)
+    print("Warming up camera (2s)...")
+    t_warm = time.monotonic() + 2.0
+    while time.monotonic() < t_warm:
+        cam.grab_rgb()
     print("Camera ready.")
 
     # ── Go home ──────────────────────────────────────────────────────
@@ -559,7 +473,7 @@ def main():
     rollout_dir = None
     if args.save_rollout:
         ts = time.strftime("%Y%m%d_%H%M%S")
-        rollout_dir = Path("ur5n/dd/rollouts") / f"sync_{ts}"
+        rollout_dir = Path("ur5n/fm/rollouts") / f"sync_{ts}"
         rollout_dir.mkdir(parents=True, exist_ok=True)
         (rollout_dir / "images").mkdir(exist_ok=True)
         print(f"Rollout: {rollout_dir}")
@@ -576,8 +490,6 @@ def main():
             "y_min_world": Y_MIN_WORLD,
             "z_bounds_world": [Z_MIN_WORLD, Z_MAX_WORLD],
             "fix_rotation": args.fix_rotation,
-            "decode_temperature": args.decode_temperature,
-            "choice_temperature": args.choice_temperature,
             "dataset_key": dataset_key,
         }
         with open(rollout_dir / "config.json", "w") as f:
@@ -585,7 +497,7 @@ def main():
 
     # ── Print config ─────────────────────────────────────────────────
     print(f"\n{'=' * 60}")
-    print(f"  Closed-Loop Sync (Discrete Diffusion)")
+    print(f"  Closed-Loop Sync (Flow Matching / QwenPI)")
     print(f"  Arm:             {args.arm}")
     print(f"  Instruction:     \"{args.instruction}\"")
     print(f"  n_actions:       {args.n_actions}")
@@ -601,8 +513,7 @@ def main():
 
     # ── Control loop ─────────────────────────────────────────────────
     step = 0
-    chunks_since_grasp = None  # None = not yet grasped
-    object_grasped = False
+    chunks_since_grasp = None
     try:
         while args.max_steps == 0 or step < args.max_steps:
             loop_t0 = time.monotonic()
@@ -618,32 +529,16 @@ def main():
                 print("[WARN] Camera frame dropped, retrying...")
                 continue
 
-            # 3. Inference
+            # 3. Inference (FM: no temperature kwargs)
             example = {"image": [pil_img], "lang": args.instruction}
             t_infer = time.monotonic()
-            output = model.predict_action(examples=[example], **infer_kwargs)
+            output = model.predict_action(examples=[example])
             infer_ms = (time.monotonic() - t_infer) * 1000
 
             pred_normalized = output["normalized_actions"][0].astype(np.float32)
             pred_10d = baseframework.unnormalize_actions(pred_normalized, action_stats)
 
             # 4. Convert to absolute world-frame waypoints
-            #
-            # if_grasp_delay_temp_solution (temporary workaround):
-            #   Problem: After grasping, the policy often predicts small/hesitant
-            #   deltas for the first few chunks, causing the robot to "get stuck"
-            #   near the grasp location instead of lifting and moving to the target.
-            #   This happens because the closed-loop re-inference sees the object
-            #   still near the grasp point and keeps predicting grasp-like actions.
-            #
-            #   Solution: For the first N chunks after the gripper closes, execute
-            #   more actions per chunk (e.g. 12 instead of 8). This lets the robot
-            #   commit to a longer horizon and move away from the grasp location
-            #   before re-inferring, breaking the "stuck" loop.
-            #
-            #   This is a TEMPORARY fix — ideally the policy should handle this
-            #   natively, e.g. via action chunking with temporal ensembling or
-            #   by conditioning on gripper state.
             if (args.if_grasp_delay_temp_solution
                     and chunks_since_grasp is not None
                     and chunks_since_grasp < args.n_chunks_after_grasp):
@@ -654,7 +549,7 @@ def main():
             n_exec = min(n_actions, len(pred_10d))
             waypoints = np.zeros((n_exec, 6), dtype=np.float64)
             pos = current_pos[:3].copy()
-            rot = current_pos[3:6].copy()  # fixed rotation
+            rot = current_pos[3:6].copy()
 
             task_finished = False
             for i in range(n_exec):
@@ -670,76 +565,41 @@ def main():
                 # Safety clamps (world frame)
                 pos[1] = max(pos[1], Y_MIN_WORLD)
                 pos[2] = np.clip(pos[2], Z_MIN_WORLD, Z_MAX_WORLD)
-                # Board zone: y in [-0.4276, 0.2931] has obstacles, enforce z > 0.125
-                if -0.4276 <= pos[1] <= 0.2931:
+                if -0.4276 <= pos[1] <= -0.2931:
                     pos[2] = max(pos[2], 0.125)
 
                 waypoints[i, :3] = pos
                 waypoints[i, 3:6] = rot
 
-                # Handle gripper on transition
+                # Handle gripper
                 new_gripper = float(delta[6])
 
-                # if_release_when_reach_temp:
-                #   When the robot has grasped an object and carried it to the
-                #   target zone (y >= release_y_threshold), lift the grasped_not_release
-                #   lock so the policy can open the gripper to place the object.
-                #   Once it actually releases, the task is considered done → exit.
                 reached_target = (args.if_release_when_reach_temp
                                   and current_gripper > 0.5
-                                  and object_grasped
                                   and pos[1] >= args.release_y_threshold)
 
                 if reached_target and new_gripper <= 0.5:
-                    # At target zone, policy says open → release and finish
                     print(f"  Gripper -> RELEASE at target (y={pos[1]:.4f} >= {args.release_y_threshold})")
                     gripper_hw.move(0, 255, 150)
                     current_gripper = 0.0
-                    object_grasped = False
-                    # Execute remaining waypoints up to this point, then exit
                     n_exec = i + 1
                     waypoints = waypoints[:n_exec]
                     task_finished = True
                     break
-                elif (args.if_grasped_not_release
-                      and current_gripper > 0.5
-                      and object_grasped
-                      and new_gripper <= 0.5):
-                    pass  # keep closed, not at target yet
+                elif args.if_grasped_not_release and current_gripper > 0.5 and new_gripper <= 0.5:
+                    pass
                 elif (new_gripper > 0.5) != (current_gripper > 0.5):
-                    # if_grasp_trick: only allow closing when z is low enough
-                    # (near table surface), prevents premature grasping in mid-air
                     if (args.if_grasp_trick
                             and new_gripper > 0.5
                             and pos[2] >= args.grasp_z_threshold):
-                        continue  # too high, skip close command
+                        continue
                     grip_pos = int(new_gripper * 255)
                     label = "CLOSE" if new_gripper > 0.5 else "OPEN"
                     print(f"  Gripper -> {label} (pos={grip_pos})")
                     gripper_hw.move(grip_pos, 255, 150)
                     current_gripper = new_gripper
-
-                    # Verify actual grasp after closing
-                    if new_gripper > 0.5:
-                        actual_pos = gripper_hw.get_current_position()
-                        if actual_pos < args.grasp_detect_threshold:
-                            object_grasped = True
-                            print(f"  [GRASP_DETECT] Object grasped "
-                                  f"(pos={actual_pos} < {args.grasp_detect_threshold})")
-                        else:
-                            object_grasped = False
-                            current_gripper = 0.0
-                            chunks_since_grasp = None
-                            print(f"  [GRASP_DETECT] Empty grasp "
-                                  f"(pos={actual_pos} >= {args.grasp_detect_threshold}), "
-                                  f"re-opening gripper")
-                            gripper_hw.move(0, 255, 150)
-                    else:
-                        object_grasped = False
-
-                    # Start post-grasp counter on first close
                     if (args.if_grasp_delay_temp_solution
-                            and object_grasped
+                            and new_gripper > 0.5
                             and chunks_since_grasp is None):
                         chunks_since_grasp = 0
 
@@ -767,16 +627,13 @@ def main():
                 img_path = rollout_dir / "images" / f"step_{step:04d}.jpg"
                 pil_img.save(str(img_path), quality=90)
 
-                # Build full predicted trajectory for viz
                 all_deltas_7d = actions_10d_to_7d(pred_10d)
                 if args.fix_rotation:
                     all_deltas_7d[:, 3:6] = 0.0
                 traj_world = accumulate_deltas(pose_world, all_deltas_7d)
-                # Safety clamps for viz (match execution clamps)
                 traj_world[:, 1] = np.maximum(traj_world[:, 1], Y_MIN_WORLD)
                 traj_world[:, 2] = np.clip(traj_world[:, 2], Z_MIN_WORLD, Z_MAX_WORLD)
-                # Board zone constraint
-                in_board = (traj_world[:, 1] >= -0.4276) & (traj_world[:, 1] <= 0.2931)
+                in_board = (traj_world[:, 1] >= -0.4276) & (traj_world[:, 1] <= -0.2931)
                 traj_world[in_board, 2] = np.maximum(traj_world[in_board, 2], 0.125)
 
                 traj_base = traj_world.copy()

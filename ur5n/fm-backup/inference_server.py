@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-StarVLA inference server (dd/ — pick-from-static, place-on-turntable variant).
+StarVLA inference server (fm/ — flow matching / QwenPI variant).
 
 Loads the model once into GPU memory and serves predict_action /
 predict_action_realtime requests over a Unix-domain socket. Pair with
@@ -12,16 +12,16 @@ client-side code: keep the server running in one terminal, edit and re-run
 the closed-loop script in another. The model stays warm in GPU memory
 across many client runs.
 
-Default socket is /tmp/starvla_infer_dd.sock so this server can run side
-by side with the 2dd/ server (which uses /tmp/starvla_infer.sock).
+Default socket is /tmp/starvla_infer_fm.sock so this server can run side
+by side with the dd/ server (which uses /tmp/starvla_infer_dd.sock).
 
 Usage:
     # Terminal 1 — start the server (load once, leave running)
-    python ur5n/dd/inference_server.py
-    # optional: --checkpoint <path>  --socket /tmp/starvla_infer_dd.sock
+    python ur5n/fm/inference_server.py
+    # optional: --checkpoint <path>  --socket /tmp/starvla_infer_fm.sock
 
     # Terminal 2 — run the closed-loop script (defaults to --use_server)
-    python ur5n/dd/closedloop_rtc_v6.py
+    python ur5n/fm/closedloop_rtc_v6.py
 
 Wire format (pickle over multiprocessing.connection):
     request:  {'cmd': 'info'}
@@ -58,10 +58,10 @@ from starVLA.model.framework.share_tools import read_mode_config, dict_to_namesp
 from starVLA.model.framework import build_framework
 
 DEFAULT_CHECKPOINT = (
-    "checkpoints/discreteRTC/fastumi_pickandplace_qwenDiscreteDiffusion_0409_0_pick_to_moved_filtered/"
-    "checkpoints/steps_30000_pytorch_model.pt"
+    "checkpoints/discreteRTC/fastumi_pickandplace_qwenPI_329v4/"
+    "checkpoints/steps_15000_pytorch_model.pt"
 )
-DEFAULT_SOCKET = "/tmp/starvla_infer_dd.sock"
+DEFAULT_SOCKET = "/tmp/starvla_infer_fm.sock"
 AUTHKEY = b'starvla'
 
 
@@ -205,7 +205,7 @@ def serve(socket_path, checkpoint_path):
 
 def main():
     parser = argparse.ArgumentParser(
-        description="StarVLA inference server — dd/ pick-to-turntable variant "
+        description="StarVLA inference server — fm/ flow matching (QwenPI) variant "
                     "(load model once, serve over IPC)")
     parser.add_argument("--checkpoint", type=str, default=DEFAULT_CHECKPOINT)
     parser.add_argument("--socket", type=str, default=DEFAULT_SOCKET,
