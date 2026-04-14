@@ -46,7 +46,7 @@ class RemoteModel:
         except (FileNotFoundError, ConnectionRefusedError) as e:
             raise RuntimeError(
                 f"Could not connect to inference server at {socket_path}: {e}\n"
-                f"  Start it first:  python ur5n/2dd/inference_server.py"
+                f"  Start it first:  python ur5n/2fm/inference_server.py"
             ) from e
 
         # Fetch metadata so the rest of the script doesn't need the model

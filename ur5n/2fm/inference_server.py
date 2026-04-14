@@ -14,11 +14,11 @@ across many client runs.
 
 Usage:
     # Terminal 1 — start the server (load once, leave running)
-    python ur5n/2dd/inference_server.py
+    python ur5n/2fm/inference_server.py
     # optional: --checkpoint <path>  --socket /tmp/starvla_infer.sock
 
     # Terminal 2 — run the closed-loop script (defaults to --use_server)
-    python ur5n/2dd/closedloop_rtc_v6.py
+    python ur5n/2fm/closedloop_rtc_v7.py
 
 Wire format (pickle over multiprocessing.connection):
     request:  {'cmd': 'info'}

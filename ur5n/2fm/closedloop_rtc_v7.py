@@ -900,6 +900,21 @@ class Inferencer:
             example = {"image": [pil_img], "lang": self._instruction}
             prev_norm_batch = prev_action_chunk[np.newaxis, ...]
 
+            # FM's predict_action_realtime requires prev of full chunk_len
+            # (DD pads internally; FM does not). The ΠGDM weight schedule
+            # assigns weight=0 to the last `suffix_length` positions (default
+            # = inference_delay), so zero-padding there is harmless when
+            # n_actions == inference_delay (suffix zone == missing prev).
+            T_prev = prev_norm_batch.shape[1]
+            if T_prev < self._chunk_len:
+                pad = np.zeros(
+                    (prev_norm_batch.shape[0],
+                     self._chunk_len - T_prev,
+                     prev_norm_batch.shape[2]),
+                    dtype=prev_norm_batch.dtype,
+                )
+                prev_norm_batch = np.concatenate([prev_norm_batch, pad], axis=1)
+
             start_evt = torch.cuda.Event(enable_timing=True)
             end_evt = torch.cuda.Event(enable_timing=True)
             start_evt.record()

@@ -749,8 +749,8 @@ class ServoRunner:
                   f"(Δz={dz:.4f}), skipping moveL")
 
         # 4. Close gripper.
-        print(f"  Gripper -> CLOSE (snap, pos=255)")
-        self._gripper_hw.move(255, 255, 150)
+        print(f"  Gripper -> CLOSE (snap, pos=255, force=255)")
+        self._gripper_hw.move(255, 255, 255)
 
         # 5. Wait for fingers to physically settle.
         time.sleep(self._grasp_settle_s)
@@ -1259,6 +1259,10 @@ def main():
     print(f"{'=' * 60}\n")
 
     try:
+        try:
+            input("\nPress ENTER to start the episode (Ctrl+C to abort)... ")
+        except EOFError:
+            pass
         run_episode(model, cam, rtde_c, rtde_r, gripper_hw, T_bw,
                     args, infer_kwargs, action_stats, chunk_len,
                     episode_num=1)

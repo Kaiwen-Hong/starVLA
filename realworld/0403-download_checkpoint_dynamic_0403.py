@@ -50,6 +50,7 @@ def main():
         "fastumi_pickandplace_qwenDiscreteDiffusion_0409_0_pick_to_moved_filtered",
         "fastumi_pickandplace_qwenDiscreteDiffusion_0403_1_pick_from_moved",
         "fastumi_pickandplace_qwenPI_0409_0_pick_to_moved_filtered",
+        "fastumi_pickandplace_qwenPI_0403_1_pick_from_moved"
     ]
 
     ignore_patterns = [f"{m}/final_model/**" for m in models]

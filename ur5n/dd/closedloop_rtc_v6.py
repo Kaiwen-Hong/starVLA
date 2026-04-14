@@ -95,7 +95,8 @@ def slam_to_gripper_rotation(rotvec):
     return Rot.from_matrix(R).as_rotvec()
 
 _HOME_SLAM = {
-    'left': [0.25666, -0.428459, 0.185173, 2.130869, 0.107971, -2.304919, 1],
+    # 'left': [0.25666, -0.428459, 0.185173, 2.130869, 0.107971, -2.304919, 1],
+    'left': [0.266716, -0.498155, 0.234938, 2.257823, 0.107971, -2.304919, 1],
     'right': [-0.1, -0.3, 0.25, 2.2419, -2.1984, 0.0166, 1],
 }
 HOME_POSES_WORLD = {}
@@ -1180,8 +1181,8 @@ def main():
     parser.add_argument("--arm", choices=["left", "right"], default="left")
     parser.add_argument("--camera_dev", type=int, default=0)
     parser.add_argument("--instruction", type=str, default=DEFAULT_INSTRUCTION)
-    parser.add_argument("--n_actions", type=int, default=5)
-    parser.add_argument("--inference_delay", type=int, default=5)
+    parser.add_argument("--n_actions", type=int, default=4)
+    parser.add_argument("--inference_delay", type=int, default=4)
     parser.add_argument("--n_actions_after_grasp", type=int, default=16)
     parser.add_argument("--n_chunks_after_grasp", type=int, default=2)
     parser.add_argument("--max_steps", type=int, default=0,
@@ -1209,7 +1210,7 @@ def main():
     parser.add_argument("--no_release_when_reach", dest="if_release_when_reach_temp",
                         action="store_false")
     parser.add_argument("--release_y_threshold", type=float, default=-0.318)
-    parser.add_argument("--tricks_release_z_constraint", type=float, default=0.12,
+    parser.add_argument("--tricks_release_z_constraint", type=float, default=0.13,
                         help="Only release if z <= this value. Pass 'none' to disable.")
     parser.add_argument("--no_tricks_release_z_constraint",
                         dest="tricks_release_z_constraint",
