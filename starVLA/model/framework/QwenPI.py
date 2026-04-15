@@ -195,7 +195,7 @@ class Qwen_PI(baseframework):
         normalized_actions = pred_actions.detach().cpu().numpy()
         return {"normalized_actions": normalized_actions}
 
-    @torch.inference_mode()
+    @torch.no_grad()
     def predict_action_realtime(
         self,
         examples: List[dict] = None,
