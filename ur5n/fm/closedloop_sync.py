@@ -315,6 +315,10 @@ def load_model(checkpoint_path):
     model.load_state_dict(state_dict, strict=True)
     model = model.to("cuda").eval()
 
+    # Match 2dd's num_inference_timesteps=8 for fair fm↔dd comparison.
+    model.action_model.num_inference_timesteps = 8
+    print(f"num_inference_timesteps set to {model.action_model.num_inference_timesteps}")
+
     if not getattr(config.datasets.vla_data, "image_size", None):
         config.datasets.vla_data.image_size = [224, 224]
         print("[FIX] Set image_size=[224,224]")
