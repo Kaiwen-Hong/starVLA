@@ -58,7 +58,7 @@ from starVLA.model.framework.share_tools import read_mode_config, dict_to_namesp
 from starVLA.model.framework import build_framework
 
 DEFAULT_CHECKPOINT = (
-    "results/Checkpoints/fastumi_pickandplace_qwenPI_0403_1_pick_from_moved/"
+    "checkpoints/discreteRTC/fastumi_pickandplace_qwenPI_0403_1_pick_from_moved/"
     "checkpoints/steps_30000_pytorch_model.pt"
 )
 DEFAULT_SOCKET = "/tmp/starvla_infer_2fm.sock"

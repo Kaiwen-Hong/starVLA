@@ -51,7 +51,7 @@ import modular_policy
 
 # ── Defaults ─────────────────────────────────────────────────────────
 DEFAULT_CHECKPOINT = (
-    "results/Checkpoints/fastumi_pickandplace_qwenPI_0403_1_pick_from_moved/"
+    "checkpoints/discreteRTC/fastumi_pickandplace_qwenDiscreteDiffusion_0403_1_pick_from_moved/"
     "checkpoints/steps_30000_pytorch_model.pt"
 )
 
@@ -466,7 +466,7 @@ def main():
     parser.add_argument("--arm", choices=["left", "right"], default="left")
     parser.add_argument("--camera_dev", type=int, default=0)
     parser.add_argument("--instruction", type=str, default=DEFAULT_INSTRUCTION)
-    parser.add_argument("--n_actions", type=int, default=16,
+    parser.add_argument("--n_actions", type=int, default=8,
                         help="Number of predicted actions to execute per inference")
     parser.add_argument("--n_actions_after_grasp", type=int, default=16,
                         help="Number of actions to execute for the first N chunks after grasping")
@@ -513,16 +513,34 @@ def main():
                              "For pick-from-turntable: turntable surface is at "
                              "TURNTABLE_SURFACE_Z=0.101, so 0.117 gives a ~1.6cm grasp "
                              "window above the surface (default: 0.117)")
-    parser.add_argument("--save_rollout", action="store_true", default=True)
+    parser.add_argument("--save_rollout", action="store_true", default=False)
     parser.add_argument("--no_save_rollout", dest="save_rollout",
                         action="store_false")
+    # ── Inference server (mirrors closedloop_rtc_v7). Default ON: start
+    # `python ur5n/2fm/inference_server.py` in another terminal first,
+    # then this script connects via Unix socket and proxies all
+    # predict_action calls to it. Pass --no_use_server for the legacy
+    # in-process load.
+    parser.add_argument("--use_server", action="store_true", default=True,
+                        help="Connect to inference_server.py over a Unix "
+                             "socket instead of loading the model in-process.")
+    parser.add_argument("--no_use_server", dest="use_server",
+                        action="store_false",
+                        help="Load the model in-process (legacy ~30s startup)")
+    parser.add_argument("--server_socket", type=str,
+                        default="/tmp/starvla_infer_2fm.sock")
     args = parser.parse_args()
 
     T_bw = BASE_IN_WORLD[args.arm]
     servo_dt = 1.0 / SERVO_HZ
 
-    # ── Load model ───────────────────────────────────────────────────
-    model = load_model(args.checkpoint)
+    # ── Load model (in-process or remote via inference_server.py) ────
+    if args.use_server:
+        from remote_model import RemoteModel
+        model = RemoteModel(args.server_socket)
+        args.checkpoint = model.checkpoint_path
+    else:
+        model = load_model(args.checkpoint)
     chunk_len = model.chunk_len
     norm_stats = model.norm_stats
     dataset_key = list(norm_stats.keys())[0]
@@ -932,6 +950,11 @@ def main():
         except Exception:
             pass
         cam.close()
+        if hasattr(model, 'close'):
+            try:
+                model.close()
+            except Exception:
+                pass
 
         if args.save_rollout and rollout_dir is not None and rollout_log:
             with open(rollout_dir / "rollout.json", "w") as f:
