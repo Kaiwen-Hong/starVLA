@@ -96,7 +96,7 @@ def load_model(checkpoint_path):
     return model
 
 
-def serve(socket_path, checkpoint_path):
+def serve(socket_path, checkpoint_path, injected_delay_ms=50):
     model = load_model(checkpoint_path)
 
     # Clean up stale socket file from a previous (crashed) server run.
@@ -107,6 +107,7 @@ def serve(socket_path, checkpoint_path):
 
     listener = Listener(socket_path, family='AF_UNIX', authkey=AUTHKEY)
     print(f"[server] Listening on {socket_path}")
+    print(f"[server] Injected post-inference delay: {injected_delay_ms} ms")
     print(f"[server] Ready. Ctrl+C to stop.")
 
     req_count = 0
@@ -175,6 +176,9 @@ def serve(socket_path, checkpoint_path):
                         print(f"[server] #{req_count} {cmd} "
                               f"in {elapsed_ms:.1f}ms")
 
+                    if injected_delay_ms > 0 and cmd in ('predict_action', 'predict_action_realtime'):
+                        time.sleep(injected_delay_ms / 1000.0)
+
                     try:
                         conn.send(reply)
                     except (BrokenPipeError, ConnectionResetError):
@@ -206,8 +210,12 @@ def main():
     parser.add_argument("--checkpoint", type=str, default=DEFAULT_CHECKPOINT)
     parser.add_argument("--socket", type=str, default=DEFAULT_SOCKET,
                         help=f"Unix socket path (default: {DEFAULT_SOCKET})")
+    parser.add_argument("--injected_delay", type=int, default=50,
+                        help="Artificial delay (ms) added after each inference "
+                             "call before sending the reply. Simulates slower "
+                             "models for RTC timing tests. Default: 50")
     args = parser.parse_args()
-    serve(args.socket, args.checkpoint)
+    serve(args.socket, args.checkpoint, args.injected_delay)
 
 
 if __name__ == "__main__":
