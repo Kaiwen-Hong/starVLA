@@ -1210,7 +1210,7 @@ def main():
     parser.add_argument("--no_release_when_reach", dest="if_release_when_reach_temp",
                         action="store_false")
     parser.add_argument("--release_y_threshold", type=float, default=-0.318)
-    parser.add_argument("--tricks_release_z_constraint", type=float, default=0.13,
+    parser.add_argument("--tricks_release_z_constraint", type=float, default=0.15,
                         help="Only release if z <= this value. Pass 'none' to disable.")
     parser.add_argument("--no_tricks_release_z_constraint",
                         dest="tricks_release_z_constraint",

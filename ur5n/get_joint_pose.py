@@ -35,13 +35,7 @@ def base_to_world(pose_base, T_bw):
     return pose_world
 
 
-@click.command()
-@click.option('--arm', '-a', default='left',
-              type=click.Choice(['left', 'right'], case_sensitive=False),
-              help="Which arm to read: left or right")
-def main(arm):
-    """Read and print current joint angles and EE pose"""
-
+def read_arm(arm):
     robot_ip = ROBOT_IPS[arm]
     print(f"Connecting to {arm} arm at {robot_ip}...")
 
@@ -60,6 +54,18 @@ def main(arm):
     print(f"  {[round(x, 6) for x in pose_world]}")
     print(f"\nEE Pose (base frame)  [x, y, z, rx, ry, rz]:")
     print(f"  {[round(x, 6) for x in pose_base]}")
+
+
+@click.command()
+@click.option('--arm', '-a', default='both',
+              type=click.Choice(['left', 'right', 'both'], case_sensitive=False),
+              help="Which arm to read: left, right, or both")
+def main(arm):
+    """Read and print current joint angles and EE pose"""
+
+    arms = ['left', 'right'] if arm == 'both' else [arm]
+    for a in arms:
+        read_arm(a)
 
 
 if __name__ == '__main__':

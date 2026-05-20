@@ -1181,8 +1181,8 @@ def main():
     parser.add_argument("--arm", choices=["left", "right"], default="left")
     parser.add_argument("--camera_dev", type=int, default=0)
     parser.add_argument("--instruction", type=str, default=DEFAULT_INSTRUCTION)
-    parser.add_argument("--n_actions", type=int, default=4)
-    parser.add_argument("--inference_delay", type=int, default=4)
+    parser.add_argument("--n_actions", type=int, default=5)
+    parser.add_argument("--inference_delay", type=int, default=5)
     parser.add_argument("--n_actions_after_grasp", type=int, default=16)
     parser.add_argument("--n_chunks_after_grasp", type=int, default=2)
     parser.add_argument("--max_steps", type=int, default=0,

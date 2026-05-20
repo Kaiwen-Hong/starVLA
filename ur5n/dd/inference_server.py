@@ -214,7 +214,7 @@ def main():
     parser.add_argument("--checkpoint", type=str, default=DEFAULT_CHECKPOINT)
     parser.add_argument("--socket", type=str, default=DEFAULT_SOCKET,
                         help=f"Unix socket path (default: {DEFAULT_SOCKET})")
-    parser.add_argument("--injected_delay", type=int, default=50,
+    parser.add_argument("--injected_delay", type=int, default=30,
                         help="Artificial delay (ms) added after each inference "
                              "call before sending the reply. Simulates slower "
                              "models for RTC timing tests. Default: 50")
