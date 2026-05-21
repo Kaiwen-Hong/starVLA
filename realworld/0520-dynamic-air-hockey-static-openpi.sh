@@ -23,7 +23,7 @@ accelerate launch \
   --framework.action_model.num_inference_timesteps 4 \
   --framework.action_model.num_target_vision_tokens 32 \
   --datasets.vla_data.data_root_dir playground/Datasets/FastUMI \
-  --datasets.vla_data.data_mix d1airhockey_strike_combined \
+  --datasets.vla_data.data_mix 1airhockey_strike_combined \
   --datasets.vla_data.include_state false \
   --datasets.vla_data.per_device_batch_size 8 \
   --datasets.vla_data.video_backend torchvision_av \
