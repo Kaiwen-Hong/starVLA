@@ -388,22 +388,31 @@ class LayerwiseDiscreteDiffusionActionHead(nn.Module):
         else:
             prefix_length = self.action_horizon - execution_horizon
 
-        # Pad prev_action_chunk to action_horizon if shorter (right-pad with zeros;
-        # padded positions fall under prefix_mask=False and get replaced by mask_token).
+        # Encode only the real (non-padded) prev-chunk positions. Positions
+        # the caller did not provide get filled with mask_token_id in the
+        # prefix_bins tensor directly — not encoded from a zero sentinel —
+        # so they can be excluded from the effective prefix below.
         T_prev = prev_action_chunk.shape[1]
-        if T_prev < self.action_horizon:
-            pad = torch.zeros(
-                B, self.action_horizon - T_prev, prev_action_chunk.shape[2],
-                device=device, dtype=prev_action_chunk.dtype,
-            )
-            prev_action_chunk = torch.cat([prev_action_chunk, pad], dim=1)
-
-        # Encode the prefix into bin indices
         prefix_bins = self.binning.encode(prev_action_chunk)
-        prefix_mask = (
+        if T_prev < self.action_horizon:
+            pad_bins = torch.full(
+                (B, self.action_horizon - T_prev, self.action_dim),
+                self.mask_token_id, dtype=prefix_bins.dtype, device=device,
+            )
+            prefix_bins = torch.cat([prefix_bins, pad_bins], dim=1)
+
+        # Positional prefix: the first prefix_length positions (natural or
+        # hard-mask cutoff) are candidates for being treated as prefix.
+        positional_prefix_mask = (
             torch.arange(self.action_horizon, device=device)[None, :, None]
             < prefix_length
         ).expand(B, self.action_horizon, self.action_dim)
+
+        # Effective prefix = positional prefix AND that slot actually holds
+        # a real bin value (not mask_token_id from padding). Padded slots
+        # fall through to the mask_token branch below, not the prefix_bins
+        # branch, so they get regenerated instead of being treated as known.
+        prefix_mask = positional_prefix_mask & (prefix_bins != self.mask_token_id)
 
         cur_seqs = torch.where(
             prefix_mask,
@@ -428,6 +437,18 @@ class LayerwiseDiscreteDiffusionActionHead(nn.Module):
             state_feat = self.state_encoder(state).unsqueeze(1)
 
         for step_idx in range(num_steps):
+
+            # Early stop once the first (inference_delay + execution_horizon)
+            # action rows are unmasked — those are the positions the robot
+            # will actually execute before the next inference completes.
+            # Before breaking, commit any still-masked tokens outside the
+            # early region by taking this step's sample so binning.decode
+            # gets only valid bin indices (< num_bins).
+            if early_stop:
+                if (cur_seqs[:, :inference_delay + execution_horizon, :] != self.mask_token_id).all():
+                    break
+
+
             logits = self._forward_logits(
                 vl_embs_list, cur_seqs, state_feat, device
             )
@@ -479,10 +500,8 @@ class LayerwiseDiscreteDiffusionActionHead(nn.Module):
                 torch.where(action_mask, self.mask_token_id, sampled),
             )
 
-            # Early stop if all non-prefix positions are unmasked
-            if early_stop:
-                if (cur_seqs[:, prefix_length:, :] != self.mask_token_id).all():
-                    break
+
+
 
         return self.binning.decode(cur_seqs)
 

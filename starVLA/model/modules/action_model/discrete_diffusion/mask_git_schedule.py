@@ -57,16 +57,20 @@ def mask_by_random_topk(
     generator=None,
 ) -> torch.Tensor:
     """
-    Which positions stay masked: Gumbel + top-k (ref: ref_dd_mode.py).
+    Which positions stay masked: Gumbel-Top-K on log-prob.
     selected_probs [B, L]; mask_len [B].
     Returns action_mask [B, L] with True = stay masked (low confidence / low prob).
-    Score = -log(probs)/temp + gumbel; temperature adds stochasticity to ranking.
+
+    Score = log(probs)/temp + gumbel. Argsort ascending puts the lowest-
+    probability positions first; the first mask_len of those stay masked.
+    As temperature → 0 this collapses to mask_by_deterministic_lowest
+    (both pick the mask_len lowest-prob positions).
     """
     B, L = selected_probs.shape
     device = selected_probs.device
 
     gumbel = -torch.log(-torch.log(torch.rand(B, L, device=device, generator=generator) + 1e-10) + 1e-10)
-    score = -torch.log(selected_probs + 1e-8) / max(temperature, 1e-8) + gumbel
+    score = torch.log(selected_probs + 1e-8) / max(temperature, 1e-8) + gumbel
     perm = torch.argsort(score, dim=1)
     ranks = torch.argsort(perm, dim=1)
     action_mask = ranks < mask_len.unsqueeze(1)

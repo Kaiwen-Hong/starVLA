@@ -1,8 +1,6 @@
 debug/
 ckpts/
 third_party/
-realworld/0403-dynamic-0403-0-pick_to_moved.sh
-realworld/0403-dynamic-0403-1-pick_from_moved.sh
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
