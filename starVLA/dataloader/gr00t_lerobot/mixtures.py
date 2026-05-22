@@ -529,7 +529,7 @@ DATASET_NAMED_MIXTURES = {
     ],
 
     "3airhockey_dynamic_bounce": [
-        ("3airhockey_dynamic_bounce", 1.0, "fastumi"),
+        ("3airhockey_dynamic_bounce", 1.0, "airhockey_bounce_2d"),
     ],
 
     "pool_strike_combined": [

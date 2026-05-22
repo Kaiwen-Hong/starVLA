@@ -1076,6 +1076,67 @@ class FastUMIDataConfig:
 ###########################################################################################
 
 
+class AirHockeyBounce2DDataConfig:
+    """Air-hockey dynamic bounce-back: left arm TCP world XY only (2-D).
+
+    State:  [x_left, y_left]   = 2D absolute world-frame position (metres)
+    Action: [dx_left, dy_left] = 2D world-frame delta position (metres)
+    Camera: 1x wrist (256x256) @ 50 fps
+    HORIZON = 32, N_OBS_STEPS = 1  (no state history)
+    """
+
+    video_keys = ["video.wrist"]
+    state_keys = ["state.eef_pos"]
+    action_keys = ["action.eef_pos"]
+    language_keys = ["annotation.human.action.task_description"]
+    observation_indices = [0]
+    action_indices = list(range(32))
+
+    ACTION_NORM_MODES = ["min_max", "min_max"]
+
+    def modality_config(self):
+        video_modality = ModalityConfig(
+            delta_indices=self.observation_indices,
+            modality_keys=self.video_keys,
+        )
+        state_modality = ModalityConfig(
+            delta_indices=self.observation_indices,
+            modality_keys=self.state_keys,
+        )
+        action_modality = ModalityConfig(
+            delta_indices=self.action_indices,
+            modality_keys=self.action_keys,
+        )
+        language_modality = ModalityConfig(
+            delta_indices=self.observation_indices,
+            modality_keys=self.language_keys,
+        )
+        return {
+            "video": video_modality,
+            "state": state_modality,
+            "action": action_modality,
+            "language": language_modality,
+        }
+
+    def transform(self):
+        transforms = [
+            StateActionToTensor(apply_to=self.state_keys),
+            StateActionTransform(
+                apply_to=self.state_keys,
+                normalization_modes={"state.eef_pos": "min_max"},
+            ),
+            StateActionToTensor(apply_to=self.action_keys),
+            StateActionTransform(
+                apply_to=self.action_keys,
+                normalization_modes={"action.eef_pos": "min_max"},
+            ),
+        ]
+        return ComposedModalityTransform(transforms=transforms)
+
+
+###########################################################################################
+
+
 class RobotwinEEDataConfig:
     """RoboTwin dual-arm EE space: 16D (3 pos + 4 quat + 1 gripper per arm)."""
     video_keys = [
@@ -1176,6 +1237,7 @@ ROBOT_TYPE_CONFIG_MAP = {
     "fourier_gr1_arms_waist": FourierGr1ArmsWaistDataConfig(),
     
     "fastumi": FastUMIDataConfig(),
+    "airhockey_bounce_2d": AirHockeyBounce2DDataConfig(),
     "robotwin_ee": RobotwinEEDataConfig(),
 
     "custom_robot_config": SingleFrankaRobotiqDeltaEefDataConfig(),

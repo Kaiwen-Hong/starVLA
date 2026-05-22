@@ -1,0 +1,68 @@
+#!/bin/bash
+# 7-GPU production training: QwenPI + DiT-S on pool_strike_combined.
+# Runs on the 7 healthy GPUs (excluding GPU 3 with uncorrectable DRAM ECC).
+# 20k steps total, checkpoint every 2k.
+#
+# Source dataset: kaiwen2/pool-dataset/pool_strike_combined
+#   388 episodes / 21 759 frames / 2 tasks
+#     task 0 (190 ep): "Strike the white ball into the red ball to pocket it"
+#     task 1 (198 ep): "Strike the white ball so that the red ball bounces off the walls into the goal"
+
+set -e
+
+cd /scratch/wangpc/starVLA
+
+# Activate the starVLA conda env (the script may be launched from base)
+source ~/miniconda3/etc/profile.d/conda.sh
+conda activate starVLA
+
+# Use the 7 healthy GPUs only (skip GPU 3 — uncorrectable ECC).
+export CUDA_VISIBLE_DEVICES=0,1,2,4,5,6,7
+
+echo "[tc] CUDA_VISIBLE_DEVICES=$CUDA_VISIBLE_DEVICES"
+echo "[tc] python: $(which python)"
+echo "[tc] torch.cuda.device_count(): $(python -c 'import torch; print(torch.cuda.device_count())')"
+echo
+
+accelerate launch \
+  --config_file starVLA/config/deepseeds/deepspeed_zero2.yaml \
+  --num_processes 7 \
+  starVLA/training/train_starvla.py \
+  --config_yaml ./examples/calvin/train_files/starvla_train_calvin.yaml \
+  --framework.name QwenPI \
+  --framework.qwenvl.base_vlm playground/Pretrained_models/Qwen2.5-VL-3B-Instruct-Action \
+  --framework.qwenvl.attn_implementation flash_attention_2 \
+  --framework.action_model.action_dim 10 \
+  --framework.action_model.state_dim 10 \
+  --framework.action_model.future_action_window_size 15 \
+  --framework.action_model.past_action_window_size 0 \
+  --framework.action_model.action_hidden_dim 1024 \
+  --framework.action_model.hidden_size 1024 \
+  --framework.action_model.action_model_type DiT-S \
+  --framework.action_model.add_pos_embed True \
+  --framework.action_model.max_seq_len 1024 \
+  --framework.action_model.noise_beta_alpha 1.5 \
+  --framework.action_model.noise_beta_beta 1.0 \
+  --framework.action_model.noise_s 0.999 \
+  --framework.action_model.num_timestep_buckets 1000 \
+  --framework.action_model.num_inference_timesteps 4 \
+  --framework.action_model.num_target_vision_tokens 32 \
+  --datasets.vla_data.data_root_dir playground/Datasets/FastUMI \
+  --datasets.vla_data.data_mix pool_strike_combined \
+  --datasets.vla_data.include_state false \
+  --datasets.vla_data.per_device_batch_size 8 \
+  --datasets.vla_data.video_backend torchvision_av \
+  --trainer.freeze_modules '' \
+  --trainer.is_resume false \
+  --trainer.max_train_steps 20000 \
+  --trainer.save_interval 2000 \
+  --trainer.logging_frequency 50 \
+  --trainer.eval_interval 100 \
+  --trainer.gradient_accumulation_steps 1 \
+  --run_root_dir ./results/Checkpoints \
+  --run_id fastumi_pool_qwenPI_0522_DiT-S \
+  --wandb_project starVLA_FastUMI_pool_0522_DiTS \
+  --wandb_entity 2200011093-peking-university
+
+echo
+echo "[tc] === Training launch returned ==="
