@@ -524,6 +524,18 @@ DATASET_NAMED_MIXTURES = {
         ("dynamic-0409-0-pick_to_moved-filtered", 1.0, "fastumi"),
     ],
 
+    "1airhockey_strike_combined": [
+        ("1airhockey_strike_combined", 1.0, "fastumi"),
+    ],
+
+    "3airhockey_dynamic_bounce": [
+        ("3airhockey_dynamic_bounce", 1.0, "fastumi"),
+    ],
+
+    "pool_strike_combined": [
+        ("pool_strike_combined", 1.0, "fastumi"),
+    ],
+
     # Debug subset: just 1 FastUMI task
     "fastumi_task1": [
         ("pickandplace_vla", 1.0, "fastumi"),
