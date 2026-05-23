@@ -435,9 +435,14 @@ class VLATrainer(TrainerUtils):
             self.optimizer.step()
             self.lr_scheduler.step()
 
-        return {
-            "action_dit_loss": action_loss.item(),
-        }
+        step_metrics = {"action_dit_loss": action_loss.item()}
+        # Pass through any per-component metrics the framework forward attached
+        # under log/* keys (e.g. QwenPI_VQA exports L_action / L_vqa / vqa_acc /
+        # per-task vqa_acc). They get surfaced to wandb via the normal step log.
+        for k, v in output_dict.items():
+            if isinstance(k, str) and k.startswith("log/"):
+                step_metrics[k.replace("log/", "", 1)] = float(v) if not isinstance(v, (int, float)) else v
+        return step_metrics
 
     def _finalize_training(self):
         """Training end processing."""
