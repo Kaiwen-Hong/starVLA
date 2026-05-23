@@ -205,6 +205,20 @@ PREF_CATEGORIES: Dict[str, PrefCategory] = {
         sep_re=None,
         leak_re=None,
     ),
+    # `contact` is the canonical name for the legacy `giveobj` category
+    # (same data, same prompts, same pref keys). Disk path renamed
+    # /mnt/.../pref/data/giveobj -> /mnt/.../pref/data/contact;
+    # `giveobj/` is kept as a backward-compat symlink. Use this key in
+    # new YAML / launch scripts; `giveobj` remains for old ckpts.
+    "contact": PrefCategory(
+        name="contact",
+        task_groups=GIVEOBJ_TASK_GROUPS,
+        pref_keys=("25", "75"),
+        pref_labels=GIVEOBJ_PREF_LABELS,
+        clean_templates=GIVEOBJ_CLEAN_TEMPLATE,
+        sep_re=None,
+        leak_re=None,
+    ),
     "height": PrefCategory(
         name="height",
         task_groups=HEIGHT_TASK_GROUPS,

@@ -101,6 +101,15 @@ VQA_CATEGORIES: Dict[str, VQACategoryConfig] = {
         answer_text={"25": "low", "75": "high"},
         question="Question: low or high contact at grasp? Answer:",
     ),
+    # `contact` is the canonical alias for legacy `giveobj` (see
+    # prompt.PREF_CATEGORIES for the rename note). Same question, same
+    # answer tokens.
+    "contact": VQACategoryConfig(
+        pref_keys=("25", "75"),
+        answer_token_ids={"25": 10303, "75": 11892},
+        answer_text={"25": "low", "75": "high"},
+        question="Question: low or high contact at grasp? Answer:",
+    ),
     "height": VQACategoryConfig(
         pref_keys=("high", "low"),
         answer_token_ids={"high": 11892, "low": 10303},

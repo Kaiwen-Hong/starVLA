@@ -24,7 +24,11 @@
 set -e
 
 REPO_ROOT=/home/kaiwenh/starVLA
-RUN_DIR=${REPO_ROOT}/results/Checkpoints/pref_baseline_stage_a_v1_noVQA
+# Updated 2026-05-23: giveobj baseline ckpt renamed to ..._noVQA_contact/.
+# This script was hardcoded for the legacy giveobj baseline run; if reused
+# for resume/inspect of that ckpt, the dir lives under the _contact suffix
+# now. For fresh contact training prefer launch_pref_stage_a_baseline_contact.sh.
+RUN_DIR=${REPO_ROOT}/results/Checkpoints/pref_baseline_stage_a_v1_noVQA_contact
 CLEAN="${CLEAN:-0}"
 STEPS_OVERRIDE="${STEPS:-}"
 # Default to 29501 instead of accelerate's default 29500 so we don't collide

@@ -1,3 +1,9 @@
+# DEPRECATED 2026-05-23: this is the legacy giveobj baseline YAML, retained as
+# the historical anchor matching the (now renamed) ckpt at
+# results/Checkpoints/pref_baseline_stage_a_v1_noVQA_contact/. For fresh
+# training prefer starvla_pref_stage_a_baseline_contact.yaml (byte-identical
+# spec, uses the new `contact` category key + path). Re-launching this YAML
+# would create a NEW empty ckpt dir at the legacy name, which is confusing.
 run_id: pref_baseline_stage_a_v1_noVQA
 run_root_dir: results/Checkpoints
 seed: 42

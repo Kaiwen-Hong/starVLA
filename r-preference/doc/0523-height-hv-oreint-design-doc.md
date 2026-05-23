@@ -37,9 +37,18 @@
 
 ## 1. Categories on disk (verified 2026-05-23)
 
+> **Naming update 2026-05-23 evening**: `giveobj` was renamed to **`contact`**
+> (the 4-category set is now `contact/height/hvlv/orient`). Local data path
+> is `/mnt/.../pref/data/contact/` with `giveobj/` kept as a symlink; trained
+> ckpts gained the `_contact` suffix. Code registry accepts both keys as
+> aliases. Original `1595` count in the table below was for the remote HF
+> repo's partial; **the local-disk `giveobj`/`contact` is full 16×100 = 1600**
+> (1280/320 train/val). See [`0522-a-giveobj.md`](0522-a-giveobj.md) top note
+> for full rename trail.
+
 | Category | Tasks | Eps/task | Total eps | Train/val eps (80/20, seed 42) | Train frames |
 |----------|-------|----------|-----------|--------------------------------|--------------|
-| `giveobj` (legacy contact) | 16 | mostly 100 (1 partial) | 1595 | 1276 / 319 | 192,927 |
+| `contact` (was `giveobj`) | 16 | 100 (local disk, full) | 1600 | 1280 / 320 | 192,927 |
 | `height` | 16 | 100 | 1600 | 1280 / 320 | 195,431 |
 | `hvlv`   | 16 | 100 | 1600 | 1280 / 320 | 280,684 |
 | `orient` | 16 | 100 (1 task=95, §10.1) | 1595 | 1276 / 319 | 197,486 |

@@ -19,7 +19,10 @@ set -uo pipefail
 
 TRAIN_PID="${1:?usage: watchdog.sh <train_pid>}"
 INTERVAL="${INTERVAL:-1800}"
-RUN_DIR=/home/kaiwenh/starVLA/results/Checkpoints/pref_baseline_stage_a_v1_noVQA
+# Updated 2026-05-23 for the giveobj→contact rename. See training-runbook.md §7.5
+# for the known false-positive STEP_STUCK bug — this watchdog is largely
+# superseded but kept as a manual fallback.
+RUN_DIR=/home/kaiwenh/starVLA/results/Checkpoints/pref_baseline_stage_a_v1_noVQA_contact
 LOG_FILE=${RUN_DIR}/watchdog.log
 ALERT_FILE=${RUN_DIR}/WATCHDOG_ALERT
 TRAIN_LOG=${RUN_DIR}/train.log

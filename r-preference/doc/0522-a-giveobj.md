@@ -1,5 +1,17 @@
 # Preference-conditioned VLA — Stage A baseline (no VQA), giveobj
 
+> **2026-05-23 RENAME NOTE**: this category is now canonically called **`contact`**.
+> Disk path was `/mnt/.../pref/data/giveobj` → renamed to `/mnt/.../pref/data/contact`;
+> `giveobj/` is kept as a backward-compat symlink. Stats file
+> `stats_giveobj_v1.json` was copied to `stats_contact_v1.json` (byte-identical).
+> Trained ckpts renamed: `pref_baseline_stage_a_v1_noVQA/` →
+> `..._noVQA_contact/`, `pref_main_stage_a_v1_VQA/` → `..._VQA_contact/`
+> (`config.yaml` patched accordingly). New YAML/launch pairs live under
+> `…_baseline_contact.{yaml,sh}` / `…_vqa_contact.{yaml,sh}`. Code registries
+> `PREF_CATEGORIES` and `VQA_CATEGORIES` accept BOTH keys (`"giveobj"` and
+> `"contact"`) — they map to byte-identical entries. **The rest of this doc
+> uses the historic `giveobj` naming as written.**
+
 **Scope: spec + design only.** Data, model, prompt, norm, loss, hyperparams,
 ablation lock between baseline and main-method. **For ops** (launch scripts,
 storage, training quirks, postmortems, troubleshooting) see

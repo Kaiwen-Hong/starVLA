@@ -1,8 +1,4 @@
-# DEPRECATED 2026-05-23: legacy giveobj VQA YAML, retained as the historical
-# anchor matching the (renamed) ckpt at
-# results/Checkpoints/pref_main_stage_a_v1_VQA_contact/. For fresh training
-# prefer starvla_pref_stage_a_vqa_contact.yaml.
-run_id: pref_main_stage_a_v1_VQA
+run_id: pref_main_stage_a_v1_VQA_contact
 run_root_dir: results/Checkpoints
 seed: 42
 trackers: [jsonl, wandb]
@@ -12,15 +8,15 @@ is_debug: false
 
 
 framework:
-  # MAIN-METHOD: L = L_action + lambda_vqa * L_vqa. Action stream is
-  # byte-identical to baseline (Qwen_PI.forward), VQA is bolted on inside
-  # Qwen_PI_VQA.forward and aggregated there. See QwenPI_VQA.py module
-  # docstring for the spec map.
+  # MAIN-METHOD on contact (= legacy "giveobj"). Q: "low or high contact at
+  # grasp?" A: "low"(25) / "high"(75). 50k step / 5k warmup (same as original
+  # giveobj VQA). Renamed ckpt at .../Checkpoints/pref_main_stage_a_v1_VQA_contact/
+  # corresponds to this YAML.
   name: QwenPI_VQA
   qwenvl:
     base_vlm: Qwen/Qwen3-VL-4B-Instruct
     attn_implementation: sdpa
-    vl_hidden_dim: 2560   # Qwen3-VL-4B; framework overrides at runtime
+    vl_hidden_dim: 2560
   dino:
     dino_backbone: dinov2_vits14
   action_model:
@@ -42,8 +38,6 @@ framework:
     num_inference_timesteps: 4
     num_target_vision_tokens: 32
     diffusion_model_cfg:
-      # Schema parity with baseline; runtime override in LayerwiseFM_ActionHeader
-      # __init__ pins shape to (36 layers, hidden 2560, ~3.3B params).
       cross_attention_dim: 2560
       dropout: 0.2
       final_dropout: true
@@ -53,14 +47,8 @@ framework:
       output_dim: 1024
       positional_embeddings: null
   vqa:
-    # Sweep lambda_vqa in {0.1, 0.3, 0.5, 1.0} (spec §6.1); 0.5 is the
-    # starting point. If vqa_acc plateaus low or class-collapses (spec §7),
-    # raise lambda.
+    category: contact
     lambda_vqa: 0.5
-    # Spec §2.3: deterministic take-first-2 unique episodes per batch.
-    # 2:8 = 1:4 — the HIGH end of the 1:4 ~ 1:8 target ratio. Stronger VQA
-    # signal early; lambda owns magnitude scaling, so 2 is a clean starting
-    # point that's easy to sweep against.
     n_vqa_per_batch: 2
     num_frames: 8
     camera: head_camera
@@ -71,10 +59,10 @@ framework:
 datasets:
   vla_data:
     dataset_py: pref_hdf5_vqa
-    data_root_dir: /mnt/localssd/kaiwenh/pref/data/giveobj
-    data_mix: giveobj_v1
-    # Same stats JSON as baseline — DO NOT regenerate (split would shift).
-    stats_json_path: examples/preference/dataset/stats_giveobj_v1.json
+    data_root_dir: /mnt/localssd/kaiwenh/pref/data/contact
+    data_mix: contact_v1
+    stats_json_path: examples/preference/dataset/stats_contact_v1.json
+    pref_category: contact
     action_type: abs_ee_6d
     future_action_window_size: 15
     past_action_window_size: 0
@@ -101,9 +89,6 @@ trainer:
   scheduler_specific_kwargs:
     min_lr: 1.0e-06
   freeze_modules: ''
-  # NB: aggregation INSIDE Qwen_PI_VQA.forward. trainer reads only
-  # output_dict["action_loss"] (which here = L_action + lambda_vqa * L_vqa).
-  # `loss_scale.*` would be dead config — intentionally NOT set.
   max_grad_norm: 1.0
   warmup_ratio: 0.1
   weight_decay: 0.0
@@ -120,8 +105,7 @@ trainer:
   is_resume: false
   resume_epoch: null
   resume_step: null
-  # H200 141GB has ~85 GB headroom over baseline H100 peak (56 GB), so we
-  # can keep ckpt OFF even with the 8-frame VQA clip + LM head bwd.
-  # If on H100 80GB, flip to true (cost ~8% throughput, recovers ~10 GB).
+  # H200 141GB → grad_ckpt OFF (same as original giveobj VQA).
+  # If running on H100 80GB, flip to true.
   enable_gradient_checkpointing: false
   enable_mixed_precision_training: true
