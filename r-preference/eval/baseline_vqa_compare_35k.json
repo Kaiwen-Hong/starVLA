@@ -1,0 +1,640 @@
+{
+  "category": "contact",
+  "baseline_ckpt": "/mnt/localssd/kaiwenh/starVLA_runs/results/Checkpoints/pref_baseline_stage_a_v1_noVQA_contact/checkpoints/steps_35000_pytorch_model.pt",
+  "vqa_ckpt": "/mnt/localssd/kaiwenh/starVLA_runs/results/Checkpoints/pref_main_stage_a_v1_VQA_contact/checkpoints/steps_35000_pytorch_model.pt",
+  "strategies": [
+    "mid_8",
+    "gripper_anchored",
+    "uniform_8"
+  ],
+  "results": {
+    "baseline": {
+      "mid_8": {
+        "taskB": {
+          "n": 100,
+          "acc": 0.51,
+          "acc_gt_low": 0.02,
+          "acc_gt_high": 1.0,
+          "n_pred_low": 1,
+          "n_pred_high": 99,
+          "gap_mean_overall": -1.98033447265625,
+          "gap_diff_signal": 0.01931152343750009
+        },
+        "taskA_overall": {
+          "n": 80,
+          "acc": 0.5125,
+          "acc_gt_low": 0.025,
+          "acc_gt_high": 1.0,
+          "n_pred_low": 1,
+          "n_pred_high": 79,
+          "gap_mean_overall": -1.7926769256591797,
+          "gap_diff_signal": 0.006833648681640714
+        },
+        "taskA_per_task": {
+          "give_boxdrink": {
+            "n": 10,
+            "acc": 0.5,
+            "acc_gt_low": 0.0,
+            "acc_gt_high": 1.0,
+            "n_pred_low": 0,
+            "n_pred_high": 10,
+            "gap_mean_overall": -2.158056640625,
+            "gap_diff_signal": -0.05927734374999982
+          },
+          "give_callbell": {
+            "n": 10,
+            "acc": 0.5,
+            "acc_gt_low": 0.0,
+            "acc_gt_high": 1.0,
+            "n_pred_low": 0,
+            "n_pred_high": 10,
+            "gap_mean_overall": -2.089697265625,
+            "gap_diff_signal": -0.26982421874999996
+          },
+          "give_fork": {
+            "n": 10,
+            "acc": 0.5,
+            "acc_gt_low": 0.0,
+            "acc_gt_high": 1.0,
+            "n_pred_low": 0,
+            "n_pred_high": 10,
+            "gap_mean_overall": -1.8123046875,
+            "gap_diff_signal": 0.2144531249999999
+          },
+          "give_screwdriver": {
+            "n": 10,
+            "acc": 0.5,
+            "acc_gt_low": 0.0,
+            "acc_gt_high": 1.0,
+            "n_pred_low": 0,
+            "n_pred_high": 10,
+            "gap_mean_overall": -1.7220794677734375,
+            "gap_diff_signal": 0.15974731445312496
+          },
+          "put_boxdrink_dustbin": {
+            "n": 10,
+            "acc": 0.5,
+            "acc_gt_low": 0.0,
+            "acc_gt_high": 1.0,
+            "n_pred_low": 0,
+            "n_pred_high": 10,
+            "gap_mean_overall": -2.0427734375,
+            "gap_diff_signal": 0.22656250000000022
+          },
+          "put_callbell_dustbin": {
+            "n": 10,
+            "acc": 0.5,
+            "acc_gt_low": 0.0,
+            "acc_gt_high": 1.0,
+            "n_pred_low": 0,
+            "n_pred_high": 10,
+            "gap_mean_overall": -1.854296875,
+            "gap_diff_signal": 0.09531249999999991
+          },
+          "put_fork_dustbin": {
+            "n": 10,
+            "acc": 0.6,
+            "acc_gt_low": 0.2,
+            "acc_gt_high": 1.0,
+            "n_pred_low": 1,
+            "n_pred_high": 9,
+            "gap_mean_overall": -0.95009765625,
+            "gap_diff_signal": -0.5744140625
+          },
+          "put_screwdriver_dustbin": {
+            "n": 10,
+            "acc": 0.5,
+            "acc_gt_low": 0.0,
+            "acc_gt_high": 1.0,
+            "n_pred_low": 0,
+            "n_pred_high": 10,
+            "gap_mean_overall": -1.712109375,
+            "gap_diff_signal": 0.2621093750000001
+          }
+        }
+      },
+      "gripper_anchored": {
+        "taskB": {
+          "n": 100,
+          "acc": 0.5,
+          "acc_gt_low": 0.0,
+          "acc_gt_high": 1.0,
+          "n_pred_low": 0,
+          "n_pred_high": 100,
+          "gap_mean_overall": -1.863045196533203,
+          "gap_diff_signal": -0.04143218994140607
+        },
+        "taskA_overall": {
+          "n": 80,
+          "acc": 0.5,
+          "acc_gt_low": 0.0,
+          "acc_gt_high": 1.0,
+          "n_pred_low": 0,
+          "n_pred_high": 80,
+          "gap_mean_overall": -1.828569221496582,
+          "gap_diff_signal": -0.015493392944335938
+        },
+        "taskA_per_task": {
+          "give_boxdrink": {
+            "n": 10,
+            "acc": 0.5,
+            "acc_gt_low": 0.0,
+            "acc_gt_high": 1.0,
+            "n_pred_low": 0,
+            "n_pred_high": 10,
+            "gap_mean_overall": -2.268310546875,
+            "gap_diff_signal": -0.07978515624999982
+          },
+          "give_callbell": {
+            "n": 10,
+            "acc": 0.5,
+            "acc_gt_low": 0.0,
+            "acc_gt_high": 1.0,
+            "n_pred_low": 0,
+            "n_pred_high": 10,
+            "gap_mean_overall": -2.0694351196289062,
+            "gap_diff_signal": -0.23847351074218737
+          },
+          "give_fork": {
+            "n": 10,
+            "acc": 0.5,
+            "acc_gt_low": 0.0,
+            "acc_gt_high": 1.0,
+            "n_pred_low": 0,
+            "n_pred_high": 10,
+            "gap_mean_overall": -1.6853515625,
+            "gap_diff_signal": -0.061328124999999956
+          },
+          "give_screwdriver": {
+            "n": 10,
+            "acc": 0.5,
+            "acc_gt_low": 0.0,
+            "acc_gt_high": 1.0,
+            "n_pred_low": 0,
+            "n_pred_high": 10,
+            "gap_mean_overall": -1.68828125,
+            "gap_diff_signal": 0.1646484374999999
+          },
+          "put_boxdrink_dustbin": {
+            "n": 10,
+            "acc": 0.5,
+            "acc_gt_low": 0.0,
+            "acc_gt_high": 1.0,
+            "n_pred_low": 0,
+            "n_pred_high": 10,
+            "gap_mean_overall": -1.98095703125,
+            "gap_diff_signal": 0.3478515624999998
+          },
+          "put_callbell_dustbin": {
+            "n": 10,
+            "acc": 0.5,
+            "acc_gt_low": 0.0,
+            "acc_gt_high": 1.0,
+            "n_pred_low": 0,
+            "n_pred_high": 10,
+            "gap_mean_overall": -1.87049560546875,
+            "gap_diff_signal": 0.02517089843750009
+          },
+          "put_fork_dustbin": {
+            "n": 10,
+            "acc": 0.5,
+            "acc_gt_low": 0.0,
+            "acc_gt_high": 1.0,
+            "n_pred_low": 0,
+            "n_pred_high": 10,
+            "gap_mean_overall": -1.429150390625,
+            "gap_diff_signal": -0.62939453125
+          },
+          "put_screwdriver_dustbin": {
+            "n": 10,
+            "acc": 0.5,
+            "acc_gt_low": 0.0,
+            "acc_gt_high": 1.0,
+            "n_pred_low": 0,
+            "n_pred_high": 10,
+            "gap_mean_overall": -1.636572265625,
+            "gap_diff_signal": 0.34736328125000004
+          }
+        }
+      },
+      "uniform_8": {
+        "taskB": {
+          "n": 100,
+          "acc": 0.49,
+          "acc_gt_low": 0.04,
+          "acc_gt_high": 0.94,
+          "n_pred_low": 5,
+          "n_pred_high": 95,
+          "gap_mean_overall": -1.654237060546875,
+          "gap_diff_signal": 0.13350585937500004
+        },
+        "taskA_overall": {
+          "n": 80,
+          "acc": 0.5,
+          "acc_gt_low": 0.0,
+          "acc_gt_high": 1.0,
+          "n_pred_low": 0,
+          "n_pred_high": 80,
+          "gap_mean_overall": -1.9257980346679688,
+          "gap_diff_signal": 0.12067565917968737
+        },
+        "taskA_per_task": {
+          "give_boxdrink": {
+            "n": 10,
+            "acc": 0.5,
+            "acc_gt_low": 0.0,
+            "acc_gt_high": 1.0,
+            "n_pred_low": 0,
+            "n_pred_high": 10,
+            "gap_mean_overall": -2.404541015625,
+            "gap_diff_signal": -0.10751953125000036
+          },
+          "give_callbell": {
+            "n": 10,
+            "acc": 0.5,
+            "acc_gt_low": 0.0,
+            "acc_gt_high": 1.0,
+            "n_pred_low": 0,
+            "n_pred_high": 10,
+            "gap_mean_overall": -2.25860595703125,
+            "gap_diff_signal": -0.13044433593749982
+          },
+          "give_fork": {
+            "n": 10,
+            "acc": 0.5,
+            "acc_gt_low": 0.0,
+            "acc_gt_high": 1.0,
+            "n_pred_low": 0,
+            "n_pred_high": 10,
+            "gap_mean_overall": -2.0109375,
+            "gap_diff_signal": 0.00390625
+          },
+          "give_screwdriver": {
+            "n": 10,
+            "acc": 0.5,
+            "acc_gt_low": 0.0,
+            "acc_gt_high": 1.0,
+            "n_pred_low": 0,
+            "n_pred_high": 10,
+            "gap_mean_overall": -1.7357421875,
+            "gap_diff_signal": -0.06992187500000013
+          },
+          "put_boxdrink_dustbin": {
+            "n": 10,
+            "acc": 0.5,
+            "acc_gt_low": 0.0,
+            "acc_gt_high": 1.0,
+            "n_pred_low": 0,
+            "n_pred_high": 10,
+            "gap_mean_overall": -2.1716796875,
+            "gap_diff_signal": 0.07929687500000027
+          },
+          "put_callbell_dustbin": {
+            "n": 10,
+            "acc": 0.5,
+            "acc_gt_low": 0.0,
+            "acc_gt_high": 1.0,
+            "n_pred_low": 0,
+            "n_pred_high": 10,
+            "gap_mean_overall": -1.9294921875,
+            "gap_diff_signal": 0.5550781250000001
+          },
+          "put_fork_dustbin": {
+            "n": 10,
+            "acc": 0.5,
+            "acc_gt_low": 0.0,
+            "acc_gt_high": 1.0,
+            "n_pred_low": 0,
+            "n_pred_high": 10,
+            "gap_mean_overall": -1.2021484375,
+            "gap_diff_signal": 0.4457031250000001
+          },
+          "put_screwdriver_dustbin": {
+            "n": 10,
+            "acc": 0.5,
+            "acc_gt_low": 0.0,
+            "acc_gt_high": 1.0,
+            "n_pred_low": 0,
+            "n_pred_high": 10,
+            "gap_mean_overall": -1.6932373046875,
+            "gap_diff_signal": 0.1893066406249999
+          }
+        }
+      }
+    },
+    "vqa": {
+      "mid_8": {
+        "taskB": {
+          "n": 100,
+          "acc": 0.99,
+          "acc_gt_low": 0.98,
+          "acc_gt_high": 1.0,
+          "n_pred_low": 49,
+          "n_pred_high": 51,
+          "gap_mean_overall": 0.6675,
+          "gap_diff_signal": 41.96875
+        },
+        "taskA_overall": {
+          "n": 80,
+          "acc": 0.725,
+          "acc_gt_low": 0.85,
+          "acc_gt_high": 0.6,
+          "n_pred_low": 50,
+          "n_pred_high": 30,
+          "gap_mean_overall": 7.692578125,
+          "gap_diff_signal": 25.546093749999997
+        },
+        "taskA_per_task": {
+          "give_boxdrink": {
+            "n": 10,
+            "acc": 1.0,
+            "acc_gt_low": 1.0,
+            "acc_gt_high": 1.0,
+            "n_pred_low": 5,
+            "n_pred_high": 5,
+            "gap_mean_overall": 6.690625,
+            "gap_diff_signal": 54.518750000000004
+          },
+          "give_callbell": {
+            "n": 10,
+            "acc": 1.0,
+            "acc_gt_low": 1.0,
+            "acc_gt_high": 1.0,
+            "n_pred_low": 5,
+            "n_pred_high": 5,
+            "gap_mean_overall": 8.46875,
+            "gap_diff_signal": 51.912499999999994
+          },
+          "give_fork": {
+            "n": 10,
+            "acc": 0.6,
+            "acc_gt_low": 0.8,
+            "acc_gt_high": 0.4,
+            "n_pred_low": 7,
+            "n_pred_high": 3,
+            "gap_mean_overall": 2.6125,
+            "gap_diff_signal": 0.5749999999999997
+          },
+          "give_screwdriver": {
+            "n": 10,
+            "acc": 0.4,
+            "acc_gt_low": 0.4,
+            "acc_gt_high": 0.4,
+            "n_pred_low": 5,
+            "n_pred_high": 5,
+            "gap_mean_overall": -0.6375,
+            "gap_diff_signal": -3.425
+          },
+          "put_boxdrink_dustbin": {
+            "n": 10,
+            "acc": 0.9,
+            "acc_gt_low": 1.0,
+            "acc_gt_high": 0.8,
+            "n_pred_low": 6,
+            "n_pred_high": 4,
+            "gap_mean_overall": 12.109375,
+            "gap_diff_signal": 48.96875
+          },
+          "put_callbell_dustbin": {
+            "n": 10,
+            "acc": 1.0,
+            "acc_gt_low": 1.0,
+            "acc_gt_high": 1.0,
+            "n_pred_low": 5,
+            "n_pred_high": 5,
+            "gap_mean_overall": 8.734375,
+            "gap_diff_signal": 56.068749999999994
+          },
+          "put_fork_dustbin": {
+            "n": 10,
+            "acc": 0.4,
+            "acc_gt_low": 0.6,
+            "acc_gt_high": 0.2,
+            "n_pred_low": 7,
+            "n_pred_high": 3,
+            "gap_mean_overall": 3.925,
+            "gap_diff_signal": -4.4
+          },
+          "put_screwdriver_dustbin": {
+            "n": 10,
+            "acc": 0.5,
+            "acc_gt_low": 1.0,
+            "acc_gt_high": 0.0,
+            "n_pred_low": 10,
+            "n_pred_high": 0,
+            "gap_mean_overall": 19.6375,
+            "gap_diff_signal": 0.14999999999999858
+          }
+        }
+      },
+      "gripper_anchored": {
+        "taskB": {
+          "n": 100,
+          "acc": 0.97,
+          "acc_gt_low": 0.96,
+          "acc_gt_high": 0.98,
+          "n_pred_low": 49,
+          "n_pred_high": 51,
+          "gap_mean_overall": 1.7746875,
+          "gap_diff_signal": 45.161874999999995
+        },
+        "taskA_overall": {
+          "n": 80,
+          "acc": 0.725,
+          "acc_gt_low": 0.8,
+          "acc_gt_high": 0.65,
+          "n_pred_low": 46,
+          "n_pred_high": 34,
+          "gap_mean_overall": 6.405859375,
+          "gap_diff_signal": 26.65078125
+        },
+        "taskA_per_task": {
+          "give_boxdrink": {
+            "n": 10,
+            "acc": 1.0,
+            "acc_gt_low": 1.0,
+            "acc_gt_high": 1.0,
+            "n_pred_low": 5,
+            "n_pred_high": 5,
+            "gap_mean_overall": 5.5078125,
+            "gap_diff_signal": 56.940625
+          },
+          "give_callbell": {
+            "n": 10,
+            "acc": 1.0,
+            "acc_gt_low": 1.0,
+            "acc_gt_high": 1.0,
+            "n_pred_low": 5,
+            "n_pred_high": 5,
+            "gap_mean_overall": 8.1125,
+            "gap_diff_signal": 51.7625
+          },
+          "give_fork": {
+            "n": 10,
+            "acc": 0.5,
+            "acc_gt_low": 0.8,
+            "acc_gt_high": 0.2,
+            "n_pred_low": 8,
+            "n_pred_high": 2,
+            "gap_mean_overall": 2.7125,
+            "gap_diff_signal": -0.125
+          },
+          "give_screwdriver": {
+            "n": 10,
+            "acc": 0.4,
+            "acc_gt_low": 0.4,
+            "acc_gt_high": 0.4,
+            "n_pred_low": 5,
+            "n_pred_high": 5,
+            "gap_mean_overall": 0.2,
+            "gap_diff_signal": -5.4
+          },
+          "put_boxdrink_dustbin": {
+            "n": 10,
+            "acc": 0.9,
+            "acc_gt_low": 1.0,
+            "acc_gt_high": 0.8,
+            "n_pred_low": 6,
+            "n_pred_high": 4,
+            "gap_mean_overall": 10.990625,
+            "gap_diff_signal": 51.23125
+          },
+          "put_callbell_dustbin": {
+            "n": 10,
+            "acc": 1.0,
+            "acc_gt_low": 1.0,
+            "acc_gt_high": 1.0,
+            "n_pred_low": 5,
+            "n_pred_high": 5,
+            "gap_mean_overall": 10.5984375,
+            "gap_diff_signal": 52.996874999999996
+          },
+          "put_fork_dustbin": {
+            "n": 10,
+            "acc": 0.5,
+            "acc_gt_low": 0.2,
+            "acc_gt_high": 0.8,
+            "n_pred_low": 2,
+            "n_pred_high": 8,
+            "gap_mean_overall": -6.6625,
+            "gap_diff_signal": 4.175
+          },
+          "put_screwdriver_dustbin": {
+            "n": 10,
+            "acc": 0.5,
+            "acc_gt_low": 1.0,
+            "acc_gt_high": 0.0,
+            "n_pred_low": 10,
+            "n_pred_high": 0,
+            "gap_mean_overall": 19.7875,
+            "gap_diff_signal": 1.625
+          }
+        }
+      },
+      "uniform_8": {
+        "taskB": {
+          "n": 100,
+          "acc": 0.61,
+          "acc_gt_low": 1.0,
+          "acc_gt_high": 0.22,
+          "n_pred_low": 89,
+          "n_pred_high": 11,
+          "gap_mean_overall": 20.738125,
+          "gap_diff_signal": 12.28875
+        },
+        "taskA_overall": {
+          "n": 80,
+          "acc": 0.8625,
+          "acc_gt_low": 0.85,
+          "acc_gt_high": 0.875,
+          "n_pred_low": 39,
+          "n_pred_high": 41,
+          "gap_mean_overall": 6.513671875,
+          "gap_diff_signal": 37.00390625
+        },
+        "taskA_per_task": {
+          "give_boxdrink": {
+            "n": 10,
+            "acc": 1.0,
+            "acc_gt_low": 1.0,
+            "acc_gt_high": 1.0,
+            "n_pred_low": 5,
+            "n_pred_high": 5,
+            "gap_mean_overall": 9.05625,
+            "gap_diff_signal": 50.675
+          },
+          "give_callbell": {
+            "n": 10,
+            "acc": 1.0,
+            "acc_gt_low": 1.0,
+            "acc_gt_high": 1.0,
+            "n_pred_low": 5,
+            "n_pred_high": 5,
+            "gap_mean_overall": 5.653125,
+            "gap_diff_signal": 57.168749999999996
+          },
+          "give_fork": {
+            "n": 10,
+            "acc": 1.0,
+            "acc_gt_low": 1.0,
+            "acc_gt_high": 1.0,
+            "n_pred_low": 5,
+            "n_pred_high": 5,
+            "gap_mean_overall": 5.0625,
+            "gap_diff_signal": 48.0
+          },
+          "give_screwdriver": {
+            "n": 10,
+            "acc": 0.9,
+            "acc_gt_low": 0.8,
+            "acc_gt_high": 1.0,
+            "n_pred_low": 4,
+            "n_pred_high": 6,
+            "gap_mean_overall": -1.446875,
+            "gap_diff_signal": 30.91875
+          },
+          "put_boxdrink_dustbin": {
+            "n": 10,
+            "acc": 1.0,
+            "acc_gt_low": 1.0,
+            "acc_gt_high": 1.0,
+            "n_pred_low": 5,
+            "n_pred_high": 5,
+            "gap_mean_overall": 8.6,
+            "gap_diff_signal": 55.7
+          },
+          "put_callbell_dustbin": {
+            "n": 10,
+            "acc": 1.0,
+            "acc_gt_low": 1.0,
+            "acc_gt_high": 1.0,
+            "n_pred_low": 5,
+            "n_pred_high": 5,
+            "gap_mean_overall": 11.446875,
+            "gap_diff_signal": 51.01875
+          },
+          "put_fork_dustbin": {
+            "n": 10,
+            "acc": 0.5,
+            "acc_gt_low": 0.0,
+            "acc_gt_high": 1.0,
+            "n_pred_low": 0,
+            "n_pred_high": 10,
+            "gap_mean_overall": -7.55,
+            "gap_diff_signal": -1.049999999999999
+          },
+          "put_screwdriver_dustbin": {
+            "n": 10,
+            "acc": 0.5,
+            "acc_gt_low": 1.0,
+            "acc_gt_high": 0.0,
+            "n_pred_low": 10,
+            "n_pred_high": 0,
+            "gap_mean_overall": 21.2875,
+            "gap_diff_signal": 3.599999999999998
+          }
+        }
+      }
+    }
+  }
+}

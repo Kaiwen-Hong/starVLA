@@ -33,6 +33,32 @@ The signal IS real (+49 logit gap on taskB with mid_8); the model genuinely perc
 
 ---
 
+## 1a. **VQA vs baseline ckpt** (added later — answers "does VQA cotrain help?")
+
+Baseline (no VQA training, just action loss) ckpt, run through the SAME `predict_with_logits` machinery (manually injecting `_vqa_question` / `_vqa_id_A` / `_vqa_id_B` so the comparison is apples-to-apples), on contact 35k:
+
+| strategy | baseline taskB | VQA taskB | baseline taskA | VQA taskA |
+|---|---:|---:|---:|---:|
+| mid_8 | 0.510 | **0.990** | 0.512 | 0.725 |
+| gripper_anchored | 0.500 | **0.970** | 0.500 | 0.725 |
+| uniform_8 | 0.490 | **0.610** | 0.500 | 0.863 |
+
+| | baseline pred_dist (taskB) | VQA pred_dist (taskB) | baseline gap signal | VQA gap signal |
+|---|---|---|---:|---:|
+| mid_8 | 1 low / 99 high | 49 low / 51 high | +0.02 | **+41.97** |
+| gripper_anchored | 0 low / 100 high | 49 low / 51 high | -0.04 | **+45.16** |
+| uniform_8 | 5 low / 95 high | 89 low / 11 high | +0.13 | +12.29 |
+
+**Baseline ckpt has ZERO discrimination ability** — predicts "high" essentially 100% of the time (~50% acc just from random GT distribution), signal ≈ 0. This holds across all 3 clip strategies and both taskA/taskB.
+
+**VQA cotrain adds the entire pseudo-labeling capability**: from chance accuracy to 97-99% on taskB and 72-86% on taskA. The cotrain is **load-bearing for Stage B**.
+
+(Note: baseline's "always-high" default isn't random — it's the LM head's prior for the bare-form `"high"` token (id 11892) being mildly higher than `"low"` (id 10303) on the Qwen3-VL pretraining distribution. Without task-specific supervision, the head can't discriminate.)
+
+→ **The whole point of the VQA cotrain is validated**: it teaches the LM head to read grasp pose from pixels. The frame-strategy issue from §0 is about HOW to access that learned capability at inference, not whether the capability exists.
+
+---
+
 ## 1. The headline experiment (what flipped the verdict)
 
 Three clip strategies tested on the same VQA 50k ckpt — all 100 contact/taskB episodes + 160 taskA val episodes (10 per task_dir):
@@ -324,6 +350,8 @@ The single most impactful fix: **make clip-selection strategy configurable in `v
 - **For the other 3 categories (height/hvlv/orient)**, expect similar pattern: uniform_8 may underperform when episode-length distribution or pref-signal-window differs from training. Run `frame_window_test` (extended with gripper_anchored) on each before going to Stage B.
 
 - **VQA approach itself is sound.** The signal IS visually perceivable by Qwen3-VL-4B at the demonstrated resolution. The structural issues (single-token CE saturates fast, no augmentation, hard-coded uniform clips) are fixable without changing the overall design. A retrain with stochastic clip selection (recommendation #4) would likely make pseudo-labeling robust across all task types.
+
+- **VQA cotrain is load-bearing vs baseline.** Baseline ckpt (action-only training, same backbone) gets 0.49-0.51 acc on taskB across all 3 clip strategies — chance, no discrimination, signal ~0. VQA ckpt + right clip gets 0.97-0.99. The +0.47 absolute is the entire pseudo-labeling capability, attributable to the 1:4 VQA gradient signal during training. Without VQA cotrain, Stage B has no labeler at all.
 
 ---
 
