@@ -45,6 +45,10 @@ if [ -n "${NO_SAVE:-}" ]; then
   EXTRA_ARGS+=(--trainer.save_interval "$((SAVE_GUARD + 1))")
 fi
 
+if [ "${IS_RESUME:-0}" = "1" ]; then
+  EXTRA_ARGS+=(--trainer.is_resume true)
+fi
+
 export NCCL_BLOCKING_WAIT=1
 export NCCL_ASYNC_ERROR_HANDLING=1
 export TOKENIZERS_PARALLELISM=false
