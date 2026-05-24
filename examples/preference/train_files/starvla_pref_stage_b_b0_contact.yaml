@@ -88,10 +88,10 @@ trainer:
   is_resume: false
 
   epochs: 100
-  max_train_steps: 5000                     # same as main for clean comparison (per §4.3)
-  num_warmup_steps: 500                     # 0.1 × max_train_steps
-  save_interval: 1000                       # same grid as main: 1000/2000/.../5000 + final = 6 ckpts
-  eval_interval: 6000                       # > max → no step-eval
+  max_train_steps: 3000                     # same as main for clean comparison
+  num_warmup_steps: 300                     # 0.1 × max_train_steps
+  save_interval: 500                        # same grid as main: 500/1000/.../3000 + final = 7 ckpts
+  eval_interval: 4000                       # > max → no step-eval
 
   learning_rate:
     base: 2.5e-06
