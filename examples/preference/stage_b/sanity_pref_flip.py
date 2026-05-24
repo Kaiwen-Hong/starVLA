@@ -146,6 +146,14 @@ def main():
     ap.add_argument("--seed", type=int, default=42)
     ap.add_argument("--out", default=None,
                     help="Optional path to dump per-episode records as JSON")
+    ap.add_argument("--framework_name", default="QwenPI",
+                    help="Framework class name to instantiate (default QwenPI; "
+                         "use QwenPI_VQA for Stage A VQA ckpts).")
+    ap.add_argument("--dump_chunks", action="store_true",
+                    help="Dump full a_low and a_high action chunks (16, 20) per episode")
+    ap.add_argument("--frame_fraction", type=float, default=None,
+                    help="If set, use frame at this fraction of T (e.g. 0.30 = pre-grasp). "
+                         "Default None = use gripper-detected grasp_t (fallback 0.45*T).")
     args = ap.parse_args()
 
     cat = PREF_CATEGORIES[args.category]
@@ -157,9 +165,9 @@ def main():
     stats_path = cfg.datasets.vla_data.stats_json_path
 
     # Load policy
-    print(f"[sanity] loading policy ckpt: {args.policy_ckpt}")
+    print(f"[sanity] loading policy ckpt: {args.policy_ckpt} (framework={args.framework_name})")
     t0 = time.time()
-    model, _ = build_framework(args.policy_yaml, "QwenPI")
+    model, _ = build_framework(args.policy_yaml, args.framework_name)
     load_ckpt_into_model(model, args.policy_ckpt)
     model = model.cuda().eval()
     print(f"[sanity] loaded in {time.time()-t0:.1f}s\n")
@@ -177,7 +185,12 @@ def main():
     records = []
     for i, (task_dir, gt_pk, ep_id) in enumerate(eps):
         h5p = Path(args.taskB_data_root) / task_dir / "data" / f"episode{ep_id}.hdf5"
-        frame_idx = pick_grasp_or_mid_frame(h5p)
+        if args.frame_fraction is not None:
+            with h5py.File(h5p, "r") as h5:
+                T = h5["observation/head_camera/rgb"].shape[0]
+            frame_idx = max(0, min(T - 17, int(args.frame_fraction * (T - 1))))
+        else:
+            frame_idx = pick_grasp_or_mid_frame(h5p)
         obs = load_frame_obs(h5p, frame_idx)
         state = normalize_state(obs["state_raw"], stats_path)
 
@@ -192,14 +205,18 @@ def main():
         delta_at_max = float(delta[k_max])
         mean_delta = float(delta.mean())
 
-        records.append({
+        rec = {
             "task_dir": task_dir, "ep_id": ep_id, "gt_pk": gt_pk,
             "frame_idx": frame_idx,
             "delta_at_chunk_max": delta_at_max,
             "delta_chunk_mean": mean_delta,
             "k_max": k_max,
             "sign_correct": int(np.sign(delta_at_max) == args.expected_sign),
-        })
+        }
+        if args.dump_chunks:
+            rec["a_low"] = a_low.tolist()
+            rec["a_high"] = a_high.tolist()
+        records.append(rec)
         print(f"  [{i+1}/{len(eps)}] {task_dir}/ep{ep_id}  frame={frame_idx}  "
               f"Δ[k={k_max}]={delta_at_max:+.4f}  mean={mean_delta:+.4f}  "
               f"sign_correct={records[-1]['sign_correct']}")

@@ -1,0 +1,309 @@
+{
+  "policy_ckpt": "/mnt/localssd/kaiwenh/starVLA_runs/results/Checkpoints/pref_baseline_stage_a_v1_noVQA_contact/checkpoints/steps_35000_pytorch_model.pt",
+  "axis": 2,
+  "expected_sign": 1,
+  "sign_acc": 0.6666666666666666,
+  "mean_delta": 0.02213985621929169,
+  "records": [
+    {
+      "task_dir": "put_boxdrink3_plate_25",
+      "ep_id": 25,
+      "gt_pk": "25",
+      "frame_idx": 33,
+      "delta_at_chunk_max": -0.04819279909133911,
+      "delta_chunk_mean": 0.0030778422951698303,
+      "k_max": 10,
+      "sign_correct": 0
+    },
+    {
+      "task_dir": "put_boxdrink3_plate_25",
+      "ep_id": 23,
+      "gt_pk": "25",
+      "frame_idx": 41,
+      "delta_at_chunk_max": 0.05339258909225464,
+      "delta_chunk_mean": 0.004121445119380951,
+      "k_max": 1,
+      "sign_correct": 1
+    },
+    {
+      "task_dir": "put_boxdrink3_plate_25",
+      "ep_id": 19,
+      "gt_pk": "25",
+      "frame_idx": 37,
+      "delta_at_chunk_max": -0.03063654899597168,
+      "delta_chunk_mean": 0.00364559143781662,
+      "k_max": 15,
+      "sign_correct": 0
+    },
+    {
+      "task_dir": "put_boxdrink3_plate_25",
+      "ep_id": 11,
+      "gt_pk": "25",
+      "frame_idx": 35,
+      "delta_at_chunk_max": 0.06291714310646057,
+      "delta_chunk_mean": -0.0011992938816547394,
+      "k_max": 6,
+      "sign_correct": 1
+    },
+    {
+      "task_dir": "put_boxdrink3_plate_25",
+      "ep_id": 4,
+      "gt_pk": "25",
+      "frame_idx": 35,
+      "delta_at_chunk_max": 0.06563104689121246,
+      "delta_chunk_mean": 0.01594296097755432,
+      "k_max": 13,
+      "sign_correct": 1
+    },
+    {
+      "task_dir": "put_boxdrink3_plate_25",
+      "ep_id": 45,
+      "gt_pk": "25",
+      "frame_idx": 35,
+      "delta_at_chunk_max": 0.0754089206457138,
+      "delta_chunk_mean": -0.00205171387642622,
+      "k_max": 3,
+      "sign_correct": 1
+    },
+    {
+      "task_dir": "put_boxdrink3_plate_25",
+      "ep_id": 26,
+      "gt_pk": "25",
+      "frame_idx": 33,
+      "delta_at_chunk_max": 0.05860239267349243,
+      "delta_chunk_mean": 0.010889589786529541,
+      "k_max": 13,
+      "sign_correct": 1
+    },
+    {
+      "task_dir": "put_boxdrink3_plate_25",
+      "ep_id": 9,
+      "gt_pk": "25",
+      "frame_idx": 45,
+      "delta_at_chunk_max": -0.027253299951553345,
+      "delta_chunk_mean": -0.004282682668417692,
+      "k_max": 5,
+      "sign_correct": 0
+    },
+    {
+      "task_dir": "put_boxdrink3_plate_25",
+      "ep_id": 29,
+      "gt_pk": "25",
+      "frame_idx": 35,
+      "delta_at_chunk_max": 0.05966228246688843,
+      "delta_chunk_mean": 0.014842454344034195,
+      "k_max": 4,
+      "sign_correct": 1
+    },
+    {
+      "task_dir": "put_boxdrink3_plate_25",
+      "ep_id": 16,
+      "gt_pk": "25",
+      "frame_idx": 40,
+      "delta_at_chunk_max": 0.04046562314033508,
+      "delta_chunk_mean": 0.009426798671483994,
+      "k_max": 9,
+      "sign_correct": 1
+    },
+    {
+      "task_dir": "put_boxdrink3_plate_25",
+      "ep_id": 31,
+      "gt_pk": "25",
+      "frame_idx": 35,
+      "delta_at_chunk_max": 0.057333797216415405,
+      "delta_chunk_mean": 0.013592327013611794,
+      "k_max": 0,
+      "sign_correct": 1
+    },
+    {
+      "task_dir": "put_boxdrink3_plate_25",
+      "ep_id": 21,
+      "gt_pk": "25",
+      "frame_idx": 33,
+      "delta_at_chunk_max": 0.05052095651626587,
+      "delta_chunk_mean": 0.009203951805830002,
+      "k_max": 6,
+      "sign_correct": 1
+    },
+    {
+      "task_dir": "put_boxdrink3_plate_25",
+      "ep_id": 12,
+      "gt_pk": "25",
+      "frame_idx": 33,
+      "delta_at_chunk_max": -0.048653990030288696,
+      "delta_chunk_mean": 0.006681440398097038,
+      "k_max": 8,
+      "sign_correct": 0
+    },
+    {
+      "task_dir": "put_boxdrink3_plate_25",
+      "ep_id": 3,
+      "gt_pk": "25",
+      "frame_idx": 38,
+      "delta_at_chunk_max": 0.04297618567943573,
+      "delta_chunk_mean": -0.000702819786965847,
+      "k_max": 14,
+      "sign_correct": 1
+    },
+    {
+      "task_dir": "put_boxdrink3_plate_25",
+      "ep_id": 39,
+      "gt_pk": "25",
+      "frame_idx": 34,
+      "delta_at_chunk_max": 0.05117309093475342,
+      "delta_chunk_mean": 0.004241211339831352,
+      "k_max": 12,
+      "sign_correct": 1
+    },
+    {
+      "task_dir": "put_boxdrink3_plate_75",
+      "ep_id": 42,
+      "gt_pk": "75",
+      "frame_idx": 34,
+      "delta_at_chunk_max": 0.11275789141654968,
+      "delta_chunk_mean": 0.011799566447734833,
+      "k_max": 9,
+      "sign_correct": 1
+    },
+    {
+      "task_dir": "put_boxdrink3_plate_75",
+      "ep_id": 41,
+      "gt_pk": "75",
+      "frame_idx": 35,
+      "delta_at_chunk_max": -0.04902854561805725,
+      "delta_chunk_mean": -0.0003298697993159294,
+      "k_max": 10,
+      "sign_correct": 0
+    },
+    {
+      "task_dir": "put_boxdrink3_plate_75",
+      "ep_id": 13,
+      "gt_pk": "75",
+      "frame_idx": 36,
+      "delta_at_chunk_max": -0.03358091413974762,
+      "delta_chunk_mean": -0.00709111662581563,
+      "k_max": 14,
+      "sign_correct": 0
+    },
+    {
+      "task_dir": "put_boxdrink3_plate_75",
+      "ep_id": 9,
+      "gt_pk": "75",
+      "frame_idx": 33,
+      "delta_at_chunk_max": 0.06014065444469452,
+      "delta_chunk_mean": 0.01237974502146244,
+      "k_max": 13,
+      "sign_correct": 1
+    },
+    {
+      "task_dir": "put_boxdrink3_plate_75",
+      "ep_id": 19,
+      "gt_pk": "75",
+      "frame_idx": 31,
+      "delta_at_chunk_max": -0.041188061237335205,
+      "delta_chunk_mean": 0.000881614163517952,
+      "k_max": 7,
+      "sign_correct": 0
+    },
+    {
+      "task_dir": "put_boxdrink3_plate_75",
+      "ep_id": 29,
+      "gt_pk": "75",
+      "frame_idx": 33,
+      "delta_at_chunk_max": 0.06448429822921753,
+      "delta_chunk_mean": 0.014914391562342644,
+      "k_max": 14,
+      "sign_correct": 1
+    },
+    {
+      "task_dir": "put_boxdrink3_plate_75",
+      "ep_id": 1,
+      "gt_pk": "75",
+      "frame_idx": 31,
+      "delta_at_chunk_max": -0.030273661017417908,
+      "delta_chunk_mean": -0.0041323089972138405,
+      "k_max": 1,
+      "sign_correct": 0
+    },
+    {
+      "task_dir": "put_boxdrink3_plate_75",
+      "ep_id": 0,
+      "gt_pk": "75",
+      "frame_idx": 38,
+      "delta_at_chunk_max": 0.05025859177112579,
+      "delta_chunk_mean": -0.003645064774900675,
+      "k_max": 13,
+      "sign_correct": 1
+    },
+    {
+      "task_dir": "put_boxdrink3_plate_75",
+      "ep_id": 15,
+      "gt_pk": "75",
+      "frame_idx": 31,
+      "delta_at_chunk_max": -0.06711402535438538,
+      "delta_chunk_mean": 0.00422511575743556,
+      "k_max": 14,
+      "sign_correct": 0
+    },
+    {
+      "task_dir": "put_boxdrink3_plate_75",
+      "ep_id": 3,
+      "gt_pk": "75",
+      "frame_idx": 33,
+      "delta_at_chunk_max": 0.054385244846343994,
+      "delta_chunk_mean": 0.007358197588473558,
+      "k_max": 9,
+      "sign_correct": 1
+    },
+    {
+      "task_dir": "put_boxdrink3_plate_75",
+      "ep_id": 28,
+      "gt_pk": "75",
+      "frame_idx": 31,
+      "delta_at_chunk_max": 0.035600483417510986,
+      "delta_chunk_mean": 0.007119585294276476,
+      "k_max": 6,
+      "sign_correct": 1
+    },
+    {
+      "task_dir": "put_boxdrink3_plate_75",
+      "ep_id": 10,
+      "gt_pk": "75",
+      "frame_idx": 38,
+      "delta_at_chunk_max": 0.03342901170253754,
+      "delta_chunk_mean": 0.005887115839868784,
+      "k_max": 1,
+      "sign_correct": 1
+    },
+    {
+      "task_dir": "put_boxdrink3_plate_75",
+      "ep_id": 38,
+      "gt_pk": "75",
+      "frame_idx": 33,
+      "delta_at_chunk_max": 0.05716770887374878,
+      "delta_chunk_mean": 0.0031423885375261307,
+      "k_max": 15,
+      "sign_correct": 1
+    },
+    {
+      "task_dir": "put_boxdrink3_plate_75",
+      "ep_id": 22,
+      "gt_pk": "75",
+      "frame_idx": 32,
+      "delta_at_chunk_max": 0.031101614236831665,
+      "delta_chunk_mean": 0.0036757965572178364,
+      "k_max": 13,
+      "sign_correct": 1
+    },
+    {
+      "task_dir": "put_boxdrink3_plate_75",
+      "ep_id": 16,
+      "gt_pk": "75",
+      "frame_idx": 33,
+      "delta_at_chunk_max": -0.07729199528694153,
+      "delta_chunk_mean": -0.010158572345972061,
+      "k_max": 10,
+      "sign_correct": 0
+    }
+  ]
+}
