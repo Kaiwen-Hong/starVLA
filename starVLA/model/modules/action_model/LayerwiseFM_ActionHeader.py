@@ -292,6 +292,28 @@ class LayerwiseFlowmatchingActionHead(nn.Module):
         self.num_timestep_buckets = action_config.num_timestep_buckets
         self.config = action_config
 
+        # Training-time RTC: when set, training samples a per-batch prefix
+        # delay in [0, simulated_delay) so the model learns to denoise a
+        # suffix conditional on a clean (t=1) prefix — matching the
+        # predict_action_realtime(mode="simulated_delay") inference path.
+        # When None or 0, training behaves identically to the original
+        # flow-matching loss (no checkpoint shape changes).
+        self.simulated_delay = action_config.get("simulated_delay", None)
+        if self.simulated_delay is not None and self.simulated_delay > 0:
+            w = torch.exp(torch.arange(self.simulated_delay - 1, -1, -1, dtype=torch.float32))
+            w = w / w.sum()
+            self.register_buffer("_simulated_delay_weights", w, persistent=False)
+
+    @property
+    def default_realtime_mode(self) -> str:
+        """Explicit realtime-inference mode that matches how this head was
+        trained. Use this so call sites read as ``mode="simulated_delay"``
+        (for the finetuned head) instead of relying on opaque ``None``
+        dispatch deep inside the head."""
+        if self.simulated_delay is not None and self.simulated_delay > 0:
+            return "simulated_delay"
+        return "pigdm"
+
     def sample_time(self, batch_size, device, dtype):
         sample = self.beta_dist.sample([batch_size]).to(device, dtype=dtype)
         return (self.config.noise_s - sample) / self.config.noise_s
@@ -305,6 +327,12 @@ class LayerwiseFlowmatchingActionHead(nn.Module):
         vl_embs: list of torch.Tensor, each shape (B, seq_length, feature_dim)
         actions: shape (B, future_action_window_size, D_action)
         """
+        # Training-time RTC: dispatch to the per-position-time branch when
+        # simulated_delay is configured. Original loss path is preserved
+        # bit-identically below when simulated_delay is None or 0.
+        if self.simulated_delay is not None and self.simulated_delay > 0:
+            return self._forward_rtc(vl_embs_list, actions, state)
+
         device = actions.device
         num_layers = len(vl_embs_list)
         B, L, D = vl_embs_list[0].shape
@@ -333,7 +361,7 @@ class LayerwiseFlowmatchingActionHead(nn.Module):
         future_tokens = self.future_tokens.weight.unsqueeze(0).expand(B, -1, -1)
         sa_embs = torch.cat((state_features, future_tokens, action_features), dim=1) \
             if state_features is not None else torch.cat((future_tokens, action_features), dim=1)
-        
+
         # Encode timesteps
         temb = self.model.timestep_encoder(t_discretized)
 
@@ -345,13 +373,101 @@ class LayerwiseFlowmatchingActionHead(nn.Module):
                 encoder_hidden_states=vl_embs_list[layer_idx],  # Use layer-specific vl_embs
                 temb=temb,
             )
-        
+
         # TODO miss self att and _process_output, but work well
         pred = self.action_decoder(model_output)
         pred_actions = pred[:, -actions.shape[1] :]
 
         # Slice out only the action portion of pred and target.
         loss = ((pred_actions - velocity) ** 2).mean()
+        return loss
+
+    def _forward_rtc(self, vl_embs_list: list, actions: torch.Tensor, state: torch.Tensor = None):
+        """
+        Training-time RTC branch. Mirrors the inference-time
+        predict_action_realtime(mode="simulated_delay") path so the model
+        learns the same prefix-conditioning distribution it will encounter
+        at deployment.
+
+        - delay ~ Categorical(exp([d_max-1,...,0])/Z), shape (B,)
+        - prefix positions [0..delay-1] get time=1.0 (clean target)
+        - suffix positions get the base flow time sampled per batch
+        - velocity MSE is masked to suffix positions only
+        - When delay==0 (the dominant draw), this reduces exactly to the
+          standard flow-matching loss.
+        """
+        device = actions.device
+        dtype = actions.dtype
+        B, H, D = actions.shape
+        assert H == self.action_horizon, (H, self.action_horizon)
+
+        noise = torch.randn(actions.shape, device=device, dtype=dtype)
+        t_scalar = self.sample_time(B, device=device, dtype=dtype)  # (B,)
+        velocity = actions - noise
+
+        weights = self._simulated_delay_weights.to(device=device, dtype=torch.float32)
+        delay = torch.multinomial(weights, num_samples=B, replacement=True).to(device=device)  # (B,)
+
+        pos = torch.arange(H, device=device)  # (H,)
+        prefix_mask = (pos[None, :] < delay[:, None])  # (B, H), True on prefix
+
+        # Per-position continuous time in (0, 1]. Prefix=1.0 means "clean".
+        time_per_pos = torch.where(
+            prefix_mask, torch.ones_like(prefix_mask, dtype=dtype), t_scalar[:, None].to(dtype)
+        )  # (B, H)
+
+        x_t = (1 - time_per_pos)[:, :, None] * noise + time_per_pos[:, :, None] * actions
+
+        # Per-position discretized bucket time for the action encoder.
+        t_buckets_pos = (time_per_pos.float() * self.num_timestep_buckets).long()
+        t_buckets_pos = t_buckets_pos.clamp(max=self.num_timestep_buckets - 1)
+
+        # Inline the action encoder so we can feed (B, H) timesteps —
+        # ActionEncoder.forward only accepts (B,). Matches the inference
+        # path on lines that build x_enc from layer1/layer2/layer3.
+        a_emb = self.action_encoder.layer1(x_t)
+        tau_emb = self.action_encoder.pos_encoding(t_buckets_pos).to(dtype=a_emb.dtype)
+        x_enc = torch.cat([a_emb, tau_emb], dim=-1)
+        x_enc = swish(self.action_encoder.layer2(x_enc))
+        action_features = self.action_encoder.layer3(x_enc)
+
+        if self.config.add_pos_embed:
+            pos_ids = torch.arange(action_features.shape[1], dtype=torch.long, device=device)
+            pos_embs = self.position_embedding(pos_ids).unsqueeze(0)
+            action_features = action_features + pos_embs
+
+        state_features = self.state_encoder(state) if state is not None else None
+
+        future_tokens = self.future_tokens.weight.unsqueeze(0).expand(B, -1, -1)
+        sa_embs = (
+            torch.cat((state_features, future_tokens, action_features), dim=1)
+            if state_features is not None
+            else torch.cat((future_tokens, action_features), dim=1)
+        )
+
+        # Per-batch temb (matches inference path that uses one t_bucket per
+        # batch item for AdaLN conditioning). Use the suffix base time.
+        t_bucket_batch = (t_scalar.float() * self.num_timestep_buckets).long().clamp(
+            max=self.num_timestep_buckets - 1
+        )
+        temb = self.model.timestep_encoder(t_bucket_batch)
+
+        model_output = sa_embs
+        for layer_idx, layer in enumerate(self.model.transformer_blocks):
+            model_output = layer(
+                hidden_states=model_output,
+                encoder_hidden_states=vl_embs_list[layer_idx],
+                temb=temb,
+            )
+
+        pred = self.action_decoder(model_output)
+        pred_actions = pred[:, -H:]
+
+        # Mask the loss to suffix positions only (prefix slots already
+        # equal the clean target, so there is no useful gradient there).
+        loss_mask = (~prefix_mask)[:, :, None].to(pred_actions.dtype)
+        sq_err = (pred_actions - velocity) ** 2 * loss_mask
+        loss = sq_err.sum() / (loss_mask.sum() * D + 1e-8)
         return loss
 
     @torch.no_grad()
@@ -449,7 +565,7 @@ class LayerwiseFlowmatchingActionHead(nn.Module):
         state: torch.Tensor = None,
         prev_action_chunk: torch.Tensor = None,
         inference_delay: int = 1,
-        mode: str = "pigdm",
+        mode: str | None = None,
         suffix_length: int | None = None,
         prefix_attention_schedule: str = "exp",
         max_guidance_weight: float = 10.0,
@@ -492,6 +608,16 @@ class LayerwiseFlowmatchingActionHead(nn.Module):
         """
         if prev_action_chunk is None or inference_delay <= 0:
             return self.predict_action(vl_embs_list, state)
+
+        # Smart default: when the model was finetuned with simulated_delay,
+        # prefer the matching inference path. Otherwise fall back to ΠGDM
+        # (training-free). Explicit `mode=` overrides this.
+        if mode is None:
+            mode = (
+                "simulated_delay"
+                if (self.simulated_delay is not None and self.simulated_delay > 0)
+                else "pigdm"
+            )
 
         batch_size = vl_embs_list[0].shape[0]
         device = vl_embs_list[0].device

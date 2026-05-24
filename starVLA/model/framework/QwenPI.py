@@ -201,6 +201,10 @@ class Qwen_PI(baseframework):
         examples: List[dict] = None,
         prev_action_chunk_normalized: np.ndarray = None,
         inference_delay: int = 1,
+        mode: str | None = None,
+        suffix_length: int | None = None,
+        prefix_attention_schedule: str = "exp",
+        max_guidance_weight: float = 10.0,
         **kwargs,
     ) -> dict:
         """
@@ -214,6 +218,11 @@ class Qwen_PI(baseframework):
             prev_action_chunk_normalized: (B, T, action_dim) *normalized*
                 continuous actions from the previous prediction.
             inference_delay: how many leading timesteps to keep as prefix.
+            mode: "pigdm" | "simulated_delay" | None. None => smart default:
+                "simulated_delay" if the head was trained with simulated_delay,
+                else "pigdm". Pass explicitly to override.
+            suffix_length / prefix_attention_schedule / max_guidance_weight:
+                forwarded to the head; only `pigdm` consumes them.
 
         Returns:
             dict with 'normalized_actions' (np.ndarray) [B, T, action_dim]
@@ -260,12 +269,22 @@ class Qwen_PI(baseframework):
             np.array(prev_action_chunk_normalized)
         ).to(base_hidden.device, dtype=torch.float32)
 
+        # Resolve the realtime mode explicitly: a finetuned head returns
+        # "simulated_delay"; an untrained one returns "pigdm". Callers can
+        # still override by passing mode="..." directly.
+        if mode is None:
+            mode = self.action_model.default_realtime_mode
+
         with torch.autocast("cuda", dtype=torch.float32):
             pred_actions = self.action_model.predict_action_realtime(
                 vl_embs_list,
                 state_t,
                 prev_action_chunk=prev_chunk_t,
                 inference_delay=inference_delay,
+                mode=mode,
+                suffix_length=suffix_length,
+                prefix_attention_schedule=prefix_attention_schedule,
+                max_guidance_weight=max_guidance_weight,
             )
 
         normalized_actions = pred_actions.detach().cpu().numpy()
