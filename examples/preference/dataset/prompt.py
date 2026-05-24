@@ -51,6 +51,20 @@ GIVEOBJ_CLEAN_TEMPLATE = {
     "put_screwdriver_dustbin":"Put the screwdriver into the dustbin.",
 }
 
+# contact extends giveobj with the taskB task group(s) used by Stage B
+# pseudo-labeling / continue-training. Same pref_keys/labels (25/75 ->
+# low/high contact); only the task_groups + clean_templates differ.
+# legacy "giveobj" entry stays unchanged (it's a pure alias for the
+# Stage-A taskA-only task set; doesn't include taskB).
+CONTACT_TASK_GROUPS = GIVEOBJ_TASK_GROUPS + (
+    "put_boxdrink3_plate",   # contact/taskB, 50+50 ep
+)
+
+CONTACT_CLEAN_TEMPLATE = {
+    **GIVEOBJ_CLEAN_TEMPLATE,
+    "put_boxdrink3_plate":   "Put the box drink onto the plate.",
+}
+
 # v5 hybrid: broad regex catching "grasping/holding ... top/bottom [of X]".
 _STRIP_RE = re.compile(
     r"(,\s*)?(?:while\s+)?(?:by\s+|and\s+|before\s+)?"
@@ -239,12 +253,17 @@ PREF_CATEGORIES: Dict[str, PrefCategory] = {
     # /mnt/.../pref/data/giveobj -> /mnt/.../pref/data/contact;
     # `giveobj/` is kept as a backward-compat symlink. Use this key in
     # new YAML / launch scripts; `giveobj` remains for old ckpts.
+    #
+    # NB: `contact` task_groups/clean_templates *extend* giveobj's with
+    # `put_boxdrink3_plate` (the taskB task group used by Stage B
+    # pseudo-labeling/continue-training). legacy `giveobj` entry above
+    # stays strictly Stage-A taskA-only.
     "contact": PrefCategory(
         name="contact",
-        task_groups=GIVEOBJ_TASK_GROUPS,
+        task_groups=CONTACT_TASK_GROUPS,
         pref_keys=("25", "75"),
         pref_labels=GIVEOBJ_PREF_LABELS,
-        clean_templates=GIVEOBJ_CLEAN_TEMPLATE,
+        clean_templates=CONTACT_CLEAN_TEMPLATE,
         sep_re=None,
         leak_re=None,
     ),

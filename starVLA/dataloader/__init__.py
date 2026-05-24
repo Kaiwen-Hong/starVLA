@@ -87,3 +87,19 @@ def build_dataloader(cfg, dataset_py="lerobot_datasets_oxe"): # TODO now here on
             output_dir = Path(cfg.output_dir)
             vla_dataset.save_dataset_statistics(output_dir / "dataset_statistics.json")
         return vla_train_dataloader
+    elif dataset_py == "pref_hdf5_stageb":
+        from examples.preference.dataset.pref_hdf5_stageb_dataset import (
+            get_pref_stageb_dataset, collate_fn,
+        )
+        vla_dataset_cfg = cfg.datasets.vla_data
+        vla_dataset = get_pref_stageb_dataset(data_cfg=vla_dataset_cfg, mode="train")
+        vla_train_dataloader = DataLoader(
+            vla_dataset,
+            batch_size=vla_dataset_cfg.per_device_batch_size,
+            collate_fn=collate_fn,
+            num_workers=vla_dataset_cfg.get("num_workers", 4),
+        )
+        if not dist.is_initialized() or dist.get_rank() == 0:
+            output_dir = Path(cfg.output_dir)
+            vla_dataset.save_dataset_statistics(output_dir / "dataset_statistics.json")
+        return vla_train_dataloader
