@@ -128,6 +128,12 @@ VQA_CATEGORIES: Dict[str, VQACategoryConfig] = {
         answer_text={"0": "horizontal", "90": "vertical"},
         question="Question: horizontal or vertical grasp? Answer:",
     ),
+    "place": VQACategoryConfig(
+        pref_keys=("center", "corner"),
+        answer_token_ids={"center": 3057, "corner": 73425},
+        answer_text={"center": "center", "corner": "corner"},
+        question="Question: center or corner placement? Answer:",
+    ),
 }
 
 
@@ -156,8 +162,159 @@ VQA_ANSWER_TEXT      = VQA_CATEGORIES["giveobj"].answer_text
 # ============================================================
 
 def uniform_clip_indices(T: int, n: int = VQA_NUM_FRAMES) -> np.ndarray:
-    """Uniform-linspace frame indices into a T-frame episode."""
+    """Uniform-linspace frame indices into a T-frame episode.
+
+    This is what the training-time VQA clip cache uses. For inference, prefer
+    `mid_clip_indices` or `gripper_anchored_clip_indices` — both validated to
+    push contact taskB acc 0.61 -> 0.97-0.99 (see r-preference/doc/0523-stageA-analysis.md
+    §4 for the strategy comparison).
+    """
     return np.linspace(0, T - 1, n).round().astype(np.int64)
+
+
+# Validated fractions: pushed contact taskB acc from 0.61 (uniform_8) to 0.99.
+# Hand-tuned to be denser in the middle (diff 0.07/0.08/0.05/0.05/0.05/0.07/0.08)
+# so more samples land near the typical grasp moment.
+# DO NOT change without re-running the Stage A gate eval — the 0.99 number
+# is bound to THIS sequence of fractions.
+DEFAULT_MID_FRACS: Tuple[float, ...] = (0.25, 0.32, 0.40, 0.45, 0.50, 0.55, 0.62, 0.70)
+
+
+def mid_clip_indices(
+    T: int,
+    n: int = VQA_NUM_FRAMES,
+    fracs: Sequence[float] = DEFAULT_MID_FRACS,
+) -> np.ndarray:
+    """Frame indices at hand-tuned fractions clustered in mid-episode.
+
+    Validated for contact taskB (put_boxdrink3_plate, T~193) where it gives
+    0.99 acc on the 35k VQA ckpt vs 0.61 for uniform_8. Default fracs are
+    the ones used in that validation; pass a different sequence at your
+    own risk.
+    """
+    fracs_arr = np.asarray(fracs, dtype=np.float64)
+    if len(fracs_arr) != n:
+        raise ValueError(
+            f"mid_clip_indices: len(fracs)={len(fracs_arr)} must match n={n}"
+        )
+    return (fracs_arr * (T - 1)).round().astype(np.int64)
+
+
+# Validated gripper-close threshold + half-window: see analysis doc §4.
+# half_window=4 → span = 8, total clip covers ~64 frames around grasp_t.
+# Threshold 0.5 works for contact's gripper convention (1.0=open, 0.0=closed);
+# verify per category before reusing.
+DEFAULT_GRIPPER_CLOSE_THRESH: float = 0.5
+DEFAULT_GRIPPER_HALF_WINDOW: int = 4
+
+
+def find_grasp_frame(
+    h5: h5py.File,
+    threshold: float = DEFAULT_GRIPPER_CLOSE_THRESH,
+) -> Optional[int]:
+    """Find the first frame where either gripper crosses below `threshold`.
+
+    Detection priority:
+      1. First open→closed transition (gripper[t] < thr AND gripper[t-1] >= thr)
+         on either left or right gripper.
+      2. If no transition (gripper starts already closed), first frame
+         where any gripper is below threshold.
+      3. None if no closure ever happens (rare; caller should fall back).
+    """
+    L = np.asarray(h5["endpose/left_gripper"][:])
+    R = np.asarray(h5["endpose/right_gripper"][:])
+    T = len(L)
+    for t in range(1, T):
+        if (L[t] < threshold and L[t - 1] >= threshold) or \
+           (R[t] < threshold and R[t - 1] >= threshold):
+            return t
+    where = np.where((L < threshold) | (R < threshold))[0]
+    return int(where[0]) if len(where) > 0 else None
+
+
+def gripper_anchored_clip_indices(
+    h5: h5py.File,
+    n: int = VQA_NUM_FRAMES,
+    half_window: int = DEFAULT_GRIPPER_HALF_WINDOW,
+    threshold: float = DEFAULT_GRIPPER_CLOSE_THRESH,
+) -> Tuple[np.ndarray, Optional[int]]:
+    """Frame indices centered on the detected grasp moment.
+
+    Returns (indices, grasp_t). If no grasp moment detected, returns
+    uniform indices + grasp_t=None (caller can see this and decide what
+    to do — current pipeline accepts the fallback).
+
+    Validated on contact taskB: 0.98 acc on 35k VQA, signal +45.16.
+    """
+    L_len = len(h5["endpose/left_gripper"])
+    T = L_len
+    grasp_t = find_grasp_frame(h5, threshold=threshold)
+    if grasp_t is None:
+        return uniform_clip_indices(T, n), None
+    span = max(half_window * 2, 1)
+    t0 = max(0, grasp_t - span * n // 2)
+    t1 = min(T - 1, grasp_t + span * n // 2)
+    if t0 == 0:
+        t1 = min(T - 1, t0 + span * (n - 1))
+    elif t1 == T - 1:
+        t0 = max(0, t1 - span * (n - 1))
+    return np.linspace(t0, t1, n).round().astype(np.int64), grasp_t
+
+
+# ============================================================
+# Unified clip-loading dispatcher (used by Stage A eval + Stage B labeler)
+# ============================================================
+
+CLIP_STRATEGY_NAMES = ("uniform_8", "mid_8", "gripper_anchored")
+
+
+def load_clip_by_strategy(
+    h5_path: Path,
+    strategy: str = "mid_8",
+    n: int = VQA_NUM_FRAMES,
+    camera: str = VQA_CAMERA,
+    image_size: Tuple[int, int] = VQA_IMAGE_SIZE,
+) -> Tuple[List["Image.Image"], Dict]:
+    """Decode an n-frame clip from an HDF5 episode using the given strategy.
+
+    Returns (frames, info) where info has keys:
+      - "strategy", "indices" (list[int]), "T" (total frames),
+      - "grasp_t" (int|None, only for gripper_anchored).
+
+    Pipeline contract: Stage A eval and Stage B labeler MUST both call into
+    this function to guarantee the strategy used at pseudo-label time
+    matches the one validated at gate time.
+    """
+    H, W = image_size
+    with h5py.File(h5_path, "r") as h5:
+        T = h5[f"observation/{camera}/rgb"].shape[0]
+        grasp_t = None
+        if strategy == "uniform_8":
+            idx = uniform_clip_indices(T, n)
+        elif strategy == "mid_8":
+            idx = mid_clip_indices(T, n)
+        elif strategy == "gripper_anchored":
+            idx, grasp_t = gripper_anchored_clip_indices(h5, n)
+        else:
+            raise ValueError(
+                f"Unknown clip strategy {strategy!r}; expected one of {CLIP_STRATEGY_NAMES}"
+            )
+
+        frames: List[Image.Image] = []
+        for t in idx:
+            raw = h5[f"observation/{camera}/rgb"][int(t)]
+            data = raw.tobytes() if hasattr(raw, "tobytes") else raw
+            img = Image.open(io.BytesIO(data)).convert("RGB")
+            if img.size != (W, H):
+                img = img.resize((W, H))
+            frames.append(img)
+
+    return frames, {
+        "strategy": strategy,
+        "indices": idx.tolist(),
+        "T": int(T),
+        "grasp_t": int(grasp_t) if grasp_t is not None else None,
+    }
 
 
 def _decode_clip(

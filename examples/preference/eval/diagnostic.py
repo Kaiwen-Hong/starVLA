@@ -43,11 +43,15 @@ from PIL import Image
 
 from examples.preference.dataset.prompt import PREF_CATEGORIES
 from examples.preference.dataset.pref_hdf5_dataset import PrefHDF5Dataset
-from examples.preference.dataset.vqa_sample import VQA_CATEGORIES, uniform_clip_indices
+from examples.preference.dataset.vqa_sample import (
+    VQA_CATEGORIES,
+    CLIP_STRATEGY_NAMES,
+    load_clip_by_strategy,
+)
 from examples.preference.eval.stage_a_gate import (
     build_framework,
     load_ckpt_into_model,
-    load_clip_from_h5,
+    load_clip_from_h5,  # kept for back-compat; new path uses load_clip_by_strategy
     list_taskB_episodes,
     subsample_taskA_episodes,
     FrameSample,
@@ -146,13 +150,17 @@ def main():
     ap.add_argument("--taskB_data_root", default=None)
     ap.add_argument("--seed", type=int, default=42)
     ap.add_argument("--out", required=True)
+    ap.add_argument("--clip_strategy", default="uniform_8", choices=list(CLIP_STRATEGY_NAMES),
+                    help="Clip selection strategy for VQA forward. Default uniform_8 "
+                         "(back-compat with original gate eval). For Stage B labeling "
+                         "use mid_8 or gripper_anchored (validated).")
     args = ap.parse_args()
 
     rng = random.Random(args.seed)
     cat = PREF_CATEGORIES[args.category]
     vqa_cat = VQA_CATEGORIES[args.category]
     pk_A, pk_B = vqa_cat.pref_keys
-    print(f"[diag] category={args.category} pk_A={pk_A} pk_B={pk_B}")
+    print(f"[diag] category={args.category} pk_A={pk_A} pk_B={pk_B} clip_strategy={args.clip_strategy}")
 
     # Build taskA val ds
     cfg = OmegaConf.load(args.vqa_yaml)
@@ -185,22 +193,24 @@ def main():
     results = {
         "category": args.category, "vqa_ckpt": args.vqa_ckpt,
         "pk_A": pk_A, "pk_B": pk_B,
+        "clip_strategy": args.clip_strategy,
     }
 
     # === 1. TaskB per-sample diagnostic ===
     if taskB_eps:
-        print(f"\n  === TaskB per-sample diagnostic ({len(taskB_eps)} ep) ===")
+        print(f"\n  === TaskB per-sample diagnostic ({len(taskB_eps)} ep, strategy={args.clip_strategy}) ===")
         t0 = time.time()
         records = []
         for i, fs in enumerate(taskB_eps):
             h5p = Path(args.taskB_data_root) / fs.task_dir / "data" / f"episode{fs.ep_id}.hdf5"
-            clip = load_clip_from_h5(h5p)
+            clip, info = load_clip_by_strategy(h5p, strategy=args.clip_strategy)
             r = predict_with_logits(model, clip)
             r["task_dir"] = fs.task_dir
             r["task_group"] = fs.task_group
             r["gt_pref_key"] = fs.pref_key
             r["ep_id"] = fs.ep_id
             r["correct"] = int(r["pred_pref_key"] == fs.pref_key)
+            r["clip_info"] = info  # strategy, indices, T, grasp_t
             records.append(r)
             if (i+1) % 20 == 0:
                 print(f"    {i+1}/{len(taskB_eps)} ({time.time()-t0:.1f}s)")
@@ -233,16 +243,17 @@ def main():
 
     # === 2. TaskA per-sample diagnostic ===
     if taskA_eps:
-        print(f"\n  === TaskA per-sample diagnostic ({len(taskA_eps)} ep) ===")
+        print(f"\n  === TaskA per-sample diagnostic ({len(taskA_eps)} ep, strategy={args.clip_strategy}) ===")
         t0 = time.time()
         records = []
         for i, fs in enumerate(taskA_eps):
             h5p = val_ds.data_root / fs.task_dir / "data" / f"episode{fs.ep_id}.hdf5"
-            clip = load_clip_from_h5(h5p)
+            clip, info = load_clip_by_strategy(h5p, strategy=args.clip_strategy)
             r = predict_with_logits(model, clip)
             r.update({"task_dir": fs.task_dir, "task_group": fs.task_group,
                       "gt_pref_key": fs.pref_key, "ep_id": fs.ep_id,
-                      "correct": int(r["pred_pref_key"] == fs.pref_key)})
+                      "correct": int(r["pred_pref_key"] == fs.pref_key),
+                      "clip_info": info})
             records.append(r)
             if (i+1) % 20 == 0:
                 print(f"    {i+1}/{len(taskA_eps)} ({time.time()-t0:.1f}s)")

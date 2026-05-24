@@ -168,6 +168,35 @@ _LEAK_RE_ORIENT = re.compile(
     re.IGNORECASE,
 )
 
+# ============================================================
+# place (16 tasks: move|place × 4 obj × {pad,tray} × {center,corner})
+# Strategy: template_only — paraphrase ignored.
+# Reason: pre-flight 137,200 paraphrases × 4 strip strategies, max pass
+# 47.74% (broad-sep). ~52% of paraphrases lack any separator and embed
+# the pref word inline ("Place the pillbottle at the center of the
+# tray."). Templates are the only ≥99% clean option.
+# ============================================================
+
+PLACE_PREF_LABELS = {"center": "center placement", "corner": "corner placement"}
+
+PLACE_TASK_GROUPS = (
+    "move_mouse_pad", "move_pillbottle_pad",
+    "move_playingcards_pad", "move_soap_pad",
+    "place_mouse_tray", "place_pillbottle_tray",
+    "place_playingcards_tray", "place_soap_tray",
+)
+
+PLACE_CLEAN_TEMPLATE = {
+    "move_mouse_pad":          "Move the mouse onto the pad.",
+    "move_pillbottle_pad":     "Move the pill bottle onto the pad.",
+    "move_playingcards_pad":   "Move the playing cards onto the pad.",
+    "move_soap_pad":           "Move the soap onto the pad.",
+    "place_mouse_tray":        "Place the mouse on the tray.",
+    "place_pillbottle_tray":   "Place the pill bottle on the tray.",
+    "place_playingcards_tray": "Place the playing cards on the tray.",
+    "place_soap_tray":         "Place the soap on the tray.",
+}
+
 # Broader separator shared by hvlv + orient.
 _SEP_RE_BROAD = re.compile(r",|\s+(?:and|while|by|before|after)\s+", re.IGNORECASE)
 MIN_BASE_LEN = 15
@@ -246,6 +275,15 @@ PREF_CATEGORIES: Dict[str, PrefCategory] = {
         sep_re=_SEP_RE_BROAD,
         leak_re=_LEAK_RE_ORIENT,
     ),
+    "place": PrefCategory(
+        name="place",
+        task_groups=PLACE_TASK_GROUPS,
+        pref_keys=("center", "corner"),
+        pref_labels=PLACE_PREF_LABELS,
+        clean_templates=PLACE_CLEAN_TEMPLATE,
+        sep_re=None,
+        leak_re=None,
+    ),
 }
 
 # ============================================================
@@ -308,14 +346,16 @@ def build_action_prompt(
       height   ignore paraphrase; always use CLEAN_TEMPLATE.
       hvlv     broader-sep first-split; fallback on no-sep/short/leak.
       orient   same as hvlv with tighter leak regex.
+      place    ignore paraphrase; always use CLEAN_TEMPLATE (same as height).
 
     Args:
-      task_group: e.g. 'give_boxdrink' (giveobj), 'move_mouse_pad' (height),
-                  'place_apple_plate' (hvlv), 'place_bottle_box' (orient).
+      task_group: e.g. 'give_boxdrink' (giveobj), 'move_mouse_pad' (height
+                  or place), 'place_apple_plate' (hvlv), 'place_bottle_box'
+                  (orient), 'place_mouse_tray' (place).
       pref_key:   per-category pref keys — see PREF_CATEGORIES[c].pref_keys.
       paraphrase: optional 'seen' phrase; if None or fallback triggered,
                   uses CLEAN_TEMPLATE.
-      category:   one of {'giveobj','height','hvlv','orient'}.
+      category:   one of {'giveobj','contact','height','hvlv','orient','place'}.
     """
     cat = PREF_CATEGORIES.get(category)
     if cat is None:
