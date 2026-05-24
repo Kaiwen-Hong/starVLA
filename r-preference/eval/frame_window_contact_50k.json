@@ -1,0 +1,54 @@
+{
+  "category": "contact",
+  "vqa_ckpt": "/mnt/localssd/kaiwenh/starVLA_runs/results/Checkpoints/pref_main_stage_a_v1_VQA_contact/checkpoints/steps_50000_pytorch_model.pt",
+  "strategies": {
+    "uniform_8": {
+      "n_frames": 8,
+      "acc": 0.61,
+      "acc_gt_low": 1.0,
+      "acc_gt_high": 0.22,
+      "n_pred_low": 89,
+      "n_pred_high": 11,
+      "gap_mean_overall": 19.575,
+      "gap_mean_gt_low": 24.603125,
+      "gap_mean_gt_high": 14.546875,
+      "gap_diff_signal": 10.056249999999999
+    },
+    "mid_8": {
+      "n_frames": 8,
+      "acc": 0.99,
+      "acc_gt_low": 0.98,
+      "acc_gt_high": 1.0,
+      "n_pred_low": 49,
+      "n_pred_high": 51,
+      "gap_mean_overall": -2.033125,
+      "gap_mean_gt_low": 22.55,
+      "gap_mean_gt_high": -26.61625,
+      "gap_diff_signal": 49.166250000000005
+    },
+    "dense_16": {
+      "n_frames": 16,
+      "acc": 0.57,
+      "acc_gt_low": 1.0,
+      "acc_gt_high": 0.14,
+      "n_pred_low": 93,
+      "n_pred_high": 7,
+      "gap_mean_overall": 20.7475,
+      "gap_mean_gt_low": 23.43375,
+      "gap_mean_gt_high": 18.06125,
+      "gap_diff_signal": 5.372499999999999
+    },
+    "mid_dense_16": {
+      "n_frames": 16,
+      "acc": 0.96,
+      "acc_gt_low": 0.92,
+      "acc_gt_high": 1.0,
+      "n_pred_low": 46,
+      "n_pred_high": 54,
+      "gap_mean_overall": -2.82515625,
+      "gap_mean_gt_low": 20.346875,
+      "gap_mean_gt_high": -25.9971875,
+      "gap_diff_signal": 46.3440625
+    }
+  }
+}

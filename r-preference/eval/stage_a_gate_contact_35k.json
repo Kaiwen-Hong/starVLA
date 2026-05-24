@@ -1,0 +1,170 @@
+{
+  "category": "contact",
+  "baseline_ckpt": "/mnt/localssd/kaiwenh/starVLA_runs/results/Checkpoints/pref_baseline_stage_a_v1_noVQA_contact/checkpoints/steps_35000_pytorch_model.pt",
+  "vqa_ckpt": "/mnt/localssd/kaiwenh/starVLA_runs/results/Checkpoints/pref_main_stage_a_v1_VQA_contact/checkpoints/steps_35000_pytorch_model.pt",
+  "n_taskA_eps": 80,
+  "n_taskB_eps": 100,
+  "baseline_counterfactual_taskA": {
+    "overall_mse_normalized": 0.03109203843632713,
+    "per_task_mse": {
+      "give_boxdrink": 0.03741592206060886,
+      "give_callbell": 0.03427744824439287,
+      "give_fork": 0.04176819548010826,
+      "give_screwdriver": 0.039058618061244485,
+      "put_boxdrink_dustbin": 0.02201715037226677,
+      "put_callbell_dustbin": 0.023909701220691203,
+      "put_fork_dustbin": 0.02582658203318715,
+      "put_screwdriver_dustbin": 0.024462690018117426
+    },
+    "per_task_n": {
+      "give_boxdrink": 10,
+      "give_callbell": 10,
+      "give_fork": 10,
+      "give_screwdriver": 10,
+      "put_boxdrink_dustbin": 10,
+      "put_callbell_dustbin": 10,
+      "put_fork_dustbin": 10,
+      "put_screwdriver_dustbin": 10
+    },
+    "sign_accuracy_strong": {
+      "put_boxdrink_dustbin": 0.6,
+      "put_callbell_dustbin": 0.6,
+      "put_fork_dustbin": 0.7
+    },
+    "sign_accuracy_n": {
+      "put_boxdrink_dustbin": 10,
+      "put_callbell_dustbin": 10,
+      "put_fork_dustbin": 10
+    }
+  },
+  "vqa_taskB": {
+    "overall_acc": 0.61,
+    "overall_n": 100,
+    "per_task_acc": {
+      "put_boxdrink3_plate": 0.61
+    },
+    "per_task_n": {
+      "put_boxdrink3_plate": 100
+    },
+    "confidence_mean": 0.9983821374177932,
+    "confidence_p10": 1.0,
+    "pred_dist": {
+      "put_boxdrink3_plate": {
+        "25": 89,
+        "75": 11
+      }
+    }
+  },
+  "vqa_taskA": {
+    "overall_acc": 0.8625,
+    "overall_n": 80,
+    "per_task_acc": {
+      "give_boxdrink": 1.0,
+      "give_callbell": 1.0,
+      "give_fork": 1.0,
+      "give_screwdriver": 0.9,
+      "put_boxdrink_dustbin": 1.0,
+      "put_callbell_dustbin": 1.0,
+      "put_fork_dustbin": 0.5,
+      "put_screwdriver_dustbin": 0.5
+    },
+    "per_task_n": {
+      "give_boxdrink": 10,
+      "give_callbell": 10,
+      "give_fork": 10,
+      "give_screwdriver": 10,
+      "put_boxdrink_dustbin": 10,
+      "put_callbell_dustbin": 10,
+      "put_fork_dustbin": 10,
+      "put_screwdriver_dustbin": 10
+    },
+    "confidence_mean": 0.990739195048809,
+    "confidence_p10": 0.9984864890575409,
+    "pred_dist": {
+      "give_boxdrink": {
+        "25": 5,
+        "75": 5
+      },
+      "give_callbell": {
+        "25": 5,
+        "75": 5
+      },
+      "give_fork": {
+        "25": 5,
+        "75": 5
+      },
+      "give_screwdriver": {
+        "25": 4,
+        "75": 6
+      },
+      "put_boxdrink_dustbin": {
+        "25": 5,
+        "75": 5
+      },
+      "put_callbell_dustbin": {
+        "25": 5,
+        "75": 5
+      },
+      "put_fork_dustbin": {
+        "75": 10
+      },
+      "put_screwdriver_dustbin": {
+        "25": 10
+      }
+    }
+  },
+  "vqa_counterfactual_taskA": {
+    "overall_mse_normalized": 0.0321319687878713,
+    "per_task_mse": {
+      "give_boxdrink": 0.034944679401814935,
+      "give_callbell": 0.03983801770955324,
+      "give_fork": 0.047746220417320726,
+      "give_screwdriver": 0.03432370815426111,
+      "put_boxdrink_dustbin": 0.022523376159369946,
+      "put_callbell_dustbin": 0.025887578167021273,
+      "put_fork_dustbin": 0.02788120098412037,
+      "put_screwdriver_dustbin": 0.0239109693095088
+    },
+    "per_task_n": {
+      "give_boxdrink": 10,
+      "give_callbell": 10,
+      "give_fork": 10,
+      "give_screwdriver": 10,
+      "put_boxdrink_dustbin": 10,
+      "put_callbell_dustbin": 10,
+      "put_fork_dustbin": 10,
+      "put_screwdriver_dustbin": 10
+    },
+    "sign_accuracy_strong": {
+      "put_boxdrink_dustbin": 0.7,
+      "put_callbell_dustbin": 0.4,
+      "put_fork_dustbin": 0.5
+    },
+    "sign_accuracy_n": {
+      "put_boxdrink_dustbin": 10,
+      "put_callbell_dustbin": 10,
+      "put_fork_dustbin": 10
+    }
+  },
+  "baseline_vs_vqa_drift_taskA": {
+    "overall_drift_normalized": 0.0585907631797256,
+    "per_task_drift": {
+      "give_boxdrink": 0.06522566798895264,
+      "give_callbell": 0.07022267401527328,
+      "give_fork": 0.08682952702997031,
+      "give_screwdriver": 0.07483354283961799,
+      "put_boxdrink_dustbin": 0.04196541384111251,
+      "put_callbell_dustbin": 0.043574928121486306,
+      "put_fork_dustbin": 0.04242107560250764,
+      "put_screwdriver_dustbin": 0.04365327599888411
+    },
+    "n_compared": 80
+  },
+  "gate": {
+    "taskB_per_task_acc": {
+      "put_boxdrink3_plate": 0.61
+    },
+    "passed_ge_0.90": [],
+    "verdict": "RED: no taskB task \u226590%, diagnose before Stage B"
+  }
+}

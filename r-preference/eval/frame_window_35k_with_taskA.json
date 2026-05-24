@@ -1,0 +1,216 @@
+{
+  "category": "contact",
+  "vqa_ckpt": "/mnt/localssd/kaiwenh/starVLA_runs/results/Checkpoints/pref_main_stage_a_v1_VQA_contact/checkpoints/steps_35000_pytorch_model.pt",
+  "taskB": {
+    "uniform_8": {
+      "n": 100,
+      "acc": 0.61,
+      "acc_gt_low": 1.0,
+      "acc_gt_high": 0.22,
+      "n_pred_low": 89,
+      "n_pred_high": 11,
+      "gap_mean_overall": 20.738125,
+      "gap_diff_signal": 12.28875
+    },
+    "mid_8": {
+      "n": 100,
+      "acc": 0.99,
+      "acc_gt_low": 0.98,
+      "acc_gt_high": 1.0,
+      "n_pred_low": 49,
+      "n_pred_high": 51,
+      "gap_mean_overall": 0.6675,
+      "gap_diff_signal": 41.96875
+    }
+  },
+  "taskA": {
+    "uniform_8": {
+      "summary": {
+        "n": 160,
+        "acc": 0.8625,
+        "acc_gt_low": 0.875,
+        "acc_gt_high": 0.85,
+        "n_pred_low": 82,
+        "n_pred_high": 78,
+        "gap_mean_overall": 7.2767578125,
+        "gap_diff_signal": 37.279296875
+      },
+      "per_task": {
+        "give_boxdrink": {
+          "n": 20,
+          "acc": 0.95,
+          "acc_gt_low": 1.0,
+          "acc_gt_high": 0.9,
+          "n_pred_low": 11,
+          "n_pred_high": 9,
+          "gap_mean_overall": 10.3,
+          "gap_diff_signal": 46.44375
+        },
+        "give_callbell": {
+          "n": 20,
+          "acc": 1.0,
+          "acc_gt_low": 1.0,
+          "acc_gt_high": 1.0,
+          "n_pred_low": 10,
+          "n_pred_high": 10,
+          "gap_mean_overall": 7.8796875,
+          "gap_diff_signal": 54.128125
+        },
+        "give_fork": {
+          "n": 20,
+          "acc": 1.0,
+          "acc_gt_low": 1.0,
+          "acc_gt_high": 1.0,
+          "n_pred_low": 10,
+          "n_pred_high": 10,
+          "gap_mean_overall": 5.98125,
+          "gap_diff_signal": 46.6625
+        },
+        "give_screwdriver": {
+          "n": 20,
+          "acc": 0.95,
+          "acc_gt_low": 0.9,
+          "acc_gt_high": 1.0,
+          "n_pred_low": 9,
+          "n_pred_high": 11,
+          "gap_mean_overall": 2.0859375,
+          "gap_diff_signal": 33.128125
+        },
+        "put_boxdrink_dustbin": {
+          "n": 20,
+          "acc": 1.0,
+          "acc_gt_low": 1.0,
+          "acc_gt_high": 1.0,
+          "n_pred_low": 10,
+          "n_pred_high": 10,
+          "gap_mean_overall": 6.534375,
+          "gap_diff_signal": 59.68125
+        },
+        "put_callbell_dustbin": {
+          "n": 20,
+          "acc": 0.95,
+          "acc_gt_low": 1.0,
+          "acc_gt_high": 0.9,
+          "n_pred_low": 11,
+          "n_pred_high": 9,
+          "gap_mean_overall": 10.8171875,
+          "gap_diff_signal": 53.159375
+        },
+        "put_fork_dustbin": {
+          "n": 20,
+          "acc": 0.55,
+          "acc_gt_low": 0.1,
+          "acc_gt_high": 1.0,
+          "n_pred_low": 1,
+          "n_pred_high": 19,
+          "gap_mean_overall": -6.81875,
+          "gap_diff_signal": 0.4375
+        },
+        "put_screwdriver_dustbin": {
+          "n": 20,
+          "acc": 0.5,
+          "acc_gt_low": 1.0,
+          "acc_gt_high": 0.0,
+          "n_pred_low": 20,
+          "n_pred_high": 0,
+          "gap_mean_overall": 21.434375,
+          "gap_diff_signal": 4.59375
+        }
+      }
+    },
+    "mid_8": {
+      "summary": {
+        "n": 160,
+        "acc": 0.775,
+        "acc_gt_low": 0.9,
+        "acc_gt_high": 0.65,
+        "n_pred_low": 100,
+        "n_pred_high": 60,
+        "gap_mean_overall": 7.546484375,
+        "gap_diff_signal": 27.821875000000002
+      },
+      "per_task": {
+        "give_boxdrink": {
+          "n": 20,
+          "acc": 1.0,
+          "acc_gt_low": 1.0,
+          "acc_gt_high": 1.0,
+          "n_pred_low": 10,
+          "n_pred_high": 10,
+          "gap_mean_overall": 7.509375,
+          "gap_diff_signal": 52.625
+        },
+        "give_callbell": {
+          "n": 20,
+          "acc": 1.0,
+          "acc_gt_low": 1.0,
+          "acc_gt_high": 1.0,
+          "n_pred_low": 10,
+          "n_pred_high": 10,
+          "gap_mean_overall": 9.35,
+          "gap_diff_signal": 51.5625
+        },
+        "give_fork": {
+          "n": 20,
+          "acc": 0.75,
+          "acc_gt_low": 0.9,
+          "acc_gt_high": 0.6,
+          "n_pred_low": 13,
+          "n_pred_high": 7,
+          "gap_mean_overall": 0.7625,
+          "gap_diff_signal": 5.375
+        },
+        "give_screwdriver": {
+          "n": 20,
+          "acc": 0.5,
+          "acc_gt_low": 0.6,
+          "acc_gt_high": 0.4,
+          "n_pred_low": 12,
+          "n_pred_high": 8,
+          "gap_mean_overall": 0.85,
+          "gap_diff_signal": -0.125
+        },
+        "put_boxdrink_dustbin": {
+          "n": 20,
+          "acc": 0.95,
+          "acc_gt_low": 1.0,
+          "acc_gt_high": 0.9,
+          "n_pred_low": 11,
+          "n_pred_high": 9,
+          "gap_mean_overall": 8.7234375,
+          "gap_diff_signal": 55.603125
+        },
+        "put_callbell_dustbin": {
+          "n": 20,
+          "acc": 0.95,
+          "acc_gt_low": 1.0,
+          "acc_gt_high": 0.9,
+          "n_pred_low": 11,
+          "n_pred_high": 9,
+          "gap_mean_overall": 9.5328125,
+          "gap_diff_signal": 55.246875
+        },
+        "put_fork_dustbin": {
+          "n": 20,
+          "acc": 0.55,
+          "acc_gt_low": 0.7,
+          "acc_gt_high": 0.4,
+          "n_pred_low": 13,
+          "n_pred_high": 7,
+          "gap_mean_overall": 3.1,
+          "gap_diff_signal": -0.2250000000000001
+        },
+        "put_screwdriver_dustbin": {
+          "n": 20,
+          "acc": 0.5,
+          "acc_gt_low": 1.0,
+          "acc_gt_high": 0.0,
+          "n_pred_low": 20,
+          "n_pred_high": 0,
+          "gap_mean_overall": 20.54375,
+          "gap_diff_signal": 2.5124999999999993
+        }
+      }
+    }
+  }
+}
