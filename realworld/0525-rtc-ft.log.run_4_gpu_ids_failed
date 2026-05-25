@@ -1,0 +1,1064 @@
+[rtc-ft] HF auto-upload target: outsider86/DiscreteRTC/<run_id>/
+[rtc-ft] GPU selection: accelerate --gpu_ids 4,5,6,7 (set per-block)
+[rtc-ft] python: /home/wangpc/miniconda3/envs/starVLA/bin/python
+[rtc-ft] torch.cuda.device_count(): 8
+
+
+============================================================
+[rtc-ft] === START: airhockey_bounce ===
+[rtc-ft] pretrained_checkpoint=/scratch/wangpc/starVLA/results/Checkpoints/fastumi_airhockey_bounce_qwenPI_0522_DiT-S/checkpoints/steps_20000_pytorch_model.pt
+============================================================
+[2026-05-25 04:30:41,718] [INFO] [real_accelerator.py:254:get_accelerator] Setting ds_accelerator to cuda (auto detect)
+W0525 04:30:42.813000 663456 site-packages/torch/distributed/run.py:766] 
+W0525 04:30:42.813000 663456 site-packages/torch/distributed/run.py:766] *****************************************
+W0525 04:30:42.813000 663456 site-packages/torch/distributed/run.py:766] Setting OMP_NUM_THREADS environment variable for each process to be 1 in default, to avoid your system being overloaded, please further tune the variable for optimal performance in your application as needed. 
+W0525 04:30:42.813000 663456 site-packages/torch/distributed/run.py:766] *****************************************
+[2026-05-25 04:30:45,576] [INFO] [real_accelerator.py:254:get_accelerator] Setting ds_accelerator to cuda (auto detect)
+[2026-05-25 04:30:45,630] [INFO] [real_accelerator.py:254:get_accelerator] Setting ds_accelerator to cuda (auto detect)
+05/25 [04:30:45] INFO     | >> gcc -pthread -B /home/wangpc/miniconda3/envs/starVLA/compiler_compat -Wno-unused-result               spawn.py:77
+                          -Wsign-compare -DNDEBUG -fwrapv -O2 -Wall -fPIC -O2 -isystem /home/wangpc/miniconda3/envs/starVLA/include             
+                          -fPIC -O2 -isystem /home/wangpc/miniconda3/envs/starVLA/include -fPIC -c /tmp/tmplqy_gu73/test.c -o                   
+                          /tmp/tmplqy_gu73/test.o                                                                                               
+[2026-05-25 04:30:45,646] [INFO] [real_accelerator.py:254:get_accelerator] Setting ds_accelerator to cuda (auto detect)
+                 INFO     | >> gcc -pthread -B /home/wangpc/miniconda3/envs/starVLA/compiler_compat /tmp/tmplqy_gu73/test.o -laio -o spawn.py:77
+                          /tmp/tmplqy_gu73/a.out                                                                                                
+05/25 [04:30:45] INFO     | >> gcc -pthread -B /home/wangpc/miniconda3/envs/starVLA/compiler_compat -Wno-unused-result               spawn.py:77
+                          -Wsign-compare -DNDEBUG -fwrapv -O2 -Wall -fPIC -O2 -isystem /home/wangpc/miniconda3/envs/starVLA/include             
+                          -fPIC -O2 -isystem /home/wangpc/miniconda3/envs/starVLA/include -fPIC -c /tmp/tmp0db9a02v/test.c -o                   
+                          /tmp/tmp0db9a02v/test.o                                                                                               
+                 INFO     | >> gcc -pthread -B /home/wangpc/miniconda3/envs/starVLA/compiler_compat /tmp/tmp0db9a02v/test.o -laio -o spawn.py:77
+                          /tmp/tmp0db9a02v/a.out                                                                                                
+[2026-05-25 04:30:45,700] [INFO] [real_accelerator.py:254:get_accelerator] Setting ds_accelerator to cuda (auto detect)
+05/25 [04:30:45] INFO     | >> gcc -pthread -B /home/wangpc/miniconda3/envs/starVLA/compiler_compat -Wno-unused-result               spawn.py:77
+                          -Wsign-compare -DNDEBUG -fwrapv -O2 -Wall -fPIC -O2 -isystem /home/wangpc/miniconda3/envs/starVLA/include             
+                          -fPIC -O2 -isystem /home/wangpc/miniconda3/envs/starVLA/include -fPIC -c /tmp/tmpqd_mmp71/test.c -o                   
+                          /tmp/tmpqd_mmp71/test.o                                                                                               
+                 INFO     | >> gcc -pthread -B /home/wangpc/miniconda3/envs/starVLA/compiler_compat /tmp/tmpqd_mmp71/test.o -laio -o spawn.py:77
+                          /tmp/tmpqd_mmp71/a.out                                                                                                
+05/25 [04:30:45] INFO     | >> gcc -pthread -B /home/wangpc/miniconda3/envs/starVLA/compiler_compat -Wno-unused-result               spawn.py:77
+                          -Wsign-compare -DNDEBUG -fwrapv -O2 -Wall -fPIC -O2 -isystem /home/wangpc/miniconda3/envs/starVLA/include             
+                          -fPIC -O2 -isystem /home/wangpc/miniconda3/envs/starVLA/include -fPIC -c /tmp/tmpur7e1fkj/test.c -o                   
+                          /tmp/tmpur7e1fkj/test.o                                                                                               
+                 INFO     | >> gcc -pthread -B /home/wangpc/miniconda3/envs/starVLA/compiler_compat /tmp/tmpur7e1fkj/test.o -laio -o spawn.py:77
+                          /tmp/tmpur7e1fkj/a.out                                                                                                
+                 INFO     | >> gcc -pthread -B /home/wangpc/miniconda3/envs/starVLA/compiler_compat -Wno-unused-result               spawn.py:77
+                          -Wsign-compare -DNDEBUG -fwrapv -O2 -Wall -fPIC -O2 -isystem /home/wangpc/miniconda3/envs/starVLA/include             
+                          -fPIC -O2 -isystem /home/wangpc/miniconda3/envs/starVLA/include -fPIC -c /tmp/tmp8bmp2mop/test.c -o                   
+                          /tmp/tmp8bmp2mop/test.o                                                                                               
+                 INFO     | >> gcc -pthread -B /home/wangpc/miniconda3/envs/starVLA/compiler_compat /tmp/tmp8bmp2mop/test.o -L/usr   spawn.py:77
+                          -L/usr/lib64 -lcufile -o /tmp/tmp8bmp2mop/a.out                                                                       
+                 INFO     | >> gcc -pthread -B /home/wangpc/miniconda3/envs/starVLA/compiler_compat -Wno-unused-result               spawn.py:77
+                          -Wsign-compare -DNDEBUG -fwrapv -O2 -Wall -fPIC -O2 -isystem /home/wangpc/miniconda3/envs/starVLA/include             
+                          -fPIC -O2 -isystem /home/wangpc/miniconda3/envs/starVLA/include -fPIC -c /tmp/tmpbassy06_/test.c -o                   
+                          /tmp/tmpbassy06_/test.o                                                                                               
+                 INFO     | >> gcc -pthread -B /home/wangpc/miniconda3/envs/starVLA/compiler_compat /tmp/tmpbassy06_/test.o -L/usr   spawn.py:77
+                          -L/usr/lib64 -lcufile -o /tmp/tmpbassy06_/a.out                                                                       
+                 INFO     | >> gcc -pthread -B /home/wangpc/miniconda3/envs/starVLA/compiler_compat -Wno-unused-result               spawn.py:77
+                          -Wsign-compare -DNDEBUG -fwrapv -O2 -Wall -fPIC -O2 -isystem /home/wangpc/miniconda3/envs/starVLA/include             
+                          -fPIC -O2 -isystem /home/wangpc/miniconda3/envs/starVLA/include -fPIC -c /tmp/tmplnz3tbxv/test.c -o                   
+                          /tmp/tmplnz3tbxv/test.o                                                                                               
+                 INFO     | >> gcc -pthread -B /home/wangpc/miniconda3/envs/starVLA/compiler_compat /tmp/tmplnz3tbxv/test.o -L/usr   spawn.py:77
+                          -L/usr/lib64 -lcufile -o /tmp/tmplnz3tbxv/a.out                                                                       
+05/25 [04:30:46] INFO     | >> gcc -pthread -B /home/wangpc/miniconda3/envs/starVLA/compiler_compat -Wno-unused-result               spawn.py:77
+                          -Wsign-compare -DNDEBUG -fwrapv -O2 -Wall -fPIC -O2 -isystem /home/wangpc/miniconda3/envs/starVLA/include             
+                          -fPIC -O2 -isystem /home/wangpc/miniconda3/envs/starVLA/include -fPIC -c /tmp/tmp51lk9x7r/test.c -o                   
+                          /tmp/tmp51lk9x7r/test.o                                                                                               
+                 INFO     | >> gcc -pthread -B /home/wangpc/miniconda3/envs/starVLA/compiler_compat /tmp/tmp51lk9x7r/test.o -L/usr   spawn.py:77
+                          -L/usr/lib64 -lcufile -o /tmp/tmp51lk9x7r/a.out                                                                       
+[2026-05-25 04:30:46,386] [INFO] [comm.py:669:init_distributed] cdb=None
+[2026-05-25 04:30:46,425] [INFO] [comm.py:669:init_distributed] cdb=None
+[2026-05-25 04:30:46,444] [INFO] [comm.py:669:init_distributed] cdb=None
+[2026-05-25 04:30:46,560] [INFO] [comm.py:669:init_distributed] cdb=None
+[2026-05-25 04:30:46,560] [INFO] [comm.py:700:init_distributed] Initializing TorchBackend in DeepSpeed with backend nccl
+Distributed environment: DEEPSPEED  Backend: nccl
+Num processes: 4
+Process index: 0
+Local process index: 0
+Device: cuda:0
+
+Mixed precision type: bf16
+ds_config: {'fp16': {'enabled': False}, 'bf16': {'enabled': True}, 'train_micro_batch_size_per_gpu': 'auto', 'train_batch_size': 'auto', 'gradient_accumulation_steps': 1, 'zero_optimization': {'stage': 2, 'allgather_partitions': True, 'allgather_bucket_size': 500000000.0, 'reduce_scatter': True, 'reduce_bucket_size': 500000000.0, 'overlap_comm': True, 'contiguous_gradients': True, 'cpu_offload': False}, 'gradient_clipping': 1.0, 'steps_per_print': inf}
+
+                 INFO     | >> VLA Training :: Warming Up                                                                   train_starvla.py:483
+                 INFO     | >> ✅ Configuration wrapped for access tracking                                                 train_starvla.py:486
+Loading checkpoint shards:   0%|          | 0/2 [00:00<?, ?it/s]Loading checkpoint shards:   0%|          | 0/2 [00:00<?, ?it/s]Loading checkpoint shards: 100%|██████████| 2/2 [00:00<00:00, 60.75it/s]
+Loading checkpoint shards: 100%|██████████| 2/2 [00:00<00:00, 61.81it/s]
+Loading checkpoint shards:   0%|          | 0/2 [00:00<?, ?it/s]Loading checkpoint shards:   0%|          | 0/2 [00:00<?, ?it/s]Loading checkpoint shards: 100%|██████████| 2/2 [00:00<00:00, 60.88it/s]
+Loading checkpoint shards: 100%|██████████| 2/2 [00:00<00:00, 62.72it/s]
+Total number of DiT parameters:  2129953792
+Total number of DiT parameters:  2129953792
+05/25 [04:30:53] INFO     | >> Creating VLA Dataset with Mixture `3airhockey_dynamic_bounce`                                 train_starvla.py:82
+Total number of DiT parameters:  2129953792
+Total number of DiT parameters:  2129953792
+/home/wangpc/miniconda3/envs/starVLA/lib/python3.10/site-packages/albumentations/__init__.py:13: UserWarning: A new version of Albumentations is available: 2.0.8 (you have 1.4.18). Upgrade using: pip install -U albumentations. To disable automatic update checks, set the environment variable NO_ALBUMENTATIONS_UPDATE to 1.
+  check_for_updates()
+Warning: Robot type airhockey_bounce_2d not found in ROBOT_TYPE_TO_EMBODIMENT_TAG, using EmbodimentTag.NEW_EMBODIMENT as default
+[rank2]:[W525 04:30:53.185780628 ProcessGroupNCCL.cpp:4715] [PG ID 0 PG GUID 0 Rank 2]  using GPU 2 as device used by this process is currently unknown. This can potentially cause a hang if this rank to GPU mapping is incorrect. You can pecify device_id in init_process_group() to force use of a particular device.
+/home/wangpc/miniconda3/envs/starVLA/lib/python3.10/site-packages/albumentations/__init__.py:13: UserWarning: A new version of Albumentations is available: 2.0.8 (you have 1.4.18). Upgrade using: pip install -U albumentations. To disable automatic update checks, set the environment variable NO_ALBUMENTATIONS_UPDATE to 1.
+  check_for_updates()
+Warning: Robot type airhockey_bounce_2d not found in ROBOT_TYPE_TO_EMBODIMENT_TAG, using EmbodimentTag.NEW_EMBODIMENT as default
+[rank0]:[W525 04:30:53.310983154 ProcessGroupNCCL.cpp:4715] [PG ID 0 PG GUID 0 Rank 0]  using GPU 0 as device used by this process is currently unknown. This can potentially cause a hang if this rank to GPU mapping is incorrect. You can pecify device_id in init_process_group() to force use of a particular device.
+/home/wangpc/miniconda3/envs/starVLA/lib/python3.10/site-packages/albumentations/__init__.py:13: UserWarning: A new version of Albumentations is available: 2.0.8 (you have 1.4.18). Upgrade using: pip install -U albumentations. To disable automatic update checks, set the environment variable NO_ALBUMENTATIONS_UPDATE to 1.
+  check_for_updates()
+Warning: Robot type airhockey_bounce_2d not found in ROBOT_TYPE_TO_EMBODIMENT_TAG, using EmbodimentTag.NEW_EMBODIMENT as default
+[rank3]:[W525 04:30:53.343560578 ProcessGroupNCCL.cpp:4715] [PG ID 0 PG GUID 0 Rank 3]  using GPU 3 as device used by this process is currently unknown. This can potentially cause a hang if this rank to GPU mapping is incorrect. You can pecify device_id in init_process_group() to force use of a particular device.
+/home/wangpc/miniconda3/envs/starVLA/lib/python3.10/site-packages/albumentations/__init__.py:13: UserWarning: A new version of Albumentations is available: 2.0.8 (you have 1.4.18). Upgrade using: pip install -U albumentations. To disable automatic update checks, set the environment variable NO_ALBUMENTATIONS_UPDATE to 1.
+  check_for_updates()
+Warning: Robot type airhockey_bounce_2d not found in ROBOT_TYPE_TO_EMBODIMENT_TAG, using EmbodimentTag.NEW_EMBODIMENT as default
+[rank1]:[W525 04:30:53.362976950 ProcessGroupNCCL.cpp:4715] [PG ID 0 PG GUID 0 Rank 1]  using GPU 1 as device used by this process is currently unknown. This can potentially cause a hang if this rank to GPU mapping is incorrect. You can pecify device_id in init_process_group() to force use of a particular device.
+Initialized dataset 3airhockey_dynamic_bounce with EmbodimentTag.NEW_EMBODIMENT
+Dataset lengths: [13046]
+Initialized dataset 3airhockey_dynamic_bounce with EmbodimentTag.NEW_EMBODIMENT
+Dataset lengths: [13046]
+Initialized dataset 3airhockey_dynamic_bounce with EmbodimentTag.NEW_EMBODIMENT
+Initialized dataset 3airhockey_dynamic_bounce with EmbodimentTag.NEW_EMBODIMENT
+Dataset lengths: [13046]
+Dataset lengths: [13046]
+Merged dataset statistics saved to: results/Checkpoints/fastumi_airhockey_bounce_qwenPI_0522_DiT-S_rtc_ft/dataset_statistics.json
+Used action keys (reordered): ['eef_pos']
+Used state keys (reordered): ['eef_pos']
+05/25 [04:30:54] INFO     | >> LR Group qwen_vl_interface: lr=1e-05,      train_starvla.py:104
+                          num_params=824                                                      
+                 INFO     | >> LR Group action_model: lr=0.0001,          train_starvla.py:104
+                          num_params=528                                                      
+No checkpoints found in ./results/Checkpoints/fastumi_airhockey_bounce_qwenPI_0522_DiT-S_rtc_ft/checkpoints
+                 WARNING  | >> No valid checkpoint found in               train_starvla.py:192
+                          ./results/Checkpoints/fastumi_airhockey_bounce_                     
+                          qwenPI_0522_DiT-S_rtc_ft/checkpoints. Starting                      
+                          training from scratch.                                              
+📦 loading checkpoint: /scratch/wangpc/starVLA/results/Checkpoints/fastumi_airhockey_bounce_qwenPI_0522_DiT-S/checkpoints/steps_20000_pytorch_model.pt
+✅ loaded <full_model> model parameters
+##############################
+None
+[2026-05-25 04:31:00,039] [INFO] [config.py:735:__init__] Config mesh_device None world_size = 4
+[2026-05-25 04:31:00,039] [WARNING] [config_utils.py:70:_process_deprecated_field] Config parameter cpu_offload is deprecated use offload_optimizer instead
+05/25 [04:31:00] INFO     | >> Loaded pretrained checkpoint:              train_starvla.py:200
+                          /scratch/wangpc/starVLA/results/Checkpoints/fas                     
+                          tumi_airhockey_bounce_qwenPI_0522_DiT-S/checkpo                     
+                          ints/steps_20000_pytorch_model.pt, steps: 0                         
+##############################
+None
+📊 model parameter statistics:
+# Parameters (in millions): 5907.174 Total, 5907.174 Trainable
+[2026-05-25 04:31:00,058] [INFO] [logging.py:107:log_dist] [Rank 0] DeepSpeed info: version=0.16.9, git-hash=unknown, git-branch=unknown
+[2026-05-25 04:31:00,058] [INFO] [config.py:735:__init__] Config mesh_device None world_size = 4
+[2026-05-25 04:31:00,058] [WARNING] [config_utils.py:70:_process_deprecated_field] Config parameter cpu_offload is deprecated use offload_optimizer instead
+##############################
+None
+[2026-05-25 04:31:00,078] [INFO] [config.py:735:__init__] Config mesh_device None world_size = 4
+[2026-05-25 04:31:00,078] [WARNING] [config_utils.py:70:_process_deprecated_field] Config parameter cpu_offload is deprecated use offload_optimizer instead
+##############################
+None
+[2026-05-25 04:31:00,785] [INFO] [config.py:735:__init__] Config mesh_device None world_size = 4
+[2026-05-25 04:31:00,786] [WARNING] [config_utils.py:70:_process_deprecated_field] Config parameter cpu_offload is deprecated use offload_optimizer instead
+[rank2]:[E525 04:31:03.628796495 ProcessGroupNCCL.cpp:1896] [PG ID 1 PG GUID 1 Rank 2] Process group watchdog thread terminated with exception: CUDA error: an illegal memory access was encountered
+CUDA kernel errors might be asynchronously reported at some other API call, so the stacktrace below might be incorrect.
+For debugging consider passing CUDA_LAUNCH_BLOCKING=1
+Compile with `TORCH_USE_CUDA_DSA` to enable device-side assertions.
+
+Exception raised from c10_cuda_check_implementation at /pytorch/c10/cuda/CUDAException.cpp:43 (most recent call first):
+frame #0: c10::Error::Error(c10::SourceLocation, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >) + 0x98 (0x72c5573785e8 in /home/wangpc/miniconda3/envs/starVLA/lib/python3.10/site-packages/torch/lib/libc10.so)
+frame #1: c10::detail::torchCheckFail(char const*, char const*, unsigned int, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&) + 0xe0 (0x72c55730d4a2 in /home/wangpc/miniconda3/envs/starVLA/lib/python3.10/site-packages/torch/lib/libc10.so)
+frame #2: c10::cuda::c10_cuda_check_implementation(int, char const*, char const*, int, bool) + 0x3c2 (0x72c5577c8422 in /home/wangpc/miniconda3/envs/starVLA/lib/python3.10/site-packages/torch/lib/libc10_cuda.so)
+frame #3: c10d::ProcessGroupNCCL::WorkNCCL::finishedGPUExecutionInternal() const + 0x56 (0x72c4e6ae5456 in /home/wangpc/miniconda3/envs/starVLA/lib/python3.10/site-packages/torch/lib/libtorch_cuda.so)
+frame #4: c10d::ProcessGroupNCCL::WorkNCCL::isCompleted() + 0x70 (0x72c4e6af56f0 in /home/wangpc/miniconda3/envs/starVLA/lib/python3.10/site-packages/torch/lib/libtorch_cuda.so)
+frame #5: c10d::ProcessGroupNCCL::watchdogHandler() + 0x782 (0x72c4e6af7282 in /home/wangpc/miniconda3/envs/starVLA/lib/python3.10/site-packages/torch/lib/libtorch_cuda.so)
+frame #6: c10d::ProcessGroupNCCL::ncclCommWatchdog() + 0x14d (0x72c4e6af8e8d in /home/wangpc/miniconda3/envs/starVLA/lib/python3.10/site-packages/torch/lib/libtorch_cuda.so)
+frame #7: <unknown function> + 0xdf0e6 (0x72c4d6cea0e6 in /home/wangpc/miniconda3/envs/starVLA/bin/../lib/libstdc++.so.6)
+frame #8: <unknown function> + 0x9caa4 (0x72c55c09caa4 in /lib/x86_64-linux-gnu/libc.so.6)
+frame #9: <unknown function> + 0x129c6c (0x72c55c129c6c in /lib/x86_64-linux-gnu/libc.so.6)
+
+terminate called after throwing an instance of 'c10::DistBackendError'
+  what():  [PG ID 1 PG GUID 1 Rank 2] Process group watchdog thread terminated with exception: CUDA error: an illegal memory access was encountered
+CUDA kernel errors might be asynchronously reported at some other API call, so the stacktrace below might be incorrect.
+For debugging consider passing CUDA_LAUNCH_BLOCKING=1
+Compile with `TORCH_USE_CUDA_DSA` to enable device-side assertions.
+
+Exception raised from c10_cuda_check_implementation at /pytorch/c10/cuda/CUDAException.cpp:43 (most recent call first):
+frame #0: c10::Error::Error(c10::SourceLocation, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >) + 0x98 (0x72c5573785e8 in /home/wangpc/miniconda3/envs/starVLA/lib/python3.10/site-packages/torch/lib/libc10.so)
+frame #1: c10::detail::torchCheckFail(char const*, char const*, unsigned int, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&) + 0xe0 (0x72c55730d4a2 in /home/wangpc/miniconda3/envs/starVLA/lib/python3.10/site-packages/torch/lib/libc10.so)
+frame #2: c10::cuda::c10_cuda_check_implementation(int, char const*, char const*, int, bool) + 0x3c2 (0x72c5577c8422 in /home/wangpc/miniconda3/envs/starVLA/lib/python3.10/site-packages/torch/lib/libc10_cuda.so)
+frame #3: c10d::ProcessGroupNCCL::WorkNCCL::finishedGPUExecutionInternal() const + 0x56 (0x72c4e6ae5456 in /home/wangpc/miniconda3/envs/starVLA/lib/python3.10/site-packages/torch/lib/libtorch_cuda.so)
+frame #4: c10d::ProcessGroupNCCL::WorkNCCL::isCompleted() + 0x70 (0x72c4e6af56f0 in /home/wangpc/miniconda3/envs/starVLA/lib/python3.10/site-packages/torch/lib/libtorch_cuda.so)
+frame #5: c10d::ProcessGroupNCCL::watchdogHandler() + 0x782 (0x72c4e6af7282 in /home/wangpc/miniconda3/envs/starVLA/lib/python3.10/site-packages/torch/lib/libtorch_cuda.so)
+frame #6: c10d::ProcessGroupNCCL::ncclCommWatchdog() + 0x14d (0x72c4e6af8e8d in /home/wangpc/miniconda3/envs/starVLA/lib/python3.10/site-packages/torch/lib/libtorch_cuda.so)
+frame #7: <unknown function> + 0xdf0e6 (0x72c4d6cea0e6 in /home/wangpc/miniconda3/envs/starVLA/bin/../lib/libstdc++.so.6)
+frame #8: <unknown function> + 0x9caa4 (0x72c55c09caa4 in /lib/x86_64-linux-gnu/libc.so.6)
+frame #9: <unknown function> + 0x129c6c (0x72c55c129c6c in /lib/x86_64-linux-gnu/libc.so.6)
+
+Exception raised from ncclCommWatchdog at /pytorch/torch/csrc/distributed/c10d/ProcessGroupNCCL.cpp:1902 (most recent call first):
+frame #0: c10::Error::Error(c10::SourceLocation, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >) + 0x98 (0x72c5573785e8 in /home/wangpc/miniconda3/envs/starVLA/lib/python3.10/site-packages/torch/lib/libc10.so)
+frame #1: <unknown function> + 0xcc7a4e (0x72c4e6ac7a4e in /home/wangpc/miniconda3/envs/starVLA/lib/python3.10/site-packages/torch/lib/libtorch_cuda.so)
+frame #2: <unknown function> + 0x9165ed (0x72c4e67165ed in /home/wangpc/miniconda3/envs/starVLA/lib/python3.10/site-packages/torch/lib/libtorch_cuda.so)
+frame #3: <unknown function> + 0xdf0e6 (0x72c4d6cea0e6 in /home/wangpc/miniconda3/envs/starVLA/bin/../lib/libstdc++.so.6)
+frame #4: <unknown function> + 0x9caa4 (0x72c55c09caa4 in /lib/x86_64-linux-gnu/libc.so.6)
+frame #5: <unknown function> + 0x129c6c (0x72c55c129c6c in /lib/x86_64-linux-gnu/libc.so.6)
+
+[rank0]:[E525 04:31:03.630883975 ProcessGroupNCCL.cpp:1896] [PG ID 1 PG GUID 1 Rank 0] Process group watchdog thread terminated with exception: CUDA error: an illegal memory access was encountered
+CUDA kernel errors might be asynchronously reported at some other API call, so the stacktrace below might be incorrect.
+For debugging consider passing CUDA_LAUNCH_BLOCKING=1
+Compile with `TORCH_USE_CUDA_DSA` to enable device-side assertions.
+
+Exception raised from c10_cuda_check_implementation at /pytorch/c10/cuda/CUDAException.cpp:43 (most recent call first):
+frame #0: c10::Error::Error(c10::SourceLocation, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >) + 0x98 (0x729d953785e8 in /home/wangpc/miniconda3/envs/starVLA/lib/python3.10/site-packages/torch/lib/libc10.so)
+frame #1: c10::detail::torchCheckFail(char const*, char const*, unsigned int, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&) + 0xe0 (0x729d9530d4a2 in /home/wangpc/miniconda3/envs/starVLA/lib/python3.10/site-packages/torch/lib/libc10.so)
+frame #2: c10::cuda::c10_cuda_check_implementation(int, char const*, char const*, int, bool) + 0x3c2 (0x729d95743422 in /home/wangpc/miniconda3/envs/starVLA/lib/python3.10/site-packages/torch/lib/libc10_cuda.so)
+frame #3: c10d::ProcessGroupNCCL::WorkNCCL::finishedGPUExecutionInternal() const + 0x56 (0x729d24ae5456 in /home/wangpc/miniconda3/envs/starVLA/lib/python3.10/site-packages/torch/lib/libtorch_cuda.so)
+frame #4: c10d::ProcessGroupNCCL::WorkNCCL::isCompleted() + 0x70 (0x729d24af56f0 in /home/wangpc/miniconda3/envs/starVLA/lib/python3.10/site-packages/torch/lib/libtorch_cuda.so)
+frame #5: c10d::ProcessGroupNCCL::watchdogHandler() + 0x782 (0x729d24af7282 in /home/wangpc/miniconda3/envs/starVLA/lib/python3.10/site-packages/torch/lib/libtorch_cuda.so)
+frame #6: c10d::ProcessGroupNCCL::ncclCommWatchdog() + 0x14d (0x729d24af8e8d in /home/wangpc/miniconda3/envs/starVLA/lib/python3.10/site-packages/torch/lib/libtorch_cuda.so)
+frame #7: <unknown function> + 0xdf0e6 (0x729d14cea0e6 in /home/wangpc/miniconda3/envs/starVLA/bin/../lib/libstdc++.so.6)
+frame #8: <unknown function> + 0x9caa4 (0x729d99e9caa4 in /lib/x86_64-linux-gnu/libc.so.6)
+frame #9: <unknown function> + 0x129c6c (0x729d99f29c6c in /lib/x86_64-linux-gnu/libc.so.6)
+
+terminate called after throwing an instance of 'c10::DistBackendError'
+[rank1]:[E525 04:31:03.631185102 ProcessGroupNCCL.cpp:1896] [PG ID 1 PG GUID 1 Rank 1] Process group watchdog thread terminated with exception: CUDA error: an illegal memory access was encountered
+CUDA kernel errors might be asynchronously reported at some other API call, so the stacktrace below might be incorrect.
+For debugging consider passing CUDA_LAUNCH_BLOCKING=1
+Compile with `TORCH_USE_CUDA_DSA` to enable device-side assertions.
+
+Exception raised from c10_cuda_check_implementation at /pytorch/c10/cuda/CUDAException.cpp:43 (most recent call first):
+frame #0: c10::Error::Error(c10::SourceLocation, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >) + 0x98 (0x7425443785e8 in /home/wangpc/miniconda3/envs/starVLA/lib/python3.10/site-packages/torch/lib/libc10.so)
+frame #1: c10::detail::torchCheckFail(char const*, char const*, unsigned int, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&) + 0xe0 (0x74254430d4a2 in /home/wangpc/miniconda3/envs/starVLA/lib/python3.10/site-packages/torch/lib/libc10.so)
+frame #2: c10::cuda::c10_cuda_check_implementation(int, char const*, char const*, int, bool) + 0x3c2 (0x742550ba5422 in /home/wangpc/miniconda3/envs/starVLA/lib/python3.10/site-packages/torch/lib/libc10_cuda.so)
+frame #3: c10d::ProcessGroupNCCL::WorkNCCL::finishedGPUExecutionInternal() const + 0x56 (0x7424e02e5456 in /home/wangpc/miniconda3/envs/starVLA/lib/python3.10/site-packages/torch/lib/libtorch_cuda.so)
+frame #4: c10d::ProcessGroupNCCL::WorkNCCL::isCompleted() + 0x70 (0x7424e02f56f0 in /home/wangpc/miniconda3/envs/starVLA/lib/python3.10/site-packages/torch/lib/libtorch_cuda.so)
+frame #5: c10d::ProcessGroupNCCL::watchdogHandler() + 0x782 (0x7424e02f7282 in /home/wangpc/miniconda3/envs/starVLA/lib/python3.10/site-packages/torch/lib/libtorch_cuda.so)
+frame #6: c10d::ProcessGroupNCCL::ncclCommWatchdog() + 0x14d (0x7424e02f8e8d in /home/wangpc/miniconda3/envs/starVLA/lib/python3.10/site-packages/torch/lib/libtorch_cuda.so)
+frame #7: <unknown function> + 0xdf0e6 (0x7424d04ea0e6 in /home/wangpc/miniconda3/envs/starVLA/bin/../lib/libstdc++.so.6)
+frame #8: <unknown function> + 0x9caa4 (0x74255569caa4 in /lib/x86_64-linux-gnu/libc.so.6)
+frame #9: <unknown function> + 0x129c6c (0x742555729c6c in /lib/x86_64-linux-gnu/libc.so.6)
+
+terminate called after throwing an instance of 'c10::DistBackendError'
+[rank1]: Traceback (most recent call last):
+[rank1]:   File "/scratch/wangpc/starVLA/starVLA/training/train_starvla.py", line 538, in <module>
+[rank1]:     main(cfg)
+[rank1]:   File "/scratch/wangpc/starVLA/starVLA/training/train_starvla.py", line 502, in main
+[rank1]:     trainer.prepare_training()
+[rank1]:   File "/scratch/wangpc/starVLA/starVLA/training/train_starvla.py", line 145, in prepare_training
+[rank1]:     self.model, self.optimizer, self.vla_train_dataloader = self.setup_distributed_training(
+[rank1]:   File "/scratch/wangpc/starVLA/starVLA/training/trainer_utils/trainer_tools.py", line 289, in setup_distributed_training
+[rank1]:     prepared_components = accelerator.prepare(*components)
+[rank1]:   File "/home/wangpc/miniconda3/envs/starVLA/lib/python3.10/site-packages/accelerate/accelerator.py", line 1392, in prepare
+[rank1]:     result = self._prepare_deepspeed(*args)
+[rank1]:   File "/home/wangpc/miniconda3/envs/starVLA/lib/python3.10/site-packages/accelerate/accelerator.py", line 1953, in _prepare_deepspeed
+[rank1]:     engine, optimizer, _, lr_scheduler = ds_initialize(**kwargs)
+[rank1]:   File "/home/wangpc/miniconda3/envs/starVLA/lib/python3.10/site-packages/deepspeed/__init__.py", line 193, in initialize
+[rank1]:     engine = DeepSpeedEngine(args=args,
+[rank1]:   File "/home/wangpc/miniconda3/envs/starVLA/lib/python3.10/site-packages/deepspeed/runtime/engine.py", line 278, in __init__
+[rank1]:     self._configure_distributed_model(model)
+[rank1]:   File "/home/wangpc/miniconda3/envs/starVLA/lib/python3.10/site-packages/deepspeed/runtime/engine.py", line 1307, in _configure_distributed_model
+[rank1]:     self._broadcast_model()
+[rank1]:   File "/home/wangpc/miniconda3/envs/starVLA/lib/python3.10/site-packages/deepspeed/runtime/engine.py", line 1225, in _broadcast_model
+[rank1]:     dist.broadcast(p.data, groups._get_broadcast_src_rank(), group=self.seq_data_parallel_group)
+[rank1]:   File "/home/wangpc/miniconda3/envs/starVLA/lib/python3.10/site-packages/deepspeed/comm/comm.py", line 117, in log_wrapper
+[rank1]:     return func(*args, **kwargs)
+[rank1]:   File "/home/wangpc/miniconda3/envs/starVLA/lib/python3.10/site-packages/deepspeed/comm/comm.py", line 224, in broadcast
+[rank1]:     return cdb.broadcast(tensor=tensor, src=src, group=group, async_op=async_op)
+[rank1]:   File "/home/wangpc/miniconda3/envs/starVLA/lib/python3.10/site-packages/deepspeed/comm/torch.py", line 206, in broadcast
+[rank1]:     return torch.distributed.broadcast(tensor=tensor, src=src, group=group, async_op=async_op)
+[rank1]:   File "/home/wangpc/miniconda3/envs/starVLA/lib/python3.10/site-packages/torch/distributed/c10d_logger.py", line 81, in wrapper
+[rank1]:     return func(*args, **kwargs)
+[rank1]:   File "/home/wangpc/miniconda3/envs/starVLA/lib/python3.10/site-packages/torch/distributed/distributed_c10d.py", line 2714, in broadcast
+[rank1]:     work = group.broadcast([tensor], opts)
+[rank1]: torch.distributed.DistBackendError: NCCL error in: /pytorch/torch/csrc/distributed/c10d/ProcessGroupNCCL.cpp:3353, unhandled cuda error (run with NCCL_DEBUG=INFO for details), NCCL version 2.26.2
+[rank1]: ncclUnhandledCudaError: Call to CUDA function failed.
+[rank1]: Last error:
+[rank1]: Cuda failure 'an illegal memory access was encountered'
+[rank0]: Traceback (most recent call last):
+[rank0]:   File "/scratch/wangpc/starVLA/starVLA/training/train_starvla.py", line 538, in <module>
+[rank0]:     main(cfg)
+[rank0]:   File "/scratch/wangpc/starVLA/starVLA/training/train_starvla.py", line 502, in main
+[rank0]:     trainer.prepare_training()
+[rank0]:   File "/scratch/wangpc/starVLA/starVLA/training/train_starvla.py", line 145, in prepare_training
+[rank0]:     self.model, self.optimizer, self.vla_train_dataloader = self.setup_distributed_training(
+[rank0]:   File "/scratch/wangpc/starVLA/starVLA/training/trainer_utils/trainer_tools.py", line 289, in setup_distributed_training
+[rank0]:     prepared_components = accelerator.prepare(*components)
+[rank0]:   File "/home/wangpc/miniconda3/envs/starVLA/lib/python3.10/site-packages/accelerate/accelerator.py", line 1392, in prepare
+[rank0]:     result = self._prepare_deepspeed(*args)
+[rank0]:   File "/home/wangpc/miniconda3/envs/starVLA/lib/python3.10/site-packages/accelerate/accelerator.py", line 1953, in _prepare_deepspeed
+[rank0]:     engine, optimizer, _, lr_scheduler = ds_initialize(**kwargs)
+[rank0]:   File "/home/wangpc/miniconda3/envs/starVLA/lib/python3.10/site-packages/deepspeed/__init__.py", line 193, in initialize
+[rank0]:     engine = DeepSpeedEngine(args=args,
+[rank0]:   File "/home/wangpc/miniconda3/envs/starVLA/lib/python3.10/site-packages/deepspeed/runtime/engine.py", line 278, in __init__
+[rank0]:     self._configure_distributed_model(model)
+[rank0]:   File "/home/wangpc/miniconda3/envs/starVLA/lib/python3.10/site-packages/deepspeed/runtime/engine.py", line 1307, in _configure_distributed_model
+[rank0]:     self._broadcast_model()
+[rank0]:   File "/home/wangpc/miniconda3/envs/starVLA/lib/python3.10/site-packages/deepspeed/runtime/engine.py", line 1225, in _broadcast_model
+[rank0]:     dist.broadcast(p.data, groups._get_broadcast_src_rank(), group=self.seq_data_parallel_group)
+[rank0]:   File "/home/wangpc/miniconda3/envs/starVLA/lib/python3.10/site-packages/deepspeed/comm/comm.py", line 117, in log_wrapper
+[rank0]:     return func(*args, **kwargs)
+[rank0]:   File "/home/wangpc/miniconda3/envs/starVLA/lib/python3.10/site-packages/deepspeed/comm/comm.py", line 224, in broadcast
+[rank0]:     return cdb.broadcast(tensor=tensor, src=src, group=group, async_op=async_op)
+[rank0]:   File "/home/wangpc/miniconda3/envs/starVLA/lib/python3.10/site-packages/deepspeed/comm/torch.py", line 206, in broadcast
+[rank0]:     return torch.distributed.broadcast(tensor=tensor, src=src, group=group, async_op=async_op)
+[rank0]:   File "/home/wangpc/miniconda3/envs/starVLA/lib/python3.10/site-packages/torch/distributed/c10d_logger.py", line 81, in wrapper
+[rank0]:     return func(*args, **kwargs)
+[rank0]:   File "/home/wangpc/miniconda3/envs/starVLA/lib/python3.10/site-packages/torch/distributed/distributed_c10d.py", line 2714, in broadcast
+[rank0]:     work = group.broadcast([tensor], opts)
+[rank0]: torch.distributed.DistBackendError: NCCL error in: /pytorch/torch/csrc/distributed/c10d/ProcessGroupNCCL.cpp:3353, unhandled cuda error (run with NCCL_DEBUG=INFO for details), NCCL version 2.26.2
+[rank0]: ncclUnhandledCudaError: Call to CUDA function failed.
+[rank0]: Last error:
+[rank0]: Cuda failure 'an illegal memory access was encountered'
+  what():  [PG ID 1 PG GUID 1 Rank 0] Process group watchdog thread terminated with exception: CUDA error: an illegal memory access was encountered
+CUDA kernel errors might be asynchronously reported at some other API call, so the stacktrace below might be incorrect.
+For debugging consider passing CUDA_LAUNCH_BLOCKING=1
+Compile with `TORCH_USE_CUDA_DSA` to enable device-side assertions.
+
+Exception raised from c10_cuda_check_implementation at /pytorch/c10/cuda/CUDAException.cpp:43 (most recent call first):
+frame #0: c10::Error::Error(c10::SourceLocation, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >) + 0x98 (0x729d953785e8 in /home/wangpc/miniconda3/envs/starVLA/lib/python3.10/site-packages/torch/lib/libc10.so)
+frame #1: c10::detail::torchCheckFail(char const*, char const*, unsigned int, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&) + 0xe0 (0x729d9530d4a2 in /home/wangpc/miniconda3/envs/starVLA/lib/python3.10/site-packages/torch/lib/libc10.so)
+frame #2: c10::cuda::c10_cuda_check_implementation(int, char const*, char const*, int, bool) + 0x3c2 (0x729d95743422 in /home/wangpc/miniconda3/envs/starVLA/lib/python3.10/site-packages/torch/lib/libc10_cuda.so)
+frame #3: c10d::ProcessGroupNCCL::WorkNCCL::finishedGPUExecutionInternal() const + 0x56 (0x729d24ae5456 in /home/wangpc/miniconda3/envs/starVLA/lib/python3.10/site-packages/torch/lib/libtorch_cuda.so)
+frame #4: c10d::ProcessGroupNCCL::WorkNCCL::isCompleted() + 0x70 (0x729d24af56f0 in /home/wangpc/miniconda3/envs/starVLA/lib/python3.10/site-packages/torch/lib/libtorch_cuda.so)
+frame #5: c10d::ProcessGroupNCCL::watchdogHandler() + 0x782 (0x729d24af7282 in /home/wangpc/miniconda3/envs/starVLA/lib/python3.10/site-packages/torch/lib/libtorch_cuda.so)
+frame #6: c10d::ProcessGroupNCCL::ncclCommWatchdog() + 0x14d (0x729d24af8e8d in /home/wangpc/miniconda3/envs/starVLA/lib/python3.10/site-packages/torch/lib/libtorch_cuda.so)
+frame #7: <unknown function> + 0xdf0e6 (0x729d14cea0e6 in /home/wangpc/miniconda3/envs/starVLA/bin/../lib/libstdc++.so.6)
+frame #8: <unknown function> + 0x9caa4 (0x729d99e9caa4 in /lib/x86_64-linux-gnu/libc.so.6)
+frame #9: <unknown function> + 0x129c6c (0x729d99f29c6c in /lib/x86_64-linux-gnu/libc.so.6)
+
+Exception raised from ncclCommWatchdog at /pytorch/torch/csrc/distributed/c10d/ProcessGroupNCCL.cpp:1902 (most recent call first):
+frame #0: c10::Error::Error(c10::SourceLocation, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >) + 0x98 (0x729d953785e8 in /home/wangpc/miniconda3/envs/starVLA/lib/python3.10/site-packages/torch/lib/libc10.so)
+frame #1: <unknown function> + 0xcc7a4e (0x729d24ac7a4e in /home/wangpc/miniconda3/envs/starVLA/lib/python3.10/site-packages/torch/lib/libtorch_cuda.so)
+frame #2: <unknown function> + 0x9165ed (0x729d247165ed in /home/wangpc/miniconda3/envs/starVLA/lib/python3.10/site-packages/torch/lib/libtorch_cuda.so)
+frame #3: <unknown function> + 0xdf0e6 (0x729d14cea0e6 in /home/wangpc/miniconda3/envs/starVLA/bin/../lib/libstdc++.so.6)
+frame #4: <unknown function> + 0x9caa4 (0x729d99e9caa4 in /lib/x86_64-linux-gnu/libc.so.6)
+frame #5: <unknown function> + 0x129c6c (0x729d99f29c6c in /lib/x86_64-linux-gnu/libc.so.6)
+
+  what():  [PG ID 1 PG GUID 1 Rank 1] Process group watchdog thread terminated with exception: CUDA error: an illegal memory access was encountered
+CUDA kernel errors might be asynchronously reported at some other API call, so the stacktrace below might be incorrect.
+For debugging consider passing CUDA_LAUNCH_BLOCKING=1
+Compile with `TORCH_USE_CUDA_DSA` to enable device-side assertions.
+
+Exception raised from c10_cuda_check_implementation at /pytorch/c10/cuda/CUDAException.cpp:43 (most recent call first):
+frame #0: c10::Error::Error(c10::SourceLocation, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >) + 0x98 (0x7425443785e8 in /home/wangpc/miniconda3/envs/starVLA/lib/python3.10/site-packages/torch/lib/libc10.so)
+frame #1: c10::detail::torchCheckFail(char const*, char const*, unsigned int, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&) + 0xe0 (0x74254430d4a2 in /home/wangpc/miniconda3/envs/starVLA/lib/python3.10/site-packages/torch/lib/libc10.so)
+frame #2: c10::cuda::c10_cuda_check_implementation(int, char const*, char const*, int, bool) + 0x3c2 (0x742550ba5422 in /home/wangpc/miniconda3/envs/starVLA/lib/python3.10/site-packages/torch/lib/libc10_cuda.so)
+frame #3: c10d::ProcessGroupNCCL::WorkNCCL::finishedGPUExecutionInternal() const + 0x56 (0x7424e02e5456 in /home/wangpc/miniconda3/envs/starVLA/lib/python3.10/site-packages/torch/lib/libtorch_cuda.so)
+frame #4: c10d::ProcessGroupNCCL::WorkNCCL::isCompleted() + 0x70 (0x7424e02f56f0 in /home/wangpc/miniconda3/envs/starVLA/lib/python3.10/site-packages/torch/lib/libtorch_cuda.so)
+frame #5: c10d::ProcessGroupNCCL::watchdogHandler() + 0x782 (0x7424e02f7282 in /home/wangpc/miniconda3/envs/starVLA/lib/python3.10/site-packages/torch/lib/libtorch_cuda.so)
+frame #6: c10d::ProcessGroupNCCL::ncclCommWatchdog() + 0x14d (0x7424e02f8e8d in /home/wangpc/miniconda3/envs/starVLA/lib/python3.10/site-packages/torch/lib/libtorch_cuda.so)
+frame #7: <unknown function> + 0xdf0e6 (0x7424d04ea0e6 in /home/wangpc/miniconda3/envs/starVLA/bin/../lib/libstdc++.so.6)
+frame #8: <unknown function> + 0x9caa4 (0x74255569caa4 in /lib/x86_64-linux-gnu/libc.so.6)
+frame #9: <unknown function> + 0x129c6c (0x742555729c6c in /lib/x86_64-linux-gnu/libc.so.6)
+
+Exception raised from ncclCommWatchdog at /pytorch/torch/csrc/distributed/c10d/ProcessGroupNCCL.cpp:1902 (most recent call first):
+frame #0: c10::Error::Error(c10::SourceLocation, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >) + 0x98 (0x7425443785e8 in /home/wangpc/miniconda3/envs/starVLA/lib/python3.10/site-packages/torch/lib/libc10.so)
+frame #1: <unknown function> + 0xcc7a4e (0x7424e02c7a4e in /home/wangpc/miniconda3/envs/starVLA/lib/python3.10/site-packages/torch/lib/libtorch_cuda.so)
+frame #2: <unknown function> + 0x9165ed (0x7424dff165ed in /home/wangpc/miniconda3/envs/starVLA/lib/python3.10/site-packages/torch/lib/libtorch_cuda.so)
+frame #3: <unknown function> + 0xdf0e6 (0x7424d04ea0e6 in /home/wangpc/miniconda3/envs/starVLA/bin/../lib/libstdc++.so.6)
+frame #4: <unknown function> + 0x9caa4 (0x74255569caa4 in /lib/x86_64-linux-gnu/libc.so.6)
+frame #5: <unknown function> + 0x129c6c (0x742555729c6c in /lib/x86_64-linux-gnu/libc.so.6)
+
+[rank3]: Traceback (most recent call last):
+[rank3]:   File "/scratch/wangpc/starVLA/starVLA/training/train_starvla.py", line 538, in <module>
+[rank3]:     main(cfg)
+[rank3]:   File "/scratch/wangpc/starVLA/starVLA/training/train_starvla.py", line 502, in main
+[rank3]:     trainer.prepare_training()
+[rank3]:   File "/scratch/wangpc/starVLA/starVLA/training/train_starvla.py", line 145, in prepare_training
+[rank3]:     self.model, self.optimizer, self.vla_train_dataloader = self.setup_distributed_training(
+[rank3]:   File "/scratch/wangpc/starVLA/starVLA/training/trainer_utils/trainer_tools.py", line 289, in setup_distributed_training
+[rank3]:     prepared_components = accelerator.prepare(*components)
+[rank3]:   File "/home/wangpc/miniconda3/envs/starVLA/lib/python3.10/site-packages/accelerate/accelerator.py", line 1392, in prepare
+[rank3]:     result = self._prepare_deepspeed(*args)
+[rank3]:   File "/home/wangpc/miniconda3/envs/starVLA/lib/python3.10/site-packages/accelerate/accelerator.py", line 1953, in _prepare_deepspeed
+[rank3]:     engine, optimizer, _, lr_scheduler = ds_initialize(**kwargs)
+[rank3]:   File "/home/wangpc/miniconda3/envs/starVLA/lib/python3.10/site-packages/deepspeed/__init__.py", line 193, in initialize
+[rank3]:     engine = DeepSpeedEngine(args=args,
+[rank3]:   File "/home/wangpc/miniconda3/envs/starVLA/lib/python3.10/site-packages/deepspeed/runtime/engine.py", line 278, in __init__
+[rank3]:     self._configure_distributed_model(model)
+[rank3]:   File "/home/wangpc/miniconda3/envs/starVLA/lib/python3.10/site-packages/deepspeed/runtime/engine.py", line 1307, in _configure_distributed_model
+[rank3]:     self._broadcast_model()
+[rank3]:   File "/home/wangpc/miniconda3/envs/starVLA/lib/python3.10/site-packages/deepspeed/runtime/engine.py", line 1225, in _broadcast_model
+[rank3]:     dist.broadcast(p.data, groups._get_broadcast_src_rank(), group=self.seq_data_parallel_group)
+[rank3]:   File "/home/wangpc/miniconda3/envs/starVLA/lib/python3.10/site-packages/deepspeed/comm/comm.py", line 117, in log_wrapper
+[rank3]:     return func(*args, **kwargs)
+[rank3]:   File "/home/wangpc/miniconda3/envs/starVLA/lib/python3.10/site-packages/deepspeed/comm/comm.py", line 224, in broadcast
+[rank3]:     return cdb.broadcast(tensor=tensor, src=src, group=group, async_op=async_op)
+[rank3]:   File "/home/wangpc/miniconda3/envs/starVLA/lib/python3.10/site-packages/deepspeed/comm/torch.py", line 206, in broadcast
+[rank3]:     return torch.distributed.broadcast(tensor=tensor, src=src, group=group, async_op=async_op)
+[rank3]:   File "/home/wangpc/miniconda3/envs/starVLA/lib/python3.10/site-packages/torch/distributed/c10d_logger.py", line 81, in wrapper
+[rank3]:     return func(*args, **kwargs)
+[rank3]:   File "/home/wangpc/miniconda3/envs/starVLA/lib/python3.10/site-packages/torch/distributed/distributed_c10d.py", line 2714, in broadcast
+[rank3]:     work = group.broadcast([tensor], opts)
+[rank3]: torch.distributed.DistBackendError: NCCL error in: /pytorch/torch/csrc/distributed/c10d/ProcessGroupNCCL.cpp:3353, unhandled cuda error (run with NCCL_DEBUG=INFO for details), NCCL version 2.26.2
+[rank3]: ncclUnhandledCudaError: Call to CUDA function failed.
+[rank3]: Last error:
+[rank3]: Cuda failure 'an illegal memory access was encountered'
+[rank3]:[E525 04:31:03.633832886 ProcessGroupNCCL.cpp:1896] [PG ID 1 PG GUID 1 Rank 3] Process group watchdog thread terminated with exception: CUDA error: an illegal memory access was encountered
+CUDA kernel errors might be asynchronously reported at some other API call, so the stacktrace below might be incorrect.
+For debugging consider passing CUDA_LAUNCH_BLOCKING=1
+Compile with `TORCH_USE_CUDA_DSA` to enable device-side assertions.
+
+Exception raised from c10_cuda_check_implementation at /pytorch/c10/cuda/CUDAException.cpp:43 (most recent call first):
+frame #0: c10::Error::Error(c10::SourceLocation, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >) + 0x98 (0x7583df5785e8 in /home/wangpc/miniconda3/envs/starVLA/lib/python3.10/site-packages/torch/lib/libc10.so)
+frame #1: c10::detail::torchCheckFail(char const*, char const*, unsigned int, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&) + 0xe0 (0x7583df50d4a2 in /home/wangpc/miniconda3/envs/starVLA/lib/python3.10/site-packages/torch/lib/libc10.so)
+frame #2: c10::cuda::c10_cuda_check_implementation(int, char const*, char const*, int, bool) + 0x3c2 (0x7583ebd99422 in /home/wangpc/miniconda3/envs/starVLA/lib/python3.10/site-packages/torch/lib/libc10_cuda.so)
+frame #3: c10d::ProcessGroupNCCL::WorkNCCL::finishedGPUExecutionInternal() const + 0x56 (0x75837b4e5456 in /home/wangpc/miniconda3/envs/starVLA/lib/python3.10/site-packages/torch/lib/libtorch_cuda.so)
+frame #4: c10d::ProcessGroupNCCL::WorkNCCL::isCompleted() + 0x70 (0x75837b4f56f0 in /home/wangpc/miniconda3/envs/starVLA/lib/python3.10/site-packages/torch/lib/libtorch_cuda.so)
+frame #5: c10d::ProcessGroupNCCL::watchdogHandler() + 0x782 (0x75837b4f7282 in /home/wangpc/miniconda3/envs/starVLA/lib/python3.10/site-packages/torch/lib/libtorch_cuda.so)
+frame #6: c10d::ProcessGroupNCCL::ncclCommWatchdog() + 0x14d (0x75837b4f8e8d in /home/wangpc/miniconda3/envs/starVLA/lib/python3.10/site-packages/torch/lib/libtorch_cuda.so)
+frame #7: <unknown function> + 0xdf0e6 (0x75836b6ea0e6 in /home/wangpc/miniconda3/envs/starVLA/bin/../lib/libstdc++.so.6)
+frame #8: <unknown function> + 0x9caa4 (0x7583f089caa4 in /lib/x86_64-linux-gnu/libc.so.6)
+frame #9: <unknown function> + 0x129c6c (0x7583f0929c6c in /lib/x86_64-linux-gnu/libc.so.6)
+
+terminate called after throwing an instance of 'c10::DistBackendError'
+  what():  [PG ID 1 PG GUID 1 Rank 3] Process group watchdog thread terminated with exception: CUDA error: an illegal memory access was encountered
+CUDA kernel errors might be asynchronously reported at some other API call, so the stacktrace below might be incorrect.
+For debugging consider passing CUDA_LAUNCH_BLOCKING=1
+Compile with `TORCH_USE_CUDA_DSA` to enable device-side assertions.
+
+Exception raised from c10_cuda_check_implementation at /pytorch/c10/cuda/CUDAException.cpp:43 (most recent call first):
+frame #0: c10::Error::Error(c10::SourceLocation, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >) + 0x98 (0x7583df5785e8 in /home/wangpc/miniconda3/envs/starVLA/lib/python3.10/site-packages/torch/lib/libc10.so)
+frame #1: c10::detail::torchCheckFail(char const*, char const*, unsigned int, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&) + 0xe0 (0x7583df50d4a2 in /home/wangpc/miniconda3/envs/starVLA/lib/python3.10/site-packages/torch/lib/libc10.so)
+frame #2: c10::cuda::c10_cuda_check_implementation(int, char const*, char const*, int, bool) + 0x3c2 (0x7583ebd99422 in /home/wangpc/miniconda3/envs/starVLA/lib/python3.10/site-packages/torch/lib/libc10_cuda.so)
+frame #3: c10d::ProcessGroupNCCL::WorkNCCL::finishedGPUExecutionInternal() const + 0x56 (0x75837b4e5456 in /home/wangpc/miniconda3/envs/starVLA/lib/python3.10/site-packages/torch/lib/libtorch_cuda.so)
+frame #4: c10d::ProcessGroupNCCL::WorkNCCL::isCompleted() + 0x70 (0x75837b4f56f0 in /home/wangpc/miniconda3/envs/starVLA/lib/python3.10/site-packages/torch/lib/libtorch_cuda.so)
+frame #5: c10d::ProcessGroupNCCL::watchdogHandler() + 0x782 (0x75837b4f7282 in /home/wangpc/miniconda3/envs/starVLA/lib/python3.10/site-packages/torch/lib/libtorch_cuda.so)
+frame #6: c10d::ProcessGroupNCCL::ncclCommWatchdog() + 0x14d (0x75837b4f8e8d in /home/wangpc/miniconda3/envs/starVLA/lib/python3.10/site-packages/torch/lib/libtorch_cuda.so)
+frame #7: <unknown function> + 0xdf0e6 (0x75836b6ea0e6 in /home/wangpc/miniconda3/envs/starVLA/bin/../lib/libstdc++.so.6)
+frame #8: <unknown function> + 0x9caa4 (0x7583f089caa4 in /lib/x86_64-linux-gnu/libc.so.6)
+frame #9: <unknown function> + 0x129c6c (0x7583f0929c6c in /lib/x86_64-linux-gnu/libc.so.6)
+
+Exception raised from ncclCommWatchdog at /pytorch/torch/csrc/distributed/c10d/ProcessGroupNCCL.cpp:1902 (most recent call first):
+frame #0: c10::Error::Error(c10::SourceLocation, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >) + 0x98 (0x7583df5785e8 in /home/wangpc/miniconda3/envs/starVLA/lib/python3.10/site-packages/torch/lib/libc10.so)
+frame #1: <unknown function> + 0xcc7a4e (0x75837b4c7a4e in /home/wangpc/miniconda3/envs/starVLA/lib/python3.10/site-packages/torch/lib/libtorch_cuda.so)
+frame #2: <unknown function> + 0x9165ed (0x75837b1165ed in /home/wangpc/miniconda3/envs/starVLA/lib/python3.10/site-packages/torch/lib/libtorch_cuda.so)
+frame #3: <unknown function> + 0xdf0e6 (0x75836b6ea0e6 in /home/wangpc/miniconda3/envs/starVLA/bin/../lib/libstdc++.so.6)
+frame #4: <unknown function> + 0x9caa4 (0x7583f089caa4 in /lib/x86_64-linux-gnu/libc.so.6)
+frame #5: <unknown function> + 0x129c6c (0x7583f0929c6c in /lib/x86_64-linux-gnu/libc.so.6)
+
+W0525 04:31:04.663000 663456 site-packages/torch/distributed/elastic/multiprocessing/api.py:900] Sending process 663742 closing signal SIGTERM
+W0525 04:31:04.665000 663456 site-packages/torch/distributed/elastic/multiprocessing/api.py:900] Sending process 663743 closing signal SIGTERM
+W0525 04:31:04.666000 663456 site-packages/torch/distributed/elastic/multiprocessing/api.py:900] Sending process 663745 closing signal SIGTERM
+E0525 04:31:07.765000 663456 site-packages/torch/distributed/elastic/multiprocessing/api.py:874] failed (exitcode: -6) local_rank: 2 (pid: 663744) of binary: /home/wangpc/miniconda3/envs/starVLA/bin/python3.10
+Traceback (most recent call last):
+  File "/home/wangpc/miniconda3/envs/starVLA/bin/accelerate", line 6, in <module>
+    sys.exit(main())
+  File "/home/wangpc/miniconda3/envs/starVLA/lib/python3.10/site-packages/accelerate/commands/accelerate_cli.py", line 48, in main
+    args.func(args)
+  File "/home/wangpc/miniconda3/envs/starVLA/lib/python3.10/site-packages/accelerate/commands/launch.py", line 1177, in launch_command
+    deepspeed_launcher(args)
+  File "/home/wangpc/miniconda3/envs/starVLA/lib/python3.10/site-packages/accelerate/commands/launch.py", line 863, in deepspeed_launcher
+    distrib_run.run(args)
+  File "/home/wangpc/miniconda3/envs/starVLA/lib/python3.10/site-packages/torch/distributed/run.py", line 883, in run
+    elastic_launch(
+  File "/home/wangpc/miniconda3/envs/starVLA/lib/python3.10/site-packages/torch/distributed/launcher/api.py", line 139, in __call__
+    return launch_agent(self._config, self._entrypoint, list(args))
+  File "/home/wangpc/miniconda3/envs/starVLA/lib/python3.10/site-packages/torch/distributed/launcher/api.py", line 270, in launch_agent
+    raise ChildFailedError(
+torch.distributed.elastic.multiprocessing.errors.ChildFailedError: 
+=======================================================
+starVLA/training/train_starvla.py FAILED
+-------------------------------------------------------
+Failures:
+  <NO_OTHER_FAILURES>
+-------------------------------------------------------
+Root Cause (first observed failure):
+[0]:
+  time      : 2026-05-25_04:31:04
+  host      : tams02
+  rank      : 2 (local_rank: 2)
+  exitcode  : -6 (pid: 663744)
+  error_file: <N/A>
+  traceback : Signal 6 (SIGABRT) received by PID 663744
+=======================================================
+
+============================================================
+[rtc-ft] === START: pickandplace_pick_to_moved ===
+[rtc-ft] pretrained_checkpoint=/scratch/wangpc/starVLA/results/Checkpoints/fastumi_pickandplace_qwenPI_0403_0_pick_to_moved/checkpoints/steps_30000_pytorch_model.pt
+============================================================
+[2026-05-25 04:31:12,533] [INFO] [real_accelerator.py:254:get_accelerator] Setting ds_accelerator to cuda (auto detect)
+W0525 04:31:13.914000 664709 site-packages/torch/distributed/run.py:766] 
+W0525 04:31:13.914000 664709 site-packages/torch/distributed/run.py:766] *****************************************
+W0525 04:31:13.914000 664709 site-packages/torch/distributed/run.py:766] Setting OMP_NUM_THREADS environment variable for each process to be 1 in default, to avoid your system being overloaded, please further tune the variable for optimal performance in your application as needed. 
+W0525 04:31:13.914000 664709 site-packages/torch/distributed/run.py:766] *****************************************
+[2026-05-25 04:31:16,707] [INFO] [real_accelerator.py:254:get_accelerator] Setting ds_accelerator to cuda (auto detect)
+[2026-05-25 04:31:16,738] [INFO] [real_accelerator.py:254:get_accelerator] Setting ds_accelerator to cuda (auto detect)
+[2026-05-25 04:31:16,754] [INFO] [real_accelerator.py:254:get_accelerator] Setting ds_accelerator to cuda (auto detect)
+[2026-05-25 04:31:16,765] [INFO] [real_accelerator.py:254:get_accelerator] Setting ds_accelerator to cuda (auto detect)
+05/25 [04:31:16] INFO     | >> gcc -pthread -B                                     spawn.py:77
+                          /home/wangpc/miniconda3/envs/starVLA/compiler_compat                
+                          -Wno-unused-result -Wsign-compare -DNDEBUG -fwrapv -O2              
+                          -Wall -fPIC -O2 -isystem                                            
+                          /home/wangpc/miniconda3/envs/starVLA/include -fPIC -O2              
+                          -isystem /home/wangpc/miniconda3/envs/starVLA/include               
+                          -fPIC -c /tmp/tmpdyivbd_z/test.c -o                                 
+                          /tmp/tmpdyivbd_z/test.o                                             
+                 INFO     | >> gcc -pthread -B                                     spawn.py:77
+                          /home/wangpc/miniconda3/envs/starVLA/compiler_compat                
+                          /tmp/tmpdyivbd_z/test.o -laio -o /tmp/tmpdyivbd_z/a.out             
+05/25 [04:31:16] INFO     | >> gcc -pthread -B                                     spawn.py:77
+                          /home/wangpc/miniconda3/envs/starVLA/compiler_compat                
+                          -Wno-unused-result -Wsign-compare -DNDEBUG -fwrapv -O2              
+                          -Wall -fPIC -O2 -isystem                                            
+                          /home/wangpc/miniconda3/envs/starVLA/include -fPIC -O2              
+                          -isystem /home/wangpc/miniconda3/envs/starVLA/include               
+                          -fPIC -c /tmp/tmpjn4y8c0e/test.c -o                                 
+                          /tmp/tmpjn4y8c0e/test.o                                             
+                 INFO     | >> gcc -pthread -B                                     spawn.py:77
+                          /home/wangpc/miniconda3/envs/starVLA/compiler_compat                
+                          /tmp/tmpjn4y8c0e/test.o -laio -o /tmp/tmpjn4y8c0e/a.out             
+05/25 [04:31:16] INFO     | >> gcc -pthread -B                                     spawn.py:77
+                          /home/wangpc/miniconda3/envs/starVLA/compiler_compat                
+                          -Wno-unused-result -Wsign-compare -DNDEBUG -fwrapv -O2              
+                          -Wall -fPIC -O2 -isystem                                            
+                          /home/wangpc/miniconda3/envs/starVLA/include -fPIC -O2              
+                          -isystem /home/wangpc/miniconda3/envs/starVLA/include               
+                          -fPIC -c /tmp/tmpcmhng3ul/test.c -o                                 
+                          /tmp/tmpcmhng3ul/test.o                                             
+                 INFO     | >> gcc -pthread -B                                     spawn.py:77
+                          /home/wangpc/miniconda3/envs/starVLA/compiler_compat                
+                          /tmp/tmpcmhng3ul/test.o -laio -o /tmp/tmpcmhng3ul/a.out             
+05/25 [04:31:16] INFO     | >> gcc -pthread -B                                     spawn.py:77
+                          /home/wangpc/miniconda3/envs/starVLA/compiler_compat                
+                          -Wno-unused-result -Wsign-compare -DNDEBUG -fwrapv -O2              
+                          -Wall -fPIC -O2 -isystem                                            
+                          /home/wangpc/miniconda3/envs/starVLA/include -fPIC -O2              
+                          -isystem /home/wangpc/miniconda3/envs/starVLA/include               
+                          -fPIC -c /tmp/tmp52ar7fsz/test.c -o                                 
+                          /tmp/tmp52ar7fsz/test.o                                             
+                 INFO     | >> gcc -pthread -B                                     spawn.py:77
+                          /home/wangpc/miniconda3/envs/starVLA/compiler_compat                
+                          /tmp/tmp52ar7fsz/test.o -laio -o /tmp/tmp52ar7fsz/a.out             
+05/25 [04:31:17] INFO     | >> gcc -pthread -B                                     spawn.py:77
+                          /home/wangpc/miniconda3/envs/starVLA/compiler_compat                
+                          -Wno-unused-result -Wsign-compare -DNDEBUG -fwrapv -O2              
+                          -Wall -fPIC -O2 -isystem                                            
+                          /home/wangpc/miniconda3/envs/starVLA/include -fPIC -O2              
+                          -isystem /home/wangpc/miniconda3/envs/starVLA/include               
+                          -fPIC -c /tmp/tmpa28zxfic/test.c -o                                 
+                          /tmp/tmpa28zxfic/test.o                                             
+                 INFO     | >> gcc -pthread -B                                     spawn.py:77
+                          /home/wangpc/miniconda3/envs/starVLA/compiler_compat                
+                          /tmp/tmpa28zxfic/test.o -L/usr -L/usr/lib64 -lcufile -o             
+                          /tmp/tmpa28zxfic/a.out                                              
+05/25 [04:31:17] INFO     | >> gcc -pthread -B                                     spawn.py:77
+                          /home/wangpc/miniconda3/envs/starVLA/compiler_compat                
+                          -Wno-unused-result -Wsign-compare -DNDEBUG -fwrapv -O2              
+                          -Wall -fPIC -O2 -isystem                                            
+                          /home/wangpc/miniconda3/envs/starVLA/include -fPIC -O2              
+                          -isystem /home/wangpc/miniconda3/envs/starVLA/include               
+                          -fPIC -c /tmp/tmp9gdw8edn/test.c -o                                 
+                          /tmp/tmp9gdw8edn/test.o                                             
+05/25 [04:31:17] INFO     | >> gcc -pthread -B                                     spawn.py:77
+                          /home/wangpc/miniconda3/envs/starVLA/compiler_compat                
+                          -Wno-unused-result -Wsign-compare -DNDEBUG -fwrapv -O2              
+                          -Wall -fPIC -O2 -isystem                                            
+                          /home/wangpc/miniconda3/envs/starVLA/include -fPIC -O2              
+                          -isystem /home/wangpc/miniconda3/envs/starVLA/include               
+                          -fPIC -c /tmp/tmp_1_zd4rz/test.c -o                                 
+                          /tmp/tmp_1_zd4rz/test.o                                             
+                 INFO     | >> gcc -pthread -B                                     spawn.py:77
+                          /home/wangpc/miniconda3/envs/starVLA/compiler_compat                
+                          /tmp/tmp9gdw8edn/test.o -L/usr -L/usr/lib64 -lcufile -o             
+                          /tmp/tmp9gdw8edn/a.out                                              
+                 INFO     | >> gcc -pthread -B                                     spawn.py:77
+                          /home/wangpc/miniconda3/envs/starVLA/compiler_compat                
+                          /tmp/tmp_1_zd4rz/test.o -L/usr -L/usr/lib64 -lcufile -o             
+                          /tmp/tmp_1_zd4rz/a.out                                              
+05/25 [04:31:17] INFO     | >> gcc -pthread -B                                     spawn.py:77
+                          /home/wangpc/miniconda3/envs/starVLA/compiler_compat                
+                          -Wno-unused-result -Wsign-compare -DNDEBUG -fwrapv -O2              
+                          -Wall -fPIC -O2 -isystem                                            
+                          /home/wangpc/miniconda3/envs/starVLA/include -fPIC -O2              
+                          -isystem /home/wangpc/miniconda3/envs/starVLA/include               
+                          -fPIC -c /tmp/tmpwu445sug/test.c -o                                 
+                          /tmp/tmpwu445sug/test.o                                             
+                 INFO     | >> gcc -pthread -B                                     spawn.py:77
+                          /home/wangpc/miniconda3/envs/starVLA/compiler_compat                
+                          /tmp/tmpwu445sug/test.o -L/usr -L/usr/lib64 -lcufile -o             
+                          /tmp/tmpwu445sug/a.out                                              
+[2026-05-25 04:31:17,516] [INFO] [comm.py:669:init_distributed] cdb=None
+[2026-05-25 04:31:17,533] [INFO] [comm.py:669:init_distributed] cdb=None
+[2026-05-25 04:31:17,534] [INFO] [comm.py:700:init_distributed] Initializing TorchBackend in DeepSpeed with backend nccl
+[2026-05-25 04:31:17,550] [INFO] [comm.py:669:init_distributed] cdb=None
+[2026-05-25 04:31:17,561] [INFO] [comm.py:669:init_distributed] cdb=None
+Distributed environment: DEEPSPEED  Backend: nccl
+Num processes: 4
+Process index: 0
+Local process index: 0
+Device: cuda:0
+
+Mixed precision type: bf16
+ds_config: {'fp16': {'enabled': False}, 'bf16': {'enabled': True}, 'train_micro_batch_size_per_gpu': 'auto', 'train_batch_size': 'auto', 'gradient_accumulation_steps': 1, 'zero_optimization': {'stage': 2, 'allgather_partitions': True, 'allgather_bucket_size': 500000000.0, 'reduce_scatter': True, 'reduce_bucket_size': 500000000.0, 'overlap_comm': True, 'contiguous_gradients': True, 'cpu_offload': False}, 'gradient_clipping': 1.0, 'steps_per_print': inf}
+
+                 INFO     | >> VLA Training :: Warming Up                 train_starvla.py:483
+                 INFO     | >> ✅ Configuration wrapped for access        train_starvla.py:486
+                          tracking                                                            
+Loading checkpoint shards:   0%|          | 0/2 [00:00<?, ?it/s]Loading checkpoint shards: 100%|██████████| 2/2 [00:00<00:00, 63.67it/s]
+Loading checkpoint shards:   0%|          | 0/2 [00:00<?, ?it/s]Loading checkpoint shards: 100%|██████████| 2/2 [00:00<00:00, 62.82it/s]
+Loading checkpoint shards:   0%|          | 0/2 [00:00<?, ?it/s]Loading checkpoint shards:   0%|          | 0/2 [00:00<?, ?it/s]Loading checkpoint shards: 100%|██████████| 2/2 [00:00<00:00, 61.38it/s]
+Loading checkpoint shards: 100%|██████████| 2/2 [00:00<00:00, 61.13it/s]
+Total number of DiT parameters:  2129953792
+Total number of DiT parameters:  2129953792
+05/25 [04:31:24] INFO     | >> Creating VLA Dataset with Mixture           train_starvla.py:82
+                          `dynamic-0403-0-pick_to_moved`                                      
+Total number of DiT parameters:  2129953792
+Total number of DiT parameters:  2129953792
+/home/wangpc/miniconda3/envs/starVLA/lib/python3.10/site-packages/albumentations/__init__.py:13: UserWarning: A new version of Albumentations is available: 2.0.8 (you have 1.4.18). Upgrade using: pip install -U albumentations. To disable automatic update checks, set the environment variable NO_ALBUMENTATIONS_UPDATE to 1.
+  check_for_updates()
+Warning: Robot type fastumi not found in ROBOT_TYPE_TO_EMBODIMENT_TAG, using EmbodimentTag.NEW_EMBODIMENT as default
+/home/wangpc/miniconda3/envs/starVLA/lib/python3.10/site-packages/albumentations/__init__.py:13: UserWarning: A new version of Albumentations is available: 2.0.8 (you have 1.4.18). Upgrade using: pip install -U albumentations. To disable automatic update checks, set the environment variable NO_ALBUMENTATIONS_UPDATE to 1.
+  check_for_updates()
+Warning: Robot type fastumi not found in ROBOT_TYPE_TO_EMBODIMENT_TAG, using EmbodimentTag.NEW_EMBODIMENT as default
+[rank3]:[W525 04:31:24.285844156 ProcessGroupNCCL.cpp:4715] [PG ID 0 PG GUID 0 Rank 3]  using GPU 3 as device used by this process is currently unknown. This can potentially cause a hang if this rank to GPU mapping is incorrect. You can pecify device_id in init_process_group() to force use of a particular device.
+/home/wangpc/miniconda3/envs/starVLA/lib/python3.10/site-packages/albumentations/__init__.py:13: UserWarning: A new version of Albumentations is available: 2.0.8 (you have 1.4.18). Upgrade using: pip install -U albumentations. To disable automatic update checks, set the environment variable NO_ALBUMENTATIONS_UPDATE to 1.
+  check_for_updates()
+Warning: Robot type fastumi not found in ROBOT_TYPE_TO_EMBODIMENT_TAG, using EmbodimentTag.NEW_EMBODIMENT as default
+[rank2]:[W525 04:31:24.317520349 ProcessGroupNCCL.cpp:4715] [PG ID 0 PG GUID 0 Rank 2]  using GPU 2 as device used by this process is currently unknown. This can potentially cause a hang if this rank to GPU mapping is incorrect. You can pecify device_id in init_process_group() to force use of a particular device.
+[rank0]:[W525 04:31:24.326075796 ProcessGroupNCCL.cpp:4715] [PG ID 0 PG GUID 0 Rank 0]  using GPU 0 as device used by this process is currently unknown. This can potentially cause a hang if this rank to GPU mapping is incorrect. You can pecify device_id in init_process_group() to force use of a particular device.
+/home/wangpc/miniconda3/envs/starVLA/lib/python3.10/site-packages/albumentations/__init__.py:13: UserWarning: A new version of Albumentations is available: 2.0.8 (you have 1.4.18). Upgrade using: pip install -U albumentations. To disable automatic update checks, set the environment variable NO_ALBUMENTATIONS_UPDATE to 1.
+  check_for_updates()
+Warning: Robot type fastumi not found in ROBOT_TYPE_TO_EMBODIMENT_TAG, using EmbodimentTag.NEW_EMBODIMENT as default
+[rank1]:[W525 04:31:25.403503154 ProcessGroupNCCL.cpp:4715] [PG ID 0 PG GUID 0 Rank 1]  using GPU 1 as device used by this process is currently unknown. This can potentially cause a hang if this rank to GPU mapping is incorrect. You can pecify device_id in init_process_group() to force use of a particular device.
+Initialized dataset dynamic-0403-0-pick_to_moved with EmbodimentTag.NEW_EMBODIMENTInitialized dataset dynamic-0403-0-pick_to_moved with EmbodimentTag.NEW_EMBODIMENT
+
+Dataset lengths: [99448]Dataset lengths: [99448]
+
+Merged dataset statistics saved to: results/Checkpoints/fastumi_pickandplace_qwenPI_0403_0_pick_to_moved_rtc_ft/dataset_statistics.json
+Used action keys (reordered): ['eef_pos', 'eef_rot6d', 'gripper']
+Used state keys (reordered): ['eef_pos', 'eef_rot6d', 'gripper']
+Initialized dataset dynamic-0403-0-pick_to_moved with EmbodimentTag.NEW_EMBODIMENT
+Dataset lengths: [99448]
+Initialized dataset dynamic-0403-0-pick_to_moved with EmbodimentTag.NEW_EMBODIMENT
+Dataset lengths: [99448]
+05/25 [04:31:25] INFO     | >> LR Group qwen_vl_interface: lr=1e-05,      train_starvla.py:104
+                          num_params=824                                                      
+                 INFO     | >> LR Group action_model: lr=0.0001,          train_starvla.py:104
+                          num_params=528                                                      
+No checkpoints found in ./results/Checkpoints/fastumi_pickandplace_qwenPI_0403_0_pick_to_moved_rtc_ft/checkpoints
+                 WARNING  | >> No valid checkpoint found in               train_starvla.py:192
+                          ./results/Checkpoints/fastumi_pickandplace_qwen                     
+                          PI_0403_0_pick_to_moved_rtc_ft/checkpoints.                         
+                          Starting training from scratch.                                     
+📦 loading checkpoint: /scratch/wangpc/starVLA/results/Checkpoints/fastumi_pickandplace_qwenPI_0403_0_pick_to_moved/checkpoints/steps_30000_pytorch_model.pt
+✅ loaded <full_model> model parameters
+05/25 [04:31:30] INFO     | >> Loaded pretrained checkpoint:              train_starvla.py:200
+                          /scratch/wangpc/starVLA/results/Checkpoints/fas                     
+                          tumi_pickandplace_qwenPI_0403_0_pick_to_moved/c                     
+                          heckpoints/steps_30000_pytorch_model.pt, steps:                     
+                          0                                                                   
+##############################
+None
+📊 model parameter statistics:
+# Parameters (in millions): 5907.207 Total, 5907.207 Trainable
+[2026-05-25 04:31:30,903] [INFO] [logging.py:107:log_dist] [Rank 0] DeepSpeed info: version=0.16.9, git-hash=unknown, git-branch=unknown
+[2026-05-25 04:31:30,903] [INFO] [config.py:735:__init__] Config mesh_device None world_size = 4
+[2026-05-25 04:31:30,903] [WARNING] [config_utils.py:70:_process_deprecated_field] Config parameter cpu_offload is deprecated use offload_optimizer instead
+##############################
+None
+[2026-05-25 04:31:30,972] [INFO] [config.py:735:__init__] Config mesh_device None world_size = 4
+[2026-05-25 04:31:30,973] [WARNING] [config_utils.py:70:_process_deprecated_field] Config parameter cpu_offload is deprecated use offload_optimizer instead
+##############################
+None
+[2026-05-25 04:31:31,399] [INFO] [config.py:735:__init__] Config mesh_device None world_size = 4
+[2026-05-25 04:31:31,399] [WARNING] [config_utils.py:70:_process_deprecated_field] Config parameter cpu_offload is deprecated use offload_optimizer instead
+##############################
+None
+[2026-05-25 04:31:31,701] [INFO] [config.py:735:__init__] Config mesh_device None world_size = 4
+[2026-05-25 04:31:31,701] [WARNING] [config_utils.py:70:_process_deprecated_field] Config parameter cpu_offload is deprecated use offload_optimizer instead
+[rank1]:[E525 04:31:34.022723808 ProcessGroupNCCL.cpp:1896] [PG ID 1 PG GUID 1 Rank 1] Process group watchdog thread terminated with exception: CUDA error: an illegal memory access was encountered
+CUDA kernel errors might be asynchronously reported at some other API call, so the stacktrace below might be incorrect.
+For debugging consider passing CUDA_LAUNCH_BLOCKING=1
+Compile with `TORCH_USE_CUDA_DSA` to enable device-side assertions.
+
+Exception raised from c10_cuda_check_implementation at /pytorch/c10/cuda/CUDAException.cpp:43 (most recent call first):
+frame #0: c10::Error::Error(c10::SourceLocation, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >) + 0x98 (0x75229f3785e8 in /home/wangpc/miniconda3/envs/starVLA/lib/python3.10/site-packages/torch/lib/libc10.so)
+frame #1: c10::detail::torchCheckFail(char const*, char const*, unsigned int, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&) + 0xe0 (0x75229f30d4a2 in /home/wangpc/miniconda3/envs/starVLA/lib/python3.10/site-packages/torch/lib/libc10.so)
+frame #2: c10::cuda::c10_cuda_check_implementation(int, char const*, char const*, int, bool) + 0x3c2 (0x75229f775422 in /home/wangpc/miniconda3/envs/starVLA/lib/python3.10/site-packages/torch/lib/libc10_cuda.so)
+frame #3: c10d::ProcessGroupNCCL::WorkNCCL::finishedGPUExecutionInternal() const + 0x56 (0x75222eae5456 in /home/wangpc/miniconda3/envs/starVLA/lib/python3.10/site-packages/torch/lib/libtorch_cuda.so)
+frame #4: c10d::ProcessGroupNCCL::WorkNCCL::isCompleted() + 0x70 (0x75222eaf56f0 in /home/wangpc/miniconda3/envs/starVLA/lib/python3.10/site-packages/torch/lib/libtorch_cuda.so)
+frame #5: c10d::ProcessGroupNCCL::watchdogHandler() + 0x782 (0x75222eaf7282 in /home/wangpc/miniconda3/envs/starVLA/lib/python3.10/site-packages/torch/lib/libtorch_cuda.so)
+frame #6: c10d::ProcessGroupNCCL::ncclCommWatchdog() + 0x14d (0x75222eaf8e8d in /home/wangpc/miniconda3/envs/starVLA/lib/python3.10/site-packages/torch/lib/libtorch_cuda.so)
+frame #7: <unknown function> + 0xdf0e6 (0x75221ecea0e6 in /home/wangpc/miniconda3/envs/starVLA/bin/../lib/libstdc++.so.6)
+frame #8: <unknown function> + 0x9caa4 (0x7522a3e9caa4 in /lib/x86_64-linux-gnu/libc.so.6)
+frame #9: <unknown function> + 0x129c6c (0x7522a3f29c6c in /lib/x86_64-linux-gnu/libc.so.6)
+
+terminate called after throwing an instance of 'c10::DistBackendError'
+  what():  [PG ID 1 PG GUID 1 Rank 1] Process group watchdog thread terminated with exception: CUDA error: an illegal memory access was encountered
+CUDA kernel errors might be asynchronously reported at some other API call, so the stacktrace below might be incorrect.
+For debugging consider passing CUDA_LAUNCH_BLOCKING=1
+Compile with `TORCH_USE_CUDA_DSA` to enable device-side assertions.
+
+Exception raised from c10_cuda_check_implementation at /pytorch/c10/cuda/CUDAException.cpp:43 (most recent call first):
+frame #0: c10::Error::Error(c10::SourceLocation, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >) + 0x98 (0x75229f3785e8 in /home/wangpc/miniconda3/envs/starVLA/lib/python3.10/site-packages/torch/lib/libc10.so)
+frame #1: c10::detail::torchCheckFail(char const*, char const*, unsigned int, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&) + 0xe0 (0x75229f30d4a2 in /home/wangpc/miniconda3/envs/starVLA/lib/python3.10/site-packages/torch/lib/libc10.so)
+frame #2: c10::cuda::c10_cuda_check_implementation(int, char const*, char const*, int, bool) + 0x3c2 (0x75229f775422 in /home/wangpc/miniconda3/envs/starVLA/lib/python3.10/site-packages/torch/lib/libc10_cuda.so)
+frame #3: c10d::ProcessGroupNCCL::WorkNCCL::finishedGPUExecutionInternal() const + 0x56 (0x75222eae5456 in /home/wangpc/miniconda3/envs/starVLA/lib/python3.10/site-packages/torch/lib/libtorch_cuda.so)
+frame #4: c10d::ProcessGroupNCCL::WorkNCCL::isCompleted() + 0x70 (0x75222eaf56f0 in /home/wangpc/miniconda3/envs/starVLA/lib/python3.10/site-packages/torch/lib/libtorch_cuda.so)
+frame #5: c10d::ProcessGroupNCCL::watchdogHandler() + 0x782 (0x75222eaf7282 in /home/wangpc/miniconda3/envs/starVLA/lib/python3.10/site-packages/torch/lib/libtorch_cuda.so)
+frame #6: c10d::ProcessGroupNCCL::ncclCommWatchdog() + 0x14d (0x75222eaf8e8d in /home/wangpc/miniconda3/envs/starVLA/lib/python3.10/site-packages/torch/lib/libtorch_cuda.so)
+frame #7: <unknown function> + 0xdf0e6 (0x75221ecea0e6 in /home/wangpc/miniconda3/envs/starVLA/bin/../lib/libstdc++.so.6)
+frame #8: <unknown function> + 0x9caa4 (0x7522a3e9caa4 in /lib/x86_64-linux-gnu/libc.so.6)
+frame #9: <unknown function> + 0x129c6c (0x7522a3f29c6c in /lib/x86_64-linux-gnu/libc.so.6)
+
+Exception raised from ncclCommWatchdog at /pytorch/torch/csrc/distributed/c10d/ProcessGroupNCCL.cpp:1902 (most recent call first):
+frame #0: c10::Error::Error(c10::SourceLocation, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >) + 0x98 (0x75229f3785e8 in /home/wangpc/miniconda3/envs/starVLA/lib/python3.10/site-packages/torch/lib/libc10.so)
+frame #1: <unknown function> + 0xcc7a4e (0x75222eac7a4e in /home/wangpc/miniconda3/envs/starVLA/lib/python3.10/site-packages/torch/lib/libtorch_cuda.so)
+frame #2: <unknown function> + 0x9165ed (0x75222e7165ed in /home/wangpc/miniconda3/envs/starVLA/lib/python3.10/site-packages/torch/lib/libtorch_cuda.so)
+frame #3: <unknown function> + 0xdf0e6 (0x75221ecea0e6 in /home/wangpc/miniconda3/envs/starVLA/bin/../lib/libstdc++.so.6)
+frame #4: <unknown function> + 0x9caa4 (0x7522a3e9caa4 in /lib/x86_64-linux-gnu/libc.so.6)
+frame #5: <unknown function> + 0x129c6c (0x7522a3f29c6c in /lib/x86_64-linux-gnu/libc.so.6)
+
+[rank0]: Traceback (most recent call last):
+[rank0]:   File "/scratch/wangpc/starVLA/starVLA/training/train_starvla.py", line 538, in <module>
+[rank0]:     main(cfg)
+[rank0]:   File "/scratch/wangpc/starVLA/starVLA/training/train_starvla.py", line 502, in main
+[rank0]:     trainer.prepare_training()
+[rank0]:   File "/scratch/wangpc/starVLA/starVLA/training/train_starvla.py", line 145, in prepare_training
+[rank0]:     self.model, self.optimizer, self.vla_train_dataloader = self.setup_distributed_training(
+[rank0]:   File "/scratch/wangpc/starVLA/starVLA/training/trainer_utils/trainer_tools.py", line 289, in setup_distributed_training
+[rank0]:     prepared_components = accelerator.prepare(*components)
+[rank0]:   File "/home/wangpc/miniconda3/envs/starVLA/lib/python3.10/site-packages/accelerate/accelerator.py", line 1392, in prepare
+[rank0]:     result = self._prepare_deepspeed(*args)
+[rank0]:   File "/home/wangpc/miniconda3/envs/starVLA/lib/python3.10/site-packages/accelerate/accelerator.py", line 1953, in _prepare_deepspeed
+[rank0]:     engine, optimizer, _, lr_scheduler = ds_initialize(**kwargs)
+[rank0]:   File "/home/wangpc/miniconda3/envs/starVLA/lib/python3.10/site-packages/deepspeed/__init__.py", line 193, in initialize
+[rank0]:     engine = DeepSpeedEngine(args=args,
+[rank0]:   File "/home/wangpc/miniconda3/envs/starVLA/lib/python3.10/site-packages/deepspeed/runtime/engine.py", line 278, in __init__
+[rank0]:     self._configure_distributed_model(model)
+[rank0]:   File "/home/wangpc/miniconda3/envs/starVLA/lib/python3.10/site-packages/deepspeed/runtime/engine.py", line 1307, in _configure_distributed_model
+[rank0]:     self._broadcast_model()
+[rank0]:   File "/home/wangpc/miniconda3/envs/starVLA/lib/python3.10/site-packages/deepspeed/runtime/engine.py", line 1225, in _broadcast_model
+[rank0]:     dist.broadcast(p.data, groups._get_broadcast_src_rank(), group=self.seq_data_parallel_group)
+[rank0]:   File "/home/wangpc/miniconda3/envs/starVLA/lib/python3.10/site-packages/deepspeed/comm/comm.py", line 117, in log_wrapper
+[rank0]:     return func(*args, **kwargs)
+[rank0]:   File "/home/wangpc/miniconda3/envs/starVLA/lib/python3.10/site-packages/deepspeed/comm/comm.py", line 224, in broadcast
+[rank0]:     return cdb.broadcast(tensor=tensor, src=src, group=group, async_op=async_op)
+[rank0]:   File "/home/wangpc/miniconda3/envs/starVLA/lib/python3.10/site-packages/deepspeed/comm/torch.py", line 206, in broadcast
+[rank0]:     return torch.distributed.broadcast(tensor=tensor, src=src, group=group, async_op=async_op)
+[rank0]:   File "/home/wangpc/miniconda3/envs/starVLA/lib/python3.10/site-packages/torch/distributed/c10d_logger.py", line 81, in wrapper
+[rank0]:     return func(*args, **kwargs)
+[rank0]:   File "/home/wangpc/miniconda3/envs/starVLA/lib/python3.10/site-packages/torch/distributed/distributed_c10d.py", line 2714, in broadcast
+[rank0]:     work = group.broadcast([tensor], opts)
+[rank0]: torch.distributed.DistBackendError: NCCL error in: /pytorch/torch/csrc/distributed/c10d/ProcessGroupNCCL.cpp:3353, unhandled cuda error (run with NCCL_DEBUG=INFO for details), NCCL version 2.26.2
+[rank0]: ncclUnhandledCudaError: Call to CUDA function failed.
+[rank0]: Last error:
+[rank0]: Cuda failure 'an illegal memory access was encountered'
+[rank3]:[E525 04:31:34.026125975 ProcessGroupNCCL.cpp:1896] [PG ID 1 PG GUID 1 Rank 3] Process group watchdog thread terminated with exception: CUDA error: an illegal memory access was encountered
+CUDA kernel errors might be asynchronously reported at some other API call, so the stacktrace below might be incorrect.
+For debugging consider passing CUDA_LAUNCH_BLOCKING=1
+Compile with `TORCH_USE_CUDA_DSA` to enable device-side assertions.
+
+Exception raised from c10_cuda_check_implementation at /pytorch/c10/cuda/CUDAException.cpp:43 (most recent call first):
+frame #0: c10::Error::Error(c10::SourceLocation, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >) + 0x98 (0x74c0235785e8 in /home/wangpc/miniconda3/envs/starVLA/lib/python3.10/site-packages/torch/lib/libc10.so)
+frame #1: c10::detail::torchCheckFail(char const*, char const*, unsigned int, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&) + 0xe0 (0x74c02350d4a2 in /home/wangpc/miniconda3/envs/starVLA/lib/python3.10/site-packages/torch/lib/libc10.so)
+frame #2: c10::cuda::c10_cuda_check_implementation(int, char const*, char const*, int, bool) + 0x3c2 (0x74c023933422 in /home/wangpc/miniconda3/envs/starVLA/lib/python3.10/site-packages/torch/lib/libc10_cuda.so)
+frame #3: c10d::ProcessGroupNCCL::WorkNCCL::finishedGPUExecutionInternal() const + 0x56 (0x74bfb2ce5456 in /home/wangpc/miniconda3/envs/starVLA/lib/python3.10/site-packages/torch/lib/libtorch_cuda.so)
+frame #4: c10d::ProcessGroupNCCL::WorkNCCL::isCompleted() + 0x70 (0x74bfb2cf56f0 in /home/wangpc/miniconda3/envs/starVLA/lib/python3.10/site-packages/torch/lib/libtorch_cuda.so)
+frame #5: c10d::ProcessGroupNCCL::watchdogHandler() + 0x782 (0x74bfb2cf7282 in /home/wangpc/miniconda3/envs/starVLA/lib/python3.10/site-packages/torch/lib/libtorch_cuda.so)
+frame #6: c10d::ProcessGroupNCCL::ncclCommWatchdog() + 0x14d (0x74bfb2cf8e8d in /home/wangpc/miniconda3/envs/starVLA/lib/python3.10/site-packages/torch/lib/libtorch_cuda.so)
+frame #7: <unknown function> + 0xdf0e6 (0x74bfa2eea0e6 in /home/wangpc/miniconda3/envs/starVLA/bin/../lib/libstdc++.so.6)
+frame #8: <unknown function> + 0x9caa4 (0x74c02809caa4 in /lib/x86_64-linux-gnu/libc.so.6)
+frame #9: <unknown function> + 0x129c6c (0x74c028129c6c in /lib/x86_64-linux-gnu/libc.so.6)
+
+[rank2]: Traceback (most recent call last):
+[rank2]:   File "/scratch/wangpc/starVLA/starVLA/training/train_starvla.py", line 538, in <module>
+[rank2]:     main(cfg)
+[rank2]:   File "/scratch/wangpc/starVLA/starVLA/training/train_starvla.py", line 502, in main
+[rank2]:     trainer.prepare_training()
+[rank2]:   File "/scratch/wangpc/starVLA/starVLA/training/train_starvla.py", line 145, in prepare_training
+[rank2]:     self.model, self.optimizer, self.vla_train_dataloader = self.setup_distributed_training(
+[rank2]:   File "/scratch/wangpc/starVLA/starVLA/training/trainer_utils/trainer_tools.py", line 289, in setup_distributed_training
+[rank2]:     prepared_components = accelerator.prepare(*components)
+[rank2]:   File "/home/wangpc/miniconda3/envs/starVLA/lib/python3.10/site-packages/accelerate/accelerator.py", line 1392, in prepare
+[rank2]:     result = self._prepare_deepspeed(*args)
+[rank2]:   File "/home/wangpc/miniconda3/envs/starVLA/lib/python3.10/site-packages/accelerate/accelerator.py", line 1953, in _prepare_deepspeed
+[rank2]:     engine, optimizer, _, lr_scheduler = ds_initialize(**kwargs)
+[rank2]:   File "/home/wangpc/miniconda3/envs/starVLA/lib/python3.10/site-packages/deepspeed/__init__.py", line 193, in initialize
+[rank2]:     engine = DeepSpeedEngine(args=args,
+[rank2]:   File "/home/wangpc/miniconda3/envs/starVLA/lib/python3.10/site-packages/deepspeed/runtime/engine.py", line 278, in __init__
+[rank2]:     self._configure_distributed_model(model)
+[rank2]:   File "/home/wangpc/miniconda3/envs/starVLA/lib/python3.10/site-packages/deepspeed/runtime/engine.py", line 1307, in _configure_distributed_model
+[rank2]:     self._broadcast_model()
+[rank2]:   File "/home/wangpc/miniconda3/envs/starVLA/lib/python3.10/site-packages/deepspeed/runtime/engine.py", line 1225, in _broadcast_model
+[rank2]:     dist.broadcast(p.data, groups._get_broadcast_src_rank(), group=self.seq_data_parallel_group)
+[rank2]:   File "/home/wangpc/miniconda3/envs/starVLA/lib/python3.10/site-packages/deepspeed/comm/comm.py", line 117, in log_wrapper
+[rank2]:     return func(*args, **kwargs)
+[rank2]:   File "/home/wangpc/miniconda3/envs/starVLA/lib/python3.10/site-packages/deepspeed/comm/comm.py", line 224, in broadcast
+[rank2]:     return cdb.broadcast(tensor=tensor, src=src, group=group, async_op=async_op)
+[rank2]:   File "/home/wangpc/miniconda3/envs/starVLA/lib/python3.10/site-packages/deepspeed/comm/torch.py", line 206, in broadcast
+[rank2]:     return torch.distributed.broadcast(tensor=tensor, src=src, group=group, async_op=async_op)
+[rank2]:   File "/home/wangpc/miniconda3/envs/starVLA/lib/python3.10/site-packages/torch/distributed/c10d_logger.py", line 81, in wrapper
+[rank2]:     return func(*args, **kwargs)
+[rank2]:   File "/home/wangpc/miniconda3/envs/starVLA/lib/python3.10/site-packages/torch/distributed/distributed_c10d.py", line 2714, in broadcast
+[rank2]:     work = group.broadcast([tensor], opts)
+[rank2]: torch.distributed.DistBackendError: NCCL error in: /pytorch/torch/csrc/distributed/c10d/ProcessGroupNCCL.cpp:3353, unhandled cuda error (run with NCCL_DEBUG=INFO for details), NCCL version 2.26.2
+[rank2]: ncclUnhandledCudaError: Call to CUDA function failed.
+[rank2]: Last error:
+[rank2]: Cuda failure 'an illegal memory access was encountered'
+terminate called after throwing an instance of 'c10::DistBackendError'
+  what():  [PG ID 1 PG GUID 1 Rank 3] Process group watchdog thread terminated with exception: CUDA error: an illegal memory access was encountered
+CUDA kernel errors might be asynchronously reported at some other API call, so the stacktrace below might be incorrect.
+For debugging consider passing CUDA_LAUNCH_BLOCKING=1
+Compile with `TORCH_USE_CUDA_DSA` to enable device-side assertions.
+
+Exception raised from c10_cuda_check_implementation at /pytorch/c10/cuda/CUDAException.cpp:43 (most recent call first):
+frame #0: c10::Error::Error(c10::SourceLocation, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >) + 0x98 (0x74c0235785e8 in /home/wangpc/miniconda3/envs/starVLA/lib/python3.10/site-packages/torch/lib/libc10.so)
+frame #1: c10::detail::torchCheckFail(char const*, char const*, unsigned int, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&) + 0xe0 (0x74c02350d4a2 in /home/wangpc/miniconda3/envs/starVLA/lib/python3.10/site-packages/torch/lib/libc10.so)
+frame #2: c10::cuda::c10_cuda_check_implementation(int, char const*, char const*, int, bool) + 0x3c2 (0x74c023933422 in /home/wangpc/miniconda3/envs/starVLA/lib/python3.10/site-packages/torch/lib/libc10_cuda.so)
+frame #3: c10d::ProcessGroupNCCL::WorkNCCL::finishedGPUExecutionInternal() const + 0x56 (0x74bfb2ce5456 in /home/wangpc/miniconda3/envs/starVLA/lib/python3.10/site-packages/torch/lib/libtorch_cuda.so)
+frame #4: c10d::ProcessGroupNCCL::WorkNCCL::isCompleted() + 0x70 (0x74bfb2cf56f0 in /home/wangpc/miniconda3/envs/starVLA/lib/python3.10/site-packages/torch/lib/libtorch_cuda.so)
+frame #5: c10d::ProcessGroupNCCL::watchdogHandler() + 0x782 (0x74bfb2cf7282 in /home/wangpc/miniconda3/envs/starVLA/lib/python3.10/site-packages/torch/lib/libtorch_cuda.so)
+frame #6: c10d::ProcessGroupNCCL::ncclCommWatchdog() + 0x14d (0x74bfb2cf8e8d in /home/wangpc/miniconda3/envs/starVLA/lib/python3.10/site-packages/torch/lib/libtorch_cuda.so)
+frame #7: <unknown function> + 0xdf0e6 (0x74bfa2eea0e6 in /home/wangpc/miniconda3/envs/starVLA/bin/../lib/libstdc++.so.6)
+frame #8: <unknown function> + 0x9caa4 (0x74c02809caa4 in /lib/x86_64-linux-gnu/libc.so.6)
+frame #9: <unknown function> + 0x129c6c (0x74c028129c6c in /lib/x86_64-linux-gnu/libc.so.6)
+
+Exception raised from ncclCommWatchdog at /pytorch/torch/csrc/distributed/c10d/ProcessGroupNCCL.cpp:1902 (most recent call first):
+frame #0: c10::Error::Error(c10::SourceLocation, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >) + 0x98 (0x74c0235785e8 in /home/wangpc/miniconda3/envs/starVLA/lib/python3.10/site-packages/torch/lib/libc10.so)
+frame #1: <unknown function> + 0xcc7a4e (0x74bfb2cc7a4e in /home/wangpc/miniconda3/envs/starVLA/lib/python3.10/site-packages/torch/lib/libtorch_cuda.so)
+frame #2: <unknown function> + 0x9165ed (0x74bfb29165ed in /home/wangpc/miniconda3/envs/starVLA/lib/python3.10/site-packages/torch/lib/libtorch_cuda.so)
+frame #3: <unknown function> + 0xdf0e6 (0x74bfa2eea0e6 in /home/wangpc/miniconda3/envs/starVLA/bin/../lib/libstdc++.so.6)
+frame #4: <unknown function> + 0x9caa4 (0x74c02809caa4 in /lib/x86_64-linux-gnu/libc.so.6)
+frame #5: <unknown function> + 0x129c6c (0x74c028129c6c in /lib/x86_64-linux-gnu/libc.so.6)
+
+[rank2]:[E525 04:31:34.042452606 ProcessGroupNCCL.cpp:1896] [PG ID 1 PG GUID 1 Rank 2] Process group watchdog thread terminated with exception: CUDA error: an illegal memory access was encountered
+CUDA kernel errors might be asynchronously reported at some other API call, so the stacktrace below might be incorrect.
+For debugging consider passing CUDA_LAUNCH_BLOCKING=1
+Compile with `TORCH_USE_CUDA_DSA` to enable device-side assertions.
+
+Exception raised from c10_cuda_check_implementation at /pytorch/c10/cuda/CUDAException.cpp:43 (most recent call first):
+frame #0: c10::Error::Error(c10::SourceLocation, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >) + 0x98 (0x792b10d785e8 in /home/wangpc/miniconda3/envs/starVLA/lib/python3.10/site-packages/torch/lib/libc10.so)
+frame #1: c10::detail::torchCheckFail(char const*, char const*, unsigned int, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&) + 0xe0 (0x792b10d0d4a2 in /home/wangpc/miniconda3/envs/starVLA/lib/python3.10/site-packages/torch/lib/libc10.so)
+frame #2: c10::cuda::c10_cuda_check_implementation(int, char const*, char const*, int, bool) + 0x3c2 (0x792b1d5a5422 in /home/wangpc/miniconda3/envs/starVLA/lib/python3.10/site-packages/torch/lib/libc10_cuda.so)
+frame #3: c10d::ProcessGroupNCCL::WorkNCCL::finishedGPUExecutionInternal() const + 0x56 (0x792aacce5456 in /home/wangpc/miniconda3/envs/starVLA/lib/python3.10/site-packages/torch/lib/libtorch_cuda.so)
+frame #4: c10d::ProcessGroupNCCL::WorkNCCL::isCompleted() + 0x70 (0x792aaccf56f0 in /home/wangpc/miniconda3/envs/starVLA/lib/python3.10/site-packages/torch/lib/libtorch_cuda.so)
+frame #5: c10d::ProcessGroupNCCL::watchdogHandler() + 0x782 (0x792aaccf7282 in /home/wangpc/miniconda3/envs/starVLA/lib/python3.10/site-packages/torch/lib/libtorch_cuda.so)
+frame #6: c10d::ProcessGroupNCCL::ncclCommWatchdog() + 0x14d (0x792aaccf8e8d in /home/wangpc/miniconda3/envs/starVLA/lib/python3.10/site-packages/torch/lib/libtorch_cuda.so)
+frame #7: <unknown function> + 0xdf0e6 (0x792a9ceea0e6 in /home/wangpc/miniconda3/envs/starVLA/bin/../lib/libstdc++.so.6)
+frame #8: <unknown function> + 0x9caa4 (0x792b2209caa4 in /lib/x86_64-linux-gnu/libc.so.6)
+frame #9: <unknown function> + 0x129c6c (0x792b22129c6c in /lib/x86_64-linux-gnu/libc.so.6)
+
+terminate called after throwing an instance of 'c10::DistBackendError'
+  what():  [PG ID 1 PG GUID 1 Rank 2] Process group watchdog thread terminated with exception: CUDA error: an illegal memory access was encountered
+CUDA kernel errors might be asynchronously reported at some other API call, so the stacktrace below might be incorrect.
+For debugging consider passing CUDA_LAUNCH_BLOCKING=1
+Compile with `TORCH_USE_CUDA_DSA` to enable device-side assertions.
+
+Exception raised from c10_cuda_check_implementation at /pytorch/c10/cuda/CUDAException.cpp:43 (most recent call first):
+frame #0: c10::Error::Error(c10::SourceLocation, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >) + 0x98 (0x792b10d785e8 in /home/wangpc/miniconda3/envs/starVLA/lib/python3.10/site-packages/torch/lib/libc10.so)
+frame #1: c10::detail::torchCheckFail(char const*, char const*, unsigned int, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&) + 0xe0 (0x792b10d0d4a2 in /home/wangpc/miniconda3/envs/starVLA/lib/python3.10/site-packages/torch/lib/libc10.so)
+frame #2: c10::cuda::c10_cuda_check_implementation(int, char const*, char const*, int, bool) + 0x3c2 (0x792b1d5a5422 in /home/wangpc/miniconda3/envs/starVLA/lib/python3.10/site-packages/torch/lib/libc10_cuda.so)
+frame #3: c10d::ProcessGroupNCCL::WorkNCCL::finishedGPUExecutionInternal() const + 0x56 (0x792aacce5456 in /home/wangpc/miniconda3/envs/starVLA/lib/python3.10/site-packages/torch/lib/libtorch_cuda.so)
+frame #4: c10d::ProcessGroupNCCL::WorkNCCL::isCompleted() + 0x70 (0x792aaccf56f0 in /home/wangpc/miniconda3/envs/starVLA/lib/python3.10/site-packages/torch/lib/libtorch_cuda.so)
+frame #5: c10d::ProcessGroupNCCL::watchdogHandler() + 0x782 (0x792aaccf7282 in /home/wangpc/miniconda3/envs/starVLA/lib/python3.10/site-packages/torch/lib/libtorch_cuda.so)
+frame #6: c10d::ProcessGroupNCCL::ncclCommWatchdog() + 0x14d (0x792aaccf8e8d in /home/wangpc/miniconda3/envs/starVLA/lib/python3.10/site-packages/torch/lib/libtorch_cuda.so)
+frame #7: <unknown function> + 0xdf0e6 (0x792a9ceea0e6 in /home/wangpc/miniconda3/envs/starVLA/bin/../lib/libstdc++.so.6)
+frame #8: <unknown function> + 0x9caa4 (0x792b2209caa4 in /lib/x86_64-linux-gnu/libc.so.6)
+frame #9: <unknown function> + 0x129c6c (0x792b22129c6c in /lib/x86_64-linux-gnu/libc.so.6)
+
+Exception raised from ncclCommWatchdog at /pytorch/torch/csrc/distributed/c10d/ProcessGroupNCCL.cpp:1902 (most recent call first):
+frame #0: c10::Error::Error(c10::SourceLocation, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >) + 0x98 (0x792b10d785e8 in /home/wangpc/miniconda3/envs/starVLA/lib/python3.10/site-packages/torch/lib/libc10.so)
+frame #1: <unknown function> + 0xcc7a4e (0x792aaccc7a4e in /home/wangpc/miniconda3/envs/starVLA/lib/python3.10/site-packages/torch/lib/libtorch_cuda.so)
+frame #2: <unknown function> + 0x9165ed (0x792aac9165ed in /home/wangpc/miniconda3/envs/starVLA/lib/python3.10/site-packages/torch/lib/libtorch_cuda.so)
+frame #3: <unknown function> + 0xdf0e6 (0x792a9ceea0e6 in /home/wangpc/miniconda3/envs/starVLA/bin/../lib/libstdc++.so.6)
+frame #4: <unknown function> + 0x9caa4 (0x792b2209caa4 in /lib/x86_64-linux-gnu/libc.so.6)
+frame #5: <unknown function> + 0x129c6c (0x792b22129c6c in /lib/x86_64-linux-gnu/libc.so.6)
+
+[rank0]:[E525 04:31:34.045435897 ProcessGroupNCCL.cpp:1896] [PG ID 1 PG GUID 1 Rank 0] Process group watchdog thread terminated with exception: CUDA error: an illegal memory access was encountered
+CUDA kernel errors might be asynchronously reported at some other API call, so the stacktrace below might be incorrect.
+For debugging consider passing CUDA_LAUNCH_BLOCKING=1
+Compile with `TORCH_USE_CUDA_DSA` to enable device-side assertions.
+
+Exception raised from c10_cuda_check_implementation at /pytorch/c10/cuda/CUDAException.cpp:43 (most recent call first):
+frame #0: c10::Error::Error(c10::SourceLocation, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >) + 0x98 (0x77b0131785e8 in /home/wangpc/miniconda3/envs/starVLA/lib/python3.10/site-packages/torch/lib/libc10.so)
+frame #1: c10::detail::torchCheckFail(char const*, char const*, unsigned int, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&) + 0xe0 (0x77b01310d4a2 in /home/wangpc/miniconda3/envs/starVLA/lib/python3.10/site-packages/torch/lib/libc10.so)
+frame #2: c10::cuda::c10_cuda_check_implementation(int, char const*, char const*, int, bool) + 0x3c2 (0x77b01f9a5422 in /home/wangpc/miniconda3/envs/starVLA/lib/python3.10/site-packages/torch/lib/libc10_cuda.so)
+frame #3: c10d::ProcessGroupNCCL::WorkNCCL::finishedGPUExecutionInternal() const + 0x56 (0x77afaf0e5456 in /home/wangpc/miniconda3/envs/starVLA/lib/python3.10/site-packages/torch/lib/libtorch_cuda.so)
+frame #4: c10d::ProcessGroupNCCL::WorkNCCL::isCompleted() + 0x70 (0x77afaf0f56f0 in /home/wangpc/miniconda3/envs/starVLA/lib/python3.10/site-packages/torch/lib/libtorch_cuda.so)
+frame #5: c10d::ProcessGroupNCCL::watchdogHandler() + 0x782 (0x77afaf0f7282 in /home/wangpc/miniconda3/envs/starVLA/lib/python3.10/site-packages/torch/lib/libtorch_cuda.so)
+frame #6: c10d::ProcessGroupNCCL::ncclCommWatchdog() + 0x14d (0x77afaf0f8e8d in /home/wangpc/miniconda3/envs/starVLA/lib/python3.10/site-packages/torch/lib/libtorch_cuda.so)
+frame #7: <unknown function> + 0xdf0e6 (0x77af9f2ea0e6 in /home/wangpc/miniconda3/envs/starVLA/bin/../lib/libstdc++.so.6)
+frame #8: <unknown function> + 0x9caa4 (0x77b02449caa4 in /lib/x86_64-linux-gnu/libc.so.6)
+frame #9: <unknown function> + 0x129c6c (0x77b024529c6c in /lib/x86_64-linux-gnu/libc.so.6)
+
+terminate called after throwing an instance of 'c10::DistBackendError'
+  what():  [PG ID 1 PG GUID 1 Rank 0] Process group watchdog thread terminated with exception: CUDA error: an illegal memory access was encountered
+CUDA kernel errors might be asynchronously reported at some other API call, so the stacktrace below might be incorrect.
+For debugging consider passing CUDA_LAUNCH_BLOCKING=1
+Compile with `TORCH_USE_CUDA_DSA` to enable device-side assertions.
+
+Exception raised from c10_cuda_check_implementation at /pytorch/c10/cuda/CUDAException.cpp:43 (most recent call first):
+frame #0: c10::Error::Error(c10::SourceLocation, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >) + 0x98 (0x77b0131785e8 in /home/wangpc/miniconda3/envs/starVLA/lib/python3.10/site-packages/torch/lib/libc10.so)
+frame #1: c10::detail::torchCheckFail(char const*, char const*, unsigned int, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&) + 0xe0 (0x77b01310d4a2 in /home/wangpc/miniconda3/envs/starVLA/lib/python3.10/site-packages/torch/lib/libc10.so)
+frame #2: c10::cuda::c10_cuda_check_implementation(int, char const*, char const*, int, bool) + 0x3c2 (0x77b01f9a5422 in /home/wangpc/miniconda3/envs/starVLA/lib/python3.10/site-packages/torch/lib/libc10_cuda.so)
+frame #3: c10d::ProcessGroupNCCL::WorkNCCL::finishedGPUExecutionInternal() const + 0x56 (0x77afaf0e5456 in /home/wangpc/miniconda3/envs/starVLA/lib/python3.10/site-packages/torch/lib/libtorch_cuda.so)
+frame #4: c10d::ProcessGroupNCCL::WorkNCCL::isCompleted() + 0x70 (0x77afaf0f56f0 in /home/wangpc/miniconda3/envs/starVLA/lib/python3.10/site-packages/torch/lib/libtorch_cuda.so)
+frame #5: c10d::ProcessGroupNCCL::watchdogHandler() + 0x782 (0x77afaf0f7282 in /home/wangpc/miniconda3/envs/starVLA/lib/python3.10/site-packages/torch/lib/libtorch_cuda.so)
+frame #6: c10d::ProcessGroupNCCL::ncclCommWatchdog() + 0x14d (0x77afaf0f8e8d in /home/wangpc/miniconda3/envs/starVLA/lib/python3.10/site-packages/torch/lib/libtorch_cuda.so)
+frame #7: <unknown function> + 0xdf0e6 (0x77af9f2ea0e6 in /home/wangpc/miniconda3/envs/starVLA/bin/../lib/libstdc++.so.6)
+frame #8: <unknown function> + 0x9caa4 (0x77b02449caa4 in /lib/x86_64-linux-gnu/libc.so.6)
+frame #9: <unknown function> + 0x129c6c (0x77b024529c6c in /lib/x86_64-linux-gnu/libc.so.6)
+
+Exception raised from ncclCommWatchdog at /pytorch/torch/csrc/distributed/c10d/ProcessGroupNCCL.cpp:1902 (most recent call first):
+frame #0: c10::Error::Error(c10::SourceLocation, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >) + 0x98 (0x77b0131785e8 in /home/wangpc/miniconda3/envs/starVLA/lib/python3.10/site-packages/torch/lib/libc10.so)
+frame #1: <unknown function> + 0xcc7a4e (0x77afaf0c7a4e in /home/wangpc/miniconda3/envs/starVLA/lib/python3.10/site-packages/torch/lib/libtorch_cuda.so)
+frame #2: <unknown function> + 0x9165ed (0x77afaed165ed in /home/wangpc/miniconda3/envs/starVLA/lib/python3.10/site-packages/torch/lib/libtorch_cuda.so)
+frame #3: <unknown function> + 0xdf0e6 (0x77af9f2ea0e6 in /home/wangpc/miniconda3/envs/starVLA/bin/../lib/libstdc++.so.6)
+frame #4: <unknown function> + 0x9caa4 (0x77b02449caa4 in /lib/x86_64-linux-gnu/libc.so.6)
+frame #5: <unknown function> + 0x129c6c (0x77b024529c6c in /lib/x86_64-linux-gnu/libc.so.6)
+
+W0525 04:31:36.066000 664709 site-packages/torch/distributed/elastic/multiprocessing/api.py:900] Sending process 665006 closing signal SIGTERM
+W0525 04:31:36.066000 664709 site-packages/torch/distributed/elastic/multiprocessing/api.py:900] Sending process 665008 closing signal SIGTERM
+W0525 04:31:36.067000 664709 site-packages/torch/distributed/elastic/multiprocessing/api.py:900] Sending process 665009 closing signal SIGTERM
+E0525 04:31:39.088000 664709 site-packages/torch/distributed/elastic/multiprocessing/api.py:874] failed (exitcode: -6) local_rank: 1 (pid: 665007) of binary: /home/wangpc/miniconda3/envs/starVLA/bin/python3.10
+Traceback (most recent call last):
+  File "/home/wangpc/miniconda3/envs/starVLA/bin/accelerate", line 6, in <module>
+    sys.exit(main())
+  File "/home/wangpc/miniconda3/envs/starVLA/lib/python3.10/site-packages/accelerate/commands/accelerate_cli.py", line 48, in main
+    args.func(args)
+  File "/home/wangpc/miniconda3/envs/starVLA/lib/python3.10/site-packages/accelerate/commands/launch.py", line 1177, in launch_command
+    deepspeed_launcher(args)
+  File "/home/wangpc/miniconda3/envs/starVLA/lib/python3.10/site-packages/accelerate/commands/launch.py", line 863, in deepspeed_launcher
+    distrib_run.run(args)
+  File "/home/wangpc/miniconda3/envs/starVLA/lib/python3.10/site-packages/torch/distributed/run.py", line 883, in run
+    elastic_launch(
+  File "/home/wangpc/miniconda3/envs/starVLA/lib/python3.10/site-packages/torch/distributed/launcher/api.py", line 139, in __call__
+    return launch_agent(self._config, self._entrypoint, list(args))
+  File "/home/wangpc/miniconda3/envs/starVLA/lib/python3.10/site-packages/torch/distributed/launcher/api.py", line 270, in launch_agent
+    raise ChildFailedError(
+torch.distributed.elastic.multiprocessing.errors.ChildFailedError: 
+=======================================================
+starVLA/training/train_starvla.py FAILED
+-------------------------------------------------------
+Failures:
+  <NO_OTHER_FAILURES>
+-------------------------------------------------------
+Root Cause (first observed failure):
+[0]:
+  time      : 2026-05-25_04:31:36
+  host      : tams02
+  rank      : 1 (local_rank: 1)
+  exitcode  : -6 (pid: 665007)
+  error_file: <N/A>
+  traceback : Signal 6 (SIGABRT) received by PID 665007
+=======================================================
+
+============================================================
+[rtc-ft] === START: pickandplace_pick_from_moved ===
+[rtc-ft] pretrained_checkpoint=/scratch/wangpc/starVLA/results/Checkpoints/fastumi_pickandplace_qwenPI_0403_1_pick_from_moved/checkpoints/steps_30000_pytorch_model.pt
+============================================================
+[2026-05-25 04:31:43,923] [INFO] [real_accelerator.py:254:get_accelerator] Setting ds_accelerator to cuda (auto detect)
+W0525 04:31:45.029000 665926 site-packages/torch/distributed/run.py:766] 
+W0525 04:31:45.029000 665926 site-packages/torch/distributed/run.py:766] *****************************************
+W0525 04:31:45.029000 665926 site-packages/torch/distributed/run.py:766] Setting OMP_NUM_THREADS environment variable for each process to be 1 in default, to avoid your system being overloaded, please further tune the variable for optimal performance in your application as needed. 
+W0525 04:31:45.029000 665926 site-packages/torch/distributed/run.py:766] *****************************************
+[2026-05-25 04:31:47,860] [INFO] [real_accelerator.py:254:get_accelerator] Setting ds_accelerator to cuda (auto detect)
+[2026-05-25 04:31:47,865] [INFO] [real_accelerator.py:254:get_accelerator] Setting ds_accelerator to cuda (auto detect)
+05/25 [04:31:47] INFO     | >> gcc -pthread -B                                     spawn.py:77
+                          /home/wangpc/miniconda3/envs/starVLA/compiler_compat                
+                          -Wno-unused-result -Wsign-compare -DNDEBUG -fwrapv -O2              
+                          -Wall -fPIC -O2 -isystem                                            
+                          /home/wangpc/miniconda3/envs/starVLA/include -fPIC -O2              
+                          -isystem /home/wangpc/miniconda3/envs/starVLA/include               
+                          -fPIC -c /tmp/tmpcc624c8p/test.c -o                                 
+                          /tmp/tmpcc624c8p/test.o                                             
+05/25 [04:31:47] INFO     | >> gcc -pthread -B                                     spawn.py:77
+                          /home/wangpc/miniconda3/envs/starVLA/compiler_compat                
+                          -Wno-unused-result -Wsign-compare -DNDEBUG -fwrapv -O2              
+                          -Wall -fPIC -O2 -isystem                                            
+                          /home/wangpc/miniconda3/envs/starVLA/include -fPIC -O2              
+                          -isystem /home/wangpc/miniconda3/envs/starVLA/include               
+                          -fPIC -c /tmp/tmpk81r7f2y/test.c -o                                 
+                          /tmp/tmpk81r7f2y/test.o                                             
+[2026-05-25 04:31:47,930] [INFO] [real_accelerator.py:254:get_accelerator] Setting ds_accelerator to cuda (auto detect)
+                 INFO     | >> gcc -pthread -B                                     spawn.py:77
+                          /home/wangpc/miniconda3/envs/starVLA/compiler_compat                
+                          /tmp/tmpcc624c8p/test.o -laio -o /tmp/tmpcc624c8p/a.out             
+[2026-05-25 04:31:47,934] [INFO] [real_accelerator.py:254:get_accelerator] Setting ds_accelerator to cuda (auto detect)
+                 INFO     | >> gcc -pthread -B                                     spawn.py:77
+                          /home/wangpc/miniconda3/envs/starVLA/compiler_compat                
+                          /tmp/tmpk81r7f2y/test.o -laio -o /tmp/tmpk81r7f2y/a.out             
+05/25 [04:31:47] INFO     | >> gcc -pthread -B                                     spawn.py:77
+                          /home/wangpc/miniconda3/envs/starVLA/compiler_compat                
+                          -Wno-unused-result -Wsign-compare -DNDEBUG -fwrapv -O2              
+                          -Wall -fPIC -O2 -isystem                                            
+                          /home/wangpc/miniconda3/envs/starVLA/include -fPIC -O2              
+                          -isystem /home/wangpc/miniconda3/envs/starVLA/include               
+                          -fPIC -c /tmp/tmpolnhfehc/test.c -o                                 
+                          /tmp/tmpolnhfehc/test.o                                             
+05/25 [04:31:47] INFO     | >> gcc -pthread -B                                     spawn.py:77
+                          /home/wangpc/miniconda3/envs/starVLA/compiler_compat                
+                          -Wno-unused-result -Wsign-compare -DNDEBUG -fwrapv -O2              
+                          -Wall -fPIC -O2 -isystem                                            
+                          /home/wangpc/miniconda3/envs/starVLA/include -fPIC -O2              
+                          -isystem /home/wangpc/miniconda3/envs/starVLA/include               
+                          -fPIC -c /tmp/tmplyldum9h/test.c -o                                 
+                          /tmp/tmplyldum9h/test.o                                             
+                 INFO     | >> gcc -pthread -B                                     spawn.py:77
+                          /home/wangpc/miniconda3/envs/starVLA/compiler_compat                
+                          /tmp/tmpolnhfehc/test.o -laio -o /tmp/tmpolnhfehc/a.out             
+                 INFO     | >> gcc -pthread -B                                     spawn.py:77
+                          /home/wangpc/miniconda3/envs/starVLA/compiler_compat                
+                          /tmp/tmplyldum9h/test.o -laio -o /tmp/tmplyldum9h/a.out             
+05/25 [04:31:48] INFO     | >> gcc -pthread -B                                     spawn.py:77
+                          /home/wangpc/miniconda3/envs/starVLA/compiler_compat                
+                          -Wno-unused-result -Wsign-compare -DNDEBUG -fwrapv -O2              
+                          -Wall -fPIC -O2 -isystem                                            
+                          /home/wangpc/miniconda3/envs/starVLA/include -fPIC -O2              
+                          -isystem /home/wangpc/miniconda3/envs/starVLA/include               
+                          -fPIC -c /tmp/tmp6xhhy3ng/test.c -o                                 
+                          /tmp/tmp6xhhy3ng/test.o                                             
+05/25 [04:31:48] INFO     | >> gcc -pthread -B                                     spawn.py:77
+                          /home/wangpc/miniconda3/envs/starVLA/compiler_compat                
+                          -Wno-unused-result -Wsign-compare -DNDEBUG -fwrapv -O2              
+                          -Wall -fPIC -O2 -isystem                                            
+                          /home/wangpc/miniconda3/envs/starVLA/include -fPIC -O2              
+                          -isystem /home/wangpc/miniconda3/envs/starVLA/include               
+                          -fPIC -c /tmp/tmpayij9rgl/test.c -o                                 
+                          /tmp/tmpayij9rgl/test.o                                             
+                 INFO     | >> gcc -pthread -B                                     spawn.py:77
+                          /home/wangpc/miniconda3/envs/starVLA/compiler_compat                
+                          /tmp/tmp6xhhy3ng/test.o -L/usr -L/usr/lib64 -lcufile -o             
+                          /tmp/tmp6xhhy3ng/a.out                                              
+                 INFO     | >> gcc -pthread -B                                     spawn.py:77
+                          /home/wangpc/miniconda3/envs/starVLA/compiler_compat                
+                          /tmp/tmpayij9rgl/test.o -L/usr -L/usr/lib64 -lcufile -o             
+                          /tmp/tmpayij9rgl/a.out                                              
+05/25 [04:31:48] INFO     | >> gcc -pthread -B                                     spawn.py:77
+                          /home/wangpc/miniconda3/envs/starVLA/compiler_compat                
+                          -Wno-unused-result -Wsign-compare -DNDEBUG -fwrapv -O2              
+                          -Wall -fPIC -O2 -isystem                                            
+                          /home/wangpc/miniconda3/envs/starVLA/include -fPIC -O2              
+                          -isystem /home/wangpc/miniconda3/envs/starVLA/include               
+                          -fPIC -c /tmp/tmpcpdsbtlv/test.c -o                                 
+                          /tmp/tmpcpdsbtlv/test.o                                             
+05/25 [04:31:48] INFO     | >> gcc -pthread -B                                     spawn.py:77
+                          /home/wangpc/miniconda3/envs/starVLA/compiler_compat                
+                          -Wno-unused-result -Wsign-compare -DNDEBUG -fwrapv -O2              
+                          -Wall -fPIC -O2 -isystem                                            
+                          /home/wangpc/miniconda3/envs/starVLA/include -fPIC -O2              
+                          -isystem /home/wangpc/miniconda3/envs/starVLA/include               
+                          -fPIC -c /tmp/tmp1fr39047/test.c -o                                 
+                          /tmp/tmp1fr39047/test.o                                             
+                 INFO     | >> gcc -pthread -B                                     spawn.py:77
+                          /home/wangpc/miniconda3/envs/starVLA/compiler_compat                
+                          /tmp/tmpcpdsbtlv/test.o -L/usr -L/usr/lib64 -lcufile -o             
+                          /tmp/tmpcpdsbtlv/a.out                                              
+                 INFO     | >> gcc -pthread -B                                     spawn.py:77
+                          /home/wangpc/miniconda3/envs/starVLA/compiler_compat                
+                          /tmp/tmp1fr39047/test.o -L/usr -L/usr/lib64 -lcufile -o             
+                          /tmp/tmp1fr39047/a.out                                              
+[2026-05-25 04:31:48,644] [INFO] [comm.py:669:init_distributed] cdb=None
+[2026-05-25 04:31:48,667] [INFO] [comm.py:669:init_distributed] cdb=None
+[2026-05-25 04:31:48,722] [INFO] [comm.py:669:init_distributed] cdb=None
+[2026-05-25 04:31:48,722] [INFO] [comm.py:700:init_distributed] Initializing TorchBackend in DeepSpeed with backend nccl
+[2026-05-25 04:31:48,722] [INFO] [comm.py:669:init_distributed] cdb=None
+Distributed environment: DEEPSPEED  Backend: nccl
+Num processes: 4
+Process index: 0
+Local process index: 0
+Device: cuda:0
+
+Mixed precision type: bf16
+ds_config: {'fp16': {'enabled': False}, 'bf16': {'enabled': True}, 'train_micro_batch_size_per_gpu': 'auto', 'train_batch_size': 'auto', 'gradient_accumulation_steps': 1, 'zero_optimization': {'stage': 2, 'allgather_partitions': True, 'allgather_bucket_size': 500000000.0, 'reduce_scatter': True, 'reduce_bucket_size': 500000000.0, 'overlap_comm': True, 'contiguous_gradients': True, 'cpu_offload': False}, 'gradient_clipping': 1.0, 'steps_per_print': inf}
+
+05/25 [04:31:49] INFO     | >> VLA Training :: Warming Up                 train_starvla.py:483
+                 INFO     | >> ✅ Configuration wrapped for access        train_starvla.py:486
+                          tracking                                                            
+Loading checkpoint shards:   0%|          | 0/2 [00:00<?, ?it/s]Loading checkpoint shards:   0%|          | 0/2 [00:00<?, ?it/s]Loading checkpoint shards: 100%|██████████| 2/2 [00:00<00:00, 61.49it/s]
+Loading checkpoint shards:   0%|          | 0/2 [00:00<?, ?it/s]Loading checkpoint shards: 100%|██████████| 2/2 [00:00<00:00, 62.45it/s]
+Loading checkpoint shards:   0%|          | 0/2 [00:00<?, ?it/s]Loading checkpoint shards: 100%|██████████| 2/2 [00:00<00:00, 63.56it/s]
+Loading checkpoint shards: 100%|██████████| 2/2 [00:00<00:00, 60.89it/s]
