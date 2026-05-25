@@ -293,6 +293,78 @@ c) **Joint training without VQA**: VQA cotrain hurts action-side pref-
 
 ---
 
+## 7.5. UPDATE — measured demo Δz ground truth (added 2026-05-25)
+
+Quick sanity to verify the "demo signal magnitude" claim in §0 (which
+was a prior, not measured). Computed from contact/taskB demo HDF5
+data directly: for each of the 100 episodes, read raw `endpose/left_endpose`
+chunk starting at `grasp_t` (detected via gripper closure), extract z
+coordinate, aggregate per chunk-step.
+
+**Demo L_z (left endpose z) at chunk step k after grasp:**
+
+| k | low_z_mean (m) | high_z_mean (m) | demo Δz (m) | demo Δz (mm) |
+|---|---:|---:|---:|---:|
+| 0  | 0.8718 | 0.9176 | +0.0458 | **+45.8** |
+| 6  | 0.8717 | 0.9176 | +0.0459 | **+45.9** |
+| 12 | 0.8717 | 0.9177 | +0.0459 | **+45.9** |
+| 15 | 0.8717 | 0.9177 | +0.0460 | **+46.0** |
+
+→ **Demo signal is real and stable: ~46 mm consistent across all 16
+chunk steps** (because gripper has already closed at grasp_t, so
+chunk = lift/transport with the chosen grasp height).
+
+Within-class variance:
+- GT_low L_z range: [0.78, 0.94] m (std 62 mm)
+- GT_high L_z range: [0.88, 0.94] m (std 23 mm)
+- Class means differ by 46 mm; individual episodes overlap slightly.
+
+**Convert demo Δz to the normalized space used by model:**
+
+L_z normalization: q01=0.775, q99=1.102, span=0.327 m
+→ normalized factor = 2/span = 6.113
+
+Demo Δz at any chunk step: +0.046 m → **normalized = +0.281**
+
+### Model response vs demo (in same normalized units)
+
+| ckpt | model mean Δz (normalized) | physical equivalent | % of demo signal |
+|---|---:|---:|---:|
+| Stage A baseline 35k | +0.0122 | **2.0 mm** | **4.3%** |
+| Stage A VQA 35k | -0.0102 | -1.7 mm (negative!) | n/a |
+| Stage B main final | +0.0163 | **2.7 mm** | **5.9%** |
+| Stage B B0 final | +0.0059 | 1.0 mm | 2.1% |
+
+→ **Every model produces ~5% of the demo signal magnitude**, with
+Stage A VQA actually going slightly in the WRONG direction (-1.7 mm).
+
+This **strengthens** the conclusion: it's not "weak but maybe usable"
+— it's "~20× too weak for closed-loop control to meaningfully follow
+prompt". 2-3 mm of grip-height delta in normalized space is below
+robot control precision + grip contact tolerance.
+
+The 0.62 sign-acc for Stage A baseline and Stage B main is consistent
+with "tiny signal in correct direction + noise dominating individual
+episodes":
+- mean response +2-3 mm + noise std ~50 mm → ~60% of episodes happen
+  to have positive sign by random fluctuation → ~0.62 sign-acc
+- This is NOT meaningful pref-conditioning; it's noise with a slight
+  directional bias
+
+### Implication for closed-loop
+
+If a robot rollout is given `Preference: high contact` prompt, the
+predicted action will be ~3 mm higher on average than for `low contact`.
+But within-episode variance is ~50 mm. So actual grip position on any
+single rollout is essentially determined by image features + noise,
+not the prompt.
+
+→ **Closed-loop pref-following on contact/taskB with current pipeline:
+essentially won't work.** Prompt has no operational control over grasp
+height.
+
+---
+
 ## 8. Bottom line
 
 Stage B in current design has a **structural problem**: small-data SFT
@@ -301,6 +373,14 @@ learn to attend to prompts. Pseudo-labels become redundant signal
 because the image already encodes the GT. **The whole Stage B pseudo-
 labeler approach is not load-bearing here** — Stage A baseline (no
 pseudo-labels, no Stage B) is the best pref-follower we measure.
+
+**With §7.5 demo Δz update (2026-05-25)**: this is even more severe than
+previously framed. Demo data shows clean 46 mm class separation in
+left-z; all models produce only **2-3 mm** response (5% of demo signal).
+Models functionally ignore the prompt. Stage A baseline is "best" only
+in the relative sense that it's slightly less broken — but in absolute
+terms no model has meaningful pref-conditioning that would survive
+closed-loop control noise.
 
 For paper purposes: this is actually an important negative result.
 The "pseudo-label + SFT" recipe works on the labels (cache acc 1.000)
