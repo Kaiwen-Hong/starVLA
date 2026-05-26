@@ -72,6 +72,19 @@ So the gate test asks 3 questions in priority order:
 
 Each of these has a script (§3).
 
+> **⚠ Sanity check before interpreting #1 / #3 — added 2026-05-26**:
+> Always read `baseline_counterfactual_taskA.overall_mse_normalized` from the
+> gate JSON FIRST. In normalized [-1, 1] action space, contact reference
+> baseline_CF ≈ 0.031 (model has learned a usable action regressor). If
+> `baseline_CF ≈ 1.4`, the model is at the **noise floor** — it has not
+> learned to fit the action distribution at all; output is essentially random
+> per inference call. In that regime, taskB VQA acc / clip-strategy ablations /
+> baseline-vs-VQA comparisons are **meaningless**: there is no working action
+> model to interrogate. Debug the action training first (see
+> [`0526-corrections-and-pipeline-audit.md`](0526-corrections-and-pipeline-audit.md) §4 for
+> the height + hvlv example where this trap was set, and §6 for what to test
+> when baseline_CF ≈ 1.4).
+
 ### 1.1 The two-axis ablation embedded in the eval
 
 For each (ckpt, clip strategy) pair we measure VQA acc — this exposes

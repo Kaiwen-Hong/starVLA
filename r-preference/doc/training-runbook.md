@@ -23,6 +23,20 @@
 | `results/` symlink target | `/mnt/localssd/kaiwenh/starVLA_runs/results` | `/mnt/localssd/kevin/starVLA_runs/results` |
 | Git branch / HEAD | `opd` @ `ac27ba4` | `opd` @ `ac27ba4` (synced) |
 
+### 0.1 Stage A ckpt status across 5 cats (audit 2026-05-26)
+
+10 expected ckpt sets (5 cats × 2 variants). 9 exist on disk; 1 does NOT.
+
+| cat | baseline (noVQA) on disk | VQA (main) on disk | training loss (final) | usable? |
+|---|---|---|---|---|
+| **contact** | H100 35k only (run died mid-50k, see §8.1) | H100 35k+50k, H200 full 5k–50k (10 ckpts) | converged (≈0.014) | ✓ both |
+| **place**   | H100 5k–25k, H200 25k | H200 full 5k–25k | converged (bl 0.014, vqa 0.04) | ✓ both |
+| **orient**  | H200 full 5k–25k | **does NOT exist** — two fresh-from-base attempts on 2026-05-25 both killed before first save_interval (see §8.3) | bl 0.04 ✓ / VQA stuck ~1.5 ❌ | bl only |
+| **height**  | H100 5k–25k, H200 25k | H200 full 5k–25k (H100 dir empty) | **both stuck at L_action ≈ 1.45** (= unconditional mean MSE) ❌ | ckpts present but model predicts marginal — see §8.4 + [`0526-corrections-and-pipeline-audit.md`](0526-corrections-and-pipeline-audit.md) |
+| **hvlv**    | H100 5k–25k, H200 25k | H200 full 5k–25k | **both stuck at L_action ≈ 1.55** ❌ | ckpts present but degenerate, same as height |
+
+**Bottom line**: 5/10 sets are usable end-to-end (contact + place baseline+VQA, orient baseline). orient VQA is missing on disk; height + hvlv baselines + VQAs exist but their model output is essentially marginal-mean prediction (verified via gate eval baseline_CF ≈ 1.4 = noise floor in normalized action space).
+
 **MUST always be set** (4× step-time speedup, verified):
 ```bash
 export PYTORCH_CUDA_ALLOC_CONF="expandable_segments:True"
@@ -448,6 +462,68 @@ This is intentional. DeepSpeed's startup hooks also have unbound vars.
 - Trainer (`train_starvla.py:_train_step`) patched to relay `log/*` keys
   through to wandb (was previously dropping `L_action` / `L_vqa` / `vqa_acc`).
 
+### 8.3 Orient VQA 2026-05-25 — two fresh retrain attempts both killed pre-save
+
+Background: The original orient-VQA run (2026-05-24, `temp-523-h200.sh`) was
+killed mid-training and resumed via `IS_RESUME=1` from steps_10000. Loss never
+recovered (L_action bouncing 1.2–1.7 across steps 10k–25k). 0525 doc §3.2
+diagnosed this as Adam-state corruption and proposed fresh-from-base retrain.
+
+**Attempt 1** — `temp-525-h200.sh::02-orient-vqa-fresh` (wrapper):
+- 2026-05-25 11:29:47Z BEGIN; deleted old ckpts dir as pre-launch step
+- 11:31:17Z accelerate launch; wandb run `7dipoaaw`
+- Step 200 L_action=1.58 (already at unconditional-mean MSE)
+- ~11:35:50Z step 214: `Killed` signal (likely OOM-killer or external)
+- No ckpt saved (save_interval=5000)
+
+**Attempt 2** — `examples/preference/temp-524-retrain-orient-vqa.sh` in tmux
+`pref_524_orient` (manually launched after attempt 1 died):
+- 2026-05-25 11:41:02Z tmux session created
+- 11:41:10Z BEGIN; wandb run `0yo8o5vn`
+- Step 200 L_action=1.59
+- Step 1000 L_action=1.64; step 2000 L_action=2.65; step 2500 L_action=1.64
+  → loss **bouncing in [1.3, 2.7] with no downward trend** over 2300 steps
+- ~12:36Z user Ctrl-C'd 4 times in the tmux pane
+- No ckpt saved (still pre-save_interval at step 2517)
+
+**The diagnostic value**: Attempt 2's loss pattern is **identical to the failed
+resume** — bouncing in 1.3–2.7 range, no convergence. This falsifies 0525's
+"resume corrupted optimizer" hypothesis: a fresh-from-base run with brand-new
+optimizer state still fails identically.
+
+For comparison, orient **baseline** (same data, no VQA) converged smoothly:
+657 → 1.58 (step 200) → 0.17 (step 5k) → 0.04 (step 25k).
+
+→ Real root cause is something specific to the VQA path on orient data, not
+optimizer recovery. See [`0526-corrections-and-pipeline-audit.md`](0526-corrections-and-pipeline-audit.md)
+§3.2 for the falsifying evidence and recommended next steps (lambda_vqa
+ablation first, before another fresh retrain).
+
+### 8.4 Height + hvlv baseline 2026-05-23 → 2026-05-24 — completed 25k but loss never converged
+
+Both runs completed cleanly (5 ckpts saved each, summary.jsonl entries 5k–25k).
+But the loss trajectory:
+
+| run | step 200 | step 5k | step 12k | step 18k | step 25k |
+|---|---|---|---|---|---|
+| height baseline (wandb rdmadvqb) | 1.65 | 1.55 | 1.42 | 1.34 | 1.45 |
+| hvlv baseline (wandb dzb9idkc)   | 1.61 | 1.51 | 1.54 | 1.54 | 1.55 |
+| (reference: place baseline tz3np3jf) | 1.74 | 0.09 | 0.06 | 0.04 | 0.014 |
+
+For comparison, place baseline (same arch, same hyperparams, same wrapper) on
+the SAME GPUs converged from 1.74 (step 200) to 0.014 (step 25k).
+
+→ height + hvlv ckpts are on disk but their model output is essentially
+marginal-mean prediction (L_action ≈ `Var[action] + Var[noise]` per element).
+The gate eval confirms this: baseline_CF_MSE ≈ 1.41 for both (= noise-floor
+in normalized [-1,1] action space; for comparison contact = 0.031). 0525
+doc §3.3 / §3.4 blamed the data (mislabel / weak signal); 0526 re-investigation
+shows data is clean (height z_release S/N=24, hvlv transport perp S/N=5–10).
+Real cause is currently unknown. See
+[`0526-corrections-and-pipeline-audit.md`](0526-corrections-and-pipeline-audit.md) §6 for hypotheses to
+test (random seed / lambda_vqa ablation / warm-start from a working ckpt) and
+§7 for per-cat recommendations.
+
 ---
 
 ## 9. Observed sizing (Stage-A, Qwen3-VL-4B + LayerwiseFM 3.3B DiT, 8 GPUs)
@@ -513,6 +589,22 @@ cat /proc/<train_pid>/environ | tr '\0' '\n' | grep PYTORCH_CUDA
 ### "Watchdog spamming WATCHDOG_ALERT but training looks fine"
 → §7.5. Cross-check `tail summary.jsonl`. If the jsonl is advancing, watchdog
    is the one wrong, not the trainer. Plan: rewrite watchdog (TODO).
+
+### "L_action stuck at ~1.5 after step 200, never goes down"
+This is the model converging to **unconditional mean-velocity prediction**
+(L_action ≈ `Var[action] + Var[noise]` per element). Verified pattern for
+height baseline (1.45 stuck), hvlv baseline (1.55 stuck), and orient VQA
+(1.5 stuck across both resume and fresh retry). Data + pipeline are clean
+(verified per `0526-corrections-and-pipeline-audit.md` §5). Real cause is
+currently unknown. Do NOT:
+- "Fix" data via 0525 §5.1's z-final script — that script has 2 bugs (left
+  arm only; not release-frame); height + hvlv data are clean (S/N 24 / 5–10).
+- Launch another fresh-from-base retrain expecting recovery — orient VQA has
+  failed in both resume and fresh modes with identical loss patterns.
+Do try (cheapest first):
+1. Different random seed (`--trainer.seed 43`) — ~3h, isolates loss-landscape stochasticity.
+2. For orient VQA specifically: `framework.vqa.lambda_vqa: 0.0` ablation — ~1h, isolates whether VQA path is destabilizing the backbone.
+3. Warm-start from a working same-cat ckpt (e.g. height baseline init from place baseline ckpt) — ~1h, isolates init-into-degenerate-basin.
 
 ### "Wandb run missing or duplicate"
 - Wandb dir lives at `$run_dir/wandb/`, which moves with the symlink. If the

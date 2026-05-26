@@ -1,5 +1,12 @@
 # Preference-conditioned VLA — Stage B (main method) — contact
 
+> **STATUS 2026-05-26**: this is the planning doc. Stage B contact was actually
+> run on 2026-05-24 (main + B0); detailed findings + per-ckpt eval results in
+> [`0525-temp-stageb-analysis.md`](0525-temp-stageb-analysis.md). Headline:
+> VQA labeler works perfectly (cache 92/92 acc vs GT), but Stage B SFT
+> policy is not prompt-controllable (sign-acc 0.62 ≈ chance, physical Δz
+> ≈ 5 % of demo signal). See that doc for full analysis.
+
 > Self-contained 实现 doc(Stage B for contact category)。延续 baseline doc 与 VQA delta doc 的 house style。
 >
 > **Background**:Stage A 已验证(`r-preference/doc/0523-stageA-analysis.md`):
@@ -420,6 +427,7 @@ r-preference/eval/pref_pseudo_labels_contact_B.json   # NEW: §3 cache output
 - Q-A diagnostic results (filter threshold sourcing): `r-preference/eval/diagnostic_contact_35k_mid8.json` + `_gripper.json`
 - Ops manual: [`training-runbook.md`](training-runbook.md)
 - 3-new-cat design (for height/hvlv/orient Stage B later): [`0523-height-hv-oreint-design-doc.md`](0523-height-hv-oreint-design-doc.md)
+- **Stage B contact actual results** (run 2026-05-24): [`0525-temp-stageb-analysis.md`](0525-temp-stageb-analysis.md)
 
 ---
 

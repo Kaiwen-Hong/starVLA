@@ -431,6 +431,32 @@ Both `temp-h100.sh` and `temp-h200.sh` (same shape):
 Set flags: `set -uo pipefail`; deliberately NO `set -e` (we want failures to
 advance, not abort the script).
 
+### 7.4 Training outcomes (audit 2026-05-26)
+
+All 6 runs reached step 25000 cleanly (DONE in summary log), 5 ckpts each on
+disk. But **only orient baseline + the place runs (separate cat, see
+[`0524-place-category.md`](0524-place-category.md)) actually converged**.
+
+| run | final L_action | gate baseline_CF | verdict |
+|---|---|---|---|
+| height baseline (H100, wandb rdmadvqb)   | **~1.45 STUCK** | 1.41 | model output ≈ marginal mean; ckpts present but degenerate |
+| height VQA (H200)                         | **~1.45 STUCK** | 1.42 | same |
+| hvlv baseline (H100, wandb dzb9idkc)     | **~1.55 STUCK** | 1.42 | same |
+| hvlv VQA (H200)                           | **~1.55 STUCK** | 1.41 | same |
+| orient baseline (H200, wandb ml2w7b9p)   | **0.04 ✓**      | 0.061 | converged; usable |
+| orient VQA (H200, originally resumed; deleted + 2 fresh retry attempts 2026-05-25 both failed) | **~1.5 STUCK** | 1.42 | no ckpts exist on disk; see `training-runbook.md` §8.3 |
+
+`L_action ≈ 1.5` = `Var[action_dim] + Var[noise]` per element = unconditional
+mean-velocity prediction in flow-matching MSE. Model has learned the marginal
+action distribution but not the conditional structure from (image, prompt).
+0525 doc §3 attributed this to data problems (height mislabel / hvlv weak
+signal / orient resume corruption); 0526 re-investigation falsified all three.
+Data is clean (height z_release S/N=24, hvlv transport perp S/N=5–10); orient
+fresh retrain also fails. See
+[`0526-corrections-and-pipeline-audit.md`](0526-corrections-and-pipeline-audit.md)
+for full evidence + recommended hypotheses to test before launching anything
+new.
+
 ---
 
 ## 8. Wall time predictions vs actuals
@@ -526,6 +552,30 @@ working. No need to smoke separately.
 YAML's `run_id` field maps to wandb run name. New runs all have
 `pref_{baseline|main}_stage_a_v1_{noVQA|VQA}_<cat>`. All under wandb project
 `kaiwenh-17-uiuc/pref-sim`.
+
+### 10.7 Training-side failures discovered 2026-05-26
+
+After running `stage_a_gate.py` on all 4 new cats (2026-05-25) and discovering
+4 RED gates, the 0525 postmortem proposed 3 data/recovery root causes (orient
+resume-corrupt, height 50% mislabel, hvlv weak signal). Direct re-investigation
+on 2026-05-26 falsifies all three:
+
+- **height data is clean** (`_high` z_release = 1.074 ± 0.006, `_low` z_release
+  = 0.935 ± 0.006, Δ=139 mm, **S/N=24**, zero distribution overlap). The 0525
+  §5.1 diagnostic script used `endpose/left_endpose[-1, 2]` which has two bugs
+  (left arm only; last-frame z, not release-frame z).
+- **hvlv data is clean** (transport-segment perp dev: hv 22 ± 2 cm vs lv 8 ± 2
+  cm, **S/N=5–10**, zero per-episode overlap). 0525's metric used full-episode
+  perp dev which is diluted by home approach + return excursions.
+- **orient VQA "resume corrupt" is wrong**: two from-scratch fresh retrains on
+  2026-05-25 (525 wrapper + 524 manual tmux) both showed the same stuck
+  L_action ≈ 1.5 pattern as the failed resume.
+
+The real cause of height/hvlv/orient-VQA training failure is currently
+**unknown**. Pipeline audit (data shape, NaN/Inf, YAML, split disjoint, active
+arm distribution, clip rate) found no bugs. See
+[`0526-corrections-and-pipeline-audit.md`](0526-corrections-and-pipeline-audit.md)
+§6 for the open hypotheses and §7 for per-cat recommendations.
 
 ---
 
