@@ -1,0 +1,35 @@
+{
+  "mode": "sync_pool",
+  "checkpoint": "checkpoints/discreteRTC/fastumi_pool_qwenPI_0522_DiT-S/checkpoints/steps_20000_pytorch_model.pt",
+  "task": "pocket",
+  "task_idx": 0,
+  "instruction": "Strike the white ball into the red ball to pocket it",
+  "arm": "left",
+  "n_actions": 4,
+  "chunk_len": 16,
+  "policy_hz": 20,
+  "servo_hz": 100,
+  "xyz_bounds": [
+    [
+      0.09609999999999999,
+      -0.6862,
+      0.1965
+    ],
+    [
+      0.51,
+      -0.2498,
+      0.33340000000000003
+    ]
+  ],
+  "yaw_bounds_rad": [
+    -2.9301329251994326,
+    -1.394267074800567
+  ],
+  "yaw_bounds_deg": [
+    -167.88425002624962,
+    -79.88561890012355
+  ],
+  "locked_roll_rad": -3.141225918206376,
+  "locked_pitch_rad": 0.008623990477646837,
+  "dataset_key": "new_embodiment"
+}

@@ -1,0 +1,85 @@
+#!/usr/bin/env python3
+"""
+RemoteModel — thin client that mimics the StarVLA model API but forwards
+predict_action / predict_action_realtime calls to inference_server.py
+over a Unix-domain socket.
+
+Default socket /tmp/starvla_infer_pool.sock so it does not collide with
+the airhockey + DD servers running on other sockets.
+"""
+
+import threading
+from multiprocessing.connection import Client
+
+
+AUTHKEY = b'starvla'
+
+
+class RemoteModel:
+    """Drop-in replacement for the local model object on the client side.
+
+    Exposes only the surface area that the eval scripts touch:
+        - chunk_len             (attr)
+        - norm_stats            (attr)
+        - checkpoint_path       (attr)
+        - predict_action(examples, **kwargs)
+        - predict_action_realtime(examples, prev_action_chunk_normalized,
+                                  inference_delay, **kwargs)
+    """
+
+    def __init__(self, socket_path):
+        self._socket_path = socket_path
+        self._lock = threading.Lock()
+        print(f"[RemoteModel] Connecting to {socket_path}...")
+        try:
+            self._conn = Client(socket_path, family='AF_UNIX', authkey=AUTHKEY)
+        except (FileNotFoundError, ConnectionRefusedError) as e:
+            raise RuntimeError(
+                f"Could not connect to inference server at {socket_path}: {e}\n"
+                f"  Start it first:  "
+                f"python ur5n/pool-preference/fm/inference_server.py "
+                f"--checkpoint <path>"
+            ) from e
+
+        reply = self._call({'cmd': 'info'})
+        self.chunk_len = reply['chunk_len']
+        self.norm_stats = reply['norm_stats']
+        self.checkpoint_path = reply['checkpoint_path']
+        print(f"[RemoteModel] Connected. chunk_len={self.chunk_len}  "
+              f"checkpoint={self.checkpoint_path}")
+
+    def _call(self, msg):
+        with self._lock:
+            self._conn.send(msg)
+            reply = self._conn.recv()
+        if not isinstance(reply, dict) or not reply.get('ok'):
+            err = (reply.get('error') if isinstance(reply, dict)
+                   else f"bad reply: {reply!r}")
+            raise RuntimeError(f"remote call failed: {err}")
+        return reply
+
+    def predict_action(self, examples, **kwargs):
+        reply = self._call({
+            'cmd': 'predict_action',
+            'examples': examples,
+            'infer_kwargs': kwargs,
+        })
+        return {'normalized_actions': reply['normalized_actions']}
+
+    def predict_action_realtime(self, examples, prev_action_chunk_normalized,
+                                inference_delay, **kwargs):
+        reply = self._call({
+            'cmd': 'predict_action_realtime',
+            'examples': examples,
+            'prev_action_chunk_normalized': prev_action_chunk_normalized,
+            'inference_delay': inference_delay,
+            'infer_kwargs': kwargs,
+        })
+        return {'normalized_actions': reply['normalized_actions']}
+
+    def close(self):
+        try:
+            with self._lock:
+                self._conn.close()
+        except Exception:
+            pass

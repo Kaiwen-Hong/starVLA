@@ -1,0 +1,27 @@
+{
+  "mode": "sync_airhockey",
+  "checkpoint": "checkpoints/discreteRTC/fastumi_dynamic_qwenpi/checkpoints/steps_10000_pytorch_model.pt",
+  "instruction": "strike the red puck back when it comes",
+  "arm": "left",
+  "n_actions": 32,
+  "chunk_len": 32,
+  "policy_hz": 50,
+  "servo_hz": 100,
+  "xy_bounds": [
+    [
+      0.2496,
+      -0.38
+    ],
+    [
+      0.4991,
+      -0.0701
+    ]
+  ],
+  "locked_z": 0.1750647093637137,
+  "locked_rot": [
+    -2.219237106541303,
+    2.214906188073856,
+    0.009201661702641707
+  ],
+  "dataset_key": "new_embodiment"
+}
