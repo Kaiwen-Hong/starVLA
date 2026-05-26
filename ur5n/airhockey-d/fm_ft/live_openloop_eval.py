@@ -43,8 +43,9 @@ from starVLA.model.framework.base_framework import baseframework
 import modular_policy
 
 DEFAULT_CHECKPOINT = (
-    "checkpoints/discreteRTC/fastumi_dynamic_qwenpi/"
-    "checkpoints/steps_10000_pytorch_model.pt"
+    "/home/kaiwen/Desktop/research/starVLA/checkpoints/discreteRTC/"
+    "fastumi_airhockey_bounce_qwenPI_0522_DiT-S_rtc_ft/"
+    "checkpoints/pytorch_model.pt"
 )
 DEFAULT_INSTRUCTION = "strike the red puck back when it comes"
 

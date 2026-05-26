@@ -40,8 +40,9 @@ from starVLA.model.framework import build_framework
 from starVLA.model.framework.base_framework import baseframework
 
 DEFAULT_CHECKPOINT = (
-    "checkpoints/discreteRTC/fastumi_dynamic_qwenpi/"
-    "checkpoints/steps_10000_pytorch_model.pt"
+    "/home/kaiwen/Desktop/research/starVLA/checkpoints/discreteRTC/"
+    "fastumi_airhockey_bounce_qwenPI_0522_DiT-S_rtc_ft/"
+    "checkpoints/pytorch_model.pt"
 )
 DEFAULT_DATASET_DIR = (
     "/home/kaiwen/Desktop/research/fastumipro-collection/"

@@ -63,8 +63,9 @@ import modular_policy
 
 # ── Defaults ────────────────────────────────────────────────────────
 DEFAULT_CHECKPOINT = (
-    "checkpoints/discreteRTC/fastumi_dynamic_qwenpi/"
-    "checkpoints/steps_10000_pytorch_model.pt"
+    "/home/kaiwen/Desktop/research/starVLA/checkpoints/discreteRTC/"
+    "fastumi_airhockey_bounce_qwenPI_0522_DiT-S_rtc_ft/"
+    "checkpoints/pytorch_model.pt"
 )
 DEFAULT_INSTRUCTION = "strike the red puck back when it comes"
 DEFAULT_SOCKET = "/tmp/starvla_infer_airhockey.sock"

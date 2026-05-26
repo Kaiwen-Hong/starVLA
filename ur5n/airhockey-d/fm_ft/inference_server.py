@@ -56,8 +56,9 @@ from starVLA.model.framework.share_tools import read_mode_config, dict_to_namesp
 from starVLA.model.framework import build_framework
 
 DEFAULT_CHECKPOINT = (
-    "checkpoints/discreteRTC/fastumi_dynamic_qwenpi/"
-    "checkpoints/steps_10000_pytorch_model.pt"
+    "/home/kaiwen/Desktop/research/starVLA/checkpoints/discreteRTC/"
+    "fastumi_airhockey_bounce_qwenPI_0522_DiT-S_rtc_ft/"
+    "checkpoints/pytorch_model.pt"
 )
 DEFAULT_SOCKET = "/tmp/starvla_infer_airhockey.sock"
 AUTHKEY = b'starvla'
