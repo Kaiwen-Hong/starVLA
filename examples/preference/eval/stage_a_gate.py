@@ -45,7 +45,7 @@ import time
 from collections import defaultdict
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Dict, List, Optional, Tuple
+from typing import Dict, List, Optional, Sequence, Tuple
 
 import h5py
 import numpy as np
@@ -86,21 +86,26 @@ class FrameSample:
 # ---------------------------------------------------------------------------
 
 def load_clip_from_h5(h5_path: Path, n_frames: int = 8, camera: str = "head_camera",
-                       image_size: Tuple[int, int] = (224, 224)) -> List[Image.Image]:
-    """Read uniform 8-frame clip from one episode."""
-    H, W = image_size
-    with h5py.File(h5_path, "r") as h5:
-        T = h5[f"observation/{camera}/rgb"].shape[0]
-        idx = uniform_clip_indices(T, n_frames)
-        clip = []
-        for t in idx:
-            raw = h5[f"observation/{camera}/rgb"][int(t)]
-            data = raw.tobytes() if hasattr(raw, "tobytes") else raw
-            img = Image.open(__import__("io").BytesIO(data)).convert("RGB")
-            if img.size != (W, H):
-                img = img.resize((W, H))
-            clip.append(img)
-    return clip
+                       image_size: Tuple[int, int] = (224, 224),
+                       cameras: Optional[Sequence[str]] = None,
+                       strategy: str = "uniform_8") -> List[Image.Image]:
+    """Read clip from one episode.
+
+    Back-compat default: 8-frame uniform head_camera (= original contact eval).
+    Multi-cam path: pass `cameras=("head_camera", "active_wrist")` etc; resolves
+    per-ep + uses same time-grouped PIL ordering as training cache (per
+    `vqa_sample.cache_row_to_pil`), so inference matches train.
+    """
+    from examples.preference.dataset.vqa_sample import load_clip_by_strategy
+    frames, _info = load_clip_by_strategy(
+        h5_path,
+        strategy=strategy,
+        n=n_frames,
+        camera=camera,
+        image_size=image_size,
+        cameras=cameras,
+    )
+    return frames
 
 
 def list_taskB_episodes(taskB_root: Path, pref_keys: Tuple[str, str]) -> List[FrameSample]:
@@ -268,7 +273,16 @@ def run_vqa_acc(model, episode_samples: List[FrameSample], category: str,
             h5p = val_ds.data_root / fs.task_dir / "data" / f"episode{fs.ep_id}.hdf5"
         else:
             h5p = taskB_root / fs.task_dir / "data" / f"episode{fs.ep_id}.hdf5"
-        clip = load_clip_from_h5(h5p)
+        # Use per-cat cameras + strategy from registry so multi-cam cats (e.g. place
+        # with head+active_wrist+late_8) get evaluated with the SAME clip layout
+        # the VQA model was trained on. Single-cam cats (contact etc) fall back to
+        # head_camera + uniform_8 = original behavior.
+        clip = load_clip_from_h5(
+            h5p,
+            n_frames=cat_cfg.n_frames,
+            cameras=cat_cfg.cameras,
+            strategy=cat_cfg.clip_strategy,
+        )
         out = model.predict_preference(clip)
         correct = int(out["pref_key"] == fs.pref_key)
         per_task[fs.task_group].append(correct)

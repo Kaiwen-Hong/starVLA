@@ -23,13 +23,14 @@ from __future__ import annotations
 import argparse, io, json, time
 from collections import defaultdict
 from pathlib import Path
-from typing import List, Optional, Tuple
+from typing import List, Optional, Sequence, Tuple
 
 import h5py, numpy as np, torch
 from omegaconf import OmegaConf
 from PIL import Image
 
 from examples.preference.dataset.prompt import PREF_CATEGORIES
+from examples.preference.dataset.vqa_sample import VQA_CATEGORIES
 from examples.preference.dataset.pref_hdf5_dataset import PrefHDF5Dataset
 from examples.preference.eval.stage_a_gate import (
     build_framework, load_ckpt_into_model, list_taskB_episodes,
@@ -61,25 +62,26 @@ def find_grasp_frame(h5: h5py.File, gripper_close_thresh: float = 0.5) -> Option
 
 def make_gripper_anchored_clip(h5_path: Path, n: int = 8, half_window: int = 4,
                                  cam: str = "head_camera",
+                                 cameras: "Optional[Sequence[str]]" = None,
                                  hw=(224, 224)) -> Tuple[List[Image.Image], dict]:
-    """Sample n frames centered on the grasp moment. half_window = how many
-    frames before/after to span (so total span = 2*half_window frames, but
-    we down-sample to n)."""
+    """Sample n frames centered on the grasp moment, multi-cam aware.
+
+    Back-compat default: head_camera only. Pass `cameras=("head_camera", "active_wrist")`
+    for multi-cam VQA models. Time-grouped PIL order [cam0_t0, cam1_t0, cam0_t1, ...]
+    matches training cache (vqa_sample.cache_row_to_pil)."""
+    from examples.preference.dataset.vqa_sample import _resolve_cameras_for_ep
     H, W = hw
+    cams_in = tuple(cameras) if cameras is not None else (cam,)
     with h5py.File(h5_path, "r") as h5:
-        T = h5[f"observation/{cam}/rgb"].shape[0]
+        T = h5["observation/head_camera/rgb"].shape[0]
         grasp_t = find_grasp_frame(h5)
         if grasp_t is None:
-            # uniform fallback
             idx = np.linspace(0, T - 1, n).round().astype(int)
             mode = "uniform_fallback"
         else:
-            # Sample n frames spanning grasp_t - half_window*n//2 to grasp_t + half_window*n//2
-            # but clipped to [0, T-1]
             span = max(half_window * 2, 1)
             t0 = max(0, grasp_t - span * n // 2)
             t1 = min(T - 1, grasp_t + span * n // 2)
-            # If span hit boundary, expand the other side
             if t0 == 0:
                 t1 = min(T - 1, t0 + span * (n - 1))
             elif t1 == T - 1:
@@ -87,15 +89,18 @@ def make_gripper_anchored_clip(h5_path: Path, n: int = 8, half_window: int = 4,
             idx = np.linspace(t0, t1, n).round().astype(int)
             mode = "grasp_anchored"
 
+        cams = _resolve_cameras_for_ep(cams_in, h5)
         frames = []
         for t in idx:
-            raw = h5[f"observation/{cam}/rgb"][int(t)]
-            data = raw.tobytes() if hasattr(raw, "tobytes") else raw
-            img = Image.open(io.BytesIO(data)).convert("RGB")
-            if img.size != (W, H): img = img.resize((W, H))
-            frames.append(img)
+            for c in cams:
+                raw = h5[f"observation/{c}/rgb"][int(t)]
+                data = raw.tobytes() if hasattr(raw, "tobytes") else raw
+                img = Image.open(io.BytesIO(data)).convert("RGB")
+                if img.size != (W, H): img = img.resize((W, H))
+                frames.append(img)
 
-    return frames, {"grasp_t": grasp_t, "T": T, "frame_idx": idx.tolist(), "mode": mode}
+    return frames, {"grasp_t": grasp_t, "T": T, "frame_idx": idx.tolist(), "mode": mode,
+                    "cameras_resolved": list(cams)}
 
 
 def main():
@@ -146,7 +151,7 @@ def main():
     t0 = time.time()
     for i, fs in enumerate(taskB_eps):
         h5p = Path(args.taskB_data_root) / fs.task_dir / "data" / f"episode{fs.ep_id}.hdf5"
-        clip, info = make_gripper_anchored_clip(h5p)
+        clip, info = make_gripper_anchored_clip(h5p, cameras=VQA_CATEGORIES[args.category].cameras)
         r = predict_with_logits(model, clip)
         r.update({"gt_pref_key": fs.pref_key, "ep_id": fs.ep_id,
                   "task_group": fs.task_group,
@@ -171,7 +176,7 @@ def main():
     per_task = defaultdict(list)
     for i, fs in enumerate(taskA_eps):
         h5p = val_ds.data_root / fs.task_dir / "data" / f"episode{fs.ep_id}.hdf5"
-        clip, info = make_gripper_anchored_clip(h5p)
+        clip, info = make_gripper_anchored_clip(h5p, cameras=VQA_CATEGORIES[args.category].cameras)
         r = predict_with_logits(model, clip)
         r.update({"gt_pref_key": fs.pref_key, "ep_id": fs.ep_id,
                   "task_group": fs.task_group,

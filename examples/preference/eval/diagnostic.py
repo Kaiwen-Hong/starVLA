@@ -203,7 +203,7 @@ def main():
         records = []
         for i, fs in enumerate(taskB_eps):
             h5p = Path(args.taskB_data_root) / fs.task_dir / "data" / f"episode{fs.ep_id}.hdf5"
-            clip, info = load_clip_by_strategy(h5p, strategy=args.clip_strategy)
+            clip, info = load_clip_by_strategy(h5p, strategy=args.clip_strategy, cameras=vqa_cat.cameras)
             r = predict_with_logits(model, clip)
             r["task_dir"] = fs.task_dir
             r["task_group"] = fs.task_group
@@ -248,7 +248,7 @@ def main():
         records = []
         for i, fs in enumerate(taskA_eps):
             h5p = val_ds.data_root / fs.task_dir / "data" / f"episode{fs.ep_id}.hdf5"
-            clip, info = load_clip_by_strategy(h5p, strategy=args.clip_strategy)
+            clip, info = load_clip_by_strategy(h5p, strategy=args.clip_strategy, cameras=vqa_cat.cameras)
             r = predict_with_logits(model, clip)
             r.update({"task_dir": fs.task_dir, "task_group": fs.task_group,
                       "gt_pref_key": fs.pref_key, "ep_id": fs.ep_id,

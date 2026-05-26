@@ -1,0 +1,115 @@
+run_id: pref_main_stage_a_v1_VQA_place
+run_root_dir: results/Checkpoints
+seed: 42
+trackers: [jsonl, wandb]
+wandb_entity: kaiwenh-17-uiuc
+wandb_project: pref-sim
+is_debug: false
+
+
+framework:
+  # MAIN-METHOD: L = L_action + lambda_vqa * L_vqa.
+  # Action stream byte-identical to baseline (Qwen_PI.forward).
+  name: QwenPI_VQA
+  qwenvl:
+    base_vlm: Qwen/Qwen3-VL-4B-Instruct
+    attn_implementation: sdpa
+    vl_hidden_dim: 2560
+  dino:
+    dino_backbone: dinov2_vits14
+  action_model:
+    action_model_type: DiT-B
+    action_hidden_dim: 1024
+    hidden_size: 1024
+    add_pos_embed: True
+    max_seq_len: 1024
+    action_dim: 20
+    state_dim: 20
+    future_action_window_size: 15
+    action_horizon: 16
+    past_action_window_size: 0
+    repeated_diffusion_steps: 4
+    noise_beta_alpha: 1.5
+    noise_beta_beta: 1.0
+    noise_s: 0.999
+    num_timestep_buckets: 1000
+    num_inference_timesteps: 4
+    num_target_vision_tokens: 32
+    diffusion_model_cfg:
+      cross_attention_dim: 2560
+      dropout: 0.2
+      final_dropout: true
+      interleave_self_attention: true
+      norm_type: "ada_norm"
+      num_layers: 16
+      output_dim: 1024
+      positional_embeddings: null
+  vqa:
+    category: place                   # Q: "center or corner placement?"  A: "center"/"corner" (single-token bare)
+    lambda_vqa: 0.5
+    n_vqa_per_batch: 2
+    num_frames: 8
+    camera: head_camera
+
+  reduce_in_full_precision: true
+
+
+datasets:
+  vla_data:
+    dataset_py: pref_hdf5_vqa
+    data_root_dir: /mnt/localssd/kaiwenh/pref/data/place
+    data_mix: place_v1
+    stats_json_path: examples/preference/dataset/stats_place_v1.json
+    pref_category: place
+    action_type: abs_ee_6d
+    future_action_window_size: 15
+    past_action_window_size: 0
+    include_state: true
+    cameras: ["head_camera", "left_camera", "right_camera"]
+    image_size: [224, 224]
+    per_device_batch_size: 8
+    num_workers: 4
+    # VQA-side cache config: read from VQA_CATEGORIES["place"] = head + active wrist + late_8
+    # (added 2026-05-26 to fix taskB pseudo-label transfer failure; see
+    # r-preference/doc/0526-corrections-and-pipeline-audit.md).
+    # `active_wrist` sentinel is resolved per-ep to left or right wrist cam
+    # (whichever arm is active) → 2 cams × 8 frames = 16 PILs per VQA sample,
+    # same memory load as legacy 1-cam × 8-frame × 2-sample setup.
+    vqa_cameras: ["head_camera", "active_wrist"]
+    vqa_strategy: late_8
+    vqa_num_frames: 8
+
+
+trainer:
+  epochs: 100
+  max_train_steps: 25000
+  num_warmup_steps: 2500
+  save_interval: 5000
+  eval_interval: 1000
+  learning_rate:
+    base: 2.5e-05
+    qwen_vl_interface: 1.0e-05
+    action_model: 1.0e-04
+  lr_scheduler_type: cosine_with_min_lr
+  scheduler_specific_kwargs:
+    min_lr: 1.0e-06
+  freeze_modules: ''
+  max_grad_norm: 1.0
+  warmup_ratio: 0.1
+  weight_decay: 0.0
+  logging_frequency: 100
+  gradient_clipping: 1.0
+  gradient_accumulation_steps: 2
+
+  optimizer:
+    name: AdamW
+    betas: [0.9, 0.95]
+    eps: 1.0e-08
+    weight_decay: 1.0e-08
+
+  is_resume: false
+  resume_epoch: null
+  resume_step: null
+  # Default grad_ckpt=true (safe on both H100 80GB + H200 141GB).
+  enable_gradient_checkpointing: true
+  enable_mixed_precision_training: true

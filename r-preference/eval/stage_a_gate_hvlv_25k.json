@@ -1,0 +1,147 @@
+{
+  "category": "hvlv",
+  "baseline_ckpt": "results/Checkpoints/pref_baseline_stage_a_v1_noVQA_hvlv/checkpoints/steps_25000_pytorch_model.pt",
+  "vqa_ckpt": "results/Checkpoints/pref_main_stage_a_v1_VQA_hvlv/checkpoints/steps_25000_pytorch_model.pt",
+  "n_taskA_eps": 160,
+  "n_taskB_eps": 100,
+  "baseline_counterfactual_taskA": {
+    "overall_mse_normalized": 1.4168501287698745,
+    "per_task_mse": {
+      "place_apple_plate": 1.4332304835319518,
+      "place_apple_right": 1.4329393088817597,
+      "place_cup_plate": 1.4074783802032471,
+      "place_cup_right": 1.4250280797481536,
+      "place_hamburg_plate": 1.389106822013855,
+      "place_hamburg_right": 1.4207215547561645,
+      "place_seal_plate": 1.4130173683166505,
+      "place_seal_right": 1.4132790327072144
+    },
+    "per_task_n": {
+      "place_apple_plate": 20,
+      "place_apple_right": 20,
+      "place_cup_plate": 20,
+      "place_cup_right": 20,
+      "place_hamburg_plate": 20,
+      "place_hamburg_right": 20,
+      "place_seal_plate": 20,
+      "place_seal_right": 20
+    },
+    "sign_accuracy_strong": {},
+    "sign_accuracy_n": {}
+  },
+  "vqa_taskB": {
+    "overall_acc": 0.5,
+    "overall_n": 100,
+    "per_task_acc": {
+      "stamp_seal6": 0.5
+    },
+    "per_task_n": {
+      "stamp_seal6": 100
+    },
+    "confidence_mean": 1.0,
+    "confidence_p10": 1.0,
+    "pred_dist": {
+      "stamp_seal6": {
+        "lv": 100
+      }
+    }
+  },
+  "vqa_taskA": {
+    "overall_acc": 0.5,
+    "overall_n": 160,
+    "per_task_acc": {
+      "place_apple_plate": 0.5,
+      "place_apple_right": 0.5,
+      "place_cup_plate": 0.5,
+      "place_cup_right": 0.5,
+      "place_hamburg_plate": 0.5,
+      "place_hamburg_right": 0.5,
+      "place_seal_plate": 0.5,
+      "place_seal_right": 0.5
+    },
+    "per_task_n": {
+      "place_apple_plate": 20,
+      "place_apple_right": 20,
+      "place_cup_plate": 20,
+      "place_cup_right": 20,
+      "place_hamburg_plate": 20,
+      "place_hamburg_right": 20,
+      "place_seal_plate": 20,
+      "place_seal_right": 20
+    },
+    "confidence_mean": 1.0,
+    "confidence_p10": 1.0,
+    "pred_dist": {
+      "place_apple_plate": {
+        "lv": 20
+      },
+      "place_apple_right": {
+        "lv": 20
+      },
+      "place_cup_plate": {
+        "lv": 20
+      },
+      "place_cup_right": {
+        "lv": 20
+      },
+      "place_hamburg_plate": {
+        "lv": 20
+      },
+      "place_hamburg_right": {
+        "lv": 20
+      },
+      "place_seal_plate": {
+        "lv": 20
+      },
+      "place_seal_right": {
+        "lv": 20
+      }
+    }
+  },
+  "vqa_counterfactual_taskA": {
+    "overall_mse_normalized": 1.4105107314884662,
+    "per_task_mse": {
+      "place_apple_plate": 1.398030298948288,
+      "place_apple_right": 1.4302137315273284,
+      "place_cup_plate": 1.4244151890277863,
+      "place_cup_right": 1.4294510662555695,
+      "place_hamburg_plate": 1.4030532717704773,
+      "place_hamburg_right": 1.4013282120227815,
+      "place_seal_plate": 1.4203920185565948,
+      "place_seal_right": 1.3772020637989044
+    },
+    "per_task_n": {
+      "place_apple_plate": 20,
+      "place_apple_right": 20,
+      "place_cup_plate": 20,
+      "place_cup_right": 20,
+      "place_hamburg_plate": 20,
+      "place_hamburg_right": 20,
+      "place_seal_plate": 20,
+      "place_seal_right": 20
+    },
+    "sign_accuracy_strong": {},
+    "sign_accuracy_n": {}
+  },
+  "baseline_vs_vqa_drift_taskA": {
+    "overall_drift_normalized": 1.4078347262853281,
+    "per_task_drift": {
+      "place_apple_plate": 1.4090540218346643,
+      "place_apple_right": 1.404758902153811,
+      "place_cup_plate": 1.408445209477748,
+      "place_cup_right": 1.430133577322167,
+      "place_hamburg_plate": 1.4019607430194214,
+      "place_hamburg_right": 1.3961897169062494,
+      "place_seal_plate": 1.407304261847377,
+      "place_seal_right": 1.4048313777211878
+    },
+    "n_compared": 160
+  },
+  "gate": {
+    "taskB_per_task_acc": {
+      "stamp_seal6": 0.5
+    },
+    "passed_ge_0.90": [],
+    "verdict": "RED: no taskB task \u226590%, diagnose before Stage B"
+  }
+}

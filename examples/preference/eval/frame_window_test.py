@@ -20,7 +20,7 @@ from __future__ import annotations
 import argparse, io, json, time
 from collections import defaultdict
 from pathlib import Path
-from typing import List
+from typing import List, Optional, Sequence
 
 import h5py, numpy as np, torch
 from PIL import Image
@@ -48,21 +48,46 @@ def _decode(h5, cam, idx, hw=(224,224)):
     return out
 
 
-def load_clip_strategy(h5_path, strategy: str, cam: str = "head_camera") -> List[Image.Image]:
-    with h5py.File(h5_path, "r") as h5:
-        T = h5[f"observation/{cam}/rgb"].shape[0]
-        if strategy == "uniform_8":
-            idx = np.linspace(0, T-1, 8).round().astype(int)
-        elif strategy == "mid_8":
-            fracs = np.array([0.25, 0.32, 0.40, 0.45, 0.50, 0.55, 0.62, 0.70])
-            idx = (fracs * (T-1)).round().astype(int)
-        elif strategy == "dense_16":
-            idx = np.linspace(0, T-1, 16).round().astype(int)
-        elif strategy == "mid_dense_16":
-            idx = np.linspace(0.20 * (T-1), 0.70 * (T-1), 16).round().astype(int)
-        else:
-            raise ValueError(strategy)
-        return _decode(h5, cam, idx)
+def load_clip_strategy(h5_path, strategy: str, cam: str = "head_camera",
+                       cameras: "Optional[Sequence[str]]" = None,
+                       n: int = 8) -> List[Image.Image]:
+    """Frame-strategy clip loader. Now dispatches to vqa_sample.load_clip_by_strategy
+    so all eval scripts share the same multi-cam-aware logic; additional strategies
+    ('late_8', 'gripper_anchored') are picked up automatically.
+
+    Legacy single-cam call: `load_clip_strategy(h5p, 'uniform_8')` still works.
+    Multi-cam: `load_clip_strategy(h5p, 'late_8', cameras=('head_camera', 'active_wrist'))`.
+
+    For `dense_16` / `mid_dense_16` (16-frame extensions that the unified helper
+    doesn't yet implement) we fall back to the inline numpy path with the
+    cameras list resolved per-ep.
+    """
+    from examples.preference.dataset.vqa_sample import (
+        load_clip_by_strategy, _resolve_cameras_for_ep,
+    )
+    if strategy in ("dense_16", "mid_dense_16"):
+        # 16-frame strategies — handled inline (vqa_sample doesn't expose dense_16
+        # because cache builder doesn't need it yet). Multi-cam if `cameras` set.
+        cams_in = tuple(cameras) if cameras is not None else (cam,)
+        H, W = (224, 224)
+        out = []
+        with h5py.File(h5_path, "r") as h5:
+            T_ = h5[f"observation/{cams_in[0] if cams_in[0] != 'active_wrist' else 'head_camera'}/rgb"].shape[0]
+            if strategy == "dense_16":
+                idx = np.linspace(0, T_-1, 16).round().astype(int)
+            else:  # mid_dense_16
+                idx = np.linspace(0.20 * (T_-1), 0.70 * (T_-1), 16).round().astype(int)
+            cams = _resolve_cameras_for_ep(cams_in, h5)
+            for t in idx:
+                for c in cams:
+                    out.extend(_decode(h5, c, [int(t)], (H, W)))
+        return out
+    # 8-frame strategies: delegate to the unified helper.
+    frames, _ = load_clip_by_strategy(
+        h5_path, strategy=strategy, n=n,
+        camera=cam, cameras=cameras,
+    )
+    return frames
 
 
 def main():
@@ -114,6 +139,14 @@ def main():
     out = {"category": args.category, "vqa_ckpt": args.vqa_ckpt, "taskB": {}, "taskA": {}}
     strategies = [s.strip() for s in args.strategies.split(",") if s.strip()]
 
+    # Use per-cat cameras from VQA_CATEGORIES (e.g. place = head+active_wrist)
+    # so frame strategy comparison is over the SAME spatial inputs the model
+    # was trained on; only the temporal frame selection varies.
+    vqa_cat_cfg = VQA_CATEGORIES[args.category]
+    eval_cameras = vqa_cat_cfg.cameras
+    print(f"[fw] eval cameras for category={args.category}: {eval_cameras}")
+    out["cameras"] = list(eval_cameras)
+
     def _eval_episodes(strategy, episodes, source_root, tag):
         records = []
         t0 = time.time()
@@ -123,7 +156,7 @@ def main():
                 h5p = val_ds.data_root / fs.task_dir / "data" / f"episode{fs.ep_id}.hdf5"
             else:
                 h5p = source_root / fs.task_dir / "data" / f"episode{fs.ep_id}.hdf5"
-            clip = load_clip_strategy(h5p, strategy)
+            clip = load_clip_strategy(h5p, strategy, cameras=eval_cameras)
             r = predict_with_logits(model, clip)
             r.update({"gt_pref_key": fs.pref_key, "ep_id": fs.ep_id,
                       "task_group": fs.task_group,

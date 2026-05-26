@@ -1,0 +1,147 @@
+{
+  "category": "orient",
+  "baseline_ckpt": "results/Checkpoints/pref_baseline_stage_a_v1_noVQA_orient/checkpoints/steps_25000_pytorch_model.pt",
+  "vqa_ckpt": "results/Checkpoints/pref_main_stage_a_v1_VQA_orient/checkpoints/steps_25000_pytorch_model.pt",
+  "n_taskA_eps": 160,
+  "n_taskB_eps": 100,
+  "baseline_counterfactual_taskA": {
+    "overall_mse_normalized": 0.061071921978145836,
+    "per_task_mse": {
+      "place_bottle_box": 0.06961079742759466,
+      "place_bottle_left": 0.05344153940677643,
+      "place_callbell_box": 0.06316884625703097,
+      "place_callbell_left": 0.06354699349030853,
+      "place_can_box": 0.08044996522367001,
+      "place_can_left": 0.05105096707120538,
+      "place_chipstub_box": 0.0598553653806448,
+      "place_chipstub_left": 0.047450901567935945
+    },
+    "per_task_n": {
+      "place_bottle_box": 20,
+      "place_bottle_left": 20,
+      "place_callbell_box": 20,
+      "place_callbell_left": 20,
+      "place_can_box": 20,
+      "place_can_left": 20,
+      "place_chipstub_box": 20,
+      "place_chipstub_left": 20
+    },
+    "sign_accuracy_strong": {},
+    "sign_accuracy_n": {}
+  },
+  "vqa_taskB": {
+    "overall_acc": 0.5,
+    "overall_n": 100,
+    "per_task_acc": {
+      "move_can5_away": 0.5
+    },
+    "per_task_n": {
+      "move_can5_away": 100
+    },
+    "confidence_mean": 0.9999999809265137,
+    "confidence_p10": 0.9999998807907104,
+    "pred_dist": {
+      "move_can5_away": {
+        "0": 100
+      }
+    }
+  },
+  "vqa_taskA": {
+    "overall_acc": 0.5,
+    "overall_n": 160,
+    "per_task_acc": {
+      "place_bottle_box": 0.5,
+      "place_bottle_left": 0.5,
+      "place_callbell_box": 0.5,
+      "place_callbell_left": 0.5,
+      "place_can_box": 0.5,
+      "place_can_left": 0.5,
+      "place_chipstub_box": 0.5,
+      "place_chipstub_left": 0.5
+    },
+    "per_task_n": {
+      "place_bottle_box": 20,
+      "place_bottle_left": 20,
+      "place_callbell_box": 20,
+      "place_callbell_left": 20,
+      "place_can_box": 20,
+      "place_can_left": 20,
+      "place_chipstub_box": 20,
+      "place_chipstub_left": 20
+    },
+    "confidence_mean": 0.999999963492155,
+    "confidence_p10": 0.9999998807907104,
+    "pred_dist": {
+      "place_bottle_box": {
+        "0": 20
+      },
+      "place_bottle_left": {
+        "0": 20
+      },
+      "place_callbell_box": {
+        "0": 20
+      },
+      "place_callbell_left": {
+        "0": 20
+      },
+      "place_can_box": {
+        "0": 20
+      },
+      "place_can_left": {
+        "0": 20
+      },
+      "place_chipstub_box": {
+        "0": 20
+      },
+      "place_chipstub_left": {
+        "0": 20
+      }
+    }
+  },
+  "vqa_counterfactual_taskA": {
+    "overall_mse_normalized": 1.4174701690673828,
+    "per_task_mse": {
+      "place_bottle_box": 1.4351583242416381,
+      "place_bottle_left": 1.3924640595912934,
+      "place_callbell_box": 1.4048220813274384,
+      "place_callbell_left": 1.4256739854812621,
+      "place_can_box": 1.4270895063877105,
+      "place_can_left": 1.416471689939499,
+      "place_chipstub_box": 1.437015527486801,
+      "place_chipstub_left": 1.4010661780834197
+    },
+    "per_task_n": {
+      "place_bottle_box": 20,
+      "place_bottle_left": 20,
+      "place_callbell_box": 20,
+      "place_callbell_left": 20,
+      "place_can_box": 20,
+      "place_can_left": 20,
+      "place_chipstub_box": 20,
+      "place_chipstub_left": 20
+    },
+    "sign_accuracy_strong": {},
+    "sign_accuracy_n": {}
+  },
+  "baseline_vs_vqa_drift_taskA": {
+    "overall_drift_normalized": 1.1913159773805884,
+    "per_task_drift": {
+      "place_bottle_box": 1.2100166462989448,
+      "place_bottle_left": 1.1927121114498287,
+      "place_callbell_box": 1.199174608183241,
+      "place_callbell_left": 1.1778618021672878,
+      "place_can_box": 1.1704552452344699,
+      "place_can_left": 1.1867143075436424,
+      "place_chipstub_box": 1.200382243570951,
+      "place_chipstub_left": 1.1932108545963414
+    },
+    "n_compared": 160
+  },
+  "gate": {
+    "taskB_per_task_acc": {
+      "move_can5_away": 0.5
+    },
+    "passed_ge_0.90": [],
+    "verdict": "RED: no taskB task \u226590%, diagnose before Stage B"
+  }
+}

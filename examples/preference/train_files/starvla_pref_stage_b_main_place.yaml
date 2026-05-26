@@ -1,0 +1,131 @@
+run_id: pref_main_stage_b_v1_place
+run_root_dir: results/Checkpoints
+seed: 42
+trackers: [jsonl, wandb]
+wandb_entity: kaiwenh-17-uiuc
+wandb_project: pref-sim
+is_debug: false
+
+
+framework:
+  # Stage B MAIN: warm-start from VQA-Stage-A 35k, continue-train action
+  # head + backbone on contact taskB (100 ep), conditioned on PSEUDO
+  # preference labels from r-preference/eval/pref_pseudo_labels_place_B.json.
+  # NO VQA loss at Stage B (pseudo-labels already cached) → framework =
+  # plain QwenPI, not QwenPI_VQA. The VQA-trained LM-head weights load
+  # via strict=False (LM head is part of the Qwen3-VL backbone, shared
+  # between the two frameworks); will drift slightly during training as
+  # backbone updates, but we never read LM head again in Stage B so this
+  # is OK. See r-preference/doc/0524-stageB-contact-plan.md §1.1 / §1.2.
+  name: QwenPI
+  qwenvl:
+    base_vlm: Qwen/Qwen3-VL-4B-Instruct
+    attn_implementation: sdpa
+    vl_hidden_dim: 2560
+  dino:
+    dino_backbone: dinov2_vits14
+  action_model:
+    action_model_type: DiT-B
+    action_hidden_dim: 1024
+    hidden_size: 1024
+    add_pos_embed: True
+    max_seq_len: 1024
+    action_dim: 20
+    state_dim: 20
+    future_action_window_size: 15
+    action_horizon: 16
+    past_action_window_size: 0
+    repeated_diffusion_steps: 4
+    noise_beta_alpha: 1.5
+    noise_beta_beta: 1.0
+    noise_s: 0.999
+    num_timestep_buckets: 1000
+    num_inference_timesteps: 4
+    num_target_vision_tokens: 32
+    diffusion_model_cfg:
+      cross_attention_dim: 2560
+      dropout: 0.2
+      final_dropout: true
+      interleave_self_attention: true
+      norm_type: "ada_norm"
+      num_layers: 16
+      output_dim: 1024
+      positional_embeddings: null
+
+  reduce_in_full_precision: true
+
+
+datasets:
+  vla_data:
+    dataset_py: pref_hdf5_stageb           # NEW Stage B branch
+    data_root_dir: /mnt/localssd/kaiwenh/pref/data/place/taskB
+    data_mix: place_taskB_main_v1        # informational; bypasses mixtures.py
+    stats_json_path: examples/preference/dataset/stats_place_v1.json
+    pref_category: place
+    task_groups: ["place_soap2_stand"]   # only the taskB task group
+    pref_keys: ["center", "corner"]                # enumerated for index (dir parse used internally then DISCARDED)
+    split_val_fraction: 0.0                # use ALL 100 ep (no val split per §4.4)
+
+    # ==========================================================
+    # Stage B firewall config (PrefHDF5StageBDataset §2.3 firewall)
+    # ==========================================================
+    pseudo_label_cache: r-preference/eval/pref_pseudo_labels_place_B.json
+    with_pref_suffix: true                 # main mode: prompt has "Preference: <cache_label>"
+
+    action_type: abs_ee_6d
+    future_action_window_size: 15
+    past_action_window_size: 0
+    include_state: true
+    cameras: ["head_camera", "left_camera", "right_camera"]
+    image_size: [224, 224]
+    per_device_batch_size: 8
+    num_workers: 4
+
+
+trainer:
+  # ==========================================================
+  # Stage B warm-start from VQA-Stage-A 35k
+  # ==========================================================
+  pretrained_checkpoint: results/Checkpoints/pref_main_stage_a_v1_VQA_place/checkpoints/steps_25000_pytorch_model.pt
+  is_resume: false                          # warm-start, not resume — fresh optimizer + step 0
+  # reload_modules: null                    # full-model load (default)
+
+  epochs: 100
+  # max 100 ep × ~165 frame/ep / 64 eff batch ≈ 258 step/epoch
+  # → 3000 step ≈ 11.6 epoch.  6 saves + final = 7 ckpts grid
+  #   (500/1000/1500/2000/2500/3000 + final).
+  # 3000 is the middle ground per Stage A proportional (25k step / 8
+  # epoch on full data → small-data proportional = ~2000-3000); wider
+  # ckpt grid lets sanity pick sweet spot without late-step overfit.
+  max_train_steps: 3000
+  num_warmup_steps: 300                     # 0.1 × max_train_steps
+  save_interval: 500                        # 6 saves + final = 7 ckpts × 16 GB = 112 GB / run
+  eval_interval: 4000                       # > max → no step-eval (val split = 0)
+
+  # LR ↓10× from Stage A baseline (§6 hyperparam delta)
+  learning_rate:
+    base: 2.5e-06                           # was 2.5e-05 in Stage A
+    qwen_vl_interface: 1.0e-06              # was 1.0e-05
+    action_model: 1.0e-05                   # was 1.0e-04
+  lr_scheduler_type: cosine_with_min_lr
+  scheduler_specific_kwargs:
+    min_lr: 1.0e-07                         # ↓10× to match base ratio
+
+  freeze_modules: ''
+  max_grad_norm: 1.0
+  warmup_ratio: 0.1
+  weight_decay: 0.0
+  logging_frequency: 50                     # denser logs for short run
+  gradient_clipping: 1.0
+  gradient_accumulation_steps: 1            # 8 GPU * 8 batch = 64 eff batch (launcher overrides for 4 GPU)
+
+  optimizer:
+    name: AdamW
+    betas: [0.9, 0.95]
+    eps: 1.0e-08
+    weight_decay: 1.0e-08
+
+  resume_epoch: null
+  resume_step: null
+  enable_gradient_checkpointing: true       # 80GB H100 + Qwen3-VL-4B needs ckpt
+  enable_mixed_precision_training: true

@@ -45,6 +45,7 @@ from starVLA.training.trainer_utils import initialize_overwatch
 
 from examples.preference.dataset.vqa_sample import (
     VQA_CATEGORIES,
+    cache_row_to_pil,
     get_vqa_clip_cache,
 )
 
@@ -225,8 +226,13 @@ class Qwen_PI_VQA(Qwen_PI):
                     f"VQA clip cache missing for split={split!r}. "
                     f"Was PrefHDF5VQADataset initialized?"
                 )
-            row_view = cache[row]  # (8, H, W, 3) uint8 view (COW-safe read)
-            pil_list = [Image.fromarray(row_view[t]) for t in range(row_view.shape[0])]
+            # cache[row] shape:
+            #   - single-cam: (n_frames, H, W, 3)            → n_frames PILs
+            #   - multi-cam:  (n_frames, n_cams, H, W, 3)    → n_frames*n_cams PILs,
+            #     time-grouped: [cam0_t0, cam1_t0, cam2_t0, cam0_t1, ...]
+            #     (matches cache_row_to_pil + load_clip_by_strategy ordering)
+            row_view = cache[row]  # uint8 view (COW-safe read)
+            pil_list = cache_row_to_pil(row_view)
             clips.append(pil_list)
             answer_ids.append(self._vqa_answer_token_ids[pk])
             task_groups.append(tg)

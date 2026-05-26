@@ -211,6 +211,39 @@ PLACE_CLEAN_TEMPLATE = {
     "place_soap_tray":         "Place the soap on the tray.",
 }
 
+# ============================================================
+# Stage B taskB task_group extensions (mirrors contact pattern §1.1).
+# Each <CAT>_STAGEB_* extends <CAT>_* with the cat-specific taskB task
+# group + pref-free template. PREF_CATEGORIES[<cat>] uses the _STAGEB_
+# versions so Stage B code finds taskB templates via the same registry.
+# Stage A code is unaffected — it filters task_groups by what's actually
+# on disk under data_root_dir.
+# ============================================================
+
+HEIGHT_STAGEB_TASK_GROUPS = HEIGHT_TASK_GROUPS + ("place_playingcards1_box",)
+HEIGHT_STAGEB_CLEAN_TEMPLATE = {
+    **HEIGHT_CLEAN_TEMPLATE,
+    "place_playingcards1_box": "Place the playing cards into the box.",
+}
+
+HVLV_STAGEB_TASK_GROUPS = HVLV_TASK_GROUPS + ("stamp_seal6",)
+HVLV_STAGEB_CLEAN_TEMPLATE = {
+    **HVLV_CLEAN_TEMPLATE,
+    "stamp_seal6": "Stamp the seal.",
+}
+
+ORIENT_STAGEB_TASK_GROUPS = ORIENT_TASK_GROUPS + ("move_can5_away",)
+ORIENT_STAGEB_CLEAN_TEMPLATE = {
+    **ORIENT_CLEAN_TEMPLATE,
+    "move_can5_away": "Move the can away.",
+}
+
+PLACE_STAGEB_TASK_GROUPS = PLACE_TASK_GROUPS + ("place_soap2_stand",)
+PLACE_STAGEB_CLEAN_TEMPLATE = {
+    **PLACE_CLEAN_TEMPLATE,
+    "place_soap2_stand": "Place the soap on the stand.",
+}
+
 # Broader separator shared by hvlv + orient.
 _SEP_RE_BROAD = re.compile(r",|\s+(?:and|while|by|before|after)\s+", re.IGNORECASE)
 MIN_BASE_LEN = 15
@@ -269,37 +302,37 @@ PREF_CATEGORIES: Dict[str, PrefCategory] = {
     ),
     "height": PrefCategory(
         name="height",
-        task_groups=HEIGHT_TASK_GROUPS,
+        task_groups=HEIGHT_STAGEB_TASK_GROUPS,
         pref_keys=("high", "low"),
         pref_labels=HEIGHT_PREF_LABELS,
-        clean_templates=HEIGHT_CLEAN_TEMPLATE,
+        clean_templates=HEIGHT_STAGEB_CLEAN_TEMPLATE,
         sep_re=None,
         leak_re=None,
     ),
     "hvlv": PrefCategory(
         name="hvlv",
-        task_groups=HVLV_TASK_GROUPS,
+        task_groups=HVLV_STAGEB_TASK_GROUPS,
         pref_keys=("hv", "lv"),
         pref_labels=HVLV_PREF_LABELS,
-        clean_templates=HVLV_CLEAN_TEMPLATE,
+        clean_templates=HVLV_STAGEB_CLEAN_TEMPLATE,
         sep_re=_SEP_RE_BROAD,
         leak_re=_LEAK_RE_HVLV,
     ),
     "orient": PrefCategory(
         name="orient",
-        task_groups=ORIENT_TASK_GROUPS,
+        task_groups=ORIENT_STAGEB_TASK_GROUPS,
         pref_keys=("0", "90"),
         pref_labels=ORIENT_PREF_LABELS,
-        clean_templates=ORIENT_CLEAN_TEMPLATE,
+        clean_templates=ORIENT_STAGEB_CLEAN_TEMPLATE,
         sep_re=_SEP_RE_BROAD,
         leak_re=_LEAK_RE_ORIENT,
     ),
     "place": PrefCategory(
         name="place",
-        task_groups=PLACE_TASK_GROUPS,
+        task_groups=PLACE_STAGEB_TASK_GROUPS,
         pref_keys=("center", "corner"),
         pref_labels=PLACE_PREF_LABELS,
-        clean_templates=PLACE_CLEAN_TEMPLATE,
+        clean_templates=PLACE_STAGEB_CLEAN_TEMPLATE,
         sep_re=None,
         leak_re=None,
     ),

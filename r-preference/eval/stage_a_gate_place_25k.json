@@ -1,0 +1,155 @@
+{
+  "category": "place",
+  "baseline_ckpt": "results/Checkpoints/pref_baseline_stage_a_v1_noVQA_place/checkpoints/steps_25000_pytorch_model.pt",
+  "vqa_ckpt": "results/Checkpoints/pref_main_stage_a_v1_VQA_place/checkpoints/steps_25000_pytorch_model.pt",
+  "n_taskA_eps": 142,
+  "n_taskB_eps": 100,
+  "baseline_counterfactual_taskA": {
+    "overall_mse_normalized": 0.03427959164001153,
+    "per_task_mse": {
+      "move_mouse_pad": 0.03190273130312562,
+      "move_pillbottle_pad": 0.03917325651273131,
+      "move_playingcards_pad": 0.0354106513162454,
+      "move_soap_pad": 0.040684422850608824,
+      "place_mouse_tray": 0.02919581960886717,
+      "place_pillbottle_tray": 0.027439467422664166,
+      "place_playingcards_tray": 0.034269214048981665,
+      "place_soap_tray": 0.038947596214711666
+    },
+    "per_task_n": {
+      "move_mouse_pad": 20,
+      "move_pillbottle_pad": 20,
+      "move_playingcards_pad": 12,
+      "move_soap_pad": 20,
+      "place_mouse_tray": 20,
+      "place_pillbottle_tray": 20,
+      "place_playingcards_tray": 20,
+      "place_soap_tray": 10
+    },
+    "sign_accuracy_strong": {},
+    "sign_accuracy_n": {}
+  },
+  "vqa_taskB": {
+    "overall_acc": 0.44,
+    "overall_n": 100,
+    "per_task_acc": {
+      "place_soap2_stand": 0.44
+    },
+    "per_task_n": {
+      "place_soap2_stand": 100
+    },
+    "confidence_mean": 0.9557986891269684,
+    "confidence_p10": 0.8336926400661469,
+    "pred_dist": {
+      "place_soap2_stand": {
+        "center": 60,
+        "corner": 40
+      }
+    }
+  },
+  "vqa_taskA": {
+    "overall_acc": 0.7887323943661971,
+    "overall_n": 142,
+    "per_task_acc": {
+      "move_mouse_pad": 0.65,
+      "move_pillbottle_pad": 0.65,
+      "move_playingcards_pad": 0.8333333333333334,
+      "move_soap_pad": 0.5,
+      "place_mouse_tray": 1.0,
+      "place_pillbottle_tray": 1.0,
+      "place_playingcards_tray": 0.85,
+      "place_soap_tray": 0.9
+    },
+    "per_task_n": {
+      "move_mouse_pad": 20,
+      "move_pillbottle_pad": 20,
+      "move_playingcards_pad": 12,
+      "move_soap_pad": 20,
+      "place_mouse_tray": 20,
+      "place_pillbottle_tray": 20,
+      "place_playingcards_tray": 20,
+      "place_soap_tray": 10
+    },
+    "confidence_mean": 0.964642347584308,
+    "confidence_p10": 0.884207421541214,
+    "pred_dist": {
+      "move_mouse_pad": {
+        "center": 17,
+        "corner": 3
+      },
+      "move_pillbottle_pad": {
+        "center": 15,
+        "corner": 5
+      },
+      "move_playingcards_pad": {
+        "center": 12
+      },
+      "move_soap_pad": {
+        "center": 8,
+        "corner": 12
+      },
+      "place_mouse_tray": {
+        "center": 10,
+        "corner": 10
+      },
+      "place_pillbottle_tray": {
+        "center": 10,
+        "corner": 10
+      },
+      "place_playingcards_tray": {
+        "center": 11,
+        "corner": 9
+      },
+      "place_soap_tray": {
+        "corner": 9,
+        "center": 1
+      }
+    }
+  },
+  "vqa_counterfactual_taskA": {
+    "overall_mse_normalized": 0.03578433926991174,
+    "per_task_mse": {
+      "move_mouse_pad": 0.03443525061011314,
+      "move_pillbottle_pad": 0.03477824069559574,
+      "move_playingcards_pad": 0.04078399979819854,
+      "move_soap_pad": 0.047120819613337514,
+      "place_mouse_tray": 0.031526833586394784,
+      "place_pillbottle_tray": 0.03163661826401949,
+      "place_playingcards_tray": 0.028740603663027286,
+      "place_soap_tray": 0.04272008500993252
+    },
+    "per_task_n": {
+      "move_mouse_pad": 20,
+      "move_pillbottle_pad": 20,
+      "move_playingcards_pad": 12,
+      "move_soap_pad": 20,
+      "place_mouse_tray": 20,
+      "place_pillbottle_tray": 20,
+      "place_playingcards_tray": 20,
+      "place_soap_tray": 10
+    },
+    "sign_accuracy_strong": {},
+    "sign_accuracy_n": {}
+  },
+  "baseline_vs_vqa_drift_taskA": {
+    "overall_drift_normalized": 0.07835392749672433,
+    "per_task_drift": {
+      "move_mouse_pad": 0.08007618754654125,
+      "move_pillbottle_pad": 0.08806004386145463,
+      "move_playingcards_pad": 0.07667849263522244,
+      "move_soap_pad": 0.09449572283175216,
+      "place_mouse_tray": 0.06448996006830605,
+      "place_pillbottle_tray": 0.06643301119794036,
+      "place_playingcards_tray": 0.07337940354511974,
+      "place_soap_tray": 0.08674292118899023
+    },
+    "n_compared": 142
+  },
+  "gate": {
+    "taskB_per_task_acc": {
+      "place_soap2_stand": 0.44
+    },
+    "passed_ge_0.90": [],
+    "verdict": "RED: no taskB task \u226590%, diagnose before Stage B"
+  }
+}

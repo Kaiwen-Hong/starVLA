@@ -125,11 +125,12 @@ def main():
     for i, (task_dir, tg, gt_pk, ep_id) in enumerate(episodes):
         h5p = Path(args.taskB_data_root) / task_dir / "data" / f"episode{ep_id}.hdf5"
 
-        # mid_8
-        clip_mid, info_mid = load_clip_by_strategy(h5p, strategy="mid_8")
+        # mid_8 — pass per-cat cameras so multi-cam-trained VQA (e.g. place=
+        # head+active_wrist) sees the same spatial input at label-time as at train-time.
+        clip_mid, info_mid = load_clip_by_strategy(h5p, strategy="mid_8", cameras=vqa_cat.cameras)
         out_mid = predict_with_logits(model, clip_mid)
-        # gripper_anchored
-        clip_grp, info_grp = load_clip_by_strategy(h5p, strategy="gripper_anchored")
+        # gripper_anchored — second opinion, same cameras
+        clip_grp, info_grp = load_clip_by_strategy(h5p, strategy="gripper_anchored", cameras=vqa_cat.cameras)
         out_grp = predict_with_logits(model, clip_grp)
 
         # Filter decision (default: mid_8 |gap| >= threshold)

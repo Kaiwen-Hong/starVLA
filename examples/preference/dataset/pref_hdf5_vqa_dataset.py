@@ -17,27 +17,41 @@ then fork-COW-shared with DataLoader workers.
 
 from __future__ import annotations
 
-from typing import Dict, List, Tuple
+from typing import Dict, List, Optional, Tuple
 
 from .pref_hdf5_dataset import PrefHDF5Dataset
 from .vqa_sample import (
     VQA_CAMERA,
     VQA_NUM_FRAMES,
+    VQA_CATEGORIES,
     build_vqa_clip_cache,
     register_vqa_clip_cache,
 )
 
 
 class PrefHDF5VQADataset(PrefHDF5Dataset):
-    """Adds VQA per-episode clip cache + episode-id tagging on top of baseline."""
+    """Adds VQA per-episode clip cache + episode-id tagging on top of baseline.
+
+    The VQA cache config (cameras, clip_strategy, n_frames) is per-category and
+    read from `VQA_CATEGORIES[self.category]`. The legacy single-cam uniform_8
+    setup remains the default for cats that don't override (giveobj/contact/
+    height/hvlv/orient), so previously-trained ckpts stay reproducible.
+    """
 
     def __init__(
         self,
         *args,
-        vqa_num_frames: int = VQA_NUM_FRAMES,
-        vqa_camera: str = VQA_CAMERA,
+        vqa_num_frames: Optional[int] = None,
+        vqa_camera: Optional[str] = None,
+        vqa_cameras: Optional[Tuple[str, ...]] = None,
+        vqa_strategy: Optional[str] = None,
         **kwargs,
     ):
+        """
+        Per-cat defaults come from VQA_CATEGORIES[category]. Optional kwargs
+        let callers override (mostly for tests / ablations); we use them ONLY
+        if explicitly passed.
+        """
         super().__init__(*args, **kwargs)
 
         # Insertion-order unique episode keys from baseline's _index.
@@ -57,16 +71,35 @@ class PrefHDF5VQADataset(PrefHDF5Dataset):
         self._episode_pref_key: List[str] = ep_pref_key
         self._episode_task_group: List[str] = ep_task_group
 
+        # Per-cat VQA config — explicit kwargs override the registry defaults.
+        cat_cfg = VQA_CATEGORIES.get(self.category)
+        if cat_cfg is None:
+            raise KeyError(
+                f"VQA dataset for category={self.category!r} requires an entry "
+                f"in VQA_CATEGORIES; got None"
+            )
+        eff_n_frames = vqa_num_frames if vqa_num_frames is not None else cat_cfg.n_frames
+        eff_strategy = vqa_strategy if vqa_strategy is not None else cat_cfg.clip_strategy
+        if vqa_cameras is not None:
+            eff_cameras = tuple(vqa_cameras)
+        elif vqa_camera is not None:
+            # legacy single-cam override
+            eff_cameras = (vqa_camera,)
+        else:
+            eff_cameras = tuple(cat_cfg.cameras)
+
         print(
             f"[PrefHDF5VQADataset/{self.split}] building VQA clip cache "
             f"for {len(self._episode_keys)} episodes "
-            f"(camera={vqa_camera}, frames={vqa_num_frames})..."
+            f"(category={self.category}, cameras={eff_cameras}, "
+            f"strategy={eff_strategy}, n_frames={eff_n_frames})..."
         )
         cache = build_vqa_clip_cache(
             self.data_root,
             self._episode_keys,
-            num_frames=vqa_num_frames,
-            camera=vqa_camera,
+            num_frames=eff_n_frames,
+            cameras=eff_cameras,
+            strategy=eff_strategy,
             image_size=tuple(self.image_size),
         )
         register_vqa_clip_cache(self.split, cache)
@@ -92,11 +125,31 @@ class PrefHDF5VQADataset(PrefHDF5Dataset):
 
 
 def get_pref_vqa_dataset(data_cfg, mode: str = "train", **kwargs) -> PrefHDF5VQADataset:
-    """Factory mirroring get_pref_dataset signature."""
-    def _g(name, default):
+    """Factory mirroring get_pref_dataset signature.
+
+    VQA-side cache config (cameras, strategy, n_frames) defaults from
+    VQA_CATEGORIES[pref_category]. YAML can OPTIONALLY override via
+    `vqa_cameras: [...]`, `vqa_strategy: <name>`, `vqa_num_frames: <int>`.
+    If a key is absent from YAML, the per-cat default applies (don't pass
+    None overrides → dataset reads VQA_CATEGORIES).
+    """
+    def _g(name, default=None):
         return data_cfg.get(name, default) if hasattr(data_cfg, "get") else default
 
     chunk_size = int(_g("future_action_window_size", 15)) + 1
+
+    # Optional YAML overrides: only pass through if present (else dataset
+    # falls back to VQA_CATEGORIES[category]).
+    extra: dict = {}
+    yaml_cams = _g("vqa_cameras", None)
+    yaml_strategy = _g("vqa_strategy", None)
+    yaml_num_frames = _g("vqa_num_frames", None)
+    yaml_camera = _g("vqa_camera", None)  # legacy single-cam
+    if yaml_cams is not None: extra["vqa_cameras"] = tuple(yaml_cams)
+    if yaml_strategy is not None: extra["vqa_strategy"] = str(yaml_strategy)
+    if yaml_num_frames is not None: extra["vqa_num_frames"] = int(yaml_num_frames)
+    if yaml_camera is not None: extra["vqa_camera"] = str(yaml_camera)
+
     return PrefHDF5VQADataset(
         data_root_dir=data_cfg.data_root_dir,
         split=mode,
@@ -108,7 +161,6 @@ def get_pref_vqa_dataset(data_cfg, mode: str = "train", **kwargs) -> PrefHDF5VQA
         stats_json_path=_g("stats_json_path", None),
         category=str(_g("pref_category", "giveobj")),
         data_cfg=data_cfg,
-        vqa_num_frames=int(_g("vqa_num_frames", VQA_NUM_FRAMES)),
-        vqa_camera=str(_g("vqa_camera", VQA_CAMERA)),
+        **extra,
         **kwargs,
     )
