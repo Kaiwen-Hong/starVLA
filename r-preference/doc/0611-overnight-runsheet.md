@@ -41,3 +41,10 @@
   EF@2500 result: early-frame peak_eff 0.0221 (7.6x geom, 24x b0), follow 0.667 balanced — PARTIAL SUCCESS, trend rising.
   Ladder-2 launched: ef5k (5000 steps) + ef_lr3 (EF+qwen_vl LR x3), queue started 10:19:07Z, probe chain armed (bv91rliz8).
   Agent A still running (writing 0612-hvlv-diagnosis.md; defaultcam_swap variant dir spotted). Disk 39%.
+- 10:42Z pass: ef5k 2349/5000 (~23min left), probe chain armed. Agent A deep in camera-view hypothesis
+  (3 variant evals archived: defaultcam_swap / topdown_swap / topdown_noswap; doc at 247 lines; box now
+  running stamp hv arm on :10099). Disk H100 39%, box 68% (41G). No new completions to fold/commit.
+- 10:58Z pass (event): Agent A DONE — hvlv ROOT CAUSE = eval camera embodiment mismatch (topdown 73° data
+  vs default 53° eval); fixed: SPT succ 6/12 vs FT 0/12 (p~.005); @2500 FOLLOWS pref (sep +0.075). Also
+  global R/B-swap finding (STARVLA_SWAP_RB toggle). hvlv@2500 topdown 50ep launched on box (watcher b84aih80l,
+  ~4-5h). Gap doc §4c.3 added. Next box slot after 50ep: orient 50ep.

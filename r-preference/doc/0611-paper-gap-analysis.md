@@ -288,6 +288,41 @@ Conclusions:
    label-quality ablation. Use `pref_stageb_main_orient_geom` as the SPT-orient ckpt
    going forward either way.
 
+## 4c.3 — hvlv SOLVED (Agent A overnight; full evidence `0612-hvlv-diagnosis.md`)
+
+**Root cause of the 0/5+0/5: eval-side head-camera embodiment mismatch.** hvlv (taskA+taskB)
+was collected 2026-05-28 with the special `aloha-agilex-topdown` embodiment (73° head cam,
+z=1.55 — created BECAUSE the default 53° cam can't see the HV/LV swing apex; collection-box
+doc 0528-hvlv-topdown-camera.md §8.1 even warned about this drift). Every eval (old box 0529
+AND tonight's reproduction) rendered the default 53° camera → policy's main view was
+geometrically OOD every frame. Proof chain: per-frame `extrinsic_cv` in the hdf5s (73°/1.55
+vs 53°/1.35 for the other 4 cats) + teacher-forcing MAE 0.023 rad (model healthy) +
+same-seed camera swap → immediate success. The 0529 "stamp verb never trained" hypothesis is
+FALSIFIED (Stage-B trained on the 100 stamp demos).
+
+| arm (env stamp_seal6_hv, n=6/prompt) | camera | hv succ | lv succ |
+|---|---|---|---|
+| main_geom@1500 (0529 + tonight控制) | default 53° | 0 | 0 |
+| main_geom@1500 | **topdown** | **3/6** | **3/6** |
+| main_geom@2500 | topdown | **4/6** | 2/6 |
+| **b0 / Naive-FT @1500** | topdown | **0/6** | **0/6** |
+
+**SPT 6/12 vs Naive-FT 0/12 on success (Fisher p≈0.005)** — hvlv becomes the axis with the
+cleanest FT contrast, on task success itself. AND layer-2 resolves: **@2500 follows the
+preference in closed-loop** (detour hv 0.145 vs lv 0.070, sep +0.075 ≈ expert scale; follow
+90% midpoint / 70% expert-thr; @1500 had no separation) → all prior "hvlv unconditioned"
+reads were confounded by the camera + the 1500 ckpt. **hvlv SPT ckpt = steps_2500 from now on.**
+
+Secondary global finding: the collection pipeline (`pkl2hdf5.py`, cv2.imencode) stores
+**R/B-swapped images for ALL 5 cats** vs the true-color deployment stream. No effect on hvlv
+closed-loop success (camera-only control also 3/6) but offline TF cost (main +25%, b0 +120%
+MAE); bridge has a `STARVLA_SWAP_RB=1` toggle now. TODO: A/B on the other 4 cats (may
+improve their numbers), fix the collector long-term.
+
+In flight: **hvlv@2500 topdown 50-ep paired run** launched (driver `/root/drive_hvlv50_0611.sh`,
+~4-5h) → the paper number. pref_metric segment-window upgrade + early-frame re-probe @2500
+queued per the diagnosis doc §5.
+
 ## 4d. OFFICIAL follow numbers locked (2026-06-11 night, user-approved convention D4)
 
 Fixed source(taskA)-statistics thresholds computed (`eval/source_follow_thresholds.json`):
