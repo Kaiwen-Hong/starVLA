@@ -1,4 +1,175 @@
 {
+  "pref_stageb_b0_height": {
+    "axis": "drop_height",
+    "metric": "drop_height (m)",
+    "scale": "10ep-0611",
+    "prompts": {
+      "high": {
+        "n": 10,
+        "mean": 0.0885,
+        "std": 0.029,
+        "success": "11/11",
+        "vals": [
+          0.092,
+          0.063,
+          0.152,
+          0.123,
+          0.107,
+          0.081,
+          0.065,
+          0.061,
+          0.063,
+          0.078
+        ]
+      },
+      "low": {
+        "n": 10,
+        "mean": 0.0601,
+        "std": 0.004,
+        "success": "11/11",
+        "vals": [
+          0.064,
+          0.056,
+          0.066,
+          0.063,
+          0.057,
+          0.06,
+          0.054,
+          0.059,
+          0.058,
+          0.065
+        ]
+      }
+    },
+    "separation": 0.0283,
+    "midpoint": 0.0743,
+    "follow": {
+      "high": 0.6,
+      "low": 1.0,
+      "overall": 0.8
+    },
+    "direction": "high > low",
+    "src_threshold": 0.1245,
+    "follow_fixed": {
+      "high": 0.1,
+      "low": 1.0,
+      "overall": 0.55
+    }
+  },
+  "pref_stageb_b0_orient": {
+    "axis": "grasp_tilt_deg",
+    "metric": "grasp_tilt ee_x (deg)",
+    "scale": "10ep-0611",
+    "prompts": {
+      "0": {
+        "n": 10,
+        "mean": 81.8369,
+        "std": 4.9025,
+        "success": "10/11",
+        "vals": [
+          82.653,
+          72.18,
+          86.999,
+          85.842,
+          81.846,
+          86.895,
+          84.166,
+          81.738,
+          73.353,
+          82.698
+        ]
+      },
+      "90": {
+        "n": 10,
+        "mean": 4.1136,
+        "std": 3.3292,
+        "success": "10/11",
+        "vals": [
+          2.157,
+          0.61,
+          8.226,
+          7.657,
+          2.232,
+          9.443,
+          6.931,
+          1.384,
+          0.377,
+          2.119
+        ]
+      }
+    },
+    "separation": 77.7233,
+    "midpoint": 42.9752,
+    "follow": {
+      "0": 1.0,
+      "90": 1.0,
+      "overall": 1.0
+    },
+    "direction": "0 > 90",
+    "src_threshold": 41.2228,
+    "follow_fixed": {
+      "0": 1.0,
+      "90": 1.0,
+      "overall": 1.0
+    }
+  },
+  "pref_stageb_main_orient_geom": {
+    "axis": "grasp_tilt_deg",
+    "metric": "grasp_tilt ee_x (deg)",
+    "scale": "10ep-0611",
+    "prompts": {
+      "0": {
+        "n": 10,
+        "mean": 81.6097,
+        "std": 5.8531,
+        "success": "11/11",
+        "vals": [
+          82.399,
+          72.988,
+          88.557,
+          88.336,
+          82.548,
+          88.99,
+          74.298,
+          81.518,
+          73.624,
+          82.838
+        ]
+      },
+      "90": {
+        "n": 10,
+        "mean": 3.5406,
+        "std": 2.9905,
+        "success": "9/11",
+        "vals": [
+          2.162,
+          0.227,
+          8.437,
+          5.925,
+          2.374,
+          9.028,
+          3.205,
+          1.579,
+          0.594,
+          1.874
+        ]
+      }
+    },
+    "separation": 78.0692,
+    "midpoint": 42.5752,
+    "follow": {
+      "0": 1.0,
+      "90": 1.0,
+      "overall": 1.0
+    },
+    "direction": "0 > 90",
+    "src_threshold": 41.2228,
+    "follow_fixed": {
+      "0": 1.0,
+      "90": 1.0,
+      "overall": 1.0
+    }
+  },
   "pref_stageb_main_contact_geom": {
     "axis": "grasp_height",
     "metric": "EE.z-obj.z @grasp (m)",
@@ -36,7 +207,8 @@
       "25": 0.75,
       "overall": 0.75
     },
-    "direction": "75 > 25"
+    "direction": "75 > 25",
+    "follow_fixed_note": "n/a: records use fallback meters, src thr is a fraction"
   },
   "pref_stageb_main_height": {
     "axis": "drop_height",
@@ -165,7 +337,13 @@
       "low": 0.94,
       "overall": 0.81
     },
-    "direction": "high > low"
+    "direction": "high > low",
+    "src_threshold": 0.1245,
+    "follow_fixed": {
+      "high": 0.67,
+      "low": 1.0,
+      "overall": 0.84
+    }
   },
   "pref_stageb_main_hvlv_geom": {
     "axis": "obstacle_clear_m",
@@ -204,7 +382,13 @@
       "lv": 0.5,
       "overall": 0.5
     },
-    "direction": "hv > lv"
+    "direction": "hv > lv",
+    "src_threshold": 0.1501,
+    "follow_fixed": {
+      "hv": 0.0,
+      "lv": 1.0,
+      "overall": 0.5
+    }
   },
   "pref_stageb_main_orient": {
     "axis": "grasp_tilt_deg",
@@ -333,6 +517,12 @@
       "90": 0.61,
       "overall": 0.81
     },
-    "direction": "0 > 90"
+    "direction": "0 > 90",
+    "src_threshold": 41.2228,
+    "follow_fixed": {
+      "0": 1.0,
+      "90": 0.61,
+      "overall": 0.81
+    }
   }
 }

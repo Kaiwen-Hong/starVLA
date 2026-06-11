@@ -1,0 +1,92 @@
+{
+  "drop_height": {
+    "cat": "height",
+    "threshold": 0.1245,
+    "class_means": {
+      "high": 0.1795,
+      "low": 0.0694
+    },
+    "class_stds": {
+      "high": 0.0064,
+      "low": 0.0307
+    },
+    "n": {
+      "high": 320,
+      "low": 320
+    },
+    "feature": "feat_height",
+    "note": "fit on taskA(source) only; height/orient/place use EE-based proxies of the sim metric"
+  },
+  "grasp_tilt_deg": {
+    "cat": "orient",
+    "threshold": 41.2228,
+    "class_means": {
+      "0": 80.2303,
+      "90": 2.2153
+    },
+    "class_stds": {
+      "0": 7.9207,
+      "90": 2.1181
+    },
+    "n": {
+      "0": 320,
+      "90": 320
+    },
+    "feature": "feat_orient",
+    "note": "fit on taskA(source) only; height/orient/place use EE-based proxies of the sim metric"
+  },
+  "grasp_height": {
+    "cat": "contact",
+    "threshold": 0.4841,
+    "class_means": {
+      "25": 0.2522,
+      "75": 0.716
+    },
+    "class_stds": {
+      "25": 0.0283,
+      "75": 0.0884
+    },
+    "n": {
+      "25": 320,
+      "75": 320
+    },
+    "feature": "feat_contact",
+    "note": "fit on taskA(source) only; height/orient/place use EE-based proxies of the sim metric"
+  },
+  "place_offset_m": {
+    "cat": "place",
+    "threshold": 0.0536,
+    "class_means": {
+      "center": 0.0042,
+      "corner": 0.103
+    },
+    "class_stds": {
+      "center": 0.0071,
+      "corner": 0.0132
+    },
+    "n": {
+      "center": 320,
+      "corner": 320
+    },
+    "feature": "feat_place",
+    "note": "fit on taskA(source) only; height/orient/place use EE-based proxies of the sim metric"
+  },
+  "obstacle_clear_m": {
+    "cat": "hvlv",
+    "threshold": 0.1501,
+    "class_means": {
+      "hv": 0.2215,
+      "lv": 0.0787
+    },
+    "class_stds": {
+      "hv": 0.0176,
+      "lv": 0.0129
+    },
+    "n": {
+      "hv": 320,
+      "lv": 320
+    },
+    "feature": "feat_hvlv",
+    "note": "fit on taskA(source) only; height/orient/place use EE-based proxies of the sim metric"
+  }
+}
