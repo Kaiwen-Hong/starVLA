@@ -1,0 +1,13 @@
+{
+  "preference": "hv",
+  "env_pref": "None",
+  "axis": "obstacle_clear_m",
+  "n_steps": 302,
+  "grasp_step": 57,
+  "release_step": 290,
+  "value": 0.06271500205304284,
+  "active_arm": "left",
+  "seg_len": 182,
+  "task_name": "stamp_seal6_hv",
+  "episode": 46
+}

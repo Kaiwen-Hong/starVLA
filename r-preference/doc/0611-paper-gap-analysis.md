@@ -319,9 +319,17 @@ closed-loop success (camera-only control also 3/6) but offline TF cost (main +25
 MAE); bridge has a `STARVLA_SWAP_RB=1` toggle now. TODO: A/B on the other 4 cats (may
 improve their numbers), fix the collector long-term.
 
-In flight: **hvlv@2500 topdown 50-ep paired run** launched (driver `/root/drive_hvlv50_0611.sh`,
-~4-5h) → the paper number. pref_metric segment-window upgrade + early-frame re-probe @2500
-queued per the diagnosis doc §5.
+**hvlv@2500 topdown 50-ep OFFICIAL numbers (done 12:21Z; archive
+`eval/0611_ctrl/hvlv_2500_topdown_50ep/`):** detour hv 0.098±0.058 / lv 0.060±0.033,
+separation **+0.0375** (right direction; half the 5-ep sample's +0.075), follow
+**0.61 midpoint / 0.59 fixed-src-thr**; success **hv 17/51 = 33.3% / lv 10/51 = 19.6%**
+(vs Naive-FT 0/12 at n=6 — the success contrast holds; the paper row's 75/82 does not yet).
+Caveats recorded: whole-trajectory detour window is diluted by 500-step timeout episodes
+(the diagnosis doc's segment-window metric upgrade would need a pref_metric change +
+rerun — the per-episode JSONs store only the final value); early-frame probe is
+structurally blind to trajectory-shape prefs (`earlyframe_hvlv.json`, all ≈ chance even
+for the closed-loop-following ckpt) so hvlv arbitration is closed-loop-only. Honest hvlv
+row today: recognition 0.92, following 0.59–0.61, success 26.5% pooled (FT: 0%).
 
 ## 4d. OFFICIAL follow numbers locked (2026-06-11 night, user-approved convention D4)
 

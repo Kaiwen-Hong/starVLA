@@ -59,3 +59,9 @@
 - 11:48Z pass: hvlv50 FAST (hv arm 50/50 done ~45min, lv arm running — full run likely done ~12:15Z).
   Box ckpts main_height/b0_height/main_orient already pruned by Agent A; disk 32G (robomme grew) — place
   pre-ship deferred until after hvlv50. Paper diff doc written (0612-paper-diff-suggestions.md). H100 idle.
+- 12:18Z pass: hvlv50 hv arm DONE succ 17/51=33.3% (large-n regression from 4/6 sample; SPT 33% vs FT 0% holds);
+  lv arm 45/50, ~10min out. Watcher will archive+compute; then box queue: contact ef5k closed-loop -> orient 50ep.
+  Disk box 32G / H100 40%. H100 idle.
+- 12:25Z pass (event): hvlv50 DONE — sep +0.0375, follow 0.59 fixed / 0.61 midpoint, succ 33.3%/19.6%
+  (large-n regression vs 5ep sample; FT-success contrast holds, paper 75/82 not met). Archived 100 json.
+  Contact ef5k@5000 closed-loop LAUNCHED on box (driver pid 3658752, watcher b29sd0i6a). Gap doc updated.
