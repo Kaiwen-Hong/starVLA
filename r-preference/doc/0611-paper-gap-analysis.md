@@ -45,6 +45,16 @@ orient 100, place 90 → avg 96.4.
   labeler errors, NOT data noise. Cache: `r-preference/eval/pref_pseudo_labels_orient_B_geom.json`
   (kept separate; the original token cache that trained `pref_stageb_main_orient` is untouched).
 
+**UPDATE 2026-06-11 night — privilege-free labelers landed (Agent B, doc
+`0612-privilege-free-labelers.md`):** place **vision 1.000** post-filter (96/96 kept;
+Qwen3-VL grounding → backprojection, no scene_info) and **contact EE 1.000** (98/98;
+wrist-z @ grasp, 2-means + source direction; vision route 0.980 secondary). Caches
+`*_B_vision.json` / `*_B_ee.json`. → Every axis now has a **privilege-free** labeler:
+height 1.00 (token) / orient 1.00 (EE rotation) / hvlv 0.92 (EE detour) /
+place 1.00 (vision) / contact 1.00 (EE). The D2 narrative decision now has a clean
+best option: recognition story entirely without simulator privilege (avg 98.4 with
+hvlv 92 the only sub-100 axis).
+
 **Decision needed (paper):** with orient-geom the honest per-axis "best validated labeler"
 set is {100, 100, 92, 100, **100**} → avg **98.4**, vs the paper's current
 {100, 100, 92, 100, 90} → 96.4 which mixes token-place (0.90) with geom elsewhere. Either

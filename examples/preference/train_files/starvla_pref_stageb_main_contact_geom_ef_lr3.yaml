@@ -1,4 +1,4 @@
-run_id: pref_stageb_main_contact_geom_ef
+run_id: pref_stageb_main_contact_geom_ef_lr3
 run_root_dir: results/Checkpoints
 seed: 42
 trackers:
@@ -80,7 +80,7 @@ trainer:
   eval_interval: 100000
   learning_rate:
     base: 1.0e-06
-    qwen_vl_interface: 1.0e-06
+    qwen_vl_interface: 3.0e-06
     action_model: 1.0e-05
   lr_scheduler_type: cosine_with_min_lr
   scheduler_specific_kwargs:

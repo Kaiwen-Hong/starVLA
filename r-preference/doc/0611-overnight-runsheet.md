@@ -37,3 +37,7 @@
 
 ## Supervision log
 - 09:55Z pass 0: runsheet created; EF v2 training healthy (started 09:43); agents running; disk 84%.
+- 10:25Z pass: Agent B DONE (place vision 1.000, contact EE 1.000 — committed 47c6a60; gap doc §1 updated).
+  EF@2500 result: early-frame peak_eff 0.0221 (7.6x geom, 24x b0), follow 0.667 balanced — PARTIAL SUCCESS, trend rising.
+  Ladder-2 launched: ef5k (5000 steps) + ef_lr3 (EF+qwen_vl LR x3), queue started 10:19:07Z, probe chain armed (bv91rliz8).
+  Agent A still running (writing 0612-hvlv-diagnosis.md; defaultcam_swap variant dir spotted). Disk 39%.

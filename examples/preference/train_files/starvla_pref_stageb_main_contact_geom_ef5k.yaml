@@ -1,4 +1,4 @@
-run_id: pref_stageb_main_contact_geom_ef
+run_id: pref_stageb_main_contact_geom_ef5k
 run_root_dir: results/Checkpoints
 seed: 42
 trackers:
@@ -74,9 +74,9 @@ datasets:
     pseudo_label_cache: r-preference/eval/pref_pseudo_labels_contact_B.json
 trainer:
   epochs: 100
-  max_train_steps: 2500
-  num_warmup_steps: 150
-  save_interval: 500
+  max_train_steps: 5000
+  num_warmup_steps: 500
+  save_interval: 1250
   eval_interval: 100000
   learning_rate:
     base: 1.0e-06
