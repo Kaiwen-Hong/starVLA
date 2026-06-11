@@ -1,0 +1,15 @@
+{
+  "preference": "25",
+  "env_pref": "None",
+  "axis": "grasp_height",
+  "n_steps": 109,
+  "grasp_step": 59,
+  "release_step": null,
+  "value": 0.08348691463470459,
+  "active_arm": "left",
+  "ee_z_grasp": 0.8252581357955933,
+  "obj_z_grasp": 0.7417712211608887,
+  "ee_minus_obj_z": 0.08348691463470459,
+  "task_name": "put_boxdrink3_plate_25",
+  "episode": 4
+}

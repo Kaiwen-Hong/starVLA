@@ -331,6 +331,25 @@ structurally blind to trajectory-shape prefs (`earlyframe_hvlv.json`, all ≈ ch
 for the closed-loop-following ckpt) so hvlv arbitration is closed-loop-only. Honest hvlv
 row today: recognition 0.92, following 0.59–0.61, success 26.5% pooled (FT: 0%).
 
+## 4c.4 — contact ef5k closed-loop (13:38Z): plan-level conditioning does NOT yet survive execution
+
+`pref_stageb_main_contact_geom_ef5k@5000` paired closed-loop (10 metric eps/arm, after
+fixing the missing `068_boxdrink` asset on the box; archive
+`eval/0611_ctrl/contact_ef5k_closedloop/`): success **9/11 + 9/11 (81.8%)**;
+EE.z−obj.z@grasp (meters fallback — contact-point span unavailable again):
+25→0.116±0.031, 75→0.132±0.037, separation **+0.0157 m**, midpoint-follow **0.65**
+(vs geom@1500 5ep: +0.021/0.75; expected demo-scale separation ~0.05–0.07 m).
+
+Verdict: the early-frame (plan-level) conditioning breakthrough (effect ×37, follow
+0.958 offline) did **not** translate into closed-loop modulation. Mechanism hypothesis:
+rollouts re-query every 50-step chunk; the grasp-committing chunk starts near the object
+where the observation again dominates (the same image-shortcut the probe demonstrated at
+committed frames). contact stays the open conditioning axis closed-loop. Options for the
+morning: (i) more aggressive EF (frac 0.3 ×8) / longer; (ii) execution-side ideas
+(pref-token; chunk-boundary placement); (iii) fix the contact-point metric (TRUE
+height_fraction) — the meters proxy is noisy and may understate separation; (iv) report
+measured numbers honestly (paper 90 not met).
+
 ## 4d. OFFICIAL follow numbers locked (2026-06-11 night, user-approved convention D4)
 
 Fixed source(taskA)-statistics thresholds computed (`eval/source_follow_thresholds.json`):

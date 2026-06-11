@@ -71,3 +71,6 @@
   100_seal find); eval spun 1h erroring per seed. Fixed: relayed 068_boxdrink+003_plate+107_soap from
   collection kempner assets via H100; contact ef5k RESTARTED 13:30Z; watcher v2 armed (b534j3lvr, 3h budget;
   old watcher b29sd0i6a may fire early on partial — ignore if so). place assets now pre-positioned too.
+- 13:42Z pass (event): contact ef5k closed-loop DONE in 8min post-asset-fix — succ 81.8%/81.8%, BUT
+  sep +0.0157m / midpoint-follow 0.65 (~geom@1500): plan-level EF conditioning does not survive
+  per-chunk re-query execution. Gap doc §4c.4. orient50 LAUNCHED (geom then b0, watcher b2i69xxsi).
