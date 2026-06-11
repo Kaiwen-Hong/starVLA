@@ -81,3 +81,11 @@
 - 14:38Z pass (event): orient50 GEOM OFFICIAL — follow 1.00/1.00 @n=50 (90-arm 50/50 flipped), succ 98.0%/96.1%.
   b0 arm failed to start (ckpt pruned by Agent A) — reshipping (bg) + b0orient50 driver staged for after place50.
   place50 LAUNCHED (geom then b0). Box 50G.
+- 15:02Z pass: place50 geom center-arm 50/50 done, corner-arm 6/50 running; b0_orient reshipped md5-OK.
+  Chain bs80mr5gb owns place50->b0orient50->archive+compute. Box 41G. ETA: place50 ~16:10, b0orient50 ~16:45, 晨报 ~17:00.
+- 15:34Z pass: place50 geom center succ 88.2% (45/51), corner 47/50 near done; b0_place arms next, then
+  b0orient50. Chain ETA ~16:40, 晨报 after. Box 41G healthy.
+- 16:06Z pass: place50 geom DONE (center succ 88.2%; corner succ 2.0% = known center-recipe artifact, metric
+  disambiguates). b0_place center 44/50; then corner, then b0orient50. Chain ETA ~17:00. Box 41G.
+- 16:37Z pass: b0_place center arm DONE succ 49.0% (25/51) vs geom 88.2% — FT weaker even on success for place.
+  corner arm + b0orient50 remain (~50min). One more cycle then 晨报.

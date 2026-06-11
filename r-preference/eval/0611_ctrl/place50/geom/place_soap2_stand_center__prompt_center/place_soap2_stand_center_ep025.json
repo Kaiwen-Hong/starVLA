@@ -1,0 +1,17 @@
+{
+  "preference": "center",
+  "env_pref": "center",
+  "axis": "place_offset_m",
+  "n_steps": 147,
+  "grasp_step": 62,
+  "release_step": 146,
+  "value": 0.009838971025051326,
+  "ref_xy": [
+    -0.015838343650102615,
+    -0.14115506410598755
+  ],
+  "rel_idx": 146,
+  "active_arm": "left",
+  "task_name": "place_soap2_stand_center",
+  "episode": 25
+}

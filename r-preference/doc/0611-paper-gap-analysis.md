@@ -357,6 +357,20 @@ morning: (i) more aggressive EF (frac 0.3 ×8) / longer; (ii) execution-side ide
 height_fraction) — the meters proxy is noisy and may understate separation; (iv) report
 measured numbers honestly (paper 90 not met).
 
+## 4c.5 — place 50ep OFFICIAL (16:36Z; archives `eval/0611_ctrl/place50/{geom,b0}/`)
+
+| arm (n=50/prompt) | center offset | corner offset | separation | follow (FIXED 0.0536) | success |
+|---|---|---|---|---|---|
+| **SPT (geom labels)** | 0.0111±0.016 | 0.0665±0.012 | **+0.0553** (≈ demo scale) | 0.92/0.96 → **0.94** | center 45/51=88.2%; corner 1/51=2.0%† |
+| **Naive-FT (b0)** | 0.0293±0.013 | 0.0329±0.007 | +0.0035 (≈0) | 0.96/0.00 → **0.48** | center 25/51=49.0%; corner 36/51=70.6%† |
+
+† center-recipe `check_success` artifact (0529 README): under the corner prompt a CORRECT
+corner placement counts as failure (SPT corner "2.0%"), while b0's prompt-IGNORING center
+placements count as success (70.6%) — the offset metric is the honest readout. Note FT's
+corner-follow is exactly **0.00** (never places at the corner) and FT center success is
+only 49% — place is the showcase axis: **FT 0.48 vs SPT 0.94 at n=50**, a stronger
+contrast than the paper's claimed 67→83.
+
 ## 4d. OFFICIAL follow numbers locked (2026-06-11 night, user-approved convention D4)
 
 Fixed source(taskA)-statistics thresholds computed (`eval/source_follow_thresholds.json`):
