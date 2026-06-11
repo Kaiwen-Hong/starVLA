@@ -331,6 +331,14 @@ improve their numbers), fix the collector long-term.
 separation **+0.0375** (right direction; half the 5-ep sample's +0.075), follow
 **0.61 midpoint / 0.59 fixed-src-thr**; success **hv 17/51 = 33.3% / lv 10/51 = 19.6%**
 (vs Naive-FT 0/12 at n=6 — the success contrast holds; the paper row's 75/82 does not yet).
+**Post-晨报 cut (2026-06-12, user question): conditioning-given-execution.** Restricting to
+episodes that actually execute (n_steps<480 ≡ exactly the successful ones, 17 hv / 10 lv):
+separation **+0.0583**, follow **0.80 midpoint / 0.74 fixed** — vs 0.59 over all episodes.
+So hvlv's conditioning among executed episodes is decent; the headline 0.59 is dragged down
+by the 60-80% task-failure episodes (flail-to-timeout detour values ≈ noise). The real
+bottleneck is TASK SUCCESS (33/20%, ±2cm stamp placement misses), not conditioning.
+(Selection-bias caveat: success may correlate with easier spawns; report both numbers.)
+
 Caveats recorded: whole-trajectory detour window is diluted by 500-step timeout episodes
 (the diagnosis doc's segment-window metric upgrade would need a pref_metric change +
 rerun — the per-episode JSONs store only the final value); early-frame probe is
