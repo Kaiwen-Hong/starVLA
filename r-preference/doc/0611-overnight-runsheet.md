@@ -65,3 +65,9 @@
 - 12:25Z pass (event): hvlv50 DONE — sep +0.0375, follow 0.59 fixed / 0.61 midpoint, succ 33.3%/19.6%
   (large-n regression vs 5ep sample; FT-success contrast holds, paper 75/82 not met). Archived 100 json.
   Contact ef5k@5000 closed-loop LAUNCHED on box (driver pid 3658752, watcher b29sd0i6a). Gap doc updated.
+- 12:50Z pass: contact ef5k 25-arm in progress (server 12:28Z, first eps running). orient50 driver pre-staged
+  on box (/root/drive_orient50_0611.sh: geom then b0, 51eps each). Box 32G / H100 idle 40%.
+- 13:32Z pass: contact ef5k FIRST RUN WAS STUCK — box missing asset 068_boxdrink (same class as Agent A's
+  100_seal find); eval spun 1h erroring per seed. Fixed: relayed 068_boxdrink+003_plate+107_soap from
+  collection kempner assets via H100; contact ef5k RESTARTED 13:30Z; watcher v2 armed (b534j3lvr, 3h budget;
+  old watcher b29sd0i6a may fire early on partial — ignore if so). place assets now pre-positioned too.
