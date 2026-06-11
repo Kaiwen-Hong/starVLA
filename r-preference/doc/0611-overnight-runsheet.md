@@ -56,3 +56,6 @@
   early-frame weighting x schedule length, NOT LR. ef5k ckpt on box md5-verified (d79fbac1). hvlv early-frame
   probe @2500/@1500/b0 all ~chance — probe structurally blind to trajectory-shape prefs (detour accumulates
   across chunks); hvlv arbitration = closed-loop only (50ep in flight, ep001+). H100 GPUs free.
+- 11:48Z pass: hvlv50 FAST (hv arm 50/50 done ~45min, lv arm running — full run likely done ~12:15Z).
+  Box ckpts main_height/b0_height/main_orient already pruned by Agent A; disk 32G (robomme grew) — place
+  pre-ship deferred until after hvlv50. Paper diff doc written (0612-paper-diff-suggestions.md). H100 idle.
