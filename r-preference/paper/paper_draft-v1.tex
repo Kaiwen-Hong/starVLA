@@ -1,0 +1,265 @@
+=============================================================================
+paper_draft-v1.tex  —  CHANGE LIST for paper_draft-v0.tex
+
+This file is NOT a paper; it is a review worklist. Each item gives the exact
+OLD text (so you can find/replace in paper_draft-v0.tex), the proposed NEW
+text, and the reason. Items marked DELETE should be removed outright.
+Apply them one at a time. Abstract is intentionally NOT touched (write last).
+Line numbers refer to paper_draft-v0.tex and are approximate.
+=============================================================================
+
+
+###########################################################################
+A. PREAMBLE  (compile-blocking)
+###########################################################################
+
+--- A1.  \eg / \ie are used but never defined  -> "Undefined control sequence"
+ADD after the \YZ definition (line ~9):
+  NEW (add these two lines):
+    \newcommand{\eg}{\emph{e.g.}}
+    \newcommand{\ie}{\emph{i.e.}}
+  REASON: Methods uses \eg{} (e.g. lines 202, 220); corl_2026 does not define
+  it, so the document currently fails to compile. (\ie added pre-emptively.)
+
+
+###########################################################################
+B. TITLE / INTRO
+###########################################################################
+
+--- B1.  Title still says "Self-Distilled" (the method has no distillation)
+OLD (line 11):
+  \title{Self-Distilled Preference Transfer: Bootstrapping Steerable Robot Manipulation on Unlabeled Tasks}
+NEW:
+  \title{Self-Labeled Preference Transfer: Bootstrapping Steerable Robot Manipulation on Unlabeled Tasks}
+REASON: Stage B no longer distills anything; the intro body already uses
+  "Self-Labeled Preference Transfer (SPT)". (Abstract left for last per your note.)
+
+
+--- B2.  Teaser figure reuses a label that a later figure also uses
+OLD (line 70):
+  \label{fig:real_overlay}
+NEW:
+  \label{fig:teaser}
+REASON: the experiments section also defines \label{fig:real_overlay}; a
+  duplicate \label makes every \ref to it ambiguous. (The teaser is also not
+  \ref'd in text, so renaming is safe.)
+
+
+--- B3.  Broken sentence in the motivation
+OLD (line ~55):
+  In practice, however, the same instruction often admits multiple modes acceptable executions: when grasping a mug, one might grasp near its rim or near its base; when placing an item, one might set it down gently or release it from above.
+NEW:
+  In practice, however, the same instruction often admits multiple acceptable executions: when grasping a mug, one might grasp near its rim or near its base; when placing an item, one might set it down gently or release it from above.
+REASON: "multiple modes acceptable executions" is ungrammatical.
+
+
+--- B4.  Run-on intuition sentence
+OLD (inside the paragraph at line ~77):
+  Our intuition is that during source training on densely labeled preference data, the vision-language backbone not only achieves a latent vision-language representation that supports preference learning at the action level for the action head, but also learns to become an explicit preference labeling expert.
+NEW:
+  Our intuition is that source training on densely labeled preference data does two things at once: it shapes a vision-language representation that lets the action head act on a stated preference, and it teaches the backbone to read the preference from a demonstration.
+REASON: original stacks too many clauses ("not only achieves a latent ...
+  representation that supports ... at the action level for the action head,
+  but also ..."); tightened, same meaning.
+
+
+--- B5.  Axis count mismatch with the experiments
+OLD (line ~83):
+  we synthesize preference-varied demonstrations on RoboTwin~\citep{robotwin} across four axes (grasp contact height, release height, obstacle clearance, and grasp orientation).
+NEW:
+  we synthesize preference-varied demonstrations on RoboTwin~\citep{robotwin} across five axes (grasp contact height, release height, obstacle clearance, grasp orientation, and placement location).
+REASON: the experiments report five axes; the intro lists four and omits
+  placement location.
+
+
+--- B6.  Contribution (3): hardcoded numbers + a claim we no longer support
+OLD (line ~87):
+  (3) We demonstrate through simulation and real-robot experiments that SPT enables effective preference control on unlabeled tasks, achieving 81\% recognition accuracy and 20-point improvements in preference-following over baselines, and we analyze when this transfer succeeds.
+NEW:
+  (3) We demonstrate through simulation and real-robot experiments that SPT enables preference control on unlabeled tasks, improving preference-following over baselines that do not self-label while leaving task success unchanged.
+REASON: (a) "81%/20-point" are hardcoded and duplicate the [81]/[20]
+  placeholders in the body (numbers still TBD); (b) "we analyze when this
+  transfer succeeds" refers to the phi-vs-signal analysis we CUT, so it is an
+  unsupported claim. Also drop the empty intensifier "effective".
+
+
+###########################################################################
+C. METHODS   (the 学长 only changed the opening paragraph; the caption +
+   Architecture + pose paragraphs are still the earlier em-dash-heavy version)
+###########################################################################
+
+--- C1.  Methods opening paragraph: grammar + tighten
+OLD (line ~184):
+  Shown in Fig.~\ref{fig:method}, Self-Labeled Preference Transfer (SPT) trains the VLA to acquire both a preference-conditioned policy, while being able to understand the preference given a demonstration during Stage~A source training. This allows the vision-language backbone to label the preferences of the demonstrations during training on the target data, in Stage~B. In this section, we first detail the neural network architecture, and then present the SPT training procedure.
+NEW:
+  As shown in Fig.~\ref{fig:method}, Self-Labeled Preference Transfer (SPT) trains the VLA in Stage~A both to act on a stated preference and to infer the preference from a demonstration. The trained backbone can then label the preferences of the target demonstrations in Stage~B. We first describe the architecture and then the training procedure.
+REASON: "acquire both a ... policy, while being able to understand" is a
+  broken "both ... while" construction; tightened.
+
+
+--- C2.  Figure caption: de-AI it (match the plain register of figures/method.pdf)
+OLD (lines 167-180):
+  \caption{\textbf{Self-Labeled Preference Transfer (SPT).} A single shared
+  vision--language backbone supports two complementary directions over the same
+  representation: a preference-conditioned \emph{action expert} that maps a stated
+  preference to behavior (\emph{act on $c$}), and a preference-\emph{inference}
+  branch---the backbone's own language head answering a binary preference
+  question---that maps an observed demonstration back to its preference
+  (\emph{infer $c$}). The inference branch is grounded in the executed motion by a
+  learned token $\phi(s)$ of the robot's proprioceptive state.
+  \emph{Stage~A} co-trains both directions on the preference-labeled source.
+  \emph{Stage~B} freezes the source model, uses its inference direction to
+  self-label every unlabeled target demonstration, and then continues training the
+  action expert on those self-labeled, preference-conditioned prompts---using only
+  the action loss. At test time the user specifies a preference from the source
+  vocabulary and the inference branch is no longer needed.}
+NEW:
+  \caption{\textbf{Self-Labeled Preference Transfer (SPT).} One shared VLM
+  backbone serves as a policy that acts on a stated preference (\emph{act on
+  $c$}) and as a head that predicts the preference of a demonstration
+  (\emph{infer $c$}). The prediction head reads the VLM's language output, and
+  takes the proprioceptive state as a learned token $\phi(s)$. Stage~A trains
+  both on the labeled source. Stage~B freezes this model, labels each unlabeled
+  target demonstration with the prediction head, and continues training the
+  action expert on the labeled prompts. At test time the user sets $c$ and only
+  the policy is used.}
+REASON: removes "two complementary directions over the same representation",
+  the em-dashes, and the heavy emphasis; plain declarative register.
+
+
+--- C3.  Architecture paragraph: de-AI + fix EE/joint
+OLD (lines 195-209):
+  \textbf{Architecture.}
+  SPT is a single vision--language--action model with a shared backbone and two
+  read-outs. The backbone is a pretrained vision--language model (VLM) that
+  encodes multi-view observations, proprioceptive state, and text. The
+  \emph{action expert} decodes the backbone features into continuous end-effector
+  action chunks; we condition it through language by appending
+  ``\,Preference:~$w(c)$\,'' to the instruction~$\ell$, where $w(c)$ maps each
+  preference value to a short natural-language phrase
+  (\eg{}, ``grasp low'' or ``wide clearance''). The \emph{preference-inference}
+  direction reuses no new module: we pose the preference as a binary visual
+  question and read it off the backbone's own language head as a single answer
+  token. Because the two read-outs share the backbone, source training ties
+  recognition and control together---the representation learns features that are
+  both \emph{discriminative} of the preference and \emph{grounded} in executable
+  behavior.
+NEW:
+  \textbf{Architecture.}
+  SPT is a single vision--language--action model with a shared backbone and two
+  read-outs. The backbone is a pretrained vision--language model (VLM) that
+  encodes the multi-view observation, the proprioceptive state, and the text
+  prompt. An \emph{action expert} decodes the backbone features into an action
+  chunk; we condition it on the preference through language, appending
+  ``Preference:~$w(c)$'' to the instruction~$\ell$, where $w(c)$ is a fixed short
+  phrase for each preference value (\eg, ``grasp low''). For preference
+  prediction we add no new module: we pose a binary question about the preference
+  and read the answer off the VLM's language head as a single token. Because both
+  roles read the same backbone, training the predictor also shapes the features
+  the policy uses.
+REASON: (a) de-AI (drop "ties recognition and control together---...",
+  em-dashes, extra emphasis); (b) "continuous end-effector action chunks"
+  conflicts with the implementation (14-D joint actions); changed to a neutral
+  "action chunk".
+
+
+--- C4.  Proprioceptive-token paragraph: de-AI + drop an unsupported claim
+OLD (lines 211-222):
+  A preference is realized in \emph{how} the robot moves, and its visual signature
+  is often small and viewpoint-dependent. We therefore ground the inference
+  direction in the executed trajectory: a light encoder $\phi$ maps the
+  active end-effector pose over the clip to a learned token that we inject into the
+  VLM input alongside the images. Providing this proprioceptive token---rather than
+  the pose as numeric text, which the model learns to ignore---is what makes the
+  self-labels reliable enough to transfer across tasks; removing it collapses
+  inference to a near-chance prior (Section~\ref{sec:experiments}). The
+  conditioning phrase $w(c)$ and the inference answer token are decoupled and may
+  use different surface forms (\eg{}, \emph{near}/\emph{far} for inference,
+  \emph{narrow}/\emph{wide detour} for conditioning), provided both maps are fixed
+  throughout training.
+NEW:
+  A preference is expressed mainly in how the robot moves, and is often only
+  weakly visible in the camera views. We therefore also give the predictor the
+  robot's proprioceptive state: a small MLP $\phi$ encodes the active
+  end-effector pose over the clip into one token, which we insert into the VLM
+  input next to the image tokens. We pass the pose as a learned token rather than
+  as numeric text, which the model tends to ignore. The conditioning phrase
+  $w(c)$ and the answer token may differ in surface form (\eg, \emph{near}/%
+  \emph{far} for the question, \emph{narrow}/\emph{wide} for the prompt), as long
+  as both are fixed.
+REASON: (a) de-AI (em-dashes); (b) DROP "removing it collapses inference to a
+  near-chance prior (Section~\ref{sec:experiments})" — there is no state-token
+  on/off ablation in the paper (the 2x2 ablates VQA x PL, not the token), so
+  the claim has no supporting result. If you want to keep the claim, add a
+  state-token on/off ablation; otherwise this clause must go.
+
+
+--- C5.  Stage B closing: minor em-dash
+OLD (line ~260):
+  No ground-truth target preference is used, and the inference branch is not
+  updated---the model bootstraps entirely from its own source-trained
+  understanding.
+NEW:
+  No ground-truth target preference is used, and the inference branch is not
+  updated; the model bootstraps from its own source-trained understanding.
+REASON: minor de-em-dash; "entirely" is filler.
+
+
+--- C6.  Leftover commented-out duality paragraph
+OLD (lines 185-193): the commented block beginning
+  % The same scene also admits the \emph{inverse} question: ...
+  ... % prompts (Figure~\ref{fig:method}).
+ACTION: DELETE  (it is dead commented text from the previous draft)
+REASON: cleanup; not needed.
+
+
+###########################################################################
+D. PROBLEM FORMULATION
+###########################################################################
+
+--- D1.  Action space wording (consistency with implementation)
+OLD (line ~148):
+  A demonstration is a trajectory $\xi=\{(o_t,s_t,a_t)\}_{t=1}^{T}$ of multi-view observations $o_t$, proprioceptive state $s_t$, and end-effector actions $a_t$, executed under some preference $c\in\mathcal{C}$.
+NEW:
+  A demonstration is a trajectory $\xi=\{(o_t,s_t,a_t)\}_{t=1}^{T}$ of multi-view observations $o_t$, proprioceptive state $s_t$, and actions $a_t$, executed under some preference $c\in\mathcal{C}$.
+REASON: the implementation uses 14-D joint actions; keep the formulation
+  action-space-agnostic so Methods/Formulation/Experiments agree.
+
+
+###########################################################################
+E. EXPERIMENTS   (sync with the edits already agreed but not applied here)
+###########################################################################
+
+--- E1.  Undefined cross-reference: label is sec:setup, refs say sec:exp-setup
+OLD (line ~467):  configurations of\n  Section~\ref{sec:exp-setup}
+OLD (line ~481, in the table caption):  (Section~\ref{sec:exp-setup}).
+NEW: in both places change  \ref{sec:exp-setup}  ->  \ref{sec:setup}
+REASON: the Experimental Setup subsection is labeled \label{sec:setup}
+  (line 283); sec:exp-setup is undefined and renders as "Section ??".
+
+
+--- E2.  Remove the simulation phi-distribution figure (you said delete both)
+ACTION: DELETE the whole figure environment at lines ~437-448
+  (\begin{figure} ... \caption{\textbf{Preference-following in simulation.} ...}
+   \label{fig:sim_dist} \end{figure})
+REASON: figure not needed; the paragraph above it already has no \ref to it.
+
+
+--- E3.  Remove the real-robot trajectory figure
+ACTION: DELETE the whole figure environment at lines ~450-461
+  (\begin{figure} ... \caption{\textbf{Real-robot trajectories.} ...}
+   \label{fig:real_overlay} \end{figure})
+REASON: figure not needed; also frees the fig:real_overlay label (see B2).
+
+
+--- E4.  (Optional) Remove the dead commented figure placeholders
+ACTION: DELETE the commented blocks at lines ~514-532
+REASON: cleanup; they duplicate fig:real_overlay / fig:sim_dist.
+
+
+=============================================================================
+NOTE on EE vs joint (cross-section): with C3 + D1 applied, Methods and the
+Problem Formulation no longer say "end-effector"; the only place that commits
+to an action space is the Implementation paragraph in Experiments
+("14-D joint action chunks"), which is correct. No further change needed.
+=============================================================================

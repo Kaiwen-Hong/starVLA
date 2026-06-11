@@ -1,0 +1,802 @@
+{
+  "stamp_seal6_hv/episode0": {
+    "action_prompt_label": "wide detour",
+    "pref_key": "hv",
+    "decision": "keep",
+    "gt_pref_key": "hv",
+    "gt_match": true,
+    "feature": 0.2359
+  },
+  "stamp_seal6_hv/episode1": {
+    "action_prompt_label": "wide detour",
+    "pref_key": "hv",
+    "decision": "keep",
+    "gt_pref_key": "hv",
+    "gt_match": true,
+    "feature": 0.2053
+  },
+  "stamp_seal6_hv/episode10": {
+    "action_prompt_label": "wide detour",
+    "pref_key": "hv",
+    "decision": "keep",
+    "gt_pref_key": "hv",
+    "gt_match": true,
+    "feature": 0.2137
+  },
+  "stamp_seal6_hv/episode11": {
+    "action_prompt_label": "wide detour",
+    "pref_key": "hv",
+    "decision": "keep",
+    "gt_pref_key": "hv",
+    "gt_match": true,
+    "feature": 0.2364
+  },
+  "stamp_seal6_hv/episode12": {
+    "action_prompt_label": "wide detour",
+    "pref_key": "hv",
+    "decision": "keep",
+    "gt_pref_key": "hv",
+    "gt_match": true,
+    "feature": 0.2279
+  },
+  "stamp_seal6_hv/episode13": {
+    "action_prompt_label": "wide detour",
+    "pref_key": "hv",
+    "decision": "keep",
+    "gt_pref_key": "hv",
+    "gt_match": true,
+    "feature": 0.2296
+  },
+  "stamp_seal6_hv/episode14": {
+    "action_prompt_label": "wide detour",
+    "pref_key": "hv",
+    "decision": "keep",
+    "gt_pref_key": "hv",
+    "gt_match": true,
+    "feature": 0.2412
+  },
+  "stamp_seal6_hv/episode15": {
+    "action_prompt_label": "wide detour",
+    "pref_key": "hv",
+    "decision": "keep",
+    "gt_pref_key": "hv",
+    "gt_match": true,
+    "feature": 0.2004
+  },
+  "stamp_seal6_hv/episode16": {
+    "action_prompt_label": "wide detour",
+    "pref_key": "hv",
+    "decision": "keep",
+    "gt_pref_key": "hv",
+    "gt_match": true,
+    "feature": 0.2075
+  },
+  "stamp_seal6_hv/episode17": {
+    "action_prompt_label": "narrow detour",
+    "pref_key": "lv",
+    "decision": "keep",
+    "gt_pref_key": "hv",
+    "gt_match": false,
+    "feature": 0.1145
+  },
+  "stamp_seal6_hv/episode18": {
+    "action_prompt_label": "wide detour",
+    "pref_key": "hv",
+    "decision": "keep",
+    "gt_pref_key": "hv",
+    "gt_match": true,
+    "feature": 0.2115
+  },
+  "stamp_seal6_hv/episode19": {
+    "action_prompt_label": "narrow detour",
+    "pref_key": "lv",
+    "decision": "keep",
+    "gt_pref_key": "hv",
+    "gt_match": false,
+    "feature": 0.1092
+  },
+  "stamp_seal6_hv/episode2": {
+    "action_prompt_label": "wide detour",
+    "pref_key": "hv",
+    "decision": "keep",
+    "gt_pref_key": "hv",
+    "gt_match": true,
+    "feature": 0.2302
+  },
+  "stamp_seal6_hv/episode20": {
+    "action_prompt_label": "wide detour",
+    "pref_key": "hv",
+    "decision": "keep",
+    "gt_pref_key": "hv",
+    "gt_match": true,
+    "feature": 0.2324
+  },
+  "stamp_seal6_hv/episode21": {
+    "action_prompt_label": "wide detour",
+    "pref_key": "hv",
+    "decision": "keep",
+    "gt_pref_key": "hv",
+    "gt_match": true,
+    "feature": 0.2346
+  },
+  "stamp_seal6_hv/episode22": {
+    "action_prompt_label": "wide detour",
+    "pref_key": "hv",
+    "decision": "keep",
+    "gt_pref_key": "hv",
+    "gt_match": true,
+    "feature": 0.2423
+  },
+  "stamp_seal6_hv/episode23": {
+    "action_prompt_label": "narrow detour",
+    "pref_key": "lv",
+    "decision": "keep",
+    "gt_pref_key": "hv",
+    "gt_match": false,
+    "feature": 0.1344
+  },
+  "stamp_seal6_hv/episode24": {
+    "action_prompt_label": "wide detour",
+    "pref_key": "hv",
+    "decision": "keep",
+    "gt_pref_key": "hv",
+    "gt_match": true,
+    "feature": 0.2321
+  },
+  "stamp_seal6_hv/episode25": {
+    "action_prompt_label": "wide detour",
+    "pref_key": "hv",
+    "decision": "keep",
+    "gt_pref_key": "hv",
+    "gt_match": true,
+    "feature": 0.2363
+  },
+  "stamp_seal6_hv/episode26": {
+    "action_prompt_label": "wide detour",
+    "pref_key": "hv",
+    "decision": "keep",
+    "gt_pref_key": "hv",
+    "gt_match": true,
+    "feature": 0.2076
+  },
+  "stamp_seal6_hv/episode27": {
+    "action_prompt_label": "wide detour",
+    "pref_key": "hv",
+    "decision": "keep",
+    "gt_pref_key": "hv",
+    "gt_match": true,
+    "feature": 0.2221
+  },
+  "stamp_seal6_hv/episode28": {
+    "action_prompt_label": "narrow detour",
+    "pref_key": "lv",
+    "decision": "keep",
+    "gt_pref_key": "hv",
+    "gt_match": false,
+    "feature": 0.1441
+  },
+  "stamp_seal6_hv/episode29": {
+    "action_prompt_label": "wide detour",
+    "pref_key": "hv",
+    "decision": "keep",
+    "gt_pref_key": "hv",
+    "gt_match": true,
+    "feature": 0.2492
+  },
+  "stamp_seal6_hv/episode3": {
+    "action_prompt_label": "wide detour",
+    "pref_key": "hv",
+    "decision": "keep",
+    "gt_pref_key": "hv",
+    "gt_match": true,
+    "feature": 0.2177
+  },
+  "stamp_seal6_hv/episode30": {
+    "action_prompt_label": "narrow detour",
+    "pref_key": "lv",
+    "decision": "keep",
+    "gt_pref_key": "hv",
+    "gt_match": false,
+    "feature": 0.1408
+  },
+  "stamp_seal6_hv/episode31": {
+    "action_prompt_label": "wide detour",
+    "pref_key": "hv",
+    "decision": "keep",
+    "gt_pref_key": "hv",
+    "gt_match": true,
+    "feature": 0.2281
+  },
+  "stamp_seal6_hv/episode32": {
+    "action_prompt_label": "narrow detour",
+    "pref_key": "lv",
+    "decision": "keep",
+    "gt_pref_key": "hv",
+    "gt_match": false,
+    "feature": 0.1103
+  },
+  "stamp_seal6_hv/episode33": {
+    "action_prompt_label": "wide detour",
+    "pref_key": "hv",
+    "decision": "keep",
+    "gt_pref_key": "hv",
+    "gt_match": true,
+    "feature": 0.2051
+  },
+  "stamp_seal6_hv/episode34": {
+    "action_prompt_label": "wide detour",
+    "pref_key": "hv",
+    "decision": "keep",
+    "gt_pref_key": "hv",
+    "gt_match": true,
+    "feature": 0.232
+  },
+  "stamp_seal6_hv/episode35": {
+    "action_prompt_label": "wide detour",
+    "pref_key": "hv",
+    "decision": "keep",
+    "gt_pref_key": "hv",
+    "gt_match": true,
+    "feature": 0.2306
+  },
+  "stamp_seal6_hv/episode36": {
+    "action_prompt_label": "wide detour",
+    "pref_key": "hv",
+    "decision": "keep",
+    "gt_pref_key": "hv",
+    "gt_match": true,
+    "feature": 0.2102
+  },
+  "stamp_seal6_hv/episode37": {
+    "action_prompt_label": "wide detour",
+    "pref_key": "hv",
+    "decision": "keep",
+    "gt_pref_key": "hv",
+    "gt_match": true,
+    "feature": 0.2101
+  },
+  "stamp_seal6_hv/episode38": {
+    "action_prompt_label": "wide detour",
+    "pref_key": "hv",
+    "decision": "keep",
+    "gt_pref_key": "hv",
+    "gt_match": true,
+    "feature": 0.227
+  },
+  "stamp_seal6_hv/episode39": {
+    "action_prompt_label": "narrow detour",
+    "pref_key": "lv",
+    "decision": "keep",
+    "gt_pref_key": "hv",
+    "gt_match": false,
+    "feature": 0.0814
+  },
+  "stamp_seal6_hv/episode4": {
+    "action_prompt_label": "wide detour",
+    "pref_key": "hv",
+    "decision": "keep",
+    "gt_pref_key": "hv",
+    "gt_match": true,
+    "feature": 0.1805
+  },
+  "stamp_seal6_hv/episode40": {
+    "action_prompt_label": "wide detour",
+    "pref_key": "hv",
+    "decision": "keep",
+    "gt_pref_key": "hv",
+    "gt_match": true,
+    "feature": 0.2161
+  },
+  "stamp_seal6_hv/episode41": {
+    "action_prompt_label": "wide detour",
+    "pref_key": "hv",
+    "decision": "keep",
+    "gt_pref_key": "hv",
+    "gt_match": true,
+    "feature": 0.1543
+  },
+  "stamp_seal6_hv/episode42": {
+    "action_prompt_label": "wide detour",
+    "pref_key": "hv",
+    "decision": "keep",
+    "gt_pref_key": "hv",
+    "gt_match": true,
+    "feature": 0.1651
+  },
+  "stamp_seal6_hv/episode43": {
+    "action_prompt_label": "wide detour",
+    "pref_key": "hv",
+    "decision": "keep",
+    "gt_pref_key": "hv",
+    "gt_match": true,
+    "feature": 0.1542
+  },
+  "stamp_seal6_hv/episode44": {
+    "action_prompt_label": "wide detour",
+    "pref_key": "hv",
+    "decision": "keep",
+    "gt_pref_key": "hv",
+    "gt_match": true,
+    "feature": 0.2307
+  },
+  "stamp_seal6_hv/episode45": {
+    "action_prompt_label": "narrow detour",
+    "pref_key": "lv",
+    "decision": "keep",
+    "gt_pref_key": "hv",
+    "gt_match": false,
+    "feature": 0.1492
+  },
+  "stamp_seal6_hv/episode46": {
+    "action_prompt_label": "wide detour",
+    "pref_key": "hv",
+    "decision": "keep",
+    "gt_pref_key": "hv",
+    "gt_match": true,
+    "feature": 0.21
+  },
+  "stamp_seal6_hv/episode47": {
+    "action_prompt_label": "wide detour",
+    "pref_key": "hv",
+    "decision": "keep",
+    "gt_pref_key": "hv",
+    "gt_match": true,
+    "feature": 0.2209
+  },
+  "stamp_seal6_hv/episode48": {
+    "action_prompt_label": "wide detour",
+    "pref_key": "hv",
+    "decision": "keep",
+    "gt_pref_key": "hv",
+    "gt_match": true,
+    "feature": 0.1989
+  },
+  "stamp_seal6_hv/episode49": {
+    "action_prompt_label": "wide detour",
+    "pref_key": "hv",
+    "decision": "keep",
+    "gt_pref_key": "hv",
+    "gt_match": true,
+    "feature": 0.1997
+  },
+  "stamp_seal6_hv/episode5": {
+    "action_prompt_label": "wide detour",
+    "pref_key": "hv",
+    "decision": "keep",
+    "gt_pref_key": "hv",
+    "gt_match": true,
+    "feature": 0.2299
+  },
+  "stamp_seal6_hv/episode6": {
+    "action_prompt_label": "wide detour",
+    "pref_key": "hv",
+    "decision": "keep",
+    "gt_pref_key": "hv",
+    "gt_match": true,
+    "feature": 0.2166
+  },
+  "stamp_seal6_hv/episode7": {
+    "action_prompt_label": "wide detour",
+    "pref_key": "hv",
+    "decision": "keep",
+    "gt_pref_key": "hv",
+    "gt_match": true,
+    "feature": 0.1945
+  },
+  "stamp_seal6_hv/episode8": {
+    "action_prompt_label": "wide detour",
+    "pref_key": "hv",
+    "decision": "keep",
+    "gt_pref_key": "hv",
+    "gt_match": true,
+    "feature": 0.2332
+  },
+  "stamp_seal6_hv/episode9": {
+    "action_prompt_label": "wide detour",
+    "pref_key": "hv",
+    "decision": "keep",
+    "gt_pref_key": "hv",
+    "gt_match": true,
+    "feature": 0.2454
+  },
+  "stamp_seal6_lv/episode0": {
+    "action_prompt_label": "narrow detour",
+    "pref_key": "lv",
+    "decision": "keep",
+    "gt_pref_key": "lv",
+    "gt_match": true,
+    "feature": 0.0911
+  },
+  "stamp_seal6_lv/episode1": {
+    "action_prompt_label": "narrow detour",
+    "pref_key": "lv",
+    "decision": "keep",
+    "gt_pref_key": "lv",
+    "gt_match": true,
+    "feature": 0.0618
+  },
+  "stamp_seal6_lv/episode10": {
+    "action_prompt_label": "narrow detour",
+    "pref_key": "lv",
+    "decision": "keep",
+    "gt_pref_key": "lv",
+    "gt_match": true,
+    "feature": 0.085
+  },
+  "stamp_seal6_lv/episode11": {
+    "action_prompt_label": "narrow detour",
+    "pref_key": "lv",
+    "decision": "keep",
+    "gt_pref_key": "lv",
+    "gt_match": true,
+    "feature": 0.0958
+  },
+  "stamp_seal6_lv/episode12": {
+    "action_prompt_label": "narrow detour",
+    "pref_key": "lv",
+    "decision": "keep",
+    "gt_pref_key": "lv",
+    "gt_match": true,
+    "feature": 0.0726
+  },
+  "stamp_seal6_lv/episode13": {
+    "action_prompt_label": "narrow detour",
+    "pref_key": "lv",
+    "decision": "keep",
+    "gt_pref_key": "lv",
+    "gt_match": true,
+    "feature": 0.0707
+  },
+  "stamp_seal6_lv/episode14": {
+    "action_prompt_label": "narrow detour",
+    "pref_key": "lv",
+    "decision": "keep",
+    "gt_pref_key": "lv",
+    "gt_match": true,
+    "feature": 0.0738
+  },
+  "stamp_seal6_lv/episode15": {
+    "action_prompt_label": "narrow detour",
+    "pref_key": "lv",
+    "decision": "keep",
+    "gt_pref_key": "lv",
+    "gt_match": true,
+    "feature": 0.0892
+  },
+  "stamp_seal6_lv/episode16": {
+    "action_prompt_label": "narrow detour",
+    "pref_key": "lv",
+    "decision": "keep",
+    "gt_pref_key": "lv",
+    "gt_match": true,
+    "feature": 0.0853
+  },
+  "stamp_seal6_lv/episode17": {
+    "action_prompt_label": "narrow detour",
+    "pref_key": "lv",
+    "decision": "keep",
+    "gt_pref_key": "lv",
+    "gt_match": true,
+    "feature": 0.0827
+  },
+  "stamp_seal6_lv/episode18": {
+    "action_prompt_label": "narrow detour",
+    "pref_key": "lv",
+    "decision": "keep",
+    "gt_pref_key": "lv",
+    "gt_match": true,
+    "feature": 0.0951
+  },
+  "stamp_seal6_lv/episode19": {
+    "action_prompt_label": "narrow detour",
+    "pref_key": "lv",
+    "decision": "keep",
+    "gt_pref_key": "lv",
+    "gt_match": true,
+    "feature": 0.0935
+  },
+  "stamp_seal6_lv/episode2": {
+    "action_prompt_label": "narrow detour",
+    "pref_key": "lv",
+    "decision": "keep",
+    "gt_pref_key": "lv",
+    "gt_match": true,
+    "feature": 0.0907
+  },
+  "stamp_seal6_lv/episode20": {
+    "action_prompt_label": "narrow detour",
+    "pref_key": "lv",
+    "decision": "keep",
+    "gt_pref_key": "lv",
+    "gt_match": true,
+    "feature": 0.0812
+  },
+  "stamp_seal6_lv/episode21": {
+    "action_prompt_label": "narrow detour",
+    "pref_key": "lv",
+    "decision": "keep",
+    "gt_pref_key": "lv",
+    "gt_match": true,
+    "feature": 0.0706
+  },
+  "stamp_seal6_lv/episode22": {
+    "action_prompt_label": "narrow detour",
+    "pref_key": "lv",
+    "decision": "keep",
+    "gt_pref_key": "lv",
+    "gt_match": true,
+    "feature": 0.0773
+  },
+  "stamp_seal6_lv/episode23": {
+    "action_prompt_label": "narrow detour",
+    "pref_key": "lv",
+    "decision": "keep",
+    "gt_pref_key": "lv",
+    "gt_match": true,
+    "feature": 0.0717
+  },
+  "stamp_seal6_lv/episode24": {
+    "action_prompt_label": "narrow detour",
+    "pref_key": "lv",
+    "decision": "keep",
+    "gt_pref_key": "lv",
+    "gt_match": true,
+    "feature": 0.0863
+  },
+  "stamp_seal6_lv/episode25": {
+    "action_prompt_label": "narrow detour",
+    "pref_key": "lv",
+    "decision": "keep",
+    "gt_pref_key": "lv",
+    "gt_match": true,
+    "feature": 0.0798
+  },
+  "stamp_seal6_lv/episode26": {
+    "action_prompt_label": "narrow detour",
+    "pref_key": "lv",
+    "decision": "keep",
+    "gt_pref_key": "lv",
+    "gt_match": true,
+    "feature": 0.0788
+  },
+  "stamp_seal6_lv/episode27": {
+    "action_prompt_label": "narrow detour",
+    "pref_key": "lv",
+    "decision": "keep",
+    "gt_pref_key": "lv",
+    "gt_match": true,
+    "feature": 0.0878
+  },
+  "stamp_seal6_lv/episode28": {
+    "action_prompt_label": "narrow detour",
+    "pref_key": "lv",
+    "decision": "keep",
+    "gt_pref_key": "lv",
+    "gt_match": true,
+    "feature": 0.094
+  },
+  "stamp_seal6_lv/episode29": {
+    "action_prompt_label": "narrow detour",
+    "pref_key": "lv",
+    "decision": "keep",
+    "gt_pref_key": "lv",
+    "gt_match": true,
+    "feature": 0.0727
+  },
+  "stamp_seal6_lv/episode3": {
+    "action_prompt_label": "narrow detour",
+    "pref_key": "lv",
+    "decision": "keep",
+    "gt_pref_key": "lv",
+    "gt_match": true,
+    "feature": 0.084
+  },
+  "stamp_seal6_lv/episode30": {
+    "action_prompt_label": "narrow detour",
+    "pref_key": "lv",
+    "decision": "keep",
+    "gt_pref_key": "lv",
+    "gt_match": true,
+    "feature": 0.0857
+  },
+  "stamp_seal6_lv/episode31": {
+    "action_prompt_label": "narrow detour",
+    "pref_key": "lv",
+    "decision": "keep",
+    "gt_pref_key": "lv",
+    "gt_match": true,
+    "feature": 0.089
+  },
+  "stamp_seal6_lv/episode32": {
+    "action_prompt_label": "narrow detour",
+    "pref_key": "lv",
+    "decision": "keep",
+    "gt_pref_key": "lv",
+    "gt_match": true,
+    "feature": 0.066
+  },
+  "stamp_seal6_lv/episode33": {
+    "action_prompt_label": "narrow detour",
+    "pref_key": "lv",
+    "decision": "keep",
+    "gt_pref_key": "lv",
+    "gt_match": true,
+    "feature": 0.0786
+  },
+  "stamp_seal6_lv/episode34": {
+    "action_prompt_label": "narrow detour",
+    "pref_key": "lv",
+    "decision": "keep",
+    "gt_pref_key": "lv",
+    "gt_match": true,
+    "feature": 0.064
+  },
+  "stamp_seal6_lv/episode35": {
+    "action_prompt_label": "narrow detour",
+    "pref_key": "lv",
+    "decision": "keep",
+    "gt_pref_key": "lv",
+    "gt_match": true,
+    "feature": 0.0626
+  },
+  "stamp_seal6_lv/episode36": {
+    "action_prompt_label": "narrow detour",
+    "pref_key": "lv",
+    "decision": "keep",
+    "gt_pref_key": "lv",
+    "gt_match": true,
+    "feature": 0.0734
+  },
+  "stamp_seal6_lv/episode37": {
+    "action_prompt_label": "narrow detour",
+    "pref_key": "lv",
+    "decision": "keep",
+    "gt_pref_key": "lv",
+    "gt_match": true,
+    "feature": 0.0983
+  },
+  "stamp_seal6_lv/episode38": {
+    "action_prompt_label": "narrow detour",
+    "pref_key": "lv",
+    "decision": "keep",
+    "gt_pref_key": "lv",
+    "gt_match": true,
+    "feature": 0.0994
+  },
+  "stamp_seal6_lv/episode39": {
+    "action_prompt_label": "narrow detour",
+    "pref_key": "lv",
+    "decision": "keep",
+    "gt_pref_key": "lv",
+    "gt_match": true,
+    "feature": 0.0876
+  },
+  "stamp_seal6_lv/episode4": {
+    "action_prompt_label": "narrow detour",
+    "pref_key": "lv",
+    "decision": "keep",
+    "gt_pref_key": "lv",
+    "gt_match": true,
+    "feature": 0.0876
+  },
+  "stamp_seal6_lv/episode40": {
+    "action_prompt_label": "narrow detour",
+    "pref_key": "lv",
+    "decision": "keep",
+    "gt_pref_key": "lv",
+    "gt_match": true,
+    "feature": 0.0676
+  },
+  "stamp_seal6_lv/episode41": {
+    "action_prompt_label": "narrow detour",
+    "pref_key": "lv",
+    "decision": "keep",
+    "gt_pref_key": "lv",
+    "gt_match": true,
+    "feature": 0.0803
+  },
+  "stamp_seal6_lv/episode42": {
+    "action_prompt_label": "narrow detour",
+    "pref_key": "lv",
+    "decision": "keep",
+    "gt_pref_key": "lv",
+    "gt_match": true,
+    "feature": 0.0642
+  },
+  "stamp_seal6_lv/episode43": {
+    "action_prompt_label": "narrow detour",
+    "pref_key": "lv",
+    "decision": "keep",
+    "gt_pref_key": "lv",
+    "gt_match": true,
+    "feature": 0.0914
+  },
+  "stamp_seal6_lv/episode44": {
+    "action_prompt_label": "narrow detour",
+    "pref_key": "lv",
+    "decision": "keep",
+    "gt_pref_key": "lv",
+    "gt_match": true,
+    "feature": 0.086
+  },
+  "stamp_seal6_lv/episode45": {
+    "action_prompt_label": "narrow detour",
+    "pref_key": "lv",
+    "decision": "keep",
+    "gt_pref_key": "lv",
+    "gt_match": true,
+    "feature": 0.085
+  },
+  "stamp_seal6_lv/episode46": {
+    "action_prompt_label": "narrow detour",
+    "pref_key": "lv",
+    "decision": "keep",
+    "gt_pref_key": "lv",
+    "gt_match": true,
+    "feature": 0.092
+  },
+  "stamp_seal6_lv/episode47": {
+    "action_prompt_label": "narrow detour",
+    "pref_key": "lv",
+    "decision": "keep",
+    "gt_pref_key": "lv",
+    "gt_match": true,
+    "feature": 0.066
+  },
+  "stamp_seal6_lv/episode48": {
+    "action_prompt_label": "narrow detour",
+    "pref_key": "lv",
+    "decision": "keep",
+    "gt_pref_key": "lv",
+    "gt_match": true,
+    "feature": 0.0711
+  },
+  "stamp_seal6_lv/episode49": {
+    "action_prompt_label": "narrow detour",
+    "pref_key": "lv",
+    "decision": "keep",
+    "gt_pref_key": "lv",
+    "gt_match": true,
+    "feature": 0.0677
+  },
+  "stamp_seal6_lv/episode5": {
+    "action_prompt_label": "narrow detour",
+    "pref_key": "lv",
+    "decision": "keep",
+    "gt_pref_key": "lv",
+    "gt_match": true,
+    "feature": 0.0615
+  },
+  "stamp_seal6_lv/episode6": {
+    "action_prompt_label": "narrow detour",
+    "pref_key": "lv",
+    "decision": "keep",
+    "gt_pref_key": "lv",
+    "gt_match": true,
+    "feature": 0.084
+  },
+  "stamp_seal6_lv/episode7": {
+    "action_prompt_label": "narrow detour",
+    "pref_key": "lv",
+    "decision": "keep",
+    "gt_pref_key": "lv",
+    "gt_match": true,
+    "feature": 0.0965
+  },
+  "stamp_seal6_lv/episode8": {
+    "action_prompt_label": "narrow detour",
+    "pref_key": "lv",
+    "decision": "keep",
+    "gt_pref_key": "lv",
+    "gt_match": true,
+    "feature": 0.0758
+  },
+  "stamp_seal6_lv/episode9": {
+    "action_prompt_label": "narrow detour",
+    "pref_key": "lv",
+    "decision": "keep",
+    "gt_pref_key": "lv",
+    "gt_match": true,
+    "feature": 0.0595
+  }
+}

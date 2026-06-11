@@ -287,6 +287,7 @@ def get_pref_stageb_dataset(data_cfg, mode: str = "train", **kwargs) -> PrefHDF5
         image_size=tuple(_g("image_size", (224, 224))),
         stats_json_path=_g("stats_json_path", None),
         category=str(_g("pref_category", "contact")),
+        action_space=str(_g("action_space", "ee")),
         task_groups=tuple(task_groups) if task_groups else None,
         pref_keys=tuple(pref_keys) if pref_keys else None,
         split_val_fraction=val_fraction,

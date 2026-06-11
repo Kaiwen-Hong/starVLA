@@ -1,0 +1,187 @@
+{
+  "args": {
+    "cat": "place",
+    "steps": 1000,
+    "bs": 8,
+    "k": 3,
+    "lr": 0.001,
+    "readout": "lm_head",
+    "val_every": 200,
+    "n_val_per_leaf": 10,
+    "jitter": 5,
+    "mlp_baseline": true,
+    "tag": "place_lmhead"
+  },
+  "pref_keys": [
+    "center",
+    "corner"
+  ],
+  "question": "We are placing an object onto a target. Are we placing it in the middle or on the corner? Answer:",
+  "history": [
+    {
+      "step": 200,
+      "taskA": {
+        "acc": 0.95,
+        "bal_acc": 0.95,
+        "ce": 0.191,
+        "n": 160,
+        "pred_dist": {
+          "center": 84,
+          "corner": 76
+        }
+      },
+      "taskB": {
+        "acc": 0.9,
+        "bal_acc": 0.9,
+        "ce": 0.702,
+        "n": 20,
+        "pred_dist": {
+          "center": 12,
+          "corner": 8
+        }
+      },
+      "taskA_zeroed": {
+        "acc": 0.5,
+        "bal_acc": 0.5,
+        "ce": 4.544,
+        "n": 160,
+        "pred_dist": {
+          "center": 0,
+          "corner": 160
+        }
+      }
+    },
+    {
+      "step": 400,
+      "taskA": {
+        "acc": 0.981,
+        "bal_acc": 0.981,
+        "ce": 0.08,
+        "n": 160,
+        "pred_dist": {
+          "center": 77,
+          "corner": 83
+        }
+      },
+      "taskB": {
+        "acc": 0.95,
+        "bal_acc": 0.95,
+        "ce": 0.306,
+        "n": 20,
+        "pred_dist": {
+          "center": 11,
+          "corner": 9
+        }
+      },
+      "taskA_zeroed": {
+        "acc": 0.5,
+        "bal_acc": 0.5,
+        "ce": 5.362,
+        "n": 160,
+        "pred_dist": {
+          "center": 0,
+          "corner": 160
+        }
+      }
+    },
+    {
+      "step": 600,
+      "taskA": {
+        "acc": 1.0,
+        "bal_acc": 1.0,
+        "ce": 0.002,
+        "n": 160,
+        "pred_dist": {
+          "center": 80,
+          "corner": 80
+        }
+      },
+      "taskB": {
+        "acc": 0.75,
+        "bal_acc": 0.75,
+        "ce": 1.377,
+        "n": 20,
+        "pred_dist": {
+          "center": 15,
+          "corner": 5
+        }
+      },
+      "taskA_zeroed": {
+        "acc": 0.5,
+        "bal_acc": 0.5,
+        "ce": 6.501,
+        "n": 160,
+        "pred_dist": {
+          "center": 0,
+          "corner": 160
+        }
+      }
+    },
+    {
+      "step": 800,
+      "taskA": {
+        "acc": 1.0,
+        "bal_acc": 1.0,
+        "ce": 0.002,
+        "n": 160,
+        "pred_dist": {
+          "center": 80,
+          "corner": 80
+        }
+      },
+      "taskB": {
+        "acc": 0.75,
+        "bal_acc": 0.75,
+        "ce": 1.265,
+        "n": 20,
+        "pred_dist": {
+          "center": 15,
+          "corner": 5
+        }
+      },
+      "taskA_zeroed": {
+        "acc": 0.5,
+        "bal_acc": 0.5,
+        "ce": 6.515,
+        "n": 160,
+        "pred_dist": {
+          "center": 0,
+          "corner": 160
+        }
+      }
+    },
+    {
+      "step": 1000,
+      "taskA": {
+        "acc": 1.0,
+        "bal_acc": 1.0,
+        "ce": 0.002,
+        "n": 160,
+        "pred_dist": {
+          "center": 80,
+          "corner": 80
+        }
+      },
+      "taskB": {
+        "acc": 0.75,
+        "bal_acc": 0.75,
+        "ce": 1.343,
+        "n": 20,
+        "pred_dist": {
+          "center": 15,
+          "corner": 5
+        }
+      },
+      "taskA_zeroed": {
+        "acc": 0.5,
+        "bal_acc": 0.5,
+        "ce": 6.431,
+        "n": 160,
+        "pred_dist": {
+          "center": 0,
+          "corner": 160
+        }
+      }
+    }
+  ]
+}

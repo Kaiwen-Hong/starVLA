@@ -1,0 +1,802 @@
+{
+  "place_soap2_stand_center/episode0": {
+    "action_prompt_label": "corner placement",
+    "pref_key": "corner",
+    "decision": "keep",
+    "gt_pref_key": "center",
+    "gt_match": false,
+    "labeler": "vanilla_vlm_calib"
+  },
+  "place_soap2_stand_center/episode1": {
+    "action_prompt_label": "corner placement",
+    "pref_key": "corner",
+    "decision": "keep",
+    "gt_pref_key": "center",
+    "gt_match": false,
+    "labeler": "vanilla_vlm_calib"
+  },
+  "place_soap2_stand_center/episode2": {
+    "action_prompt_label": "corner placement",
+    "pref_key": "corner",
+    "decision": "keep",
+    "gt_pref_key": "center",
+    "gt_match": false,
+    "labeler": "vanilla_vlm_calib"
+  },
+  "place_soap2_stand_center/episode3": {
+    "action_prompt_label": "corner placement",
+    "pref_key": "corner",
+    "decision": "keep",
+    "gt_pref_key": "center",
+    "gt_match": false,
+    "labeler": "vanilla_vlm_calib"
+  },
+  "place_soap2_stand_center/episode4": {
+    "action_prompt_label": "corner placement",
+    "pref_key": "corner",
+    "decision": "keep",
+    "gt_pref_key": "center",
+    "gt_match": false,
+    "labeler": "vanilla_vlm_calib"
+  },
+  "place_soap2_stand_center/episode5": {
+    "action_prompt_label": "center placement",
+    "pref_key": "center",
+    "decision": "keep",
+    "gt_pref_key": "center",
+    "gt_match": true,
+    "labeler": "vanilla_vlm_calib"
+  },
+  "place_soap2_stand_center/episode6": {
+    "action_prompt_label": "corner placement",
+    "pref_key": "corner",
+    "decision": "keep",
+    "gt_pref_key": "center",
+    "gt_match": false,
+    "labeler": "vanilla_vlm_calib"
+  },
+  "place_soap2_stand_center/episode7": {
+    "action_prompt_label": "corner placement",
+    "pref_key": "corner",
+    "decision": "keep",
+    "gt_pref_key": "center",
+    "gt_match": false,
+    "labeler": "vanilla_vlm_calib"
+  },
+  "place_soap2_stand_center/episode8": {
+    "action_prompt_label": "corner placement",
+    "pref_key": "corner",
+    "decision": "keep",
+    "gt_pref_key": "center",
+    "gt_match": false,
+    "labeler": "vanilla_vlm_calib"
+  },
+  "place_soap2_stand_center/episode9": {
+    "action_prompt_label": "center placement",
+    "pref_key": "center",
+    "decision": "keep",
+    "gt_pref_key": "center",
+    "gt_match": true,
+    "labeler": "vanilla_vlm_calib"
+  },
+  "place_soap2_stand_center/episode10": {
+    "action_prompt_label": "center placement",
+    "pref_key": "center",
+    "decision": "keep",
+    "gt_pref_key": "center",
+    "gt_match": true,
+    "labeler": "vanilla_vlm_calib"
+  },
+  "place_soap2_stand_center/episode11": {
+    "action_prompt_label": "corner placement",
+    "pref_key": "corner",
+    "decision": "keep",
+    "gt_pref_key": "center",
+    "gt_match": false,
+    "labeler": "vanilla_vlm_calib"
+  },
+  "place_soap2_stand_center/episode12": {
+    "action_prompt_label": "corner placement",
+    "pref_key": "corner",
+    "decision": "keep",
+    "gt_pref_key": "center",
+    "gt_match": false,
+    "labeler": "vanilla_vlm_calib"
+  },
+  "place_soap2_stand_center/episode13": {
+    "action_prompt_label": "corner placement",
+    "pref_key": "corner",
+    "decision": "keep",
+    "gt_pref_key": "center",
+    "gt_match": false,
+    "labeler": "vanilla_vlm_calib"
+  },
+  "place_soap2_stand_center/episode14": {
+    "action_prompt_label": "corner placement",
+    "pref_key": "corner",
+    "decision": "keep",
+    "gt_pref_key": "center",
+    "gt_match": false,
+    "labeler": "vanilla_vlm_calib"
+  },
+  "place_soap2_stand_center/episode15": {
+    "action_prompt_label": "center placement",
+    "pref_key": "center",
+    "decision": "keep",
+    "gt_pref_key": "center",
+    "gt_match": true,
+    "labeler": "vanilla_vlm_calib"
+  },
+  "place_soap2_stand_center/episode16": {
+    "action_prompt_label": "center placement",
+    "pref_key": "center",
+    "decision": "keep",
+    "gt_pref_key": "center",
+    "gt_match": true,
+    "labeler": "vanilla_vlm_calib"
+  },
+  "place_soap2_stand_center/episode17": {
+    "action_prompt_label": "corner placement",
+    "pref_key": "corner",
+    "decision": "keep",
+    "gt_pref_key": "center",
+    "gt_match": false,
+    "labeler": "vanilla_vlm_calib"
+  },
+  "place_soap2_stand_center/episode18": {
+    "action_prompt_label": "corner placement",
+    "pref_key": "corner",
+    "decision": "keep",
+    "gt_pref_key": "center",
+    "gt_match": false,
+    "labeler": "vanilla_vlm_calib"
+  },
+  "place_soap2_stand_center/episode19": {
+    "action_prompt_label": "corner placement",
+    "pref_key": "corner",
+    "decision": "keep",
+    "gt_pref_key": "center",
+    "gt_match": false,
+    "labeler": "vanilla_vlm_calib"
+  },
+  "place_soap2_stand_center/episode20": {
+    "action_prompt_label": "corner placement",
+    "pref_key": "corner",
+    "decision": "keep",
+    "gt_pref_key": "center",
+    "gt_match": false,
+    "labeler": "vanilla_vlm_calib"
+  },
+  "place_soap2_stand_center/episode21": {
+    "action_prompt_label": "corner placement",
+    "pref_key": "corner",
+    "decision": "keep",
+    "gt_pref_key": "center",
+    "gt_match": false,
+    "labeler": "vanilla_vlm_calib"
+  },
+  "place_soap2_stand_center/episode22": {
+    "action_prompt_label": "corner placement",
+    "pref_key": "corner",
+    "decision": "keep",
+    "gt_pref_key": "center",
+    "gt_match": false,
+    "labeler": "vanilla_vlm_calib"
+  },
+  "place_soap2_stand_center/episode23": {
+    "action_prompt_label": "center placement",
+    "pref_key": "center",
+    "decision": "keep",
+    "gt_pref_key": "center",
+    "gt_match": true,
+    "labeler": "vanilla_vlm_calib"
+  },
+  "place_soap2_stand_center/episode24": {
+    "action_prompt_label": "corner placement",
+    "pref_key": "corner",
+    "decision": "keep",
+    "gt_pref_key": "center",
+    "gt_match": false,
+    "labeler": "vanilla_vlm_calib"
+  },
+  "place_soap2_stand_center/episode25": {
+    "action_prompt_label": "corner placement",
+    "pref_key": "corner",
+    "decision": "keep",
+    "gt_pref_key": "center",
+    "gt_match": false,
+    "labeler": "vanilla_vlm_calib"
+  },
+  "place_soap2_stand_center/episode26": {
+    "action_prompt_label": "center placement",
+    "pref_key": "center",
+    "decision": "keep",
+    "gt_pref_key": "center",
+    "gt_match": true,
+    "labeler": "vanilla_vlm_calib"
+  },
+  "place_soap2_stand_center/episode27": {
+    "action_prompt_label": "corner placement",
+    "pref_key": "corner",
+    "decision": "keep",
+    "gt_pref_key": "center",
+    "gt_match": false,
+    "labeler": "vanilla_vlm_calib"
+  },
+  "place_soap2_stand_center/episode28": {
+    "action_prompt_label": "center placement",
+    "pref_key": "center",
+    "decision": "keep",
+    "gt_pref_key": "center",
+    "gt_match": true,
+    "labeler": "vanilla_vlm_calib"
+  },
+  "place_soap2_stand_center/episode29": {
+    "action_prompt_label": "corner placement",
+    "pref_key": "corner",
+    "decision": "keep",
+    "gt_pref_key": "center",
+    "gt_match": false,
+    "labeler": "vanilla_vlm_calib"
+  },
+  "place_soap2_stand_center/episode30": {
+    "action_prompt_label": "corner placement",
+    "pref_key": "corner",
+    "decision": "keep",
+    "gt_pref_key": "center",
+    "gt_match": false,
+    "labeler": "vanilla_vlm_calib"
+  },
+  "place_soap2_stand_center/episode31": {
+    "action_prompt_label": "corner placement",
+    "pref_key": "corner",
+    "decision": "keep",
+    "gt_pref_key": "center",
+    "gt_match": false,
+    "labeler": "vanilla_vlm_calib"
+  },
+  "place_soap2_stand_center/episode32": {
+    "action_prompt_label": "center placement",
+    "pref_key": "center",
+    "decision": "keep",
+    "gt_pref_key": "center",
+    "gt_match": true,
+    "labeler": "vanilla_vlm_calib"
+  },
+  "place_soap2_stand_center/episode33": {
+    "action_prompt_label": "center placement",
+    "pref_key": "center",
+    "decision": "keep",
+    "gt_pref_key": "center",
+    "gt_match": true,
+    "labeler": "vanilla_vlm_calib"
+  },
+  "place_soap2_stand_center/episode34": {
+    "action_prompt_label": "center placement",
+    "pref_key": "center",
+    "decision": "keep",
+    "gt_pref_key": "center",
+    "gt_match": true,
+    "labeler": "vanilla_vlm_calib"
+  },
+  "place_soap2_stand_center/episode35": {
+    "action_prompt_label": "corner placement",
+    "pref_key": "corner",
+    "decision": "keep",
+    "gt_pref_key": "center",
+    "gt_match": false,
+    "labeler": "vanilla_vlm_calib"
+  },
+  "place_soap2_stand_center/episode36": {
+    "action_prompt_label": "corner placement",
+    "pref_key": "corner",
+    "decision": "keep",
+    "gt_pref_key": "center",
+    "gt_match": false,
+    "labeler": "vanilla_vlm_calib"
+  },
+  "place_soap2_stand_center/episode37": {
+    "action_prompt_label": "corner placement",
+    "pref_key": "corner",
+    "decision": "keep",
+    "gt_pref_key": "center",
+    "gt_match": false,
+    "labeler": "vanilla_vlm_calib"
+  },
+  "place_soap2_stand_center/episode38": {
+    "action_prompt_label": "corner placement",
+    "pref_key": "corner",
+    "decision": "keep",
+    "gt_pref_key": "center",
+    "gt_match": false,
+    "labeler": "vanilla_vlm_calib"
+  },
+  "place_soap2_stand_center/episode39": {
+    "action_prompt_label": "corner placement",
+    "pref_key": "corner",
+    "decision": "keep",
+    "gt_pref_key": "center",
+    "gt_match": false,
+    "labeler": "vanilla_vlm_calib"
+  },
+  "place_soap2_stand_center/episode40": {
+    "action_prompt_label": "corner placement",
+    "pref_key": "corner",
+    "decision": "keep",
+    "gt_pref_key": "center",
+    "gt_match": false,
+    "labeler": "vanilla_vlm_calib"
+  },
+  "place_soap2_stand_center/episode41": {
+    "action_prompt_label": "corner placement",
+    "pref_key": "corner",
+    "decision": "keep",
+    "gt_pref_key": "center",
+    "gt_match": false,
+    "labeler": "vanilla_vlm_calib"
+  },
+  "place_soap2_stand_center/episode42": {
+    "action_prompt_label": "corner placement",
+    "pref_key": "corner",
+    "decision": "keep",
+    "gt_pref_key": "center",
+    "gt_match": false,
+    "labeler": "vanilla_vlm_calib"
+  },
+  "place_soap2_stand_center/episode43": {
+    "action_prompt_label": "corner placement",
+    "pref_key": "corner",
+    "decision": "keep",
+    "gt_pref_key": "center",
+    "gt_match": false,
+    "labeler": "vanilla_vlm_calib"
+  },
+  "place_soap2_stand_center/episode44": {
+    "action_prompt_label": "corner placement",
+    "pref_key": "corner",
+    "decision": "keep",
+    "gt_pref_key": "center",
+    "gt_match": false,
+    "labeler": "vanilla_vlm_calib"
+  },
+  "place_soap2_stand_center/episode45": {
+    "action_prompt_label": "corner placement",
+    "pref_key": "corner",
+    "decision": "keep",
+    "gt_pref_key": "center",
+    "gt_match": false,
+    "labeler": "vanilla_vlm_calib"
+  },
+  "place_soap2_stand_center/episode46": {
+    "action_prompt_label": "corner placement",
+    "pref_key": "corner",
+    "decision": "keep",
+    "gt_pref_key": "center",
+    "gt_match": false,
+    "labeler": "vanilla_vlm_calib"
+  },
+  "place_soap2_stand_center/episode47": {
+    "action_prompt_label": "corner placement",
+    "pref_key": "corner",
+    "decision": "keep",
+    "gt_pref_key": "center",
+    "gt_match": false,
+    "labeler": "vanilla_vlm_calib"
+  },
+  "place_soap2_stand_center/episode48": {
+    "action_prompt_label": "corner placement",
+    "pref_key": "corner",
+    "decision": "keep",
+    "gt_pref_key": "center",
+    "gt_match": false,
+    "labeler": "vanilla_vlm_calib"
+  },
+  "place_soap2_stand_center/episode49": {
+    "action_prompt_label": "corner placement",
+    "pref_key": "corner",
+    "decision": "keep",
+    "gt_pref_key": "center",
+    "gt_match": false,
+    "labeler": "vanilla_vlm_calib"
+  },
+  "place_soap2_stand_corner/episode0": {
+    "action_prompt_label": "corner placement",
+    "pref_key": "corner",
+    "decision": "keep",
+    "gt_pref_key": "corner",
+    "gt_match": true,
+    "labeler": "vanilla_vlm_calib"
+  },
+  "place_soap2_stand_corner/episode1": {
+    "action_prompt_label": "corner placement",
+    "pref_key": "corner",
+    "decision": "keep",
+    "gt_pref_key": "corner",
+    "gt_match": true,
+    "labeler": "vanilla_vlm_calib"
+  },
+  "place_soap2_stand_corner/episode2": {
+    "action_prompt_label": "corner placement",
+    "pref_key": "corner",
+    "decision": "keep",
+    "gt_pref_key": "corner",
+    "gt_match": true,
+    "labeler": "vanilla_vlm_calib"
+  },
+  "place_soap2_stand_corner/episode3": {
+    "action_prompt_label": "corner placement",
+    "pref_key": "corner",
+    "decision": "keep",
+    "gt_pref_key": "corner",
+    "gt_match": true,
+    "labeler": "vanilla_vlm_calib"
+  },
+  "place_soap2_stand_corner/episode4": {
+    "action_prompt_label": "corner placement",
+    "pref_key": "corner",
+    "decision": "keep",
+    "gt_pref_key": "corner",
+    "gt_match": true,
+    "labeler": "vanilla_vlm_calib"
+  },
+  "place_soap2_stand_corner/episode5": {
+    "action_prompt_label": "corner placement",
+    "pref_key": "corner",
+    "decision": "keep",
+    "gt_pref_key": "corner",
+    "gt_match": true,
+    "labeler": "vanilla_vlm_calib"
+  },
+  "place_soap2_stand_corner/episode6": {
+    "action_prompt_label": "corner placement",
+    "pref_key": "corner",
+    "decision": "keep",
+    "gt_pref_key": "corner",
+    "gt_match": true,
+    "labeler": "vanilla_vlm_calib"
+  },
+  "place_soap2_stand_corner/episode7": {
+    "action_prompt_label": "corner placement",
+    "pref_key": "corner",
+    "decision": "keep",
+    "gt_pref_key": "corner",
+    "gt_match": true,
+    "labeler": "vanilla_vlm_calib"
+  },
+  "place_soap2_stand_corner/episode8": {
+    "action_prompt_label": "corner placement",
+    "pref_key": "corner",
+    "decision": "keep",
+    "gt_pref_key": "corner",
+    "gt_match": true,
+    "labeler": "vanilla_vlm_calib"
+  },
+  "place_soap2_stand_corner/episode9": {
+    "action_prompt_label": "corner placement",
+    "pref_key": "corner",
+    "decision": "keep",
+    "gt_pref_key": "corner",
+    "gt_match": true,
+    "labeler": "vanilla_vlm_calib"
+  },
+  "place_soap2_stand_corner/episode10": {
+    "action_prompt_label": "corner placement",
+    "pref_key": "corner",
+    "decision": "keep",
+    "gt_pref_key": "corner",
+    "gt_match": true,
+    "labeler": "vanilla_vlm_calib"
+  },
+  "place_soap2_stand_corner/episode11": {
+    "action_prompt_label": "corner placement",
+    "pref_key": "corner",
+    "decision": "keep",
+    "gt_pref_key": "corner",
+    "gt_match": true,
+    "labeler": "vanilla_vlm_calib"
+  },
+  "place_soap2_stand_corner/episode12": {
+    "action_prompt_label": "corner placement",
+    "pref_key": "corner",
+    "decision": "keep",
+    "gt_pref_key": "corner",
+    "gt_match": true,
+    "labeler": "vanilla_vlm_calib"
+  },
+  "place_soap2_stand_corner/episode13": {
+    "action_prompt_label": "corner placement",
+    "pref_key": "corner",
+    "decision": "keep",
+    "gt_pref_key": "corner",
+    "gt_match": true,
+    "labeler": "vanilla_vlm_calib"
+  },
+  "place_soap2_stand_corner/episode14": {
+    "action_prompt_label": "corner placement",
+    "pref_key": "corner",
+    "decision": "keep",
+    "gt_pref_key": "corner",
+    "gt_match": true,
+    "labeler": "vanilla_vlm_calib"
+  },
+  "place_soap2_stand_corner/episode15": {
+    "action_prompt_label": "corner placement",
+    "pref_key": "corner",
+    "decision": "keep",
+    "gt_pref_key": "corner",
+    "gt_match": true,
+    "labeler": "vanilla_vlm_calib"
+  },
+  "place_soap2_stand_corner/episode16": {
+    "action_prompt_label": "corner placement",
+    "pref_key": "corner",
+    "decision": "keep",
+    "gt_pref_key": "corner",
+    "gt_match": true,
+    "labeler": "vanilla_vlm_calib"
+  },
+  "place_soap2_stand_corner/episode17": {
+    "action_prompt_label": "corner placement",
+    "pref_key": "corner",
+    "decision": "keep",
+    "gt_pref_key": "corner",
+    "gt_match": true,
+    "labeler": "vanilla_vlm_calib"
+  },
+  "place_soap2_stand_corner/episode18": {
+    "action_prompt_label": "corner placement",
+    "pref_key": "corner",
+    "decision": "keep",
+    "gt_pref_key": "corner",
+    "gt_match": true,
+    "labeler": "vanilla_vlm_calib"
+  },
+  "place_soap2_stand_corner/episode19": {
+    "action_prompt_label": "corner placement",
+    "pref_key": "corner",
+    "decision": "keep",
+    "gt_pref_key": "corner",
+    "gt_match": true,
+    "labeler": "vanilla_vlm_calib"
+  },
+  "place_soap2_stand_corner/episode20": {
+    "action_prompt_label": "corner placement",
+    "pref_key": "corner",
+    "decision": "keep",
+    "gt_pref_key": "corner",
+    "gt_match": true,
+    "labeler": "vanilla_vlm_calib"
+  },
+  "place_soap2_stand_corner/episode21": {
+    "action_prompt_label": "corner placement",
+    "pref_key": "corner",
+    "decision": "keep",
+    "gt_pref_key": "corner",
+    "gt_match": true,
+    "labeler": "vanilla_vlm_calib"
+  },
+  "place_soap2_stand_corner/episode22": {
+    "action_prompt_label": "corner placement",
+    "pref_key": "corner",
+    "decision": "keep",
+    "gt_pref_key": "corner",
+    "gt_match": true,
+    "labeler": "vanilla_vlm_calib"
+  },
+  "place_soap2_stand_corner/episode23": {
+    "action_prompt_label": "corner placement",
+    "pref_key": "corner",
+    "decision": "keep",
+    "gt_pref_key": "corner",
+    "gt_match": true,
+    "labeler": "vanilla_vlm_calib"
+  },
+  "place_soap2_stand_corner/episode24": {
+    "action_prompt_label": "corner placement",
+    "pref_key": "corner",
+    "decision": "keep",
+    "gt_pref_key": "corner",
+    "gt_match": true,
+    "labeler": "vanilla_vlm_calib"
+  },
+  "place_soap2_stand_corner/episode25": {
+    "action_prompt_label": "corner placement",
+    "pref_key": "corner",
+    "decision": "keep",
+    "gt_pref_key": "corner",
+    "gt_match": true,
+    "labeler": "vanilla_vlm_calib"
+  },
+  "place_soap2_stand_corner/episode26": {
+    "action_prompt_label": "corner placement",
+    "pref_key": "corner",
+    "decision": "keep",
+    "gt_pref_key": "corner",
+    "gt_match": true,
+    "labeler": "vanilla_vlm_calib"
+  },
+  "place_soap2_stand_corner/episode27": {
+    "action_prompt_label": "corner placement",
+    "pref_key": "corner",
+    "decision": "keep",
+    "gt_pref_key": "corner",
+    "gt_match": true,
+    "labeler": "vanilla_vlm_calib"
+  },
+  "place_soap2_stand_corner/episode28": {
+    "action_prompt_label": "corner placement",
+    "pref_key": "corner",
+    "decision": "keep",
+    "gt_pref_key": "corner",
+    "gt_match": true,
+    "labeler": "vanilla_vlm_calib"
+  },
+  "place_soap2_stand_corner/episode29": {
+    "action_prompt_label": "corner placement",
+    "pref_key": "corner",
+    "decision": "keep",
+    "gt_pref_key": "corner",
+    "gt_match": true,
+    "labeler": "vanilla_vlm_calib"
+  },
+  "place_soap2_stand_corner/episode30": {
+    "action_prompt_label": "corner placement",
+    "pref_key": "corner",
+    "decision": "keep",
+    "gt_pref_key": "corner",
+    "gt_match": true,
+    "labeler": "vanilla_vlm_calib"
+  },
+  "place_soap2_stand_corner/episode31": {
+    "action_prompt_label": "corner placement",
+    "pref_key": "corner",
+    "decision": "keep",
+    "gt_pref_key": "corner",
+    "gt_match": true,
+    "labeler": "vanilla_vlm_calib"
+  },
+  "place_soap2_stand_corner/episode32": {
+    "action_prompt_label": "corner placement",
+    "pref_key": "corner",
+    "decision": "keep",
+    "gt_pref_key": "corner",
+    "gt_match": true,
+    "labeler": "vanilla_vlm_calib"
+  },
+  "place_soap2_stand_corner/episode33": {
+    "action_prompt_label": "corner placement",
+    "pref_key": "corner",
+    "decision": "keep",
+    "gt_pref_key": "corner",
+    "gt_match": true,
+    "labeler": "vanilla_vlm_calib"
+  },
+  "place_soap2_stand_corner/episode34": {
+    "action_prompt_label": "corner placement",
+    "pref_key": "corner",
+    "decision": "keep",
+    "gt_pref_key": "corner",
+    "gt_match": true,
+    "labeler": "vanilla_vlm_calib"
+  },
+  "place_soap2_stand_corner/episode35": {
+    "action_prompt_label": "corner placement",
+    "pref_key": "corner",
+    "decision": "keep",
+    "gt_pref_key": "corner",
+    "gt_match": true,
+    "labeler": "vanilla_vlm_calib"
+  },
+  "place_soap2_stand_corner/episode36": {
+    "action_prompt_label": "corner placement",
+    "pref_key": "corner",
+    "decision": "keep",
+    "gt_pref_key": "corner",
+    "gt_match": true,
+    "labeler": "vanilla_vlm_calib"
+  },
+  "place_soap2_stand_corner/episode37": {
+    "action_prompt_label": "corner placement",
+    "pref_key": "corner",
+    "decision": "keep",
+    "gt_pref_key": "corner",
+    "gt_match": true,
+    "labeler": "vanilla_vlm_calib"
+  },
+  "place_soap2_stand_corner/episode38": {
+    "action_prompt_label": "corner placement",
+    "pref_key": "corner",
+    "decision": "keep",
+    "gt_pref_key": "corner",
+    "gt_match": true,
+    "labeler": "vanilla_vlm_calib"
+  },
+  "place_soap2_stand_corner/episode39": {
+    "action_prompt_label": "corner placement",
+    "pref_key": "corner",
+    "decision": "keep",
+    "gt_pref_key": "corner",
+    "gt_match": true,
+    "labeler": "vanilla_vlm_calib"
+  },
+  "place_soap2_stand_corner/episode40": {
+    "action_prompt_label": "corner placement",
+    "pref_key": "corner",
+    "decision": "keep",
+    "gt_pref_key": "corner",
+    "gt_match": true,
+    "labeler": "vanilla_vlm_calib"
+  },
+  "place_soap2_stand_corner/episode41": {
+    "action_prompt_label": "corner placement",
+    "pref_key": "corner",
+    "decision": "keep",
+    "gt_pref_key": "corner",
+    "gt_match": true,
+    "labeler": "vanilla_vlm_calib"
+  },
+  "place_soap2_stand_corner/episode42": {
+    "action_prompt_label": "corner placement",
+    "pref_key": "corner",
+    "decision": "keep",
+    "gt_pref_key": "corner",
+    "gt_match": true,
+    "labeler": "vanilla_vlm_calib"
+  },
+  "place_soap2_stand_corner/episode43": {
+    "action_prompt_label": "corner placement",
+    "pref_key": "corner",
+    "decision": "keep",
+    "gt_pref_key": "corner",
+    "gt_match": true,
+    "labeler": "vanilla_vlm_calib"
+  },
+  "place_soap2_stand_corner/episode44": {
+    "action_prompt_label": "corner placement",
+    "pref_key": "corner",
+    "decision": "keep",
+    "gt_pref_key": "corner",
+    "gt_match": true,
+    "labeler": "vanilla_vlm_calib"
+  },
+  "place_soap2_stand_corner/episode45": {
+    "action_prompt_label": "corner placement",
+    "pref_key": "corner",
+    "decision": "keep",
+    "gt_pref_key": "corner",
+    "gt_match": true,
+    "labeler": "vanilla_vlm_calib"
+  },
+  "place_soap2_stand_corner/episode46": {
+    "action_prompt_label": "corner placement",
+    "pref_key": "corner",
+    "decision": "keep",
+    "gt_pref_key": "corner",
+    "gt_match": true,
+    "labeler": "vanilla_vlm_calib"
+  },
+  "place_soap2_stand_corner/episode47": {
+    "action_prompt_label": "corner placement",
+    "pref_key": "corner",
+    "decision": "keep",
+    "gt_pref_key": "corner",
+    "gt_match": true,
+    "labeler": "vanilla_vlm_calib"
+  },
+  "place_soap2_stand_corner/episode48": {
+    "action_prompt_label": "corner placement",
+    "pref_key": "corner",
+    "decision": "keep",
+    "gt_pref_key": "corner",
+    "gt_match": true,
+    "labeler": "vanilla_vlm_calib"
+  },
+  "place_soap2_stand_corner/episode49": {
+    "action_prompt_label": "corner placement",
+    "pref_key": "corner",
+    "decision": "keep",
+    "gt_pref_key": "corner",
+    "gt_match": true,
+    "labeler": "vanilla_vlm_calib"
+  }
+}

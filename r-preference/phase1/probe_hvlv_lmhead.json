@@ -1,0 +1,188 @@
+{
+  "args": {
+    "cat": "hvlv",
+    "steps": 1000,
+    "bs": 8,
+    "k": 3,
+    "lr": 0.001,
+    "readout": "lm_head",
+    "val_every": 200,
+    "n_val_per_leaf": 10,
+    "jitter": 5,
+    "mlp_baseline": true,
+    "no_state": false,
+    "tag": "hvlv_lmhead"
+  },
+  "pref_keys": [
+    "hv",
+    "lv"
+  ],
+  "question": "We are moving an object around an obstacle. Do we keep far from it or near it? Answer:",
+  "history": [
+    {
+      "step": 200,
+      "taskA": {
+        "acc": 0.831,
+        "bal_acc": 0.831,
+        "ce": 0.403,
+        "n": 160,
+        "pred_dist": {
+          "hv": 99,
+          "lv": 61
+        }
+      },
+      "taskB": {
+        "acc": 0.65,
+        "bal_acc": 0.65,
+        "ce": 0.984,
+        "n": 20,
+        "pred_dist": {
+          "hv": 17,
+          "lv": 3
+        }
+      },
+      "taskA_zeroed": {
+        "acc": 0.5,
+        "bal_acc": 0.5,
+        "ce": 2.596,
+        "n": 160,
+        "pred_dist": {
+          "hv": 0,
+          "lv": 160
+        }
+      }
+    },
+    {
+      "step": 400,
+      "taskA": {
+        "acc": 0.919,
+        "bal_acc": 0.919,
+        "ce": 0.192,
+        "n": 160,
+        "pred_dist": {
+          "hv": 67,
+          "lv": 93
+        }
+      },
+      "taskB": {
+        "acc": 0.5,
+        "bal_acc": 0.5,
+        "ce": 1.084,
+        "n": 20,
+        "pred_dist": {
+          "hv": 16,
+          "lv": 4
+        }
+      },
+      "taskA_zeroed": {
+        "acc": 0.5,
+        "bal_acc": 0.5,
+        "ce": 3.331,
+        "n": 160,
+        "pred_dist": {
+          "hv": 0,
+          "lv": 160
+        }
+      }
+    },
+    {
+      "step": 600,
+      "taskA": {
+        "acc": 0.975,
+        "bal_acc": 0.975,
+        "ce": 0.093,
+        "n": 160,
+        "pred_dist": {
+          "hv": 82,
+          "lv": 78
+        }
+      },
+      "taskB": {
+        "acc": 0.55,
+        "bal_acc": 0.55,
+        "ce": 4.124,
+        "n": 20,
+        "pred_dist": {
+          "hv": 15,
+          "lv": 5
+        }
+      },
+      "taskA_zeroed": {
+        "acc": 0.5,
+        "bal_acc": 0.5,
+        "ce": 4.706,
+        "n": 160,
+        "pred_dist": {
+          "hv": 0,
+          "lv": 160
+        }
+      }
+    },
+    {
+      "step": 800,
+      "taskA": {
+        "acc": 0.95,
+        "bal_acc": 0.95,
+        "ce": 0.129,
+        "n": 160,
+        "pred_dist": {
+          "hv": 80,
+          "lv": 80
+        }
+      },
+      "taskB": {
+        "acc": 0.6,
+        "bal_acc": 0.6,
+        "ce": 1.401,
+        "n": 20,
+        "pred_dist": {
+          "hv": 18,
+          "lv": 2
+        }
+      },
+      "taskA_zeroed": {
+        "acc": 0.5,
+        "bal_acc": 0.5,
+        "ce": 5.366,
+        "n": 160,
+        "pred_dist": {
+          "hv": 0,
+          "lv": 160
+        }
+      }
+    },
+    {
+      "step": 1000,
+      "taskA": {
+        "acc": 0.944,
+        "bal_acc": 0.944,
+        "ce": 0.151,
+        "n": 160,
+        "pred_dist": {
+          "hv": 87,
+          "lv": 73
+        }
+      },
+      "taskB": {
+        "acc": 0.55,
+        "bal_acc": 0.55,
+        "ce": 4.286,
+        "n": 20,
+        "pred_dist": {
+          "hv": 17,
+          "lv": 3
+        }
+      },
+      "taskA_zeroed": {
+        "acc": 0.5,
+        "bal_acc": 0.5,
+        "ce": 5.351,
+        "n": 160,
+        "pred_dist": {
+          "hv": 0,
+          "lv": 160
+        }
+      }
+    }
+  ]
+}

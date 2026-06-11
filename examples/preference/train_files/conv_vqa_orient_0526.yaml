@@ -1,0 +1,108 @@
+run_id: conv_vqa_orient_0526
+run_root_dir: results/Checkpoints
+seed: 42
+trackers: [jsonl]
+wandb_entity: kaiwenh-17-uiuc
+wandb_project: pref-sim
+is_debug: false
+
+# VQA main-method convergence check on 0526 orient (the cat whose VQA cotrain
+# was STUCK at L_action~1.5 on the old data). Tests: does L_vqa drop, and does
+# 0526 + current code let L_action converge (vs the old stuck behavior)?
+
+framework:
+  name: QwenPI_VQA
+  qwenvl:
+    base_vlm: Qwen/Qwen3-VL-4B-Instruct
+    attn_implementation: sdpa
+    vl_hidden_dim: 2560
+  dino:
+    dino_backbone: dinov2_vits14
+  action_model:
+    action_model_type: DiT-B
+    action_hidden_dim: 1024
+    hidden_size: 1024
+    add_pos_embed: True
+    max_seq_len: 1024
+    action_dim: 20
+    state_dim: 20
+    future_action_window_size: 15
+    action_horizon: 16
+    past_action_window_size: 0
+    repeated_diffusion_steps: 4
+    noise_beta_alpha: 1.5
+    noise_beta_beta: 1.0
+    noise_s: 0.999
+    num_timestep_buckets: 1000
+    num_inference_timesteps: 4
+    num_target_vision_tokens: 32
+    diffusion_model_cfg:
+      cross_attention_dim: 2560
+      dropout: 0.2
+      final_dropout: true
+      interleave_self_attention: true
+      norm_type: "ada_norm"
+      num_layers: 16
+      output_dim: 1024
+      positional_embeddings: null
+  vqa:
+    category: orient
+    lambda_vqa: 0.5
+    n_vqa_per_batch: 2
+    num_frames: 8
+    camera: head_camera
+
+  reduce_in_full_precision: true
+
+
+datasets:
+  vla_data:
+    dataset_py: pref_hdf5_vqa
+    data_root_dir: /mnt/localssd/kevin/pref/data/0526/orient
+    data_mix: orient_v1
+    stats_json_path: examples/preference/dataset/stats_orient_0526.json
+    pref_category: orient
+    action_type: abs_ee_6d
+    future_action_window_size: 15
+    past_action_window_size: 0
+    include_state: true
+    cameras: ["head_camera", "left_camera", "right_camera"]
+    image_size: [224, 224]
+    per_device_batch_size: 8
+    num_workers: 4
+    vqa_num_frames: 8
+    vqa_camera: head_camera
+
+
+trainer:
+  epochs: 100
+  max_train_steps: 1500
+  num_warmup_steps: 150
+  save_interval: 1500       # save one ckpt at the end (for optional taskB gate)
+  eval_interval: 100000
+  learning_rate:
+    base: 2.5e-05
+    qwen_vl_interface: 1.0e-05
+    action_model: 1.0e-04
+  lr_scheduler_type: cosine_with_min_lr
+  scheduler_specific_kwargs:
+    min_lr: 1.0e-06
+  freeze_modules: ''
+  max_grad_norm: 1.0
+  warmup_ratio: 0.1
+  weight_decay: 0.0
+  logging_frequency: 25
+  gradient_clipping: 1.0
+  gradient_accumulation_steps: 1
+
+  optimizer:
+    name: AdamW
+    betas: [0.9, 0.95]
+    eps: 1.0e-08
+    weight_decay: 1.0e-08
+
+  is_resume: false
+  resume_epoch: null
+  resume_step: null
+  enable_gradient_checkpointing: false
+  enable_mixed_precision_training: true

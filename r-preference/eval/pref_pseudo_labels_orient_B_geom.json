@@ -1,0 +1,802 @@
+{
+  "move_can5_away_0/episode0": {
+    "action_prompt_label": "horizontal grasp",
+    "pref_key": "0",
+    "decision": "keep",
+    "gt_pref_key": "0",
+    "gt_match": true,
+    "feature": -0.4434
+  },
+  "move_can5_away_0/episode1": {
+    "action_prompt_label": "horizontal grasp",
+    "pref_key": "0",
+    "decision": "keep",
+    "gt_pref_key": "0",
+    "gt_match": true,
+    "feature": -0.6292
+  },
+  "move_can5_away_0/episode10": {
+    "action_prompt_label": "horizontal grasp",
+    "pref_key": "0",
+    "decision": "keep",
+    "gt_pref_key": "0",
+    "gt_match": true,
+    "feature": -0.7335
+  },
+  "move_can5_away_0/episode11": {
+    "action_prompt_label": "horizontal grasp",
+    "pref_key": "0",
+    "decision": "keep",
+    "gt_pref_key": "0",
+    "gt_match": true,
+    "feature": -0.4138
+  },
+  "move_can5_away_0/episode12": {
+    "action_prompt_label": "horizontal grasp",
+    "pref_key": "0",
+    "decision": "keep",
+    "gt_pref_key": "0",
+    "gt_match": true,
+    "feature": -0.8533
+  },
+  "move_can5_away_0/episode13": {
+    "action_prompt_label": "horizontal grasp",
+    "pref_key": "0",
+    "decision": "keep",
+    "gt_pref_key": "0",
+    "gt_match": true,
+    "feature": -0.5366
+  },
+  "move_can5_away_0/episode14": {
+    "action_prompt_label": "horizontal grasp",
+    "pref_key": "0",
+    "decision": "keep",
+    "gt_pref_key": "0",
+    "gt_match": true,
+    "feature": -0.5642
+  },
+  "move_can5_away_0/episode15": {
+    "action_prompt_label": "horizontal grasp",
+    "pref_key": "0",
+    "decision": "keep",
+    "gt_pref_key": "0",
+    "gt_match": true,
+    "feature": -0.7286
+  },
+  "move_can5_away_0/episode16": {
+    "action_prompt_label": "horizontal grasp",
+    "pref_key": "0",
+    "decision": "keep",
+    "gt_pref_key": "0",
+    "gt_match": true,
+    "feature": -0.7395
+  },
+  "move_can5_away_0/episode17": {
+    "action_prompt_label": "horizontal grasp",
+    "pref_key": "0",
+    "decision": "keep",
+    "gt_pref_key": "0",
+    "gt_match": true,
+    "feature": -0.6912
+  },
+  "move_can5_away_0/episode18": {
+    "action_prompt_label": "horizontal grasp",
+    "pref_key": "0",
+    "decision": "keep",
+    "gt_pref_key": "0",
+    "gt_match": true,
+    "feature": -0.7201
+  },
+  "move_can5_away_0/episode19": {
+    "action_prompt_label": "horizontal grasp",
+    "pref_key": "0",
+    "decision": "keep",
+    "gt_pref_key": "0",
+    "gt_match": true,
+    "feature": -0.6823
+  },
+  "move_can5_away_0/episode2": {
+    "action_prompt_label": "horizontal grasp",
+    "pref_key": "0",
+    "decision": "keep",
+    "gt_pref_key": "0",
+    "gt_match": true,
+    "feature": -0.5459
+  },
+  "move_can5_away_0/episode20": {
+    "action_prompt_label": "horizontal grasp",
+    "pref_key": "0",
+    "decision": "keep",
+    "gt_pref_key": "0",
+    "gt_match": true,
+    "feature": -0.7899
+  },
+  "move_can5_away_0/episode21": {
+    "action_prompt_label": "horizontal grasp",
+    "pref_key": "0",
+    "decision": "keep",
+    "gt_pref_key": "0",
+    "gt_match": true,
+    "feature": -0.9199
+  },
+  "move_can5_away_0/episode22": {
+    "action_prompt_label": "horizontal grasp",
+    "pref_key": "0",
+    "decision": "keep",
+    "gt_pref_key": "0",
+    "gt_match": true,
+    "feature": -0.8448
+  },
+  "move_can5_away_0/episode23": {
+    "action_prompt_label": "horizontal grasp",
+    "pref_key": "0",
+    "decision": "keep",
+    "gt_pref_key": "0",
+    "gt_match": true,
+    "feature": -0.6251
+  },
+  "move_can5_away_0/episode24": {
+    "action_prompt_label": "horizontal grasp",
+    "pref_key": "0",
+    "decision": "keep",
+    "gt_pref_key": "0",
+    "gt_match": true,
+    "feature": -0.723
+  },
+  "move_can5_away_0/episode25": {
+    "action_prompt_label": "horizontal grasp",
+    "pref_key": "0",
+    "decision": "keep",
+    "gt_pref_key": "0",
+    "gt_match": true,
+    "feature": -0.5631
+  },
+  "move_can5_away_0/episode26": {
+    "action_prompt_label": "horizontal grasp",
+    "pref_key": "0",
+    "decision": "keep",
+    "gt_pref_key": "0",
+    "gt_match": true,
+    "feature": -0.5152
+  },
+  "move_can5_away_0/episode27": {
+    "action_prompt_label": "horizontal grasp",
+    "pref_key": "0",
+    "decision": "keep",
+    "gt_pref_key": "0",
+    "gt_match": true,
+    "feature": -0.7313
+  },
+  "move_can5_away_0/episode28": {
+    "action_prompt_label": "horizontal grasp",
+    "pref_key": "0",
+    "decision": "keep",
+    "gt_pref_key": "0",
+    "gt_match": true,
+    "feature": -0.8798
+  },
+  "move_can5_away_0/episode29": {
+    "action_prompt_label": "horizontal grasp",
+    "pref_key": "0",
+    "decision": "keep",
+    "gt_pref_key": "0",
+    "gt_match": true,
+    "feature": -0.4476
+  },
+  "move_can5_away_0/episode3": {
+    "action_prompt_label": "horizontal grasp",
+    "pref_key": "0",
+    "decision": "keep",
+    "gt_pref_key": "0",
+    "gt_match": true,
+    "feature": -0.8172
+  },
+  "move_can5_away_0/episode30": {
+    "action_prompt_label": "horizontal grasp",
+    "pref_key": "0",
+    "decision": "keep",
+    "gt_pref_key": "0",
+    "gt_match": true,
+    "feature": -0.7431
+  },
+  "move_can5_away_0/episode31": {
+    "action_prompt_label": "horizontal grasp",
+    "pref_key": "0",
+    "decision": "keep",
+    "gt_pref_key": "0",
+    "gt_match": true,
+    "feature": -0.8861
+  },
+  "move_can5_away_0/episode32": {
+    "action_prompt_label": "horizontal grasp",
+    "pref_key": "0",
+    "decision": "keep",
+    "gt_pref_key": "0",
+    "gt_match": true,
+    "feature": -0.8437
+  },
+  "move_can5_away_0/episode33": {
+    "action_prompt_label": "horizontal grasp",
+    "pref_key": "0",
+    "decision": "keep",
+    "gt_pref_key": "0",
+    "gt_match": true,
+    "feature": -0.8979
+  },
+  "move_can5_away_0/episode34": {
+    "action_prompt_label": "horizontal grasp",
+    "pref_key": "0",
+    "decision": "keep",
+    "gt_pref_key": "0",
+    "gt_match": true,
+    "feature": -0.8481
+  },
+  "move_can5_away_0/episode35": {
+    "action_prompt_label": "horizontal grasp",
+    "pref_key": "0",
+    "decision": "keep",
+    "gt_pref_key": "0",
+    "gt_match": true,
+    "feature": -0.5047
+  },
+  "move_can5_away_0/episode36": {
+    "action_prompt_label": "horizontal grasp",
+    "pref_key": "0",
+    "decision": "keep",
+    "gt_pref_key": "0",
+    "gt_match": true,
+    "feature": -0.5549
+  },
+  "move_can5_away_0/episode37": {
+    "action_prompt_label": "horizontal grasp",
+    "pref_key": "0",
+    "decision": "keep",
+    "gt_pref_key": "0",
+    "gt_match": true,
+    "feature": -0.4879
+  },
+  "move_can5_away_0/episode38": {
+    "action_prompt_label": "horizontal grasp",
+    "pref_key": "0",
+    "decision": "keep",
+    "gt_pref_key": "0",
+    "gt_match": true,
+    "feature": -0.7539
+  },
+  "move_can5_away_0/episode39": {
+    "action_prompt_label": "horizontal grasp",
+    "pref_key": "0",
+    "decision": "keep",
+    "gt_pref_key": "0",
+    "gt_match": true,
+    "feature": -0.5432
+  },
+  "move_can5_away_0/episode4": {
+    "action_prompt_label": "horizontal grasp",
+    "pref_key": "0",
+    "decision": "keep",
+    "gt_pref_key": "0",
+    "gt_match": true,
+    "feature": -0.4994
+  },
+  "move_can5_away_0/episode40": {
+    "action_prompt_label": "horizontal grasp",
+    "pref_key": "0",
+    "decision": "keep",
+    "gt_pref_key": "0",
+    "gt_match": true,
+    "feature": -0.7091
+  },
+  "move_can5_away_0/episode41": {
+    "action_prompt_label": "horizontal grasp",
+    "pref_key": "0",
+    "decision": "keep",
+    "gt_pref_key": "0",
+    "gt_match": true,
+    "feature": -0.7453
+  },
+  "move_can5_away_0/episode42": {
+    "action_prompt_label": "horizontal grasp",
+    "pref_key": "0",
+    "decision": "keep",
+    "gt_pref_key": "0",
+    "gt_match": true,
+    "feature": -0.4395
+  },
+  "move_can5_away_0/episode43": {
+    "action_prompt_label": "horizontal grasp",
+    "pref_key": "0",
+    "decision": "keep",
+    "gt_pref_key": "0",
+    "gt_match": true,
+    "feature": -0.8084
+  },
+  "move_can5_away_0/episode44": {
+    "action_prompt_label": "horizontal grasp",
+    "pref_key": "0",
+    "decision": "keep",
+    "gt_pref_key": "0",
+    "gt_match": true,
+    "feature": -0.6758
+  },
+  "move_can5_away_0/episode45": {
+    "action_prompt_label": "horizontal grasp",
+    "pref_key": "0",
+    "decision": "keep",
+    "gt_pref_key": "0",
+    "gt_match": true,
+    "feature": -0.5902
+  },
+  "move_can5_away_0/episode46": {
+    "action_prompt_label": "horizontal grasp",
+    "pref_key": "0",
+    "decision": "keep",
+    "gt_pref_key": "0",
+    "gt_match": true,
+    "feature": -0.6045
+  },
+  "move_can5_away_0/episode47": {
+    "action_prompt_label": "horizontal grasp",
+    "pref_key": "0",
+    "decision": "keep",
+    "gt_pref_key": "0",
+    "gt_match": true,
+    "feature": -0.5664
+  },
+  "move_can5_away_0/episode48": {
+    "action_prompt_label": "horizontal grasp",
+    "pref_key": "0",
+    "decision": "keep",
+    "gt_pref_key": "0",
+    "gt_match": true,
+    "feature": -0.8073
+  },
+  "move_can5_away_0/episode49": {
+    "action_prompt_label": "horizontal grasp",
+    "pref_key": "0",
+    "decision": "keep",
+    "gt_pref_key": "0",
+    "gt_match": true,
+    "feature": -0.8925
+  },
+  "move_can5_away_0/episode5": {
+    "action_prompt_label": "horizontal grasp",
+    "pref_key": "0",
+    "decision": "keep",
+    "gt_pref_key": "0",
+    "gt_match": true,
+    "feature": -0.7337
+  },
+  "move_can5_away_0/episode6": {
+    "action_prompt_label": "horizontal grasp",
+    "pref_key": "0",
+    "decision": "keep",
+    "gt_pref_key": "0",
+    "gt_match": true,
+    "feature": -0.4431
+  },
+  "move_can5_away_0/episode7": {
+    "action_prompt_label": "horizontal grasp",
+    "pref_key": "0",
+    "decision": "keep",
+    "gt_pref_key": "0",
+    "gt_match": true,
+    "feature": -0.8776
+  },
+  "move_can5_away_0/episode8": {
+    "action_prompt_label": "horizontal grasp",
+    "pref_key": "0",
+    "decision": "keep",
+    "gt_pref_key": "0",
+    "gt_match": true,
+    "feature": -0.6356
+  },
+  "move_can5_away_0/episode9": {
+    "action_prompt_label": "horizontal grasp",
+    "pref_key": "0",
+    "decision": "keep",
+    "gt_pref_key": "0",
+    "gt_match": true,
+    "feature": -0.7728
+  },
+  "move_can5_away_90/episode0": {
+    "action_prompt_label": "vertical grasp",
+    "pref_key": "90",
+    "decision": "keep",
+    "gt_pref_key": "90",
+    "gt_match": true,
+    "feature": -0.0029
+  },
+  "move_can5_away_90/episode1": {
+    "action_prompt_label": "vertical grasp",
+    "pref_key": "90",
+    "decision": "keep",
+    "gt_pref_key": "90",
+    "gt_match": true,
+    "feature": -0.0205
+  },
+  "move_can5_away_90/episode10": {
+    "action_prompt_label": "vertical grasp",
+    "pref_key": "90",
+    "decision": "keep",
+    "gt_pref_key": "90",
+    "gt_match": true,
+    "feature": -0.0173
+  },
+  "move_can5_away_90/episode11": {
+    "action_prompt_label": "vertical grasp",
+    "pref_key": "90",
+    "decision": "keep",
+    "gt_pref_key": "90",
+    "gt_match": true,
+    "feature": -0.0008
+  },
+  "move_can5_away_90/episode12": {
+    "action_prompt_label": "vertical grasp",
+    "pref_key": "90",
+    "decision": "keep",
+    "gt_pref_key": "90",
+    "gt_match": true,
+    "feature": -0.0557
+  },
+  "move_can5_away_90/episode13": {
+    "action_prompt_label": "vertical grasp",
+    "pref_key": "90",
+    "decision": "keep",
+    "gt_pref_key": "90",
+    "gt_match": true,
+    "feature": -0.0045
+  },
+  "move_can5_away_90/episode14": {
+    "action_prompt_label": "vertical grasp",
+    "pref_key": "90",
+    "decision": "keep",
+    "gt_pref_key": "90",
+    "gt_match": true,
+    "feature": -0.001
+  },
+  "move_can5_away_90/episode15": {
+    "action_prompt_label": "vertical grasp",
+    "pref_key": "90",
+    "decision": "keep",
+    "gt_pref_key": "90",
+    "gt_match": true,
+    "feature": 0.0007
+  },
+  "move_can5_away_90/episode16": {
+    "action_prompt_label": "vertical grasp",
+    "pref_key": "90",
+    "decision": "keep",
+    "gt_pref_key": "90",
+    "gt_match": true,
+    "feature": -0.0025
+  },
+  "move_can5_away_90/episode17": {
+    "action_prompt_label": "vertical grasp",
+    "pref_key": "90",
+    "decision": "keep",
+    "gt_pref_key": "90",
+    "gt_match": true,
+    "feature": -0.0019
+  },
+  "move_can5_away_90/episode18": {
+    "action_prompt_label": "vertical grasp",
+    "pref_key": "90",
+    "decision": "keep",
+    "gt_pref_key": "90",
+    "gt_match": true,
+    "feature": -0.0091
+  },
+  "move_can5_away_90/episode19": {
+    "action_prompt_label": "vertical grasp",
+    "pref_key": "90",
+    "decision": "keep",
+    "gt_pref_key": "90",
+    "gt_match": true,
+    "feature": -0.0003
+  },
+  "move_can5_away_90/episode2": {
+    "action_prompt_label": "vertical grasp",
+    "pref_key": "90",
+    "decision": "keep",
+    "gt_pref_key": "90",
+    "gt_match": true,
+    "feature": -0.0037
+  },
+  "move_can5_away_90/episode20": {
+    "action_prompt_label": "vertical grasp",
+    "pref_key": "90",
+    "decision": "keep",
+    "gt_pref_key": "90",
+    "gt_match": true,
+    "feature": -0.0089
+  },
+  "move_can5_away_90/episode21": {
+    "action_prompt_label": "vertical grasp",
+    "pref_key": "90",
+    "decision": "keep",
+    "gt_pref_key": "90",
+    "gt_match": true,
+    "feature": -0.0142
+  },
+  "move_can5_away_90/episode22": {
+    "action_prompt_label": "vertical grasp",
+    "pref_key": "90",
+    "decision": "keep",
+    "gt_pref_key": "90",
+    "gt_match": true,
+    "feature": -0.0001
+  },
+  "move_can5_away_90/episode23": {
+    "action_prompt_label": "vertical grasp",
+    "pref_key": "90",
+    "decision": "keep",
+    "gt_pref_key": "90",
+    "gt_match": true,
+    "feature": -0.0477
+  },
+  "move_can5_away_90/episode24": {
+    "action_prompt_label": "vertical grasp",
+    "pref_key": "90",
+    "decision": "keep",
+    "gt_pref_key": "90",
+    "gt_match": true,
+    "feature": -0.0129
+  },
+  "move_can5_away_90/episode25": {
+    "action_prompt_label": "vertical grasp",
+    "pref_key": "90",
+    "decision": "keep",
+    "gt_pref_key": "90",
+    "gt_match": true,
+    "feature": -0.018
+  },
+  "move_can5_away_90/episode26": {
+    "action_prompt_label": "vertical grasp",
+    "pref_key": "90",
+    "decision": "keep",
+    "gt_pref_key": "90",
+    "gt_match": true,
+    "feature": -0.0425
+  },
+  "move_can5_away_90/episode27": {
+    "action_prompt_label": "vertical grasp",
+    "pref_key": "90",
+    "decision": "keep",
+    "gt_pref_key": "90",
+    "gt_match": true,
+    "feature": -0.0006
+  },
+  "move_can5_away_90/episode28": {
+    "action_prompt_label": "vertical grasp",
+    "pref_key": "90",
+    "decision": "keep",
+    "gt_pref_key": "90",
+    "gt_match": true,
+    "feature": 0.0015
+  },
+  "move_can5_away_90/episode29": {
+    "action_prompt_label": "vertical grasp",
+    "pref_key": "90",
+    "decision": "keep",
+    "gt_pref_key": "90",
+    "gt_match": true,
+    "feature": -0.0269
+  },
+  "move_can5_away_90/episode3": {
+    "action_prompt_label": "vertical grasp",
+    "pref_key": "90",
+    "decision": "keep",
+    "gt_pref_key": "90",
+    "gt_match": true,
+    "feature": -0.002
+  },
+  "move_can5_away_90/episode30": {
+    "action_prompt_label": "vertical grasp",
+    "pref_key": "90",
+    "decision": "keep",
+    "gt_pref_key": "90",
+    "gt_match": true,
+    "feature": 0.0014
+  },
+  "move_can5_away_90/episode31": {
+    "action_prompt_label": "vertical grasp",
+    "pref_key": "90",
+    "decision": "keep",
+    "gt_pref_key": "90",
+    "gt_match": true,
+    "feature": -0.0012
+  },
+  "move_can5_away_90/episode32": {
+    "action_prompt_label": "vertical grasp",
+    "pref_key": "90",
+    "decision": "keep",
+    "gt_pref_key": "90",
+    "gt_match": true,
+    "feature": -0.0319
+  },
+  "move_can5_away_90/episode33": {
+    "action_prompt_label": "vertical grasp",
+    "pref_key": "90",
+    "decision": "keep",
+    "gt_pref_key": "90",
+    "gt_match": true,
+    "feature": -0.0048
+  },
+  "move_can5_away_90/episode34": {
+    "action_prompt_label": "vertical grasp",
+    "pref_key": "90",
+    "decision": "keep",
+    "gt_pref_key": "90",
+    "gt_match": true,
+    "feature": 0.0007
+  },
+  "move_can5_away_90/episode35": {
+    "action_prompt_label": "vertical grasp",
+    "pref_key": "90",
+    "decision": "keep",
+    "gt_pref_key": "90",
+    "gt_match": true,
+    "feature": -0.0258
+  },
+  "move_can5_away_90/episode36": {
+    "action_prompt_label": "vertical grasp",
+    "pref_key": "90",
+    "decision": "keep",
+    "gt_pref_key": "90",
+    "gt_match": true,
+    "feature": -0.0016
+  },
+  "move_can5_away_90/episode37": {
+    "action_prompt_label": "vertical grasp",
+    "pref_key": "90",
+    "decision": "keep",
+    "gt_pref_key": "90",
+    "gt_match": true,
+    "feature": -0.0029
+  },
+  "move_can5_away_90/episode38": {
+    "action_prompt_label": "vertical grasp",
+    "pref_key": "90",
+    "decision": "keep",
+    "gt_pref_key": "90",
+    "gt_match": true,
+    "feature": -0.0019
+  },
+  "move_can5_away_90/episode39": {
+    "action_prompt_label": "vertical grasp",
+    "pref_key": "90",
+    "decision": "keep",
+    "gt_pref_key": "90",
+    "gt_match": true,
+    "feature": -0.0015
+  },
+  "move_can5_away_90/episode4": {
+    "action_prompt_label": "vertical grasp",
+    "pref_key": "90",
+    "decision": "keep",
+    "gt_pref_key": "90",
+    "gt_match": true,
+    "feature": -0.0491
+  },
+  "move_can5_away_90/episode40": {
+    "action_prompt_label": "vertical grasp",
+    "pref_key": "90",
+    "decision": "keep",
+    "gt_pref_key": "90",
+    "gt_match": true,
+    "feature": -0.0145
+  },
+  "move_can5_away_90/episode41": {
+    "action_prompt_label": "vertical grasp",
+    "pref_key": "90",
+    "decision": "keep",
+    "gt_pref_key": "90",
+    "gt_match": true,
+    "feature": -0.0422
+  },
+  "move_can5_away_90/episode42": {
+    "action_prompt_label": "vertical grasp",
+    "pref_key": "90",
+    "decision": "keep",
+    "gt_pref_key": "90",
+    "gt_match": true,
+    "feature": -0.0181
+  },
+  "move_can5_away_90/episode43": {
+    "action_prompt_label": "vertical grasp",
+    "pref_key": "90",
+    "decision": "keep",
+    "gt_pref_key": "90",
+    "gt_match": true,
+    "feature": -0.002
+  },
+  "move_can5_away_90/episode44": {
+    "action_prompt_label": "vertical grasp",
+    "pref_key": "90",
+    "decision": "keep",
+    "gt_pref_key": "90",
+    "gt_match": true,
+    "feature": -0.0121
+  },
+  "move_can5_away_90/episode45": {
+    "action_prompt_label": "vertical grasp",
+    "pref_key": "90",
+    "decision": "keep",
+    "gt_pref_key": "90",
+    "gt_match": true,
+    "feature": 0.0005
+  },
+  "move_can5_away_90/episode46": {
+    "action_prompt_label": "vertical grasp",
+    "pref_key": "90",
+    "decision": "keep",
+    "gt_pref_key": "90",
+    "gt_match": true,
+    "feature": -0.0055
+  },
+  "move_can5_away_90/episode47": {
+    "action_prompt_label": "vertical grasp",
+    "pref_key": "90",
+    "decision": "keep",
+    "gt_pref_key": "90",
+    "gt_match": true,
+    "feature": -0.0118
+  },
+  "move_can5_away_90/episode48": {
+    "action_prompt_label": "vertical grasp",
+    "pref_key": "90",
+    "decision": "keep",
+    "gt_pref_key": "90",
+    "gt_match": true,
+    "feature": 0.0005
+  },
+  "move_can5_away_90/episode49": {
+    "action_prompt_label": "vertical grasp",
+    "pref_key": "90",
+    "decision": "keep",
+    "gt_pref_key": "90",
+    "gt_match": true,
+    "feature": -0.0291
+  },
+  "move_can5_away_90/episode5": {
+    "action_prompt_label": "vertical grasp",
+    "pref_key": "90",
+    "decision": "keep",
+    "gt_pref_key": "90",
+    "gt_match": true,
+    "feature": 0.0008
+  },
+  "move_can5_away_90/episode6": {
+    "action_prompt_label": "vertical grasp",
+    "pref_key": "90",
+    "decision": "keep",
+    "gt_pref_key": "90",
+    "gt_match": true,
+    "feature": -0.0371
+  },
+  "move_can5_away_90/episode7": {
+    "action_prompt_label": "vertical grasp",
+    "pref_key": "90",
+    "decision": "keep",
+    "gt_pref_key": "90",
+    "gt_match": true,
+    "feature": -0.0043
+  },
+  "move_can5_away_90/episode8": {
+    "action_prompt_label": "vertical grasp",
+    "pref_key": "90",
+    "decision": "keep",
+    "gt_pref_key": "90",
+    "gt_match": true,
+    "feature": -0.0013
+  },
+  "move_can5_away_90/episode9": {
+    "action_prompt_label": "vertical grasp",
+    "pref_key": "90",
+    "decision": "keep",
+    "gt_pref_key": "90",
+    "gt_match": true,
+    "feature": -0.0009
+  }
+}

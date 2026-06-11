@@ -1,0 +1,902 @@
+{
+  "place_playingcards1_box_high/episode0": {
+    "action_prompt_label": "high drop",
+    "pref_key": "high",
+    "decision": "keep",
+    "gt_pref_key": "high",
+    "gt_match": true,
+    "conf": 1.0,
+    "logit_gap": 20.723
+  },
+  "place_playingcards1_box_high/episode1": {
+    "action_prompt_label": "high drop",
+    "pref_key": "high",
+    "decision": "keep",
+    "gt_pref_key": "high",
+    "gt_match": true,
+    "conf": 1.0,
+    "logit_gap": 20.723
+  },
+  "place_playingcards1_box_high/episode10": {
+    "action_prompt_label": "high drop",
+    "pref_key": "high",
+    "decision": "keep",
+    "gt_pref_key": "high",
+    "gt_match": true,
+    "conf": 1.0,
+    "logit_gap": 20.723
+  },
+  "place_playingcards1_box_high/episode11": {
+    "action_prompt_label": "high drop",
+    "pref_key": "high",
+    "decision": "keep",
+    "gt_pref_key": "high",
+    "gt_match": true,
+    "conf": 1.0,
+    "logit_gap": 20.723
+  },
+  "place_playingcards1_box_high/episode12": {
+    "action_prompt_label": "high drop",
+    "pref_key": "high",
+    "decision": "keep",
+    "gt_pref_key": "high",
+    "gt_match": true,
+    "conf": 1.0,
+    "logit_gap": 20.723
+  },
+  "place_playingcards1_box_high/episode13": {
+    "action_prompt_label": "high drop",
+    "pref_key": "high",
+    "decision": "keep",
+    "gt_pref_key": "high",
+    "gt_match": true,
+    "conf": 1.0,
+    "logit_gap": 20.723
+  },
+  "place_playingcards1_box_high/episode14": {
+    "action_prompt_label": "high drop",
+    "pref_key": "high",
+    "decision": "keep",
+    "gt_pref_key": "high",
+    "gt_match": true,
+    "conf": 1.0,
+    "logit_gap": 20.723
+  },
+  "place_playingcards1_box_high/episode15": {
+    "action_prompt_label": "high drop",
+    "pref_key": "high",
+    "decision": "keep",
+    "gt_pref_key": "high",
+    "gt_match": true,
+    "conf": 1.0,
+    "logit_gap": 20.723
+  },
+  "place_playingcards1_box_high/episode16": {
+    "action_prompt_label": "high drop",
+    "pref_key": "high",
+    "decision": "keep",
+    "gt_pref_key": "high",
+    "gt_match": true,
+    "conf": 1.0,
+    "logit_gap": 20.723
+  },
+  "place_playingcards1_box_high/episode17": {
+    "action_prompt_label": "high drop",
+    "pref_key": "high",
+    "decision": "keep",
+    "gt_pref_key": "high",
+    "gt_match": true,
+    "conf": 1.0,
+    "logit_gap": 20.723
+  },
+  "place_playingcards1_box_high/episode18": {
+    "action_prompt_label": "high drop",
+    "pref_key": "high",
+    "decision": "keep",
+    "gt_pref_key": "high",
+    "gt_match": true,
+    "conf": 1.0,
+    "logit_gap": 20.723
+  },
+  "place_playingcards1_box_high/episode19": {
+    "action_prompt_label": "high drop",
+    "pref_key": "high",
+    "decision": "keep",
+    "gt_pref_key": "high",
+    "gt_match": true,
+    "conf": 1.0,
+    "logit_gap": 20.723
+  },
+  "place_playingcards1_box_high/episode2": {
+    "action_prompt_label": "high drop",
+    "pref_key": "high",
+    "decision": "keep",
+    "gt_pref_key": "high",
+    "gt_match": true,
+    "conf": 1.0,
+    "logit_gap": 20.723
+  },
+  "place_playingcards1_box_high/episode20": {
+    "action_prompt_label": "high drop",
+    "pref_key": "high",
+    "decision": "keep",
+    "gt_pref_key": "high",
+    "gt_match": true,
+    "conf": 1.0,
+    "logit_gap": 20.723
+  },
+  "place_playingcards1_box_high/episode21": {
+    "action_prompt_label": "high drop",
+    "pref_key": "high",
+    "decision": "keep",
+    "gt_pref_key": "high",
+    "gt_match": true,
+    "conf": 1.0,
+    "logit_gap": 20.723
+  },
+  "place_playingcards1_box_high/episode22": {
+    "action_prompt_label": "high drop",
+    "pref_key": "high",
+    "decision": "keep",
+    "gt_pref_key": "high",
+    "gt_match": true,
+    "conf": 1.0,
+    "logit_gap": 20.723
+  },
+  "place_playingcards1_box_high/episode23": {
+    "action_prompt_label": "high drop",
+    "pref_key": "high",
+    "decision": "keep",
+    "gt_pref_key": "high",
+    "gt_match": true,
+    "conf": 1.0,
+    "logit_gap": 20.723
+  },
+  "place_playingcards1_box_high/episode24": {
+    "action_prompt_label": "high drop",
+    "pref_key": "high",
+    "decision": "keep",
+    "gt_pref_key": "high",
+    "gt_match": true,
+    "conf": 1.0,
+    "logit_gap": 20.723
+  },
+  "place_playingcards1_box_high/episode25": {
+    "action_prompt_label": "high drop",
+    "pref_key": "high",
+    "decision": "keep",
+    "gt_pref_key": "high",
+    "gt_match": true,
+    "conf": 1.0,
+    "logit_gap": 20.723
+  },
+  "place_playingcards1_box_high/episode26": {
+    "action_prompt_label": "high drop",
+    "pref_key": "high",
+    "decision": "keep",
+    "gt_pref_key": "high",
+    "gt_match": true,
+    "conf": 1.0,
+    "logit_gap": 20.723
+  },
+  "place_playingcards1_box_high/episode27": {
+    "action_prompt_label": "high drop",
+    "pref_key": "high",
+    "decision": "keep",
+    "gt_pref_key": "high",
+    "gt_match": true,
+    "conf": 1.0,
+    "logit_gap": 20.723
+  },
+  "place_playingcards1_box_high/episode28": {
+    "action_prompt_label": "high drop",
+    "pref_key": "high",
+    "decision": "keep",
+    "gt_pref_key": "high",
+    "gt_match": true,
+    "conf": 1.0,
+    "logit_gap": 20.723
+  },
+  "place_playingcards1_box_high/episode29": {
+    "action_prompt_label": "high drop",
+    "pref_key": "high",
+    "decision": "keep",
+    "gt_pref_key": "high",
+    "gt_match": true,
+    "conf": 1.0,
+    "logit_gap": 20.723
+  },
+  "place_playingcards1_box_high/episode3": {
+    "action_prompt_label": "high drop",
+    "pref_key": "high",
+    "decision": "keep",
+    "gt_pref_key": "high",
+    "gt_match": true,
+    "conf": 1.0,
+    "logit_gap": 20.723
+  },
+  "place_playingcards1_box_high/episode30": {
+    "action_prompt_label": "high drop",
+    "pref_key": "high",
+    "decision": "keep",
+    "gt_pref_key": "high",
+    "gt_match": true,
+    "conf": 1.0,
+    "logit_gap": 20.723
+  },
+  "place_playingcards1_box_high/episode31": {
+    "action_prompt_label": "high drop",
+    "pref_key": "high",
+    "decision": "keep",
+    "gt_pref_key": "high",
+    "gt_match": true,
+    "conf": 1.0,
+    "logit_gap": 20.723
+  },
+  "place_playingcards1_box_high/episode32": {
+    "action_prompt_label": "high drop",
+    "pref_key": "high",
+    "decision": "keep",
+    "gt_pref_key": "high",
+    "gt_match": true,
+    "conf": 1.0,
+    "logit_gap": 20.723
+  },
+  "place_playingcards1_box_high/episode33": {
+    "action_prompt_label": "high drop",
+    "pref_key": "high",
+    "decision": "keep",
+    "gt_pref_key": "high",
+    "gt_match": true,
+    "conf": 1.0,
+    "logit_gap": 20.723
+  },
+  "place_playingcards1_box_high/episode34": {
+    "action_prompt_label": "high drop",
+    "pref_key": "high",
+    "decision": "keep",
+    "gt_pref_key": "high",
+    "gt_match": true,
+    "conf": 1.0,
+    "logit_gap": 20.723
+  },
+  "place_playingcards1_box_high/episode35": {
+    "action_prompt_label": "high drop",
+    "pref_key": "high",
+    "decision": "keep",
+    "gt_pref_key": "high",
+    "gt_match": true,
+    "conf": 1.0,
+    "logit_gap": 20.723
+  },
+  "place_playingcards1_box_high/episode36": {
+    "action_prompt_label": "high drop",
+    "pref_key": "high",
+    "decision": "keep",
+    "gt_pref_key": "high",
+    "gt_match": true,
+    "conf": 1.0,
+    "logit_gap": 20.723
+  },
+  "place_playingcards1_box_high/episode37": {
+    "action_prompt_label": "high drop",
+    "pref_key": "high",
+    "decision": "keep",
+    "gt_pref_key": "high",
+    "gt_match": true,
+    "conf": 1.0,
+    "logit_gap": 20.723
+  },
+  "place_playingcards1_box_high/episode38": {
+    "action_prompt_label": "high drop",
+    "pref_key": "high",
+    "decision": "keep",
+    "gt_pref_key": "high",
+    "gt_match": true,
+    "conf": 1.0,
+    "logit_gap": 20.723
+  },
+  "place_playingcards1_box_high/episode39": {
+    "action_prompt_label": "high drop",
+    "pref_key": "high",
+    "decision": "keep",
+    "gt_pref_key": "high",
+    "gt_match": true,
+    "conf": 1.0,
+    "logit_gap": 20.723
+  },
+  "place_playingcards1_box_high/episode4": {
+    "action_prompt_label": "high drop",
+    "pref_key": "high",
+    "decision": "keep",
+    "gt_pref_key": "high",
+    "gt_match": true,
+    "conf": 1.0,
+    "logit_gap": 20.723
+  },
+  "place_playingcards1_box_high/episode40": {
+    "action_prompt_label": "high drop",
+    "pref_key": "high",
+    "decision": "keep",
+    "gt_pref_key": "high",
+    "gt_match": true,
+    "conf": 1.0,
+    "logit_gap": 20.723
+  },
+  "place_playingcards1_box_high/episode41": {
+    "action_prompt_label": "high drop",
+    "pref_key": "high",
+    "decision": "keep",
+    "gt_pref_key": "high",
+    "gt_match": true,
+    "conf": 1.0,
+    "logit_gap": 20.723
+  },
+  "place_playingcards1_box_high/episode42": {
+    "action_prompt_label": "high drop",
+    "pref_key": "high",
+    "decision": "keep",
+    "gt_pref_key": "high",
+    "gt_match": true,
+    "conf": 1.0,
+    "logit_gap": 20.723
+  },
+  "place_playingcards1_box_high/episode43": {
+    "action_prompt_label": "high drop",
+    "pref_key": "high",
+    "decision": "keep",
+    "gt_pref_key": "high",
+    "gt_match": true,
+    "conf": 1.0,
+    "logit_gap": 20.723
+  },
+  "place_playingcards1_box_high/episode44": {
+    "action_prompt_label": "high drop",
+    "pref_key": "high",
+    "decision": "keep",
+    "gt_pref_key": "high",
+    "gt_match": true,
+    "conf": 1.0,
+    "logit_gap": 20.723
+  },
+  "place_playingcards1_box_high/episode45": {
+    "action_prompt_label": "high drop",
+    "pref_key": "high",
+    "decision": "keep",
+    "gt_pref_key": "high",
+    "gt_match": true,
+    "conf": 1.0,
+    "logit_gap": 20.723
+  },
+  "place_playingcards1_box_high/episode46": {
+    "action_prompt_label": "high drop",
+    "pref_key": "high",
+    "decision": "keep",
+    "gt_pref_key": "high",
+    "gt_match": true,
+    "conf": 1.0,
+    "logit_gap": 20.723
+  },
+  "place_playingcards1_box_high/episode47": {
+    "action_prompt_label": "high drop",
+    "pref_key": "high",
+    "decision": "keep",
+    "gt_pref_key": "high",
+    "gt_match": true,
+    "conf": 1.0,
+    "logit_gap": 20.723
+  },
+  "place_playingcards1_box_high/episode48": {
+    "action_prompt_label": "high drop",
+    "pref_key": "high",
+    "decision": "keep",
+    "gt_pref_key": "high",
+    "gt_match": true,
+    "conf": 1.0,
+    "logit_gap": 20.723
+  },
+  "place_playingcards1_box_high/episode49": {
+    "action_prompt_label": "high drop",
+    "pref_key": "high",
+    "decision": "keep",
+    "gt_pref_key": "high",
+    "gt_match": true,
+    "conf": 1.0,
+    "logit_gap": 20.723
+  },
+  "place_playingcards1_box_high/episode5": {
+    "action_prompt_label": "high drop",
+    "pref_key": "high",
+    "decision": "keep",
+    "gt_pref_key": "high",
+    "gt_match": true,
+    "conf": 1.0,
+    "logit_gap": 20.723
+  },
+  "place_playingcards1_box_high/episode6": {
+    "action_prompt_label": "high drop",
+    "pref_key": "high",
+    "decision": "keep",
+    "gt_pref_key": "high",
+    "gt_match": true,
+    "conf": 1.0,
+    "logit_gap": 20.723
+  },
+  "place_playingcards1_box_high/episode7": {
+    "action_prompt_label": "high drop",
+    "pref_key": "high",
+    "decision": "keep",
+    "gt_pref_key": "high",
+    "gt_match": true,
+    "conf": 1.0,
+    "logit_gap": 20.723
+  },
+  "place_playingcards1_box_high/episode8": {
+    "action_prompt_label": "high drop",
+    "pref_key": "high",
+    "decision": "keep",
+    "gt_pref_key": "high",
+    "gt_match": true,
+    "conf": 1.0,
+    "logit_gap": 20.723
+  },
+  "place_playingcards1_box_high/episode9": {
+    "action_prompt_label": "high drop",
+    "pref_key": "high",
+    "decision": "keep",
+    "gt_pref_key": "high",
+    "gt_match": true,
+    "conf": 1.0,
+    "logit_gap": 20.723
+  },
+  "place_playingcards1_box_low/episode0": {
+    "action_prompt_label": "low drop",
+    "pref_key": "low",
+    "decision": "keep",
+    "gt_pref_key": "low",
+    "gt_match": true,
+    "conf": 1.0,
+    "logit_gap": -20.723
+  },
+  "place_playingcards1_box_low/episode1": {
+    "action_prompt_label": "low drop",
+    "pref_key": "low",
+    "decision": "keep",
+    "gt_pref_key": "low",
+    "gt_match": true,
+    "conf": 1.0,
+    "logit_gap": -20.723
+  },
+  "place_playingcards1_box_low/episode10": {
+    "action_prompt_label": "low drop",
+    "pref_key": "low",
+    "decision": "keep",
+    "gt_pref_key": "low",
+    "gt_match": true,
+    "conf": 1.0,
+    "logit_gap": -20.723
+  },
+  "place_playingcards1_box_low/episode11": {
+    "action_prompt_label": "low drop",
+    "pref_key": "low",
+    "decision": "keep",
+    "gt_pref_key": "low",
+    "gt_match": true,
+    "conf": 1.0,
+    "logit_gap": -20.723
+  },
+  "place_playingcards1_box_low/episode12": {
+    "action_prompt_label": "low drop",
+    "pref_key": "low",
+    "decision": "keep",
+    "gt_pref_key": "low",
+    "gt_match": true,
+    "conf": 1.0,
+    "logit_gap": -20.723
+  },
+  "place_playingcards1_box_low/episode13": {
+    "action_prompt_label": "low drop",
+    "pref_key": "low",
+    "decision": "keep",
+    "gt_pref_key": "low",
+    "gt_match": true,
+    "conf": 1.0,
+    "logit_gap": -20.723
+  },
+  "place_playingcards1_box_low/episode14": {
+    "action_prompt_label": "low drop",
+    "pref_key": "low",
+    "decision": "keep",
+    "gt_pref_key": "low",
+    "gt_match": true,
+    "conf": 1.0,
+    "logit_gap": -20.723
+  },
+  "place_playingcards1_box_low/episode15": {
+    "action_prompt_label": "low drop",
+    "pref_key": "low",
+    "decision": "keep",
+    "gt_pref_key": "low",
+    "gt_match": true,
+    "conf": 1.0,
+    "logit_gap": -20.723
+  },
+  "place_playingcards1_box_low/episode16": {
+    "action_prompt_label": "low drop",
+    "pref_key": "low",
+    "decision": "keep",
+    "gt_pref_key": "low",
+    "gt_match": true,
+    "conf": 1.0,
+    "logit_gap": -20.723
+  },
+  "place_playingcards1_box_low/episode17": {
+    "action_prompt_label": "low drop",
+    "pref_key": "low",
+    "decision": "keep",
+    "gt_pref_key": "low",
+    "gt_match": true,
+    "conf": 1.0,
+    "logit_gap": -20.723
+  },
+  "place_playingcards1_box_low/episode18": {
+    "action_prompt_label": "low drop",
+    "pref_key": "low",
+    "decision": "keep",
+    "gt_pref_key": "low",
+    "gt_match": true,
+    "conf": 1.0,
+    "logit_gap": -20.723
+  },
+  "place_playingcards1_box_low/episode19": {
+    "action_prompt_label": "low drop",
+    "pref_key": "low",
+    "decision": "keep",
+    "gt_pref_key": "low",
+    "gt_match": true,
+    "conf": 1.0,
+    "logit_gap": -20.723
+  },
+  "place_playingcards1_box_low/episode2": {
+    "action_prompt_label": "low drop",
+    "pref_key": "low",
+    "decision": "keep",
+    "gt_pref_key": "low",
+    "gt_match": true,
+    "conf": 1.0,
+    "logit_gap": -20.723
+  },
+  "place_playingcards1_box_low/episode20": {
+    "action_prompt_label": "low drop",
+    "pref_key": "low",
+    "decision": "keep",
+    "gt_pref_key": "low",
+    "gt_match": true,
+    "conf": 1.0,
+    "logit_gap": -20.723
+  },
+  "place_playingcards1_box_low/episode21": {
+    "action_prompt_label": "low drop",
+    "pref_key": "low",
+    "decision": "keep",
+    "gt_pref_key": "low",
+    "gt_match": true,
+    "conf": 1.0,
+    "logit_gap": -20.723
+  },
+  "place_playingcards1_box_low/episode22": {
+    "action_prompt_label": "low drop",
+    "pref_key": "low",
+    "decision": "keep",
+    "gt_pref_key": "low",
+    "gt_match": true,
+    "conf": 1.0,
+    "logit_gap": -20.723
+  },
+  "place_playingcards1_box_low/episode23": {
+    "action_prompt_label": "low drop",
+    "pref_key": "low",
+    "decision": "keep",
+    "gt_pref_key": "low",
+    "gt_match": true,
+    "conf": 1.0,
+    "logit_gap": -20.723
+  },
+  "place_playingcards1_box_low/episode24": {
+    "action_prompt_label": "low drop",
+    "pref_key": "low",
+    "decision": "keep",
+    "gt_pref_key": "low",
+    "gt_match": true,
+    "conf": 1.0,
+    "logit_gap": -20.723
+  },
+  "place_playingcards1_box_low/episode25": {
+    "action_prompt_label": "low drop",
+    "pref_key": "low",
+    "decision": "keep",
+    "gt_pref_key": "low",
+    "gt_match": true,
+    "conf": 1.0,
+    "logit_gap": -20.723
+  },
+  "place_playingcards1_box_low/episode26": {
+    "action_prompt_label": "low drop",
+    "pref_key": "low",
+    "decision": "keep",
+    "gt_pref_key": "low",
+    "gt_match": true,
+    "conf": 1.0,
+    "logit_gap": -20.723
+  },
+  "place_playingcards1_box_low/episode27": {
+    "action_prompt_label": "low drop",
+    "pref_key": "low",
+    "decision": "keep",
+    "gt_pref_key": "low",
+    "gt_match": true,
+    "conf": 1.0,
+    "logit_gap": -20.723
+  },
+  "place_playingcards1_box_low/episode28": {
+    "action_prompt_label": "low drop",
+    "pref_key": "low",
+    "decision": "keep",
+    "gt_pref_key": "low",
+    "gt_match": true,
+    "conf": 1.0,
+    "logit_gap": -20.723
+  },
+  "place_playingcards1_box_low/episode29": {
+    "action_prompt_label": "low drop",
+    "pref_key": "low",
+    "decision": "keep",
+    "gt_pref_key": "low",
+    "gt_match": true,
+    "conf": 1.0,
+    "logit_gap": -20.723
+  },
+  "place_playingcards1_box_low/episode3": {
+    "action_prompt_label": "low drop",
+    "pref_key": "low",
+    "decision": "keep",
+    "gt_pref_key": "low",
+    "gt_match": true,
+    "conf": 1.0,
+    "logit_gap": -20.723
+  },
+  "place_playingcards1_box_low/episode30": {
+    "action_prompt_label": "low drop",
+    "pref_key": "low",
+    "decision": "keep",
+    "gt_pref_key": "low",
+    "gt_match": true,
+    "conf": 1.0,
+    "logit_gap": -20.723
+  },
+  "place_playingcards1_box_low/episode31": {
+    "action_prompt_label": "low drop",
+    "pref_key": "low",
+    "decision": "keep",
+    "gt_pref_key": "low",
+    "gt_match": true,
+    "conf": 1.0,
+    "logit_gap": -20.723
+  },
+  "place_playingcards1_box_low/episode32": {
+    "action_prompt_label": "low drop",
+    "pref_key": "low",
+    "decision": "keep",
+    "gt_pref_key": "low",
+    "gt_match": true,
+    "conf": 1.0,
+    "logit_gap": -20.723
+  },
+  "place_playingcards1_box_low/episode33": {
+    "action_prompt_label": "low drop",
+    "pref_key": "low",
+    "decision": "keep",
+    "gt_pref_key": "low",
+    "gt_match": true,
+    "conf": 1.0,
+    "logit_gap": -20.723
+  },
+  "place_playingcards1_box_low/episode34": {
+    "action_prompt_label": "low drop",
+    "pref_key": "low",
+    "decision": "keep",
+    "gt_pref_key": "low",
+    "gt_match": true,
+    "conf": 1.0,
+    "logit_gap": -20.723
+  },
+  "place_playingcards1_box_low/episode35": {
+    "action_prompt_label": "low drop",
+    "pref_key": "low",
+    "decision": "keep",
+    "gt_pref_key": "low",
+    "gt_match": true,
+    "conf": 1.0,
+    "logit_gap": -20.723
+  },
+  "place_playingcards1_box_low/episode36": {
+    "action_prompt_label": "low drop",
+    "pref_key": "low",
+    "decision": "keep",
+    "gt_pref_key": "low",
+    "gt_match": true,
+    "conf": 1.0,
+    "logit_gap": -20.723
+  },
+  "place_playingcards1_box_low/episode37": {
+    "action_prompt_label": "low drop",
+    "pref_key": "low",
+    "decision": "keep",
+    "gt_pref_key": "low",
+    "gt_match": true,
+    "conf": 1.0,
+    "logit_gap": -20.723
+  },
+  "place_playingcards1_box_low/episode38": {
+    "action_prompt_label": "low drop",
+    "pref_key": "low",
+    "decision": "keep",
+    "gt_pref_key": "low",
+    "gt_match": true,
+    "conf": 1.0,
+    "logit_gap": -20.723
+  },
+  "place_playingcards1_box_low/episode39": {
+    "action_prompt_label": "low drop",
+    "pref_key": "low",
+    "decision": "keep",
+    "gt_pref_key": "low",
+    "gt_match": true,
+    "conf": 1.0,
+    "logit_gap": -20.723
+  },
+  "place_playingcards1_box_low/episode4": {
+    "action_prompt_label": "low drop",
+    "pref_key": "low",
+    "decision": "keep",
+    "gt_pref_key": "low",
+    "gt_match": true,
+    "conf": 1.0,
+    "logit_gap": -20.723
+  },
+  "place_playingcards1_box_low/episode40": {
+    "action_prompt_label": "low drop",
+    "pref_key": "low",
+    "decision": "keep",
+    "gt_pref_key": "low",
+    "gt_match": true,
+    "conf": 1.0,
+    "logit_gap": -20.723
+  },
+  "place_playingcards1_box_low/episode41": {
+    "action_prompt_label": "low drop",
+    "pref_key": "low",
+    "decision": "keep",
+    "gt_pref_key": "low",
+    "gt_match": true,
+    "conf": 1.0,
+    "logit_gap": -20.723
+  },
+  "place_playingcards1_box_low/episode42": {
+    "action_prompt_label": "low drop",
+    "pref_key": "low",
+    "decision": "keep",
+    "gt_pref_key": "low",
+    "gt_match": true,
+    "conf": 1.0,
+    "logit_gap": -20.723
+  },
+  "place_playingcards1_box_low/episode43": {
+    "action_prompt_label": "low drop",
+    "pref_key": "low",
+    "decision": "keep",
+    "gt_pref_key": "low",
+    "gt_match": true,
+    "conf": 1.0,
+    "logit_gap": -20.723
+  },
+  "place_playingcards1_box_low/episode44": {
+    "action_prompt_label": "low drop",
+    "pref_key": "low",
+    "decision": "keep",
+    "gt_pref_key": "low",
+    "gt_match": true,
+    "conf": 1.0,
+    "logit_gap": -20.723
+  },
+  "place_playingcards1_box_low/episode45": {
+    "action_prompt_label": "low drop",
+    "pref_key": "low",
+    "decision": "keep",
+    "gt_pref_key": "low",
+    "gt_match": true,
+    "conf": 1.0,
+    "logit_gap": -20.723
+  },
+  "place_playingcards1_box_low/episode46": {
+    "action_prompt_label": "low drop",
+    "pref_key": "low",
+    "decision": "keep",
+    "gt_pref_key": "low",
+    "gt_match": true,
+    "conf": 1.0,
+    "logit_gap": -20.723
+  },
+  "place_playingcards1_box_low/episode47": {
+    "action_prompt_label": "low drop",
+    "pref_key": "low",
+    "decision": "keep",
+    "gt_pref_key": "low",
+    "gt_match": true,
+    "conf": 1.0,
+    "logit_gap": -20.723
+  },
+  "place_playingcards1_box_low/episode48": {
+    "action_prompt_label": "low drop",
+    "pref_key": "low",
+    "decision": "keep",
+    "gt_pref_key": "low",
+    "gt_match": true,
+    "conf": 1.0,
+    "logit_gap": -20.723
+  },
+  "place_playingcards1_box_low/episode49": {
+    "action_prompt_label": "low drop",
+    "pref_key": "low",
+    "decision": "keep",
+    "gt_pref_key": "low",
+    "gt_match": true,
+    "conf": 1.0,
+    "logit_gap": -20.723
+  },
+  "place_playingcards1_box_low/episode5": {
+    "action_prompt_label": "low drop",
+    "pref_key": "low",
+    "decision": "keep",
+    "gt_pref_key": "low",
+    "gt_match": true,
+    "conf": 1.0,
+    "logit_gap": -20.723
+  },
+  "place_playingcards1_box_low/episode6": {
+    "action_prompt_label": "low drop",
+    "pref_key": "low",
+    "decision": "keep",
+    "gt_pref_key": "low",
+    "gt_match": true,
+    "conf": 1.0,
+    "logit_gap": -20.723
+  },
+  "place_playingcards1_box_low/episode7": {
+    "action_prompt_label": "low drop",
+    "pref_key": "low",
+    "decision": "keep",
+    "gt_pref_key": "low",
+    "gt_match": true,
+    "conf": 1.0,
+    "logit_gap": -20.723
+  },
+  "place_playingcards1_box_low/episode8": {
+    "action_prompt_label": "low drop",
+    "pref_key": "low",
+    "decision": "keep",
+    "gt_pref_key": "low",
+    "gt_match": true,
+    "conf": 1.0,
+    "logit_gap": -20.723
+  },
+  "place_playingcards1_box_low/episode9": {
+    "action_prompt_label": "low drop",
+    "pref_key": "low",
+    "decision": "keep",
+    "gt_pref_key": "low",
+    "gt_match": true,
+    "conf": 1.0,
+    "logit_gap": -20.723
+  }
+}

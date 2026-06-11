@@ -1,0 +1,902 @@
+{
+  "move_can5_away_0/episode0": {
+    "action_prompt_label": "horizontal grasp",
+    "pref_key": "0",
+    "decision": "keep",
+    "gt_pref_key": "0",
+    "gt_match": true,
+    "conf": 1.0,
+    "logit_gap": 20.0
+  },
+  "move_can5_away_0/episode1": {
+    "action_prompt_label": "horizontal grasp",
+    "pref_key": "0",
+    "decision": "keep",
+    "gt_pref_key": "0",
+    "gt_match": true,
+    "conf": 1.0,
+    "logit_gap": 20.723
+  },
+  "move_can5_away_0/episode10": {
+    "action_prompt_label": "horizontal grasp",
+    "pref_key": "0",
+    "decision": "keep",
+    "gt_pref_key": "0",
+    "gt_match": true,
+    "conf": 1.0,
+    "logit_gap": 20.723
+  },
+  "move_can5_away_0/episode11": {
+    "action_prompt_label": "horizontal grasp",
+    "pref_key": "0",
+    "decision": "keep",
+    "gt_pref_key": "0",
+    "gt_match": true,
+    "conf": 1.0,
+    "logit_gap": 20.723
+  },
+  "move_can5_away_0/episode12": {
+    "action_prompt_label": "horizontal grasp",
+    "pref_key": "0",
+    "decision": "keep",
+    "gt_pref_key": "0",
+    "gt_match": true,
+    "conf": 1.0,
+    "logit_gap": 17.875
+  },
+  "move_can5_away_0/episode13": {
+    "action_prompt_label": "horizontal grasp",
+    "pref_key": "0",
+    "decision": "keep",
+    "gt_pref_key": "0",
+    "gt_match": true,
+    "conf": 1.0,
+    "logit_gap": 20.723
+  },
+  "move_can5_away_0/episode14": {
+    "action_prompt_label": "horizontal grasp",
+    "pref_key": "0",
+    "decision": "keep",
+    "gt_pref_key": "0",
+    "gt_match": true,
+    "conf": 1.0,
+    "logit_gap": 17.25
+  },
+  "move_can5_away_0/episode15": {
+    "action_prompt_label": "horizontal grasp",
+    "pref_key": "0",
+    "decision": "keep",
+    "gt_pref_key": "0",
+    "gt_match": true,
+    "conf": 1.0,
+    "logit_gap": 20.723
+  },
+  "move_can5_away_0/episode16": {
+    "action_prompt_label": "horizontal grasp",
+    "pref_key": "0",
+    "decision": "keep",
+    "gt_pref_key": "0",
+    "gt_match": true,
+    "conf": 1.0,
+    "logit_gap": 20.723
+  },
+  "move_can5_away_0/episode17": {
+    "action_prompt_label": "horizontal grasp",
+    "pref_key": "0",
+    "decision": "keep",
+    "gt_pref_key": "0",
+    "gt_match": true,
+    "conf": 1.0,
+    "logit_gap": 14.5
+  },
+  "move_can5_away_0/episode18": {
+    "action_prompt_label": "horizontal grasp",
+    "pref_key": "0",
+    "decision": "keep",
+    "gt_pref_key": "0",
+    "gt_match": true,
+    "conf": 1.0,
+    "logit_gap": 20.723
+  },
+  "move_can5_away_0/episode19": {
+    "action_prompt_label": "horizontal grasp",
+    "pref_key": "0",
+    "decision": "keep",
+    "gt_pref_key": "0",
+    "gt_match": true,
+    "conf": 1.0,
+    "logit_gap": 20.723
+  },
+  "move_can5_away_0/episode2": {
+    "action_prompt_label": "horizontal grasp",
+    "pref_key": "0",
+    "decision": "keep",
+    "gt_pref_key": "0",
+    "gt_match": true,
+    "conf": 1.0,
+    "logit_gap": 20.723
+  },
+  "move_can5_away_0/episode20": {
+    "action_prompt_label": "horizontal grasp",
+    "pref_key": "0",
+    "decision": "keep",
+    "gt_pref_key": "0",
+    "gt_match": true,
+    "conf": 0.9399,
+    "logit_gap": 2.75
+  },
+  "move_can5_away_0/episode21": {
+    "action_prompt_label": "horizontal grasp",
+    "pref_key": "0",
+    "decision": "keep",
+    "gt_pref_key": "0",
+    "gt_match": true,
+    "conf": 1.0,
+    "logit_gap": 16.0
+  },
+  "move_can5_away_0/episode22": {
+    "action_prompt_label": "horizontal grasp",
+    "pref_key": "0",
+    "decision": "keep",
+    "gt_pref_key": "0",
+    "gt_match": true,
+    "conf": 1.0,
+    "logit_gap": 20.723
+  },
+  "move_can5_away_0/episode23": {
+    "action_prompt_label": "horizontal grasp",
+    "pref_key": "0",
+    "decision": "keep",
+    "gt_pref_key": "0",
+    "gt_match": true,
+    "conf": 1.0,
+    "logit_gap": 20.723
+  },
+  "move_can5_away_0/episode24": {
+    "action_prompt_label": "horizontal grasp",
+    "pref_key": "0",
+    "decision": "keep",
+    "gt_pref_key": "0",
+    "gt_match": true,
+    "conf": 0.9241,
+    "logit_gap": 2.5
+  },
+  "move_can5_away_0/episode25": {
+    "action_prompt_label": "horizontal grasp",
+    "pref_key": "0",
+    "decision": "keep",
+    "gt_pref_key": "0",
+    "gt_match": true,
+    "conf": 1.0,
+    "logit_gap": 20.723
+  },
+  "move_can5_away_0/episode26": {
+    "action_prompt_label": "horizontal grasp",
+    "pref_key": "0",
+    "decision": "keep",
+    "gt_pref_key": "0",
+    "gt_match": true,
+    "conf": 1.0,
+    "logit_gap": 20.723
+  },
+  "move_can5_away_0/episode27": {
+    "action_prompt_label": "vertical grasp",
+    "pref_key": "90",
+    "decision": "keep",
+    "gt_pref_key": "0",
+    "gt_match": false,
+    "conf": 0.9987,
+    "logit_gap": -6.625
+  },
+  "move_can5_away_0/episode28": {
+    "action_prompt_label": "horizontal grasp",
+    "pref_key": "0",
+    "decision": "keep",
+    "gt_pref_key": "0",
+    "gt_match": true,
+    "conf": 1.0,
+    "logit_gap": 20.723
+  },
+  "move_can5_away_0/episode29": {
+    "action_prompt_label": "horizontal grasp",
+    "pref_key": "0",
+    "decision": "keep",
+    "gt_pref_key": "0",
+    "gt_match": true,
+    "conf": 1.0,
+    "logit_gap": 20.723
+  },
+  "move_can5_away_0/episode3": {
+    "action_prompt_label": "horizontal grasp",
+    "pref_key": "0",
+    "decision": "keep",
+    "gt_pref_key": "0",
+    "gt_match": true,
+    "conf": 0.982,
+    "logit_gap": 4.0
+  },
+  "move_can5_away_0/episode30": {
+    "action_prompt_label": "horizontal grasp",
+    "pref_key": "0",
+    "decision": "keep",
+    "gt_pref_key": "0",
+    "gt_match": true,
+    "conf": 1.0,
+    "logit_gap": 20.723
+  },
+  "move_can5_away_0/episode31": {
+    "action_prompt_label": "vertical grasp",
+    "pref_key": "90",
+    "decision": "keep",
+    "gt_pref_key": "0",
+    "gt_match": false,
+    "conf": 0.9978,
+    "logit_gap": -6.125
+  },
+  "move_can5_away_0/episode32": {
+    "action_prompt_label": "horizontal grasp",
+    "pref_key": "0",
+    "decision": "keep",
+    "gt_pref_key": "0",
+    "gt_match": true,
+    "conf": 1.0,
+    "logit_gap": 11.875
+  },
+  "move_can5_away_0/episode33": {
+    "action_prompt_label": "vertical grasp",
+    "pref_key": "90",
+    "decision": "keep",
+    "gt_pref_key": "0",
+    "gt_match": false,
+    "conf": 0.9841,
+    "logit_gap": -4.125
+  },
+  "move_can5_away_0/episode34": {
+    "action_prompt_label": "horizontal grasp",
+    "pref_key": "0",
+    "decision": "keep",
+    "gt_pref_key": "0",
+    "gt_match": true,
+    "conf": 0.9999,
+    "logit_gap": 9.375
+  },
+  "move_can5_away_0/episode35": {
+    "action_prompt_label": "horizontal grasp",
+    "pref_key": "0",
+    "decision": "keep",
+    "gt_pref_key": "0",
+    "gt_match": true,
+    "conf": 1.0,
+    "logit_gap": 15.25
+  },
+  "move_can5_away_0/episode36": {
+    "action_prompt_label": "horizontal grasp",
+    "pref_key": "0",
+    "decision": "keep",
+    "gt_pref_key": "0",
+    "gt_match": true,
+    "conf": 1.0,
+    "logit_gap": 17.125
+  },
+  "move_can5_away_0/episode37": {
+    "action_prompt_label": "horizontal grasp",
+    "pref_key": "0",
+    "decision": "keep",
+    "gt_pref_key": "0",
+    "gt_match": true,
+    "conf": 1.0,
+    "logit_gap": 20.723
+  },
+  "move_can5_away_0/episode38": {
+    "action_prompt_label": "vertical grasp",
+    "pref_key": "90",
+    "decision": "keep",
+    "gt_pref_key": "0",
+    "gt_match": false,
+    "conf": 0.9627,
+    "logit_gap": -3.25
+  },
+  "move_can5_away_0/episode39": {
+    "action_prompt_label": "horizontal grasp",
+    "pref_key": "0",
+    "decision": "keep",
+    "gt_pref_key": "0",
+    "gt_match": true,
+    "conf": 0.9985,
+    "logit_gap": 6.5
+  },
+  "move_can5_away_0/episode4": {
+    "action_prompt_label": "horizontal grasp",
+    "pref_key": "0",
+    "decision": "keep",
+    "gt_pref_key": "0",
+    "gt_match": true,
+    "conf": 1.0,
+    "logit_gap": 20.723
+  },
+  "move_can5_away_0/episode40": {
+    "action_prompt_label": "horizontal grasp",
+    "pref_key": "0",
+    "decision": "keep",
+    "gt_pref_key": "0",
+    "gt_match": true,
+    "conf": 1.0,
+    "logit_gap": 20.723
+  },
+  "move_can5_away_0/episode41": {
+    "action_prompt_label": "horizontal grasp",
+    "pref_key": "0",
+    "decision": "keep",
+    "gt_pref_key": "0",
+    "gt_match": true,
+    "conf": 1.0,
+    "logit_gap": 20.723
+  },
+  "move_can5_away_0/episode42": {
+    "action_prompt_label": "horizontal grasp",
+    "pref_key": "0",
+    "decision": "keep",
+    "gt_pref_key": "0",
+    "gt_match": true,
+    "conf": 1.0,
+    "logit_gap": 19.125
+  },
+  "move_can5_away_0/episode43": {
+    "action_prompt_label": "horizontal grasp",
+    "pref_key": "0",
+    "decision": "keep",
+    "gt_pref_key": "0",
+    "gt_match": true,
+    "conf": 1.0,
+    "logit_gap": 20.723
+  },
+  "move_can5_away_0/episode44": {
+    "action_prompt_label": "horizontal grasp",
+    "pref_key": "0",
+    "decision": "keep",
+    "gt_pref_key": "0",
+    "gt_match": true,
+    "conf": 1.0,
+    "logit_gap": 20.723
+  },
+  "move_can5_away_0/episode45": {
+    "action_prompt_label": "horizontal grasp",
+    "pref_key": "0",
+    "decision": "keep",
+    "gt_pref_key": "0",
+    "gt_match": true,
+    "conf": 1.0,
+    "logit_gap": 20.723
+  },
+  "move_can5_away_0/episode46": {
+    "action_prompt_label": "horizontal grasp",
+    "pref_key": "0",
+    "decision": "keep",
+    "gt_pref_key": "0",
+    "gt_match": true,
+    "conf": 1.0,
+    "logit_gap": 20.723
+  },
+  "move_can5_away_0/episode47": {
+    "action_prompt_label": "horizontal grasp",
+    "pref_key": "0",
+    "decision": "keep",
+    "gt_pref_key": "0",
+    "gt_match": true,
+    "conf": 1.0,
+    "logit_gap": 20.723
+  },
+  "move_can5_away_0/episode48": {
+    "action_prompt_label": "horizontal grasp",
+    "pref_key": "0",
+    "decision": "keep",
+    "gt_pref_key": "0",
+    "gt_match": true,
+    "conf": 1.0,
+    "logit_gap": 20.723
+  },
+  "move_can5_away_0/episode49": {
+    "action_prompt_label": "horizontal grasp",
+    "pref_key": "0",
+    "decision": "keep",
+    "gt_pref_key": "0",
+    "gt_match": true,
+    "conf": 1.0,
+    "logit_gap": 20.723
+  },
+  "move_can5_away_0/episode5": {
+    "action_prompt_label": "horizontal grasp",
+    "pref_key": "0",
+    "decision": "keep",
+    "gt_pref_key": "0",
+    "gt_match": true,
+    "conf": 1.0,
+    "logit_gap": 20.723
+  },
+  "move_can5_away_0/episode6": {
+    "action_prompt_label": "horizontal grasp",
+    "pref_key": "0",
+    "decision": "keep",
+    "gt_pref_key": "0",
+    "gt_match": true,
+    "conf": 1.0,
+    "logit_gap": 20.723
+  },
+  "move_can5_away_0/episode7": {
+    "action_prompt_label": "vertical grasp",
+    "pref_key": "90",
+    "decision": "keep",
+    "gt_pref_key": "0",
+    "gt_match": false,
+    "conf": 0.9241,
+    "logit_gap": -2.5
+  },
+  "move_can5_away_0/episode8": {
+    "action_prompt_label": "horizontal grasp",
+    "pref_key": "0",
+    "decision": "keep",
+    "gt_pref_key": "0",
+    "gt_match": true,
+    "conf": 1.0,
+    "logit_gap": 20.723
+  },
+  "move_can5_away_0/episode9": {
+    "action_prompt_label": "horizontal grasp",
+    "pref_key": "0",
+    "decision": "keep",
+    "gt_pref_key": "0",
+    "gt_match": true,
+    "conf": 1.0,
+    "logit_gap": 14.875
+  },
+  "move_can5_away_90/episode0": {
+    "action_prompt_label": "vertical grasp",
+    "pref_key": "90",
+    "decision": "keep",
+    "gt_pref_key": "90",
+    "gt_match": true,
+    "conf": 1.0,
+    "logit_gap": -20.723
+  },
+  "move_can5_away_90/episode1": {
+    "action_prompt_label": "vertical grasp",
+    "pref_key": "90",
+    "decision": "keep",
+    "gt_pref_key": "90",
+    "gt_match": true,
+    "conf": 1.0,
+    "logit_gap": -20.723
+  },
+  "move_can5_away_90/episode10": {
+    "action_prompt_label": "vertical grasp",
+    "pref_key": "90",
+    "decision": "keep",
+    "gt_pref_key": "90",
+    "gt_match": true,
+    "conf": 1.0,
+    "logit_gap": -20.723
+  },
+  "move_can5_away_90/episode11": {
+    "action_prompt_label": "vertical grasp",
+    "pref_key": "90",
+    "decision": "keep",
+    "gt_pref_key": "90",
+    "gt_match": true,
+    "conf": 1.0,
+    "logit_gap": -20.723
+  },
+  "move_can5_away_90/episode12": {
+    "action_prompt_label": "vertical grasp",
+    "pref_key": "90",
+    "decision": "keep",
+    "gt_pref_key": "90",
+    "gt_match": true,
+    "conf": 1.0,
+    "logit_gap": -20.723
+  },
+  "move_can5_away_90/episode13": {
+    "action_prompt_label": "vertical grasp",
+    "pref_key": "90",
+    "decision": "keep",
+    "gt_pref_key": "90",
+    "gt_match": true,
+    "conf": 1.0,
+    "logit_gap": -20.723
+  },
+  "move_can5_away_90/episode14": {
+    "action_prompt_label": "vertical grasp",
+    "pref_key": "90",
+    "decision": "keep",
+    "gt_pref_key": "90",
+    "gt_match": true,
+    "conf": 1.0,
+    "logit_gap": -20.723
+  },
+  "move_can5_away_90/episode15": {
+    "action_prompt_label": "vertical grasp",
+    "pref_key": "90",
+    "decision": "keep",
+    "gt_pref_key": "90",
+    "gt_match": true,
+    "conf": 1.0,
+    "logit_gap": -20.723
+  },
+  "move_can5_away_90/episode16": {
+    "action_prompt_label": "vertical grasp",
+    "pref_key": "90",
+    "decision": "keep",
+    "gt_pref_key": "90",
+    "gt_match": true,
+    "conf": 1.0,
+    "logit_gap": -20.723
+  },
+  "move_can5_away_90/episode17": {
+    "action_prompt_label": "vertical grasp",
+    "pref_key": "90",
+    "decision": "keep",
+    "gt_pref_key": "90",
+    "gt_match": true,
+    "conf": 1.0,
+    "logit_gap": -20.723
+  },
+  "move_can5_away_90/episode18": {
+    "action_prompt_label": "vertical grasp",
+    "pref_key": "90",
+    "decision": "keep",
+    "gt_pref_key": "90",
+    "gt_match": true,
+    "conf": 1.0,
+    "logit_gap": -20.723
+  },
+  "move_can5_away_90/episode19": {
+    "action_prompt_label": "vertical grasp",
+    "pref_key": "90",
+    "decision": "keep",
+    "gt_pref_key": "90",
+    "gt_match": true,
+    "conf": 1.0,
+    "logit_gap": -20.723
+  },
+  "move_can5_away_90/episode2": {
+    "action_prompt_label": "vertical grasp",
+    "pref_key": "90",
+    "decision": "keep",
+    "gt_pref_key": "90",
+    "gt_match": true,
+    "conf": 1.0,
+    "logit_gap": -20.723
+  },
+  "move_can5_away_90/episode20": {
+    "action_prompt_label": "vertical grasp",
+    "pref_key": "90",
+    "decision": "keep",
+    "gt_pref_key": "90",
+    "gt_match": true,
+    "conf": 1.0,
+    "logit_gap": -20.723
+  },
+  "move_can5_away_90/episode21": {
+    "action_prompt_label": "vertical grasp",
+    "pref_key": "90",
+    "decision": "keep",
+    "gt_pref_key": "90",
+    "gt_match": true,
+    "conf": 1.0,
+    "logit_gap": -20.723
+  },
+  "move_can5_away_90/episode22": {
+    "action_prompt_label": "vertical grasp",
+    "pref_key": "90",
+    "decision": "keep",
+    "gt_pref_key": "90",
+    "gt_match": true,
+    "conf": 1.0,
+    "logit_gap": -20.723
+  },
+  "move_can5_away_90/episode23": {
+    "action_prompt_label": "vertical grasp",
+    "pref_key": "90",
+    "decision": "keep",
+    "gt_pref_key": "90",
+    "gt_match": true,
+    "conf": 1.0,
+    "logit_gap": -20.723
+  },
+  "move_can5_away_90/episode24": {
+    "action_prompt_label": "vertical grasp",
+    "pref_key": "90",
+    "decision": "keep",
+    "gt_pref_key": "90",
+    "gt_match": true,
+    "conf": 1.0,
+    "logit_gap": -20.723
+  },
+  "move_can5_away_90/episode25": {
+    "action_prompt_label": "vertical grasp",
+    "pref_key": "90",
+    "decision": "keep",
+    "gt_pref_key": "90",
+    "gt_match": true,
+    "conf": 1.0,
+    "logit_gap": -20.723
+  },
+  "move_can5_away_90/episode26": {
+    "action_prompt_label": "vertical grasp",
+    "pref_key": "90",
+    "decision": "keep",
+    "gt_pref_key": "90",
+    "gt_match": true,
+    "conf": 1.0,
+    "logit_gap": -20.723
+  },
+  "move_can5_away_90/episode27": {
+    "action_prompt_label": "vertical grasp",
+    "pref_key": "90",
+    "decision": "keep",
+    "gt_pref_key": "90",
+    "gt_match": true,
+    "conf": 1.0,
+    "logit_gap": -20.723
+  },
+  "move_can5_away_90/episode28": {
+    "action_prompt_label": "vertical grasp",
+    "pref_key": "90",
+    "decision": "keep",
+    "gt_pref_key": "90",
+    "gt_match": true,
+    "conf": 1.0,
+    "logit_gap": -20.723
+  },
+  "move_can5_away_90/episode29": {
+    "action_prompt_label": "vertical grasp",
+    "pref_key": "90",
+    "decision": "keep",
+    "gt_pref_key": "90",
+    "gt_match": true,
+    "conf": 1.0,
+    "logit_gap": -20.723
+  },
+  "move_can5_away_90/episode3": {
+    "action_prompt_label": "vertical grasp",
+    "pref_key": "90",
+    "decision": "keep",
+    "gt_pref_key": "90",
+    "gt_match": true,
+    "conf": 1.0,
+    "logit_gap": -20.723
+  },
+  "move_can5_away_90/episode30": {
+    "action_prompt_label": "vertical grasp",
+    "pref_key": "90",
+    "decision": "keep",
+    "gt_pref_key": "90",
+    "gt_match": true,
+    "conf": 1.0,
+    "logit_gap": -20.723
+  },
+  "move_can5_away_90/episode31": {
+    "action_prompt_label": "vertical grasp",
+    "pref_key": "90",
+    "decision": "keep",
+    "gt_pref_key": "90",
+    "gt_match": true,
+    "conf": 1.0,
+    "logit_gap": -20.723
+  },
+  "move_can5_away_90/episode32": {
+    "action_prompt_label": "vertical grasp",
+    "pref_key": "90",
+    "decision": "keep",
+    "gt_pref_key": "90",
+    "gt_match": true,
+    "conf": 1.0,
+    "logit_gap": -20.723
+  },
+  "move_can5_away_90/episode33": {
+    "action_prompt_label": "vertical grasp",
+    "pref_key": "90",
+    "decision": "keep",
+    "gt_pref_key": "90",
+    "gt_match": true,
+    "conf": 1.0,
+    "logit_gap": -20.723
+  },
+  "move_can5_away_90/episode34": {
+    "action_prompt_label": "vertical grasp",
+    "pref_key": "90",
+    "decision": "keep",
+    "gt_pref_key": "90",
+    "gt_match": true,
+    "conf": 1.0,
+    "logit_gap": -20.723
+  },
+  "move_can5_away_90/episode35": {
+    "action_prompt_label": "vertical grasp",
+    "pref_key": "90",
+    "decision": "keep",
+    "gt_pref_key": "90",
+    "gt_match": true,
+    "conf": 1.0,
+    "logit_gap": -20.723
+  },
+  "move_can5_away_90/episode36": {
+    "action_prompt_label": "vertical grasp",
+    "pref_key": "90",
+    "decision": "keep",
+    "gt_pref_key": "90",
+    "gt_match": true,
+    "conf": 1.0,
+    "logit_gap": -20.723
+  },
+  "move_can5_away_90/episode37": {
+    "action_prompt_label": "vertical grasp",
+    "pref_key": "90",
+    "decision": "keep",
+    "gt_pref_key": "90",
+    "gt_match": true,
+    "conf": 1.0,
+    "logit_gap": -20.723
+  },
+  "move_can5_away_90/episode38": {
+    "action_prompt_label": "vertical grasp",
+    "pref_key": "90",
+    "decision": "keep",
+    "gt_pref_key": "90",
+    "gt_match": true,
+    "conf": 1.0,
+    "logit_gap": -20.723
+  },
+  "move_can5_away_90/episode39": {
+    "action_prompt_label": "vertical grasp",
+    "pref_key": "90",
+    "decision": "keep",
+    "gt_pref_key": "90",
+    "gt_match": true,
+    "conf": 1.0,
+    "logit_gap": -20.723
+  },
+  "move_can5_away_90/episode4": {
+    "action_prompt_label": "vertical grasp",
+    "pref_key": "90",
+    "decision": "keep",
+    "gt_pref_key": "90",
+    "gt_match": true,
+    "conf": 1.0,
+    "logit_gap": -20.723
+  },
+  "move_can5_away_90/episode40": {
+    "action_prompt_label": "vertical grasp",
+    "pref_key": "90",
+    "decision": "keep",
+    "gt_pref_key": "90",
+    "gt_match": true,
+    "conf": 1.0,
+    "logit_gap": -20.723
+  },
+  "move_can5_away_90/episode41": {
+    "action_prompt_label": "vertical grasp",
+    "pref_key": "90",
+    "decision": "keep",
+    "gt_pref_key": "90",
+    "gt_match": true,
+    "conf": 1.0,
+    "logit_gap": -20.723
+  },
+  "move_can5_away_90/episode42": {
+    "action_prompt_label": "vertical grasp",
+    "pref_key": "90",
+    "decision": "keep",
+    "gt_pref_key": "90",
+    "gt_match": true,
+    "conf": 1.0,
+    "logit_gap": -20.723
+  },
+  "move_can5_away_90/episode43": {
+    "action_prompt_label": "vertical grasp",
+    "pref_key": "90",
+    "decision": "keep",
+    "gt_pref_key": "90",
+    "gt_match": true,
+    "conf": 1.0,
+    "logit_gap": -20.723
+  },
+  "move_can5_away_90/episode44": {
+    "action_prompt_label": "vertical grasp",
+    "pref_key": "90",
+    "decision": "keep",
+    "gt_pref_key": "90",
+    "gt_match": true,
+    "conf": 1.0,
+    "logit_gap": -20.723
+  },
+  "move_can5_away_90/episode45": {
+    "action_prompt_label": "vertical grasp",
+    "pref_key": "90",
+    "decision": "keep",
+    "gt_pref_key": "90",
+    "gt_match": true,
+    "conf": 1.0,
+    "logit_gap": -20.723
+  },
+  "move_can5_away_90/episode46": {
+    "action_prompt_label": "vertical grasp",
+    "pref_key": "90",
+    "decision": "keep",
+    "gt_pref_key": "90",
+    "gt_match": true,
+    "conf": 1.0,
+    "logit_gap": -20.723
+  },
+  "move_can5_away_90/episode47": {
+    "action_prompt_label": "vertical grasp",
+    "pref_key": "90",
+    "decision": "keep",
+    "gt_pref_key": "90",
+    "gt_match": true,
+    "conf": 1.0,
+    "logit_gap": -20.723
+  },
+  "move_can5_away_90/episode48": {
+    "action_prompt_label": "vertical grasp",
+    "pref_key": "90",
+    "decision": "keep",
+    "gt_pref_key": "90",
+    "gt_match": true,
+    "conf": 1.0,
+    "logit_gap": -20.723
+  },
+  "move_can5_away_90/episode49": {
+    "action_prompt_label": "vertical grasp",
+    "pref_key": "90",
+    "decision": "keep",
+    "gt_pref_key": "90",
+    "gt_match": true,
+    "conf": 1.0,
+    "logit_gap": -20.723
+  },
+  "move_can5_away_90/episode5": {
+    "action_prompt_label": "vertical grasp",
+    "pref_key": "90",
+    "decision": "keep",
+    "gt_pref_key": "90",
+    "gt_match": true,
+    "conf": 1.0,
+    "logit_gap": -20.723
+  },
+  "move_can5_away_90/episode6": {
+    "action_prompt_label": "vertical grasp",
+    "pref_key": "90",
+    "decision": "keep",
+    "gt_pref_key": "90",
+    "gt_match": true,
+    "conf": 1.0,
+    "logit_gap": -20.723
+  },
+  "move_can5_away_90/episode7": {
+    "action_prompt_label": "vertical grasp",
+    "pref_key": "90",
+    "decision": "keep",
+    "gt_pref_key": "90",
+    "gt_match": true,
+    "conf": 1.0,
+    "logit_gap": -20.723
+  },
+  "move_can5_away_90/episode8": {
+    "action_prompt_label": "vertical grasp",
+    "pref_key": "90",
+    "decision": "keep",
+    "gt_pref_key": "90",
+    "gt_match": true,
+    "conf": 1.0,
+    "logit_gap": -20.723
+  },
+  "move_can5_away_90/episode9": {
+    "action_prompt_label": "vertical grasp",
+    "pref_key": "90",
+    "decision": "keep",
+    "gt_pref_key": "90",
+    "gt_match": true,
+    "conf": 1.0,
+    "logit_gap": -20.723
+  }
+}

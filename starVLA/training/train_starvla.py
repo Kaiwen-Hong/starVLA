@@ -142,6 +142,20 @@ class VLATrainer(TrainerUtils):
         self.model = self.freeze_backbones(self.model, freeze_modules=freeze_modules)
         self.print_trainable_parameters(self.model)
 
+        # DeepSpeed 'auto' train_micro_batch_size_per_gpu is resolved by accelerate from
+        # the dataloader during prepare(); in some paths (observed on the Stage-B
+        # pref_hdf5_stageb dataloader) that auto-detection fails and prepare() raises.
+        # Set it explicitly from config (the value accelerate would have inferred).
+        try:
+            _dp = getattr(self.accelerator.state, "deepspeed_plugin", None)
+            if _dp is not None and _dp.deepspeed_config.get("train_micro_batch_size_per_gpu") == "auto":
+                _dp.deepspeed_config["train_micro_batch_size_per_gpu"] = int(
+                    self.config.datasets.vla_data.per_device_batch_size)
+                logger.info("[deepspeed] set train_micro_batch_size_per_gpu="
+                            f"{_dp.deepspeed_config['train_micro_batch_size_per_gpu']} (explicit)")
+        except Exception as _e:
+            logger.warning(f"[deepspeed] could not set explicit micro batch: {_e}")
+
         self.model, self.optimizer, self.vla_train_dataloader = self.setup_distributed_training(
             self.accelerator,
             self.model,
@@ -373,7 +387,11 @@ class VLATrainer(TrainerUtils):
                 )
 
             if self.completed_steps % self.config.trainer.eval_interval == 0:
-                step_metrics = self.eval_action_model(step_metrics)
+                try:
+                    step_metrics = self.eval_action_model(step_metrics)
+                except Exception as e:
+                    logger.warning(f"eval_action_model skipped: {e}")
+                step_metrics = self._eval_vqa(step_metrics)
 
             step_metrics["data_time"] = t_end_data - t_start_data
             step_metrics["model_time"] = t_end_model - t_start_model
@@ -404,6 +422,28 @@ class VLATrainer(TrainerUtils):
             step_metrics["mse_score"] = score / num_pots
 
         del examples
+        if dist.is_initialized():
+            dist.barrier()
+        return step_metrics
+
+    def _eval_vqa(self, step_metrics: dict) -> dict:
+        """Held-out VQA validation (taskA-val + taskB) if the framework supports it.
+        Guarded + rank-0 only (Zero2 keeps full params per rank, so a standalone
+        forward is valid). Surfaces the REAL generalization vs train L_vqa→0."""
+        model = self.accelerator.unwrap_model(self.model)
+        if not hasattr(model, "validate_vqa"):
+            return step_metrics
+        try:
+            was_training = model.training
+            model.eval()
+            if self.accelerator.is_main_process:
+                vlog = model.validate_vqa()
+                step_metrics.update(vlog)
+                logger.info(f"[VQA val @ step {self.completed_steps}] {vlog}")
+            if was_training:
+                model.train()
+        except Exception as e:
+            logger.warning(f"VQA validation skipped: {e}")
         if dist.is_initialized():
             dist.barrier()
         return step_metrics

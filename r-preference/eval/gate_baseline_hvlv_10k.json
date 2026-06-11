@@ -1,0 +1,31 @@
+{
+  "cat": "hvlv",
+  "ckpt": "results/Checkpoints/pref_oft_baseline_hvlv_10k/checkpoints/steps_10000_pytorch_model.pt",
+  "question": "We are moving an object around an obstacle. Do we keep far from it or near it? Answer:",
+  "answers": {
+    "hv": "far",
+    "lv": "near"
+  },
+  "taskA": {
+    "n": 80,
+    "acc": 0.35,
+    "acc_gt_hv": 0.3,
+    "acc_gt_lv": 0.4,
+    "balanced_acc": 0.35,
+    "pred_dist": {
+      "hv": 36,
+      "lv": 44
+    }
+  },
+  "taskB": {
+    "n": 100,
+    "acc": 0.51,
+    "acc_gt_hv": 0.6,
+    "acc_gt_lv": 0.42,
+    "balanced_acc": 0.51,
+    "pred_dist": {
+      "hv": 59,
+      "lv": 41
+    }
+  }
+}

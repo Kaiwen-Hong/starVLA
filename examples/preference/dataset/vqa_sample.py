@@ -56,6 +56,8 @@ import h5py
 import numpy as np
 from PIL import Image
 
+from .rotation import quat_xyzw_to_6d
+
 # Module-level registry — VQA clip caches keyed by split name ('train'/'val').
 _VQA_CLIP_CACHE: Dict[str, np.ndarray] = {}
 
@@ -110,6 +112,8 @@ class VQACategoryConfig:
     cameras: Tuple[str, ...] = ("head_camera",)
     clip_strategy: str = "uniform_8"
     n_frames: int = 8
+    state_in_vqa: bool = False   # if True, inject active-arm EE pose (xyz+6D) at the
+                                 # frames as text (the pref signal lives in proprioception)
 
 
 VQA_CATEGORIES: Dict[str, VQACategoryConfig] = {
@@ -123,50 +127,66 @@ VQA_CATEGORIES: Dict[str, VQACategoryConfig] = {
     # prompt.PREF_CATEGORIES for the rename note). Same question, same
     # answer tokens.
     "contact": VQACategoryConfig(
+        # redesign 2026-05-28: grasp-height pref (25=low / 75=high), head-only,
+        # 3-frame contact3 (grasp moment), EE-state token.
         pref_keys=("25", "75"),
         answer_token_ids={"25": 10303, "75": 11892},
         answer_text={"25": "low", "75": "high"},
-        question="Question: low or high contact at grasp? Answer:",
+        question="We are picking up an object. Are we grasping it from high or from low? Answer:",
+        cameras=("head_camera",),
+        clip_strategy="contact3",
+        n_frames=3,
+        state_in_vqa=True,
     ),
     "height": VQACategoryConfig(
+        # redesign 2026-05-28: task-context question, single-token answer (high/low),
+        # head-only, 3-frame place3 (drop moment). No robot-state input (per user).
         pref_keys=("high", "low"),
         answer_token_ids={"high": 11892, "low": 10303},
         answer_text={"high": "high", "low": "low"},
-        question="Question: high or low drop? Answer:",
+        question="We are placing an object onto a target. Are we dropping it from high or from low? Answer:",
+        cameras=("head_camera",),
+        clip_strategy="height3",
+        n_frames=3,
+        state_in_vqa=True,
     ),
     "hvlv": VQACategoryConfig(
+        # redesign 2026-05-28: obstacle-avoidance margin (hv=far / lv=near),
+        # head-only, 3-frame hvlv3 (mid-move around obstacle), EE-state token.
         pref_keys=("hv", "lv"),
         answer_token_ids={"hv": 23559, "lv": 51659},   # far / near
         answer_text={"hv": "far", "lv": "near"},
-        question="Question: far from or near the obstacle? Answer:",
+        question="We are moving an object around an obstacle. Do we keep far from it or near it? Answer:",
+        cameras=("head_camera",),
+        clip_strategy="hvlv3",
+        n_frames=3,
+        state_in_vqa=True,
     ),
     "orient": VQACategoryConfig(
+        # redesign 2026-05-28: task-context question, single-token answer (side/top),
+        # head-only, 3-frame orient3 (grasp moment). No robot-state input (per user).
         pref_keys=("0", "90"),
-        answer_token_ids={"0": 30629, "90": 15292},   # horizontal / vertical
-        answer_text={"0": "horizontal", "90": "vertical"},
-        question="Question: horizontal or vertical grasp? Answer:",
+        answer_token_ids={"0": 2929, "90": 3481},   # side / top (single bare tokens)
+        answer_text={"0": "side", "90": "top"},
+        question="We are picking up an object. Are we grasping from the side (horizontal) or from the top (vertical)? Answer:",
+        cameras=("head_camera",),
+        clip_strategy="orient3",
+        n_frames=3,
+        state_in_vqa=True,
     ),
     "place": VQACategoryConfig(
+        # redesign 2026-05-28: task-context question, single-token answer
+        # (middle=center / corner), head-only (the 2026-05-26 active_wrist multicam
+        # was reverted — wrist confirmed unhelpful), 3-frame place3 (placement moment).
+        # No robot-state input (per user).
         pref_keys=("center", "corner"),
-        answer_token_ids={"center": 3057, "corner": 73425},
-        answer_text={"center": "center", "corner": "corner"},
-        question="Question: center or corner placement? Answer:",
-        # MULTI-CAM(active wrist) + LATE-CACHE (added 2026-05-26 after
-        # diagnostic showed head-only uniform_8 cache fails on small-target
-        # placement):
-        #   - head_camera         (overhead, scene context)
-        #   - active_wrist        (close-up of the arm actually doing the
-        #                          placement — resolved per-ep to either
-        #                          left_camera or right_camera based on which
-        #                          arm has larger xyz range; avoids wasting
-        #                          tokens on inactive wrist's static home view)
-        # Result: 2 cams × 8 frames = 16 images per VQA sample, same load as
-        # original head-only 8 frames × 2 samples (n_vqa_per_batch=2).
-        # late_8 fractions cluster around placement moment (frac=0.91 verified).
-        # See r-preference/eval/viz_place_diagnosis/ for the failure analysis.
-        cameras=("head_camera", "active_wrist"),
-        clip_strategy="late_8",
-        n_frames=8,
+        answer_token_ids={"center": 19656, "corner": 73425},   # middle / corner
+        answer_text={"center": "middle", "corner": "corner"},
+        question="We are placing an object onto a target. Are we placing it in the middle or on the corner? Answer:",
+        cameras=("head_camera",),
+        clip_strategy="place3",
+        n_frames=3,
+        state_in_vqa=True,
     ),
 }
 
@@ -257,6 +277,23 @@ def late_clip_indices(
     return (fracs_arr * (T - 1)).round().astype(np.int64)
 
 
+# ---- 3-frame task-anchored strategies (redesign 2026-05-28) ----
+# Pref signal is localized in time, so 3 frames near the relevant moment beat 8
+# uniform frames. place/height: placement/drop moment; orient: grasp moment.
+DEFAULT_PLACE3_FRACS: Tuple[float, ...] = (0.60, 0.80, 1.00)    # 3/5, 4/5, last
+DEFAULT_ORIENT3_FRACS: Tuple[float, ...] = (0.40, 0.60, 0.80)   # 2/5, 3/5, 4/5
+# height drop happens late (~0.9); tightened to the drop/release window
+# (the old [0.6,0.8,1.0] caught the arm post-retract at frac=1.0).
+DEFAULT_HEIGHT3_FRACS: Tuple[float, ...] = (0.90, 0.95, 1.00)
+# contact: grasp moment (~mid). hvlv: obstacle-avoidance margin during the move.
+DEFAULT_CONTACT3_FRACS: Tuple[float, ...] = (0.40, 0.60, 0.80)   # 2/5, 3/5, 4/5
+DEFAULT_HVLV3_FRACS: Tuple[float, ...] = (0.60, 0.70, 0.80)      # 3/5, 3.5/5, 4/5
+
+
+def _frac_indices(T: int, fracs: Sequence[float]) -> np.ndarray:
+    return (np.asarray(fracs, dtype=np.float64) * (T - 1)).round().astype(np.int64)
+
+
 # Validated gripper-close threshold + half-window: see analysis doc §4.
 # half_window=4 → span = 8, total clip covers ~64 frames around grasp_t.
 # Threshold 0.5 works for contact's gripper convention (1.0=open, 0.0=closed);
@@ -322,7 +359,7 @@ def gripper_anchored_clip_indices(
 # Unified clip-loading dispatcher (used by Stage A eval + Stage B labeler)
 # ============================================================
 
-CLIP_STRATEGY_NAMES = ("uniform_8", "mid_8", "late_8", "gripper_anchored")
+CLIP_STRATEGY_NAMES = ("uniform_8", "mid_8", "late_8", "place3", "orient3", "height3", "gripper_anchored")
 
 
 # Sentinel for active-arm wrist camera selection. When this string appears in
@@ -353,6 +390,78 @@ def _resolve_cameras_for_ep(cameras: Sequence[str], h5: h5py.File) -> List[str]:
     return [active if c == ACTIVE_WRIST_SENTINEL else c for c in cameras]
 
 
+# ============================================================
+# EE-pose state for the VQA (redesign 2026-05-28): the pref signal lives in
+# proprioception (S/N 4-22) not head-cam pixels, so we feed the active-arm EE
+# pose at the VQA frames as text alongside the images.
+# ============================================================
+
+def _active_arm_key(h5: h5py.File) -> str:
+    """'left' or 'right' — the arm that moves more (larger xyz range)."""
+    L = h5["endpose/left_endpose"][:, :3]
+    R = h5["endpose/right_endpose"][:, :3]
+    return "left" if np.linalg.norm(L.ptp(axis=0)) > np.linalg.norm(R.ptp(axis=0)) else "right"
+
+
+def ee_pose_9d_at(h5: h5py.File, arm: str, indices: Sequence[int]) -> np.ndarray:
+    """Active-arm EE pose [xyz(3) + 6D-rot(6)] at `indices` -> (len(indices), 9)."""
+    ep = h5[f"endpose/{arm}_endpose"]
+    out = []
+    for t in indices:
+        p = np.asarray(ep[int(t)], dtype=np.float64)  # (7,) xyz + quat_xyzw
+        sixd = quat_xyzw_to_6d(p[3:7][None, :])[0]    # (6,)
+        out.append(np.concatenate([p[:3], sixd]))
+    return np.asarray(out, dtype=np.float64)          # (n, 9)
+
+
+def format_state_text(state: np.ndarray) -> str:
+    """(n,9) active-arm EE pose -> compact text injected into the VQA prompt."""
+    parts = []
+    for i, s in enumerate(state):
+        parts.append("f%d=[%s]" % (i + 1, ",".join(f"{v:.3f}" for v in s)))
+    return ("Robot end-effector pose (x,y,z,r0,r1,r2,r3,r4,r5) at the frames: "
+            + "; ".join(parts) + ". ")
+
+
+def load_clip_and_state(
+    h5_path: Path,
+    strategy: str = "place3",
+    n: int = 3,
+    cameras: Sequence[str] = ("head_camera",),
+    image_size: Tuple[int, int] = VQA_IMAGE_SIZE,
+    jitter: int = 0,
+    rng: Optional[np.random.Generator] = None,
+) -> Tuple[List["Image.Image"], np.ndarray, Dict]:
+    """On-demand decode of the VQA clip + active-arm EE state at the SAME frames.
+
+    Used by both training (_vqa_forward, jitter>0) and eval (gate/labeler, jitter=0)
+    so frames+state always agree. `jitter`: per-frame random offset in
+    [-jitter, +jitter] (clamped to [0, T-1]) — train-time augmentation.
+    Returns (frames [n*n_cams PILs, time-grouped], state (n,9), info).
+    """
+    H, W = image_size
+    cams_in = tuple(cameras)
+    with h5py.File(h5_path, "r") as h5:
+        T = h5["observation/head_camera/rgb"].shape[0]
+        idx, _ = _compute_clip_indices(h5, strategy, n)
+        if jitter > 0:
+            r = rng if rng is not None else np.random.default_rng()
+            idx = np.clip(idx + r.integers(-jitter, jitter + 1, size=len(idx)), 0, T - 1)
+        cams = _resolve_cameras_for_ep(cams_in, h5)
+        frames: List[Image.Image] = []
+        for t in idx:
+            for cam in cams:
+                raw = h5[f"observation/{cam}/rgb"][int(t)]
+                data = raw.tobytes() if hasattr(raw, "tobytes") else raw
+                im = Image.open(io.BytesIO(data)).convert("RGB")
+                if im.size != (W, H):
+                    im = im.resize((W, H))
+                frames.append(im)
+        arm = _active_arm_key(h5)
+        state = ee_pose_9d_at(h5, arm, idx)
+    return frames, state, {"indices": idx.tolist(), "T": int(T), "arm": arm, "cameras": list(cams)}
+
+
 def _compute_clip_indices(
     h5: h5py.File, strategy: str, n: int
 ) -> Tuple[np.ndarray, Optional[int]]:
@@ -369,6 +478,21 @@ def _compute_clip_indices(
     elif strategy == "late_8":
         T = h5["observation/head_camera/rgb"].shape[0]
         return late_clip_indices(T, n), None
+    elif strategy == "place3":  # 3 frames at 0.60/0.80/1.00 (place)
+        T = h5["observation/head_camera/rgb"].shape[0]
+        return _frac_indices(T, DEFAULT_PLACE3_FRACS), None
+    elif strategy == "orient3":  # 3 frames at 0.40/0.60/0.80 (orient grasp)
+        T = h5["observation/head_camera/rgb"].shape[0]
+        return _frac_indices(T, DEFAULT_ORIENT3_FRACS), None
+    elif strategy == "height3":  # 3 frames at 0.90/0.95/1.00 (height drop/release)
+        T = h5["observation/head_camera/rgb"].shape[0]
+        return _frac_indices(T, DEFAULT_HEIGHT3_FRACS), None
+    elif strategy == "contact3":  # 3 frames at 0.40/0.60/0.80 (grasp moment)
+        T = h5["observation/head_camera/rgb"].shape[0]
+        return _frac_indices(T, DEFAULT_CONTACT3_FRACS), None
+    elif strategy == "hvlv3":  # 3 frames at 0.60/0.70/0.80 (mid-move around obstacle)
+        T = h5["observation/head_camera/rgb"].shape[0]
+        return _frac_indices(T, DEFAULT_HVLV3_FRACS), None
     elif strategy == "gripper_anchored":
         return gripper_anchored_clip_indices(h5, n)
     else:

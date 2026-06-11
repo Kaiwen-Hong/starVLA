@@ -1,0 +1,228 @@
+{
+  "cat": "contact",
+  "tag": "contact_geom",
+  "acc": 0.5833333333333334,
+  "effect": 0.0006083333333333333,
+  "per_gt": {
+    "25": 0.417,
+    "75": 0.75
+  },
+  "rows": [
+    {
+      "gt": "25",
+      "ep": "episode0",
+      "frame": 56,
+      "follows": 0,
+      "L1_correct": 0.5124,
+      "L1_flip": 0.5123,
+      "effect": 0.0006
+    },
+    {
+      "gt": "25",
+      "ep": "episode1",
+      "frame": 52,
+      "follows": 0,
+      "L1_correct": 0.5173,
+      "L1_flip": 0.5171,
+      "effect": 0.0005
+    },
+    {
+      "gt": "25",
+      "ep": "episode10",
+      "frame": 64,
+      "follows": 0,
+      "L1_correct": 0.5152,
+      "L1_flip": 0.5145,
+      "effect": 0.0012
+    },
+    {
+      "gt": "25",
+      "ep": "episode11",
+      "frame": 52,
+      "follows": 1,
+      "L1_correct": 0.5087,
+      "L1_flip": 0.5091,
+      "effect": 0.0007
+    },
+    {
+      "gt": "25",
+      "ep": "episode12",
+      "frame": 54,
+      "follows": 0,
+      "L1_correct": 0.5109,
+      "L1_flip": 0.5106,
+      "effect": 0.0006
+    },
+    {
+      "gt": "25",
+      "ep": "episode13",
+      "frame": 52,
+      "follows": 0,
+      "L1_correct": 0.5125,
+      "L1_flip": 0.5122,
+      "effect": 0.0008
+    },
+    {
+      "gt": "25",
+      "ep": "episode14",
+      "frame": 55,
+      "follows": 1,
+      "L1_correct": 0.5059,
+      "L1_flip": 0.5061,
+      "effect": 0.0005
+    },
+    {
+      "gt": "25",
+      "ep": "episode15",
+      "frame": 52,
+      "follows": 1,
+      "L1_correct": 0.5064,
+      "L1_flip": 0.5066,
+      "effect": 0.0006
+    },
+    {
+      "gt": "25",
+      "ep": "episode16",
+      "frame": 56,
+      "follows": 1,
+      "L1_correct": 0.5119,
+      "L1_flip": 0.512,
+      "effect": 0.0004
+    },
+    {
+      "gt": "25",
+      "ep": "episode17",
+      "frame": 55,
+      "follows": 0,
+      "L1_correct": 0.5101,
+      "L1_flip": 0.5099,
+      "effect": 0.0007
+    },
+    {
+      "gt": "25",
+      "ep": "episode18",
+      "frame": 59,
+      "follows": 0,
+      "L1_correct": 0.5215,
+      "L1_flip": 0.5213,
+      "effect": 0.0005
+    },
+    {
+      "gt": "25",
+      "ep": "episode19",
+      "frame": 50,
+      "follows": 1,
+      "L1_correct": 0.5068,
+      "L1_flip": 0.5071,
+      "effect": 0.0008
+    },
+    {
+      "gt": "75",
+      "ep": "episode0",
+      "frame": 56,
+      "follows": 0,
+      "L1_correct": 0.5099,
+      "L1_flip": 0.5097,
+      "effect": 0.0007
+    },
+    {
+      "gt": "75",
+      "ep": "episode1",
+      "frame": 59,
+      "follows": 0,
+      "L1_correct": 0.525,
+      "L1_flip": 0.5247,
+      "effect": 0.0006
+    },
+    {
+      "gt": "75",
+      "ep": "episode10",
+      "frame": 57,
+      "follows": 1,
+      "L1_correct": 0.5097,
+      "L1_flip": 0.5098,
+      "effect": 0.0006
+    },
+    {
+      "gt": "75",
+      "ep": "episode11",
+      "frame": 65,
+      "follows": 1,
+      "L1_correct": 0.5163,
+      "L1_flip": 0.5164,
+      "effect": 0.0006
+    },
+    {
+      "gt": "75",
+      "ep": "episode12",
+      "frame": 51,
+      "follows": 1,
+      "L1_correct": 0.5165,
+      "L1_flip": 0.5167,
+      "effect": 0.0005
+    },
+    {
+      "gt": "75",
+      "ep": "episode13",
+      "frame": 53,
+      "follows": 1,
+      "L1_correct": 0.5117,
+      "L1_flip": 0.5119,
+      "effect": 0.0004
+    },
+    {
+      "gt": "75",
+      "ep": "episode14",
+      "frame": 58,
+      "follows": 1,
+      "L1_correct": 0.5222,
+      "L1_flip": 0.5224,
+      "effect": 0.0006
+    },
+    {
+      "gt": "75",
+      "ep": "episode15",
+      "frame": 58,
+      "follows": 1,
+      "L1_correct": 0.5189,
+      "L1_flip": 0.5192,
+      "effect": 0.0007
+    },
+    {
+      "gt": "75",
+      "ep": "episode16",
+      "frame": 59,
+      "follows": 0,
+      "L1_correct": 0.5109,
+      "L1_flip": 0.5109,
+      "effect": 0.0005
+    },
+    {
+      "gt": "75",
+      "ep": "episode17",
+      "frame": 49,
+      "follows": 1,
+      "L1_correct": 0.5184,
+      "L1_flip": 0.5186,
+      "effect": 0.0004
+    },
+    {
+      "gt": "75",
+      "ep": "episode18",
+      "frame": 59,
+      "follows": 1,
+      "L1_correct": 0.5154,
+      "L1_flip": 0.5154,
+      "effect": 0.0005
+    },
+    {
+      "gt": "75",
+      "ep": "episode19",
+      "frame": 57,
+      "follows": 1,
+      "L1_correct": 0.5151,
+      "L1_flip": 0.5155,
+      "effect": 0.0006
+    }
+  ]
+}

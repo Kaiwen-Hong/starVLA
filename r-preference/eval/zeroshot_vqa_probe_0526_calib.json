@@ -1,0 +1,4607 @@
+{
+  "orient": {
+    "raw": {
+      "taskA_acc": 0.469,
+      "taskA_n": 64,
+      "taskA_acc_gt_0": 0.438,
+      "taskA_acc_gt_90": 0.5,
+      "taskA_balanced_acc": 0.469,
+      "taskA_pred_dist": {
+        "0": 30,
+        "90": 34
+      },
+      "taskB_acc": 0.64,
+      "taskB_n": 50,
+      "taskB_acc_gt_0": 0.92,
+      "taskB_acc_gt_90": 0.36,
+      "taskB_balanced_acc": 0.64,
+      "taskB_pred_dist": {
+        "0": 39,
+        "90": 11
+      }
+    },
+    "calibrated": {
+      "taskA_acc": 0.547,
+      "taskA_n": 64,
+      "taskA_acc_gt_0": 1.0,
+      "taskA_acc_gt_90": 0.094,
+      "taskA_balanced_acc": 0.547,
+      "taskA_pred_dist": {
+        "0": 61,
+        "90": 3
+      },
+      "taskB_acc": 0.52,
+      "taskB_n": 50,
+      "taskB_acc_gt_0": 1.0,
+      "taskB_acc_gt_90": 0.04,
+      "taskB_balanced_acc": 0.52,
+      "taskB_pred_dist": {
+        "0": 49,
+        "90": 1
+      }
+    },
+    "prior": {
+      "0": -2.478,
+      "90": -1.964
+    },
+    "question": "We are picking up an object. Are we grasping it from the side (horizontal grasp) or from the top (vertical grasp)?",
+    "cand": {
+      "0": "From the side.",
+      "90": "From the top."
+    },
+    "rows": [
+      {
+        "split": "taskA",
+        "leaf": "place_bottle_box_0",
+        "gt": "0",
+        "pred": "90",
+        "correct": 0,
+        "pred_cal": "0",
+        "correct_pred_cal": 1,
+        "scores": {
+          "0": -3.74,
+          "90": -3.615
+        }
+      },
+      {
+        "split": "taskA",
+        "leaf": "place_bottle_box_0",
+        "gt": "0",
+        "pred": "90",
+        "correct": 0,
+        "pred_cal": "0",
+        "correct_pred_cal": 1,
+        "scores": {
+          "0": -4.118,
+          "90": -3.837
+        }
+      },
+      {
+        "split": "taskA",
+        "leaf": "place_bottle_box_0",
+        "gt": "0",
+        "pred": "90",
+        "correct": 0,
+        "pred_cal": "0",
+        "correct_pred_cal": 1,
+        "scores": {
+          "0": -4.169,
+          "90": -4.013
+        }
+      },
+      {
+        "split": "taskA",
+        "leaf": "place_bottle_box_0",
+        "gt": "0",
+        "pred": "0",
+        "correct": 1,
+        "pred_cal": "0",
+        "correct_pred_cal": 1,
+        "scores": {
+          "0": -3.804,
+          "90": -4.273
+        }
+      },
+      {
+        "split": "taskA",
+        "leaf": "place_bottle_box_90",
+        "gt": "90",
+        "pred": "0",
+        "correct": 0,
+        "pred_cal": "0",
+        "correct_pred_cal": 0,
+        "scores": {
+          "0": -4.355,
+          "90": -4.48
+        }
+      },
+      {
+        "split": "taskA",
+        "leaf": "place_bottle_box_90",
+        "gt": "90",
+        "pred": "0",
+        "correct": 0,
+        "pred_cal": "0",
+        "correct_pred_cal": 0,
+        "scores": {
+          "0": -4.754,
+          "90": -5.192
+        }
+      },
+      {
+        "split": "taskA",
+        "leaf": "place_bottle_box_90",
+        "gt": "90",
+        "pred": "0",
+        "correct": 0,
+        "pred_cal": "0",
+        "correct_pred_cal": 0,
+        "scores": {
+          "0": -4.461,
+          "90": -4.992
+        }
+      },
+      {
+        "split": "taskA",
+        "leaf": "place_bottle_box_90",
+        "gt": "90",
+        "pred": "0",
+        "correct": 0,
+        "pred_cal": "0",
+        "correct_pred_cal": 0,
+        "scores": {
+          "0": -4.556,
+          "90": -4.806
+        }
+      },
+      {
+        "split": "taskA",
+        "leaf": "place_bottle_left_0",
+        "gt": "0",
+        "pred": "0",
+        "correct": 1,
+        "pred_cal": "0",
+        "correct_pred_cal": 1,
+        "scores": {
+          "0": -4.014,
+          "90": -4.233
+        }
+      },
+      {
+        "split": "taskA",
+        "leaf": "place_bottle_left_0",
+        "gt": "0",
+        "pred": "0",
+        "correct": 1,
+        "pred_cal": "0",
+        "correct_pred_cal": 1,
+        "scores": {
+          "0": -3.938,
+          "90": -3.939
+        }
+      },
+      {
+        "split": "taskA",
+        "leaf": "place_bottle_left_0",
+        "gt": "0",
+        "pred": "90",
+        "correct": 0,
+        "pred_cal": "0",
+        "correct_pred_cal": 1,
+        "scores": {
+          "0": -3.654,
+          "90": -3.373
+        }
+      },
+      {
+        "split": "taskA",
+        "leaf": "place_bottle_left_0",
+        "gt": "0",
+        "pred": "90",
+        "correct": 0,
+        "pred_cal": "0",
+        "correct_pred_cal": 1,
+        "scores": {
+          "0": -3.975,
+          "90": -3.789
+        }
+      },
+      {
+        "split": "taskA",
+        "leaf": "place_bottle_left_90",
+        "gt": "90",
+        "pred": "0",
+        "correct": 0,
+        "pred_cal": "0",
+        "correct_pred_cal": 0,
+        "scores": {
+          "0": -4.301,
+          "90": -4.426
+        }
+      },
+      {
+        "split": "taskA",
+        "leaf": "place_bottle_left_90",
+        "gt": "90",
+        "pred": "90",
+        "correct": 1,
+        "pred_cal": "0",
+        "correct_pred_cal": 0,
+        "scores": {
+          "0": -4.481,
+          "90": -4.325
+        }
+      },
+      {
+        "split": "taskA",
+        "leaf": "place_bottle_left_90",
+        "gt": "90",
+        "pred": "0",
+        "correct": 0,
+        "pred_cal": "0",
+        "correct_pred_cal": 0,
+        "scores": {
+          "0": -4.13,
+          "90": -4.286
+        }
+      },
+      {
+        "split": "taskA",
+        "leaf": "place_bottle_left_90",
+        "gt": "90",
+        "pred": "90",
+        "correct": 1,
+        "pred_cal": "0",
+        "correct_pred_cal": 0,
+        "scores": {
+          "0": -4.429,
+          "90": -4.116
+        }
+      },
+      {
+        "split": "taskA",
+        "leaf": "place_callbell_box_0",
+        "gt": "0",
+        "pred": "0",
+        "correct": 1,
+        "pred_cal": "0",
+        "correct_pred_cal": 1,
+        "scores": {
+          "0": -3.511,
+          "90": -3.824
+        }
+      },
+      {
+        "split": "taskA",
+        "leaf": "place_callbell_box_0",
+        "gt": "0",
+        "pred": "90",
+        "correct": 0,
+        "pred_cal": "0",
+        "correct_pred_cal": 1,
+        "scores": {
+          "0": -4.04,
+          "90": -3.728
+        }
+      },
+      {
+        "split": "taskA",
+        "leaf": "place_callbell_box_0",
+        "gt": "0",
+        "pred": "90",
+        "correct": 0,
+        "pred_cal": "0",
+        "correct_pred_cal": 1,
+        "scores": {
+          "0": -4.135,
+          "90": -4.01
+        }
+      },
+      {
+        "split": "taskA",
+        "leaf": "place_callbell_box_0",
+        "gt": "0",
+        "pred": "0",
+        "correct": 1,
+        "pred_cal": "0",
+        "correct_pred_cal": 1,
+        "scores": {
+          "0": -3.895,
+          "90": -4.301
+        }
+      },
+      {
+        "split": "taskA",
+        "leaf": "place_callbell_box_90",
+        "gt": "90",
+        "pred": "0",
+        "correct": 0,
+        "pred_cal": "0",
+        "correct_pred_cal": 0,
+        "scores": {
+          "0": -4.461,
+          "90": -4.461
+        }
+      },
+      {
+        "split": "taskA",
+        "leaf": "place_callbell_box_90",
+        "gt": "90",
+        "pred": "90",
+        "correct": 1,
+        "pred_cal": "0",
+        "correct_pred_cal": 0,
+        "scores": {
+          "0": -4.338,
+          "90": -4.026
+        }
+      },
+      {
+        "split": "taskA",
+        "leaf": "place_callbell_box_90",
+        "gt": "90",
+        "pred": "90",
+        "correct": 1,
+        "pred_cal": "0",
+        "correct_pred_cal": 0,
+        "scores": {
+          "0": -4.498,
+          "90": -4.186
+        }
+      },
+      {
+        "split": "taskA",
+        "leaf": "place_callbell_box_90",
+        "gt": "90",
+        "pred": "0",
+        "correct": 0,
+        "pred_cal": "0",
+        "correct_pred_cal": 0,
+        "scores": {
+          "0": -4.301,
+          "90": -4.301
+        }
+      },
+      {
+        "split": "taskA",
+        "leaf": "place_callbell_left_0",
+        "gt": "0",
+        "pred": "0",
+        "correct": 1,
+        "pred_cal": "0",
+        "correct_pred_cal": 1,
+        "scores": {
+          "0": -3.93,
+          "90": -4.087
+        }
+      },
+      {
+        "split": "taskA",
+        "leaf": "place_callbell_left_0",
+        "gt": "0",
+        "pred": "0",
+        "correct": 1,
+        "pred_cal": "0",
+        "correct_pred_cal": 1,
+        "scores": {
+          "0": -4.05,
+          "90": -4.394
+        }
+      },
+      {
+        "split": "taskA",
+        "leaf": "place_callbell_left_0",
+        "gt": "0",
+        "pred": "0",
+        "correct": 1,
+        "pred_cal": "0",
+        "correct_pred_cal": 1,
+        "scores": {
+          "0": -4.229,
+          "90": -4.605
+        }
+      },
+      {
+        "split": "taskA",
+        "leaf": "place_callbell_left_0",
+        "gt": "0",
+        "pred": "90",
+        "correct": 0,
+        "pred_cal": "0",
+        "correct_pred_cal": 1,
+        "scores": {
+          "0": -3.873,
+          "90": -3.499
+        }
+      },
+      {
+        "split": "taskA",
+        "leaf": "place_callbell_left_90",
+        "gt": "90",
+        "pred": "90",
+        "correct": 1,
+        "pred_cal": "0",
+        "correct_pred_cal": 0,
+        "scores": {
+          "0": -4.385,
+          "90": -4.042
+        }
+      },
+      {
+        "split": "taskA",
+        "leaf": "place_callbell_left_90",
+        "gt": "90",
+        "pred": "90",
+        "correct": 1,
+        "pred_cal": "0",
+        "correct_pred_cal": 0,
+        "scores": {
+          "0": -4.392,
+          "90": -4.111
+        }
+      },
+      {
+        "split": "taskA",
+        "leaf": "place_callbell_left_90",
+        "gt": "90",
+        "pred": "0",
+        "correct": 0,
+        "pred_cal": "0",
+        "correct_pred_cal": 0,
+        "scores": {
+          "0": -4.426,
+          "90": -4.457
+        }
+      },
+      {
+        "split": "taskA",
+        "leaf": "place_callbell_left_90",
+        "gt": "90",
+        "pred": "90",
+        "correct": 1,
+        "pred_cal": "90",
+        "correct_pred_cal": 1,
+        "scores": {
+          "0": -4.52,
+          "90": -3.865
+        }
+      },
+      {
+        "split": "taskA",
+        "leaf": "place_can_box_0",
+        "gt": "0",
+        "pred": "0",
+        "correct": 1,
+        "pred_cal": "0",
+        "correct_pred_cal": 1,
+        "scores": {
+          "0": -3.95,
+          "90": -4.076
+        }
+      },
+      {
+        "split": "taskA",
+        "leaf": "place_can_box_0",
+        "gt": "0",
+        "pred": "0",
+        "correct": 1,
+        "pred_cal": "0",
+        "correct_pred_cal": 1,
+        "scores": {
+          "0": -4.161,
+          "90": -4.255
+        }
+      },
+      {
+        "split": "taskA",
+        "leaf": "place_can_box_0",
+        "gt": "0",
+        "pred": "0",
+        "correct": 1,
+        "pred_cal": "0",
+        "correct_pred_cal": 1,
+        "scores": {
+          "0": -3.823,
+          "90": -3.979
+        }
+      },
+      {
+        "split": "taskA",
+        "leaf": "place_can_box_0",
+        "gt": "0",
+        "pred": "0",
+        "correct": 1,
+        "pred_cal": "0",
+        "correct_pred_cal": 1,
+        "scores": {
+          "0": -4.123,
+          "90": -4.186
+        }
+      },
+      {
+        "split": "taskA",
+        "leaf": "place_can_box_90",
+        "gt": "90",
+        "pred": "0",
+        "correct": 0,
+        "pred_cal": "0",
+        "correct_pred_cal": 0,
+        "scores": {
+          "0": -4.326,
+          "90": -4.888
+        }
+      },
+      {
+        "split": "taskA",
+        "leaf": "place_can_box_90",
+        "gt": "90",
+        "pred": "90",
+        "correct": 1,
+        "pred_cal": "0",
+        "correct_pred_cal": 0,
+        "scores": {
+          "0": -4.663,
+          "90": -4.631
+        }
+      },
+      {
+        "split": "taskA",
+        "leaf": "place_can_box_90",
+        "gt": "90",
+        "pred": "90",
+        "correct": 1,
+        "pred_cal": "90",
+        "correct_pred_cal": 1,
+        "scores": {
+          "0": -4.474,
+          "90": -3.881
+        }
+      },
+      {
+        "split": "taskA",
+        "leaf": "place_can_box_90",
+        "gt": "90",
+        "pred": "0",
+        "correct": 0,
+        "pred_cal": "0",
+        "correct_pred_cal": 0,
+        "scores": {
+          "0": -4.337,
+          "90": -4.462
+        }
+      },
+      {
+        "split": "taskA",
+        "leaf": "place_can_left_0",
+        "gt": "0",
+        "pred": "90",
+        "correct": 0,
+        "pred_cal": "0",
+        "correct_pred_cal": 1,
+        "scores": {
+          "0": -4.084,
+          "90": -3.866
+        }
+      },
+      {
+        "split": "taskA",
+        "leaf": "place_can_left_0",
+        "gt": "0",
+        "pred": "90",
+        "correct": 0,
+        "pred_cal": "0",
+        "correct_pred_cal": 1,
+        "scores": {
+          "0": -4.154,
+          "90": -3.998
+        }
+      },
+      {
+        "split": "taskA",
+        "leaf": "place_can_left_0",
+        "gt": "0",
+        "pred": "90",
+        "correct": 0,
+        "pred_cal": "0",
+        "correct_pred_cal": 1,
+        "scores": {
+          "0": -4.029,
+          "90": -3.779
+        }
+      },
+      {
+        "split": "taskA",
+        "leaf": "place_can_left_0",
+        "gt": "0",
+        "pred": "90",
+        "correct": 0,
+        "pred_cal": "0",
+        "correct_pred_cal": 1,
+        "scores": {
+          "0": -4.358,
+          "90": -4.171
+        }
+      },
+      {
+        "split": "taskA",
+        "leaf": "place_can_left_90",
+        "gt": "90",
+        "pred": "90",
+        "correct": 1,
+        "pred_cal": "0",
+        "correct_pred_cal": 0,
+        "scores": {
+          "0": -4.884,
+          "90": -4.821
+        }
+      },
+      {
+        "split": "taskA",
+        "leaf": "place_can_left_90",
+        "gt": "90",
+        "pred": "0",
+        "correct": 0,
+        "pred_cal": "0",
+        "correct_pred_cal": 0,
+        "scores": {
+          "0": -4.183,
+          "90": -4.277
+        }
+      },
+      {
+        "split": "taskA",
+        "leaf": "place_can_left_90",
+        "gt": "90",
+        "pred": "0",
+        "correct": 0,
+        "pred_cal": "0",
+        "correct_pred_cal": 0,
+        "scores": {
+          "0": -3.953,
+          "90": -3.953
+        }
+      },
+      {
+        "split": "taskA",
+        "leaf": "place_can_left_90",
+        "gt": "90",
+        "pred": "90",
+        "correct": 1,
+        "pred_cal": "0",
+        "correct_pred_cal": 0,
+        "scores": {
+          "0": -4.481,
+          "90": -4.106
+        }
+      },
+      {
+        "split": "taskA",
+        "leaf": "place_chipstub_box_0",
+        "gt": "0",
+        "pred": "0",
+        "correct": 1,
+        "pred_cal": "0",
+        "correct_pred_cal": 1,
+        "scores": {
+          "0": -4.112,
+          "90": -4.362
+        }
+      },
+      {
+        "split": "taskA",
+        "leaf": "place_chipstub_box_0",
+        "gt": "0",
+        "pred": "90",
+        "correct": 0,
+        "pred_cal": "0",
+        "correct_pred_cal": 1,
+        "scores": {
+          "0": -4.52,
+          "90": -4.207
+        }
+      },
+      {
+        "split": "taskA",
+        "leaf": "place_chipstub_box_0",
+        "gt": "0",
+        "pred": "90",
+        "correct": 0,
+        "pred_cal": "0",
+        "correct_pred_cal": 1,
+        "scores": {
+          "0": -3.832,
+          "90": -3.708
+        }
+      },
+      {
+        "split": "taskA",
+        "leaf": "place_chipstub_box_0",
+        "gt": "0",
+        "pred": "90",
+        "correct": 0,
+        "pred_cal": "0",
+        "correct_pred_cal": 1,
+        "scores": {
+          "0": -4.068,
+          "90": -4.005
+        }
+      },
+      {
+        "split": "taskA",
+        "leaf": "place_chipstub_box_90",
+        "gt": "90",
+        "pred": "0",
+        "correct": 0,
+        "pred_cal": "0",
+        "correct_pred_cal": 0,
+        "scores": {
+          "0": -4.317,
+          "90": -4.443
+        }
+      },
+      {
+        "split": "taskA",
+        "leaf": "place_chipstub_box_90",
+        "gt": "90",
+        "pred": "90",
+        "correct": 1,
+        "pred_cal": "0",
+        "correct_pred_cal": 0,
+        "scores": {
+          "0": -4.66,
+          "90": -4.535
+        }
+      },
+      {
+        "split": "taskA",
+        "leaf": "place_chipstub_box_90",
+        "gt": "90",
+        "pred": "90",
+        "correct": 1,
+        "pred_cal": "90",
+        "correct_pred_cal": 1,
+        "scores": {
+          "0": -5.102,
+          "90": -4.352
+        }
+      },
+      {
+        "split": "taskA",
+        "leaf": "place_chipstub_box_90",
+        "gt": "90",
+        "pred": "0",
+        "correct": 0,
+        "pred_cal": "0",
+        "correct_pred_cal": 0,
+        "scores": {
+          "0": -4.596,
+          "90": -4.971
+        }
+      },
+      {
+        "split": "taskA",
+        "leaf": "place_chipstub_left_0",
+        "gt": "0",
+        "pred": "0",
+        "correct": 1,
+        "pred_cal": "0",
+        "correct_pred_cal": 1,
+        "scores": {
+          "0": -4.558,
+          "90": -4.559
+        }
+      },
+      {
+        "split": "taskA",
+        "leaf": "place_chipstub_left_0",
+        "gt": "0",
+        "pred": "90",
+        "correct": 0,
+        "pred_cal": "0",
+        "correct_pred_cal": 1,
+        "scores": {
+          "0": -4.252,
+          "90": -3.847
+        }
+      },
+      {
+        "split": "taskA",
+        "leaf": "place_chipstub_left_0",
+        "gt": "0",
+        "pred": "90",
+        "correct": 0,
+        "pred_cal": "0",
+        "correct_pred_cal": 1,
+        "scores": {
+          "0": -4.079,
+          "90": -3.892
+        }
+      },
+      {
+        "split": "taskA",
+        "leaf": "place_chipstub_left_0",
+        "gt": "0",
+        "pred": "90",
+        "correct": 0,
+        "pred_cal": "0",
+        "correct_pred_cal": 1,
+        "scores": {
+          "0": -4.033,
+          "90": -3.783
+        }
+      },
+      {
+        "split": "taskA",
+        "leaf": "place_chipstub_left_90",
+        "gt": "90",
+        "pred": "90",
+        "correct": 1,
+        "pred_cal": "0",
+        "correct_pred_cal": 0,
+        "scores": {
+          "0": -4.879,
+          "90": -4.692
+        }
+      },
+      {
+        "split": "taskA",
+        "leaf": "place_chipstub_left_90",
+        "gt": "90",
+        "pred": "90",
+        "correct": 1,
+        "pred_cal": "0",
+        "correct_pred_cal": 0,
+        "scores": {
+          "0": -4.184,
+          "90": -3.872
+        }
+      },
+      {
+        "split": "taskA",
+        "leaf": "place_chipstub_left_90",
+        "gt": "90",
+        "pred": "0",
+        "correct": 0,
+        "pred_cal": "0",
+        "correct_pred_cal": 0,
+        "scores": {
+          "0": -4.365,
+          "90": -4.396
+        }
+      },
+      {
+        "split": "taskA",
+        "leaf": "place_chipstub_left_90",
+        "gt": "90",
+        "pred": "90",
+        "correct": 1,
+        "pred_cal": "0",
+        "correct_pred_cal": 0,
+        "scores": {
+          "0": -4.462,
+          "90": -4.305
+        }
+      },
+      {
+        "split": "taskB",
+        "leaf": "move_can5_away_0",
+        "gt": "0",
+        "pred": "0",
+        "correct": 1,
+        "pred_cal": "0",
+        "correct_pred_cal": 1,
+        "scores": {
+          "0": -4.279,
+          "90": -4.81
+        }
+      },
+      {
+        "split": "taskB",
+        "leaf": "move_can5_away_0",
+        "gt": "0",
+        "pred": "0",
+        "correct": 1,
+        "pred_cal": "0",
+        "correct_pred_cal": 1,
+        "scores": {
+          "0": -3.696,
+          "90": -3.977
+        }
+      },
+      {
+        "split": "taskB",
+        "leaf": "move_can5_away_0",
+        "gt": "0",
+        "pred": "0",
+        "correct": 1,
+        "pred_cal": "0",
+        "correct_pred_cal": 1,
+        "scores": {
+          "0": -3.717,
+          "90": -4.624
+        }
+      },
+      {
+        "split": "taskB",
+        "leaf": "move_can5_away_0",
+        "gt": "0",
+        "pred": "0",
+        "correct": 1,
+        "pred_cal": "0",
+        "correct_pred_cal": 1,
+        "scores": {
+          "0": -4.009,
+          "90": -4.197
+        }
+      },
+      {
+        "split": "taskB",
+        "leaf": "move_can5_away_0",
+        "gt": "0",
+        "pred": "0",
+        "correct": 1,
+        "pred_cal": "0",
+        "correct_pred_cal": 1,
+        "scores": {
+          "0": -3.497,
+          "90": -4.123
+        }
+      },
+      {
+        "split": "taskB",
+        "leaf": "move_can5_away_0",
+        "gt": "0",
+        "pred": "0",
+        "correct": 1,
+        "pred_cal": "0",
+        "correct_pred_cal": 1,
+        "scores": {
+          "0": -3.738,
+          "90": -4.019
+        }
+      },
+      {
+        "split": "taskB",
+        "leaf": "move_can5_away_0",
+        "gt": "0",
+        "pred": "0",
+        "correct": 1,
+        "pred_cal": "0",
+        "correct_pred_cal": 1,
+        "scores": {
+          "0": -4.395,
+          "90": -5.114
+        }
+      },
+      {
+        "split": "taskB",
+        "leaf": "move_can5_away_0",
+        "gt": "0",
+        "pred": "0",
+        "correct": 1,
+        "pred_cal": "0",
+        "correct_pred_cal": 1,
+        "scores": {
+          "0": -3.66,
+          "90": -3.879
+        }
+      },
+      {
+        "split": "taskB",
+        "leaf": "move_can5_away_0",
+        "gt": "0",
+        "pred": "0",
+        "correct": 1,
+        "pred_cal": "0",
+        "correct_pred_cal": 1,
+        "scores": {
+          "0": -4.093,
+          "90": -4.625
+        }
+      },
+      {
+        "split": "taskB",
+        "leaf": "move_can5_away_0",
+        "gt": "0",
+        "pred": "0",
+        "correct": 1,
+        "pred_cal": "0",
+        "correct_pred_cal": 1,
+        "scores": {
+          "0": -4.197,
+          "90": -4.947
+        }
+      },
+      {
+        "split": "taskB",
+        "leaf": "move_can5_away_0",
+        "gt": "0",
+        "pred": "0",
+        "correct": 1,
+        "pred_cal": "0",
+        "correct_pred_cal": 1,
+        "scores": {
+          "0": -3.536,
+          "90": -3.599
+        }
+      },
+      {
+        "split": "taskB",
+        "leaf": "move_can5_away_0",
+        "gt": "0",
+        "pred": "0",
+        "correct": 1,
+        "pred_cal": "0",
+        "correct_pred_cal": 1,
+        "scores": {
+          "0": -3.514,
+          "90": -4.046
+        }
+      },
+      {
+        "split": "taskB",
+        "leaf": "move_can5_away_0",
+        "gt": "0",
+        "pred": "0",
+        "correct": 1,
+        "pred_cal": "0",
+        "correct_pred_cal": 1,
+        "scores": {
+          "0": -4.059,
+          "90": -4.247
+        }
+      },
+      {
+        "split": "taskB",
+        "leaf": "move_can5_away_0",
+        "gt": "0",
+        "pred": "0",
+        "correct": 1,
+        "pred_cal": "0",
+        "correct_pred_cal": 1,
+        "scores": {
+          "0": -4.141,
+          "90": -4.36
+        }
+      },
+      {
+        "split": "taskB",
+        "leaf": "move_can5_away_0",
+        "gt": "0",
+        "pred": "0",
+        "correct": 1,
+        "pred_cal": "0",
+        "correct_pred_cal": 1,
+        "scores": {
+          "0": -3.862,
+          "90": -4.331
+        }
+      },
+      {
+        "split": "taskB",
+        "leaf": "move_can5_away_0",
+        "gt": "0",
+        "pred": "0",
+        "correct": 1,
+        "pred_cal": "0",
+        "correct_pred_cal": 1,
+        "scores": {
+          "0": -3.768,
+          "90": -4.394
+        }
+      },
+      {
+        "split": "taskB",
+        "leaf": "move_can5_away_0",
+        "gt": "0",
+        "pred": "0",
+        "correct": 1,
+        "pred_cal": "0",
+        "correct_pred_cal": 1,
+        "scores": {
+          "0": -3.869,
+          "90": -4.463
+        }
+      },
+      {
+        "split": "taskB",
+        "leaf": "move_can5_away_0",
+        "gt": "0",
+        "pred": "0",
+        "correct": 1,
+        "pred_cal": "0",
+        "correct_pred_cal": 1,
+        "scores": {
+          "0": -4.111,
+          "90": -4.33
+        }
+      },
+      {
+        "split": "taskB",
+        "leaf": "move_can5_away_0",
+        "gt": "0",
+        "pred": "0",
+        "correct": 1,
+        "pred_cal": "0",
+        "correct_pred_cal": 1,
+        "scores": {
+          "0": -3.938,
+          "90": -4.657
+        }
+      },
+      {
+        "split": "taskB",
+        "leaf": "move_can5_away_0",
+        "gt": "0",
+        "pred": "90",
+        "correct": 0,
+        "pred_cal": "0",
+        "correct_pred_cal": 1,
+        "scores": {
+          "0": -3.773,
+          "90": -3.586
+        }
+      },
+      {
+        "split": "taskB",
+        "leaf": "move_can5_away_0",
+        "gt": "0",
+        "pred": "90",
+        "correct": 0,
+        "pred_cal": "0",
+        "correct_pred_cal": 1,
+        "scores": {
+          "0": -4.201,
+          "90": -4.045
+        }
+      },
+      {
+        "split": "taskB",
+        "leaf": "move_can5_away_0",
+        "gt": "0",
+        "pred": "0",
+        "correct": 1,
+        "pred_cal": "0",
+        "correct_pred_cal": 1,
+        "scores": {
+          "0": -4.086,
+          "90": -4.648
+        }
+      },
+      {
+        "split": "taskB",
+        "leaf": "move_can5_away_0",
+        "gt": "0",
+        "pred": "0",
+        "correct": 1,
+        "pred_cal": "0",
+        "correct_pred_cal": 1,
+        "scores": {
+          "0": -3.853,
+          "90": -4.572
+        }
+      },
+      {
+        "split": "taskB",
+        "leaf": "move_can5_away_0",
+        "gt": "0",
+        "pred": "0",
+        "correct": 1,
+        "pred_cal": "0",
+        "correct_pred_cal": 1,
+        "scores": {
+          "0": -3.939,
+          "90": -4.533
+        }
+      },
+      {
+        "split": "taskB",
+        "leaf": "move_can5_away_0",
+        "gt": "0",
+        "pred": "0",
+        "correct": 1,
+        "pred_cal": "0",
+        "correct_pred_cal": 1,
+        "scores": {
+          "0": -3.797,
+          "90": -4.047
+        }
+      },
+      {
+        "split": "taskB",
+        "leaf": "move_can5_away_90",
+        "gt": "90",
+        "pred": "90",
+        "correct": 1,
+        "pred_cal": "0",
+        "correct_pred_cal": 0,
+        "scores": {
+          "0": -4.32,
+          "90": -4.289
+        }
+      },
+      {
+        "split": "taskB",
+        "leaf": "move_can5_away_90",
+        "gt": "90",
+        "pred": "0",
+        "correct": 0,
+        "pred_cal": "0",
+        "correct_pred_cal": 0,
+        "scores": {
+          "0": -4.169,
+          "90": -4.201
+        }
+      },
+      {
+        "split": "taskB",
+        "leaf": "move_can5_away_90",
+        "gt": "90",
+        "pred": "0",
+        "correct": 0,
+        "pred_cal": "0",
+        "correct_pred_cal": 0,
+        "scores": {
+          "0": -4.134,
+          "90": -4.322
+        }
+      },
+      {
+        "split": "taskB",
+        "leaf": "move_can5_away_90",
+        "gt": "90",
+        "pred": "0",
+        "correct": 0,
+        "pred_cal": "0",
+        "correct_pred_cal": 0,
+        "scores": {
+          "0": -4.034,
+          "90": -4.503
+        }
+      },
+      {
+        "split": "taskB",
+        "leaf": "move_can5_away_90",
+        "gt": "90",
+        "pred": "0",
+        "correct": 0,
+        "pred_cal": "0",
+        "correct_pred_cal": 0,
+        "scores": {
+          "0": -4.602,
+          "90": -4.728
+        }
+      },
+      {
+        "split": "taskB",
+        "leaf": "move_can5_away_90",
+        "gt": "90",
+        "pred": "90",
+        "correct": 1,
+        "pred_cal": "90",
+        "correct_pred_cal": 1,
+        "scores": {
+          "0": -4.271,
+          "90": -3.677
+        }
+      },
+      {
+        "split": "taskB",
+        "leaf": "move_can5_away_90",
+        "gt": "90",
+        "pred": "90",
+        "correct": 1,
+        "pred_cal": "0",
+        "correct_pred_cal": 0,
+        "scores": {
+          "0": -4.465,
+          "90": -4.122
+        }
+      },
+      {
+        "split": "taskB",
+        "leaf": "move_can5_away_90",
+        "gt": "90",
+        "pred": "0",
+        "correct": 0,
+        "pred_cal": "0",
+        "correct_pred_cal": 0,
+        "scores": {
+          "0": -4.234,
+          "90": -4.86
+        }
+      },
+      {
+        "split": "taskB",
+        "leaf": "move_can5_away_90",
+        "gt": "90",
+        "pred": "0",
+        "correct": 0,
+        "pred_cal": "0",
+        "correct_pred_cal": 0,
+        "scores": {
+          "0": -4.321,
+          "90": -4.602
+        }
+      },
+      {
+        "split": "taskB",
+        "leaf": "move_can5_away_90",
+        "gt": "90",
+        "pred": "0",
+        "correct": 0,
+        "pred_cal": "0",
+        "correct_pred_cal": 0,
+        "scores": {
+          "0": -4.378,
+          "90": -4.566
+        }
+      },
+      {
+        "split": "taskB",
+        "leaf": "move_can5_away_90",
+        "gt": "90",
+        "pred": "90",
+        "correct": 1,
+        "pred_cal": "0",
+        "correct_pred_cal": 0,
+        "scores": {
+          "0": -4.336,
+          "90": -4.18
+        }
+      },
+      {
+        "split": "taskB",
+        "leaf": "move_can5_away_90",
+        "gt": "90",
+        "pred": "0",
+        "correct": 0,
+        "pred_cal": "0",
+        "correct_pred_cal": 0,
+        "scores": {
+          "0": -4.641,
+          "90": -4.798
+        }
+      },
+      {
+        "split": "taskB",
+        "leaf": "move_can5_away_90",
+        "gt": "90",
+        "pred": "0",
+        "correct": 0,
+        "pred_cal": "0",
+        "correct_pred_cal": 0,
+        "scores": {
+          "0": -4.904,
+          "90": -5.497
+        }
+      },
+      {
+        "split": "taskB",
+        "leaf": "move_can5_away_90",
+        "gt": "90",
+        "pred": "0",
+        "correct": 0,
+        "pred_cal": "0",
+        "correct_pred_cal": 0,
+        "scores": {
+          "0": -4.379,
+          "90": -4.629
+        }
+      },
+      {
+        "split": "taskB",
+        "leaf": "move_can5_away_90",
+        "gt": "90",
+        "pred": "0",
+        "correct": 0,
+        "pred_cal": "0",
+        "correct_pred_cal": 0,
+        "scores": {
+          "0": -4.26,
+          "90": -4.292
+        }
+      },
+      {
+        "split": "taskB",
+        "leaf": "move_can5_away_90",
+        "gt": "90",
+        "pred": "0",
+        "correct": 0,
+        "pred_cal": "0",
+        "correct_pred_cal": 0,
+        "scores": {
+          "0": -4.386,
+          "90": -4.574
+        }
+      },
+      {
+        "split": "taskB",
+        "leaf": "move_can5_away_90",
+        "gt": "90",
+        "pred": "90",
+        "correct": 1,
+        "pred_cal": "0",
+        "correct_pred_cal": 0,
+        "scores": {
+          "0": -4.972,
+          "90": -4.723
+        }
+      },
+      {
+        "split": "taskB",
+        "leaf": "move_can5_away_90",
+        "gt": "90",
+        "pred": "90",
+        "correct": 1,
+        "pred_cal": "0",
+        "correct_pred_cal": 0,
+        "scores": {
+          "0": -4.135,
+          "90": -3.916
+        }
+      },
+      {
+        "split": "taskB",
+        "leaf": "move_can5_away_90",
+        "gt": "90",
+        "pred": "0",
+        "correct": 0,
+        "pred_cal": "0",
+        "correct_pred_cal": 0,
+        "scores": {
+          "0": -4.124,
+          "90": -4.374
+        }
+      },
+      {
+        "split": "taskB",
+        "leaf": "move_can5_away_90",
+        "gt": "90",
+        "pred": "90",
+        "correct": 1,
+        "pred_cal": "0",
+        "correct_pred_cal": 0,
+        "scores": {
+          "0": -4.079,
+          "90": -3.985
+        }
+      },
+      {
+        "split": "taskB",
+        "leaf": "move_can5_away_90",
+        "gt": "90",
+        "pred": "0",
+        "correct": 0,
+        "pred_cal": "0",
+        "correct_pred_cal": 0,
+        "scores": {
+          "0": -4.024,
+          "90": -4.399
+        }
+      },
+      {
+        "split": "taskB",
+        "leaf": "move_can5_away_90",
+        "gt": "90",
+        "pred": "0",
+        "correct": 0,
+        "pred_cal": "0",
+        "correct_pred_cal": 0,
+        "scores": {
+          "0": -3.974,
+          "90": -4.037
+        }
+      },
+      {
+        "split": "taskB",
+        "leaf": "move_can5_away_90",
+        "gt": "90",
+        "pred": "90",
+        "correct": 1,
+        "pred_cal": "0",
+        "correct_pred_cal": 0,
+        "scores": {
+          "0": -4.23,
+          "90": -4.011
+        }
+      },
+      {
+        "split": "taskB",
+        "leaf": "move_can5_away_90",
+        "gt": "90",
+        "pred": "0",
+        "correct": 0,
+        "pred_cal": "0",
+        "correct_pred_cal": 0,
+        "scores": {
+          "0": -4.397,
+          "90": -4.835
+        }
+      },
+      {
+        "split": "taskB",
+        "leaf": "move_can5_away_90",
+        "gt": "90",
+        "pred": "90",
+        "correct": 1,
+        "pred_cal": "0",
+        "correct_pred_cal": 0,
+        "scores": {
+          "0": -4.265,
+          "90": -4.015
+        }
+      }
+    ]
+  },
+  "place": {
+    "raw": {
+      "taskA_acc": 0.531,
+      "taskA_n": 64,
+      "taskA_acc_gt_center": 0.062,
+      "taskA_acc_gt_corner": 1.0,
+      "taskA_balanced_acc": 0.531,
+      "taskA_pred_dist": {
+        "center": 2,
+        "corner": 62
+      },
+      "taskB_acc": 0.5,
+      "taskB_n": 50,
+      "taskB_acc_gt_center": 0.0,
+      "taskB_acc_gt_corner": 1.0,
+      "taskB_balanced_acc": 0.5,
+      "taskB_pred_dist": {
+        "center": 0,
+        "corner": 50
+      }
+    },
+    "calibrated": {
+      "taskA_acc": 0.609,
+      "taskA_n": 64,
+      "taskA_acc_gt_center": 0.375,
+      "taskA_acc_gt_corner": 0.844,
+      "taskA_balanced_acc": 0.609,
+      "taskA_pred_dist": {
+        "center": 17,
+        "corner": 47
+      },
+      "taskB_acc": 0.62,
+      "taskB_n": 50,
+      "taskB_acc_gt_center": 0.24,
+      "taskB_acc_gt_corner": 1.0,
+      "taskB_balanced_acc": 0.62,
+      "taskB_pred_dist": {
+        "center": 6,
+        "corner": 44
+      }
+    },
+    "prior": {
+      "center": -2.443,
+      "corner": -1.877
+    },
+    "question": "We are placing an object onto a target. Are we placing it in the middle or on the corner?",
+    "cand": {
+      "center": "In the middle.",
+      "corner": "On the corner."
+    },
+    "rows": [
+      {
+        "split": "taskA",
+        "leaf": "move_mouse_pad_center",
+        "gt": "center",
+        "pred": "corner",
+        "correct": 0,
+        "pred_cal": "corner",
+        "correct_pred_cal": 0,
+        "scores": {
+          "center": -3.37,
+          "corner": -2.396
+        }
+      },
+      {
+        "split": "taskA",
+        "leaf": "move_mouse_pad_center",
+        "gt": "center",
+        "pred": "corner",
+        "correct": 0,
+        "pred_cal": "corner",
+        "correct_pred_cal": 0,
+        "scores": {
+          "center": -4.032,
+          "corner": -2.399
+        }
+      },
+      {
+        "split": "taskA",
+        "leaf": "move_mouse_pad_center",
+        "gt": "center",
+        "pred": "corner",
+        "correct": 0,
+        "pred_cal": "corner",
+        "correct_pred_cal": 0,
+        "scores": {
+          "center": -3.747,
+          "corner": -2.9
+        }
+      },
+      {
+        "split": "taskA",
+        "leaf": "move_mouse_pad_center",
+        "gt": "center",
+        "pred": "corner",
+        "correct": 0,
+        "pred_cal": "corner",
+        "correct_pred_cal": 0,
+        "scores": {
+          "center": -3.311,
+          "corner": -2.222
+        }
+      },
+      {
+        "split": "taskA",
+        "leaf": "move_mouse_pad_corner",
+        "gt": "corner",
+        "pred": "corner",
+        "correct": 1,
+        "pred_cal": "corner",
+        "correct_pred_cal": 1,
+        "scores": {
+          "center": -3.495,
+          "corner": -2.557
+        }
+      },
+      {
+        "split": "taskA",
+        "leaf": "move_mouse_pad_corner",
+        "gt": "corner",
+        "pred": "corner",
+        "correct": 1,
+        "pred_cal": "corner",
+        "correct_pred_cal": 1,
+        "scores": {
+          "center": -3.754,
+          "corner": -2.219
+        }
+      },
+      {
+        "split": "taskA",
+        "leaf": "move_mouse_pad_corner",
+        "gt": "corner",
+        "pred": "corner",
+        "correct": 1,
+        "pred_cal": "center",
+        "correct_pred_cal": 0,
+        "scores": {
+          "center": -3.228,
+          "corner": -2.843
+        }
+      },
+      {
+        "split": "taskA",
+        "leaf": "move_mouse_pad_corner",
+        "gt": "corner",
+        "pred": "corner",
+        "correct": 1,
+        "pred_cal": "corner",
+        "correct_pred_cal": 1,
+        "scores": {
+          "center": -2.999,
+          "corner": -2.386
+        }
+      },
+      {
+        "split": "taskA",
+        "leaf": "move_pillbottle_pad_center",
+        "gt": "center",
+        "pred": "corner",
+        "correct": 0,
+        "pred_cal": "corner",
+        "correct_pred_cal": 0,
+        "scores": {
+          "center": -3.813,
+          "corner": -2.316
+        }
+      },
+      {
+        "split": "taskA",
+        "leaf": "move_pillbottle_pad_center",
+        "gt": "center",
+        "pred": "corner",
+        "correct": 0,
+        "pred_cal": "corner",
+        "correct_pred_cal": 0,
+        "scores": {
+          "center": -3.893,
+          "corner": -2.158
+        }
+      },
+      {
+        "split": "taskA",
+        "leaf": "move_pillbottle_pad_center",
+        "gt": "center",
+        "pred": "center",
+        "correct": 1,
+        "pred_cal": "center",
+        "correct_pred_cal": 1,
+        "scores": {
+          "center": -2.907,
+          "corner": -2.914
+        }
+      },
+      {
+        "split": "taskA",
+        "leaf": "move_pillbottle_pad_center",
+        "gt": "center",
+        "pred": "corner",
+        "correct": 0,
+        "pred_cal": "center",
+        "correct_pred_cal": 1,
+        "scores": {
+          "center": -3.071,
+          "corner": -2.809
+        }
+      },
+      {
+        "split": "taskA",
+        "leaf": "move_pillbottle_pad_corner",
+        "gt": "corner",
+        "pred": "corner",
+        "correct": 1,
+        "pred_cal": "corner",
+        "correct_pred_cal": 1,
+        "scores": {
+          "center": -3.353,
+          "corner": -2.44
+        }
+      },
+      {
+        "split": "taskA",
+        "leaf": "move_pillbottle_pad_corner",
+        "gt": "corner",
+        "pred": "corner",
+        "correct": 1,
+        "pred_cal": "corner",
+        "correct_pred_cal": 1,
+        "scores": {
+          "center": -3.638,
+          "corner": -2.039
+        }
+      },
+      {
+        "split": "taskA",
+        "leaf": "move_pillbottle_pad_corner",
+        "gt": "corner",
+        "pred": "corner",
+        "correct": 1,
+        "pred_cal": "corner",
+        "correct_pred_cal": 1,
+        "scores": {
+          "center": -3.856,
+          "corner": -2.839
+        }
+      },
+      {
+        "split": "taskA",
+        "leaf": "move_pillbottle_pad_corner",
+        "gt": "corner",
+        "pred": "corner",
+        "correct": 1,
+        "pred_cal": "corner",
+        "correct_pred_cal": 1,
+        "scores": {
+          "center": -3.757,
+          "corner": -2.709
+        }
+      },
+      {
+        "split": "taskA",
+        "leaf": "move_playingcards_pad_center",
+        "gt": "center",
+        "pred": "corner",
+        "correct": 0,
+        "pred_cal": "corner",
+        "correct_pred_cal": 0,
+        "scores": {
+          "center": -2.982,
+          "corner": -2.336
+        }
+      },
+      {
+        "split": "taskA",
+        "leaf": "move_playingcards_pad_center",
+        "gt": "center",
+        "pred": "corner",
+        "correct": 0,
+        "pred_cal": "corner",
+        "correct_pred_cal": 0,
+        "scores": {
+          "center": -4.107,
+          "corner": -2.166
+        }
+      },
+      {
+        "split": "taskA",
+        "leaf": "move_playingcards_pad_center",
+        "gt": "center",
+        "pred": "corner",
+        "correct": 0,
+        "pred_cal": "corner",
+        "correct_pred_cal": 0,
+        "scores": {
+          "center": -3.6,
+          "corner": -2.861
+        }
+      },
+      {
+        "split": "taskA",
+        "leaf": "move_playingcards_pad_center",
+        "gt": "center",
+        "pred": "corner",
+        "correct": 0,
+        "pred_cal": "corner",
+        "correct_pred_cal": 0,
+        "scores": {
+          "center": -3.319,
+          "corner": -2.53
+        }
+      },
+      {
+        "split": "taskA",
+        "leaf": "move_playingcards_pad_corner",
+        "gt": "corner",
+        "pred": "corner",
+        "correct": 1,
+        "pred_cal": "corner",
+        "correct_pred_cal": 1,
+        "scores": {
+          "center": -3.791,
+          "corner": -2.63
+        }
+      },
+      {
+        "split": "taskA",
+        "leaf": "move_playingcards_pad_corner",
+        "gt": "corner",
+        "pred": "corner",
+        "correct": 1,
+        "pred_cal": "corner",
+        "correct_pred_cal": 1,
+        "scores": {
+          "center": -3.724,
+          "corner": -1.997
+        }
+      },
+      {
+        "split": "taskA",
+        "leaf": "move_playingcards_pad_corner",
+        "gt": "corner",
+        "pred": "corner",
+        "correct": 1,
+        "pred_cal": "corner",
+        "correct_pred_cal": 1,
+        "scores": {
+          "center": -4.003,
+          "corner": -2.676
+        }
+      },
+      {
+        "split": "taskA",
+        "leaf": "move_playingcards_pad_corner",
+        "gt": "corner",
+        "pred": "corner",
+        "correct": 1,
+        "pred_cal": "corner",
+        "correct_pred_cal": 1,
+        "scores": {
+          "center": -3.482,
+          "corner": -2.647
+        }
+      },
+      {
+        "split": "taskA",
+        "leaf": "move_soap_pad_center",
+        "gt": "center",
+        "pred": "corner",
+        "correct": 0,
+        "pred_cal": "corner",
+        "correct_pred_cal": 0,
+        "scores": {
+          "center": -3.663,
+          "corner": -2.639
+        }
+      },
+      {
+        "split": "taskA",
+        "leaf": "move_soap_pad_center",
+        "gt": "center",
+        "pred": "corner",
+        "correct": 0,
+        "pred_cal": "center",
+        "correct_pred_cal": 1,
+        "scores": {
+          "center": -3.298,
+          "corner": -2.739
+        }
+      },
+      {
+        "split": "taskA",
+        "leaf": "move_soap_pad_center",
+        "gt": "center",
+        "pred": "corner",
+        "correct": 0,
+        "pred_cal": "corner",
+        "correct_pred_cal": 0,
+        "scores": {
+          "center": -3.91,
+          "corner": -2.807
+        }
+      },
+      {
+        "split": "taskA",
+        "leaf": "move_soap_pad_center",
+        "gt": "center",
+        "pred": "corner",
+        "correct": 0,
+        "pred_cal": "corner",
+        "correct_pred_cal": 0,
+        "scores": {
+          "center": -3.974,
+          "corner": -2.458
+        }
+      },
+      {
+        "split": "taskA",
+        "leaf": "move_soap_pad_corner",
+        "gt": "corner",
+        "pred": "corner",
+        "correct": 1,
+        "pred_cal": "corner",
+        "correct_pred_cal": 1,
+        "scores": {
+          "center": -3.978,
+          "corner": -2.6
+        }
+      },
+      {
+        "split": "taskA",
+        "leaf": "move_soap_pad_corner",
+        "gt": "corner",
+        "pred": "corner",
+        "correct": 1,
+        "pred_cal": "corner",
+        "correct_pred_cal": 1,
+        "scores": {
+          "center": -3.736,
+          "corner": -2.095
+        }
+      },
+      {
+        "split": "taskA",
+        "leaf": "move_soap_pad_corner",
+        "gt": "corner",
+        "pred": "corner",
+        "correct": 1,
+        "pred_cal": "corner",
+        "correct_pred_cal": 1,
+        "scores": {
+          "center": -4.025,
+          "corner": -3.09
+        }
+      },
+      {
+        "split": "taskA",
+        "leaf": "move_soap_pad_corner",
+        "gt": "corner",
+        "pred": "corner",
+        "correct": 1,
+        "pred_cal": "corner",
+        "correct_pred_cal": 1,
+        "scores": {
+          "center": -4.294,
+          "corner": -2.728
+        }
+      },
+      {
+        "split": "taskA",
+        "leaf": "place_mouse_tray_center",
+        "gt": "center",
+        "pred": "corner",
+        "correct": 0,
+        "pred_cal": "corner",
+        "correct_pred_cal": 0,
+        "scores": {
+          "center": -3.51,
+          "corner": -2.836
+        }
+      },
+      {
+        "split": "taskA",
+        "leaf": "place_mouse_tray_center",
+        "gt": "center",
+        "pred": "corner",
+        "correct": 0,
+        "pred_cal": "corner",
+        "correct_pred_cal": 0,
+        "scores": {
+          "center": -3.274,
+          "corner": -2.657
+        }
+      },
+      {
+        "split": "taskA",
+        "leaf": "place_mouse_tray_center",
+        "gt": "center",
+        "pred": "corner",
+        "correct": 0,
+        "pred_cal": "center",
+        "correct_pred_cal": 1,
+        "scores": {
+          "center": -2.722,
+          "corner": -2.33
+        }
+      },
+      {
+        "split": "taskA",
+        "leaf": "place_mouse_tray_center",
+        "gt": "center",
+        "pred": "corner",
+        "correct": 0,
+        "pred_cal": "corner",
+        "correct_pred_cal": 0,
+        "scores": {
+          "center": -3.156,
+          "corner": -2.461
+        }
+      },
+      {
+        "split": "taskA",
+        "leaf": "place_mouse_tray_corner",
+        "gt": "corner",
+        "pred": "corner",
+        "correct": 1,
+        "pred_cal": "corner",
+        "correct_pred_cal": 1,
+        "scores": {
+          "center": -3.385,
+          "corner": -2.668
+        }
+      },
+      {
+        "split": "taskA",
+        "leaf": "place_mouse_tray_corner",
+        "gt": "corner",
+        "pred": "corner",
+        "correct": 1,
+        "pred_cal": "corner",
+        "correct_pred_cal": 1,
+        "scores": {
+          "center": -3.347,
+          "corner": -2.57
+        }
+      },
+      {
+        "split": "taskA",
+        "leaf": "place_mouse_tray_corner",
+        "gt": "corner",
+        "pred": "corner",
+        "correct": 1,
+        "pred_cal": "corner",
+        "correct_pred_cal": 1,
+        "scores": {
+          "center": -3.297,
+          "corner": -2.218
+        }
+      },
+      {
+        "split": "taskA",
+        "leaf": "place_mouse_tray_corner",
+        "gt": "corner",
+        "pred": "corner",
+        "correct": 1,
+        "pred_cal": "corner",
+        "correct_pred_cal": 1,
+        "scores": {
+          "center": -4.199,
+          "corner": -2.282
+        }
+      },
+      {
+        "split": "taskA",
+        "leaf": "place_pillbottle_tray_center",
+        "gt": "center",
+        "pred": "corner",
+        "correct": 0,
+        "pred_cal": "corner",
+        "correct_pred_cal": 0,
+        "scores": {
+          "center": -3.448,
+          "corner": -2.679
+        }
+      },
+      {
+        "split": "taskA",
+        "leaf": "place_pillbottle_tray_center",
+        "gt": "center",
+        "pred": "center",
+        "correct": 1,
+        "pred_cal": "center",
+        "correct_pred_cal": 1,
+        "scores": {
+          "center": -2.435,
+          "corner": -2.716
+        }
+      },
+      {
+        "split": "taskA",
+        "leaf": "place_pillbottle_tray_center",
+        "gt": "center",
+        "pred": "corner",
+        "correct": 0,
+        "pred_cal": "center",
+        "correct_pred_cal": 1,
+        "scores": {
+          "center": -3.005,
+          "corner": -2.495
+        }
+      },
+      {
+        "split": "taskA",
+        "leaf": "place_pillbottle_tray_center",
+        "gt": "center",
+        "pred": "corner",
+        "correct": 0,
+        "pred_cal": "corner",
+        "correct_pred_cal": 0,
+        "scores": {
+          "center": -3.813,
+          "corner": -2.675
+        }
+      },
+      {
+        "split": "taskA",
+        "leaf": "place_pillbottle_tray_corner",
+        "gt": "corner",
+        "pred": "corner",
+        "correct": 1,
+        "pred_cal": "corner",
+        "correct_pred_cal": 1,
+        "scores": {
+          "center": -3.64,
+          "corner": -2.493
+        }
+      },
+      {
+        "split": "taskA",
+        "leaf": "place_pillbottle_tray_corner",
+        "gt": "corner",
+        "pred": "corner",
+        "correct": 1,
+        "pred_cal": "center",
+        "correct_pred_cal": 0,
+        "scores": {
+          "center": -2.935,
+          "corner": -2.762
+        }
+      },
+      {
+        "split": "taskA",
+        "leaf": "place_pillbottle_tray_corner",
+        "gt": "corner",
+        "pred": "corner",
+        "correct": 1,
+        "pred_cal": "corner",
+        "correct_pred_cal": 1,
+        "scores": {
+          "center": -3.453,
+          "corner": -2.706
+        }
+      },
+      {
+        "split": "taskA",
+        "leaf": "place_pillbottle_tray_corner",
+        "gt": "corner",
+        "pred": "corner",
+        "correct": 1,
+        "pred_cal": "corner",
+        "correct_pred_cal": 1,
+        "scores": {
+          "center": -4.12,
+          "corner": -2.607
+        }
+      },
+      {
+        "split": "taskA",
+        "leaf": "place_playingcards_tray_center",
+        "gt": "center",
+        "pred": "corner",
+        "correct": 0,
+        "pred_cal": "corner",
+        "correct_pred_cal": 0,
+        "scores": {
+          "center": -3.232,
+          "corner": -2.63
+        }
+      },
+      {
+        "split": "taskA",
+        "leaf": "place_playingcards_tray_center",
+        "gt": "center",
+        "pred": "corner",
+        "correct": 0,
+        "pred_cal": "center",
+        "correct_pred_cal": 1,
+        "scores": {
+          "center": -2.876,
+          "corner": -2.625
+        }
+      },
+      {
+        "split": "taskA",
+        "leaf": "place_playingcards_tray_center",
+        "gt": "center",
+        "pred": "corner",
+        "correct": 0,
+        "pred_cal": "center",
+        "correct_pred_cal": 1,
+        "scores": {
+          "center": -2.788,
+          "corner": -2.541
+        }
+      },
+      {
+        "split": "taskA",
+        "leaf": "place_playingcards_tray_center",
+        "gt": "center",
+        "pred": "corner",
+        "correct": 0,
+        "pred_cal": "corner",
+        "correct_pred_cal": 0,
+        "scores": {
+          "center": -3.277,
+          "corner": -2.69
+        }
+      },
+      {
+        "split": "taskA",
+        "leaf": "place_playingcards_tray_corner",
+        "gt": "corner",
+        "pred": "corner",
+        "correct": 1,
+        "pred_cal": "corner",
+        "correct_pred_cal": 1,
+        "scores": {
+          "center": -3.226,
+          "corner": -2.506
+        }
+      },
+      {
+        "split": "taskA",
+        "leaf": "place_playingcards_tray_corner",
+        "gt": "corner",
+        "pred": "corner",
+        "correct": 1,
+        "pred_cal": "corner",
+        "correct_pred_cal": 1,
+        "scores": {
+          "center": -3.251,
+          "corner": -2.214
+        }
+      },
+      {
+        "split": "taskA",
+        "leaf": "place_playingcards_tray_corner",
+        "gt": "corner",
+        "pred": "corner",
+        "correct": 1,
+        "pred_cal": "center",
+        "correct_pred_cal": 0,
+        "scores": {
+          "center": -2.773,
+          "corner": -2.417
+        }
+      },
+      {
+        "split": "taskA",
+        "leaf": "place_playingcards_tray_corner",
+        "gt": "corner",
+        "pred": "corner",
+        "correct": 1,
+        "pred_cal": "corner",
+        "correct_pred_cal": 1,
+        "scores": {
+          "center": -3.768,
+          "corner": -2.486
+        }
+      },
+      {
+        "split": "taskA",
+        "leaf": "place_soap_tray_center",
+        "gt": "center",
+        "pred": "corner",
+        "correct": 0,
+        "pred_cal": "center",
+        "correct_pred_cal": 1,
+        "scores": {
+          "center": -3.127,
+          "corner": -2.791
+        }
+      },
+      {
+        "split": "taskA",
+        "leaf": "place_soap_tray_center",
+        "gt": "center",
+        "pred": "corner",
+        "correct": 0,
+        "pred_cal": "center",
+        "correct_pred_cal": 1,
+        "scores": {
+          "center": -2.774,
+          "corner": -2.267
+        }
+      },
+      {
+        "split": "taskA",
+        "leaf": "place_soap_tray_center",
+        "gt": "center",
+        "pred": "corner",
+        "correct": 0,
+        "pred_cal": "center",
+        "correct_pred_cal": 1,
+        "scores": {
+          "center": -2.771,
+          "corner": -2.644
+        }
+      },
+      {
+        "split": "taskA",
+        "leaf": "place_soap_tray_center",
+        "gt": "center",
+        "pred": "corner",
+        "correct": 0,
+        "pred_cal": "center",
+        "correct_pred_cal": 1,
+        "scores": {
+          "center": -3.117,
+          "corner": -2.692
+        }
+      },
+      {
+        "split": "taskA",
+        "leaf": "place_soap_tray_corner",
+        "gt": "corner",
+        "pred": "corner",
+        "correct": 1,
+        "pred_cal": "center",
+        "correct_pred_cal": 0,
+        "scores": {
+          "center": -3.406,
+          "corner": -2.84
+        }
+      },
+      {
+        "split": "taskA",
+        "leaf": "place_soap_tray_corner",
+        "gt": "corner",
+        "pred": "corner",
+        "correct": 1,
+        "pred_cal": "center",
+        "correct_pred_cal": 0,
+        "scores": {
+          "center": -3.121,
+          "corner": -2.584
+        }
+      },
+      {
+        "split": "taskA",
+        "leaf": "place_soap_tray_corner",
+        "gt": "corner",
+        "pred": "corner",
+        "correct": 1,
+        "pred_cal": "corner",
+        "correct_pred_cal": 1,
+        "scores": {
+          "center": -3.642,
+          "corner": -2.612
+        }
+      },
+      {
+        "split": "taskA",
+        "leaf": "place_soap_tray_corner",
+        "gt": "corner",
+        "pred": "corner",
+        "correct": 1,
+        "pred_cal": "corner",
+        "correct_pred_cal": 1,
+        "scores": {
+          "center": -3.46,
+          "corner": -2.511
+        }
+      },
+      {
+        "split": "taskB",
+        "leaf": "place_soap2_stand_center",
+        "gt": "center",
+        "pred": "corner",
+        "correct": 0,
+        "pred_cal": "corner",
+        "correct_pred_cal": 0,
+        "scores": {
+          "center": -3.351,
+          "corner": -2.199
+        }
+      },
+      {
+        "split": "taskB",
+        "leaf": "place_soap2_stand_center",
+        "gt": "center",
+        "pred": "corner",
+        "correct": 0,
+        "pred_cal": "corner",
+        "correct_pred_cal": 0,
+        "scores": {
+          "center": -3.657,
+          "corner": -2.518
+        }
+      },
+      {
+        "split": "taskB",
+        "leaf": "place_soap2_stand_center",
+        "gt": "center",
+        "pred": "corner",
+        "correct": 0,
+        "pred_cal": "corner",
+        "correct_pred_cal": 0,
+        "scores": {
+          "center": -3.588,
+          "corner": -2.629
+        }
+      },
+      {
+        "split": "taskB",
+        "leaf": "place_soap2_stand_center",
+        "gt": "center",
+        "pred": "corner",
+        "correct": 0,
+        "pred_cal": "corner",
+        "correct_pred_cal": 0,
+        "scores": {
+          "center": -3.344,
+          "corner": -2.342
+        }
+      },
+      {
+        "split": "taskB",
+        "leaf": "place_soap2_stand_center",
+        "gt": "center",
+        "pred": "corner",
+        "correct": 0,
+        "pred_cal": "corner",
+        "correct_pred_cal": 0,
+        "scores": {
+          "center": -3.362,
+          "corner": -2.025
+        }
+      },
+      {
+        "split": "taskB",
+        "leaf": "place_soap2_stand_center",
+        "gt": "center",
+        "pred": "corner",
+        "correct": 0,
+        "pred_cal": "center",
+        "correct_pred_cal": 1,
+        "scores": {
+          "center": -3.345,
+          "corner": -2.827
+        }
+      },
+      {
+        "split": "taskB",
+        "leaf": "place_soap2_stand_center",
+        "gt": "center",
+        "pred": "corner",
+        "correct": 0,
+        "pred_cal": "corner",
+        "correct_pred_cal": 0,
+        "scores": {
+          "center": -3.951,
+          "corner": -2.289
+        }
+      },
+      {
+        "split": "taskB",
+        "leaf": "place_soap2_stand_center",
+        "gt": "center",
+        "pred": "corner",
+        "correct": 0,
+        "pred_cal": "corner",
+        "correct_pred_cal": 0,
+        "scores": {
+          "center": -3.346,
+          "corner": -2.534
+        }
+      },
+      {
+        "split": "taskB",
+        "leaf": "place_soap2_stand_center",
+        "gt": "center",
+        "pred": "corner",
+        "correct": 0,
+        "pred_cal": "corner",
+        "correct_pred_cal": 0,
+        "scores": {
+          "center": -3.737,
+          "corner": -2.405
+        }
+      },
+      {
+        "split": "taskB",
+        "leaf": "place_soap2_stand_center",
+        "gt": "center",
+        "pred": "corner",
+        "correct": 0,
+        "pred_cal": "center",
+        "correct_pred_cal": 1,
+        "scores": {
+          "center": -3.41,
+          "corner": -3.097
+        }
+      },
+      {
+        "split": "taskB",
+        "leaf": "place_soap2_stand_center",
+        "gt": "center",
+        "pred": "corner",
+        "correct": 0,
+        "pred_cal": "center",
+        "correct_pred_cal": 1,
+        "scores": {
+          "center": -3.148,
+          "corner": -2.616
+        }
+      },
+      {
+        "split": "taskB",
+        "leaf": "place_soap2_stand_center",
+        "gt": "center",
+        "pred": "corner",
+        "correct": 0,
+        "pred_cal": "corner",
+        "correct_pred_cal": 0,
+        "scores": {
+          "center": -3.37,
+          "corner": -2.578
+        }
+      },
+      {
+        "split": "taskB",
+        "leaf": "place_soap2_stand_center",
+        "gt": "center",
+        "pred": "corner",
+        "correct": 0,
+        "pred_cal": "corner",
+        "correct_pred_cal": 0,
+        "scores": {
+          "center": -3.626,
+          "corner": -2.775
+        }
+      },
+      {
+        "split": "taskB",
+        "leaf": "place_soap2_stand_center",
+        "gt": "center",
+        "pred": "corner",
+        "correct": 0,
+        "pred_cal": "corner",
+        "correct_pred_cal": 0,
+        "scores": {
+          "center": -3.449,
+          "corner": -2.328
+        }
+      },
+      {
+        "split": "taskB",
+        "leaf": "place_soap2_stand_center",
+        "gt": "center",
+        "pred": "corner",
+        "correct": 0,
+        "pred_cal": "corner",
+        "correct_pred_cal": 0,
+        "scores": {
+          "center": -3.768,
+          "corner": -2.641
+        }
+      },
+      {
+        "split": "taskB",
+        "leaf": "place_soap2_stand_center",
+        "gt": "center",
+        "pred": "corner",
+        "correct": 0,
+        "pred_cal": "center",
+        "correct_pred_cal": 1,
+        "scores": {
+          "center": -2.95,
+          "corner": -2.621
+        }
+      },
+      {
+        "split": "taskB",
+        "leaf": "place_soap2_stand_center",
+        "gt": "center",
+        "pred": "corner",
+        "correct": 0,
+        "pred_cal": "center",
+        "correct_pred_cal": 1,
+        "scores": {
+          "center": -3.381,
+          "corner": -2.827
+        }
+      },
+      {
+        "split": "taskB",
+        "leaf": "place_soap2_stand_center",
+        "gt": "center",
+        "pred": "corner",
+        "correct": 0,
+        "pred_cal": "corner",
+        "correct_pred_cal": 0,
+        "scores": {
+          "center": -3.257,
+          "corner": -2.473
+        }
+      },
+      {
+        "split": "taskB",
+        "leaf": "place_soap2_stand_center",
+        "gt": "center",
+        "pred": "corner",
+        "correct": 0,
+        "pred_cal": "corner",
+        "correct_pred_cal": 0,
+        "scores": {
+          "center": -3.497,
+          "corner": -2.738
+        }
+      },
+      {
+        "split": "taskB",
+        "leaf": "place_soap2_stand_center",
+        "gt": "center",
+        "pred": "corner",
+        "correct": 0,
+        "pred_cal": "corner",
+        "correct_pred_cal": 0,
+        "scores": {
+          "center": -3.247,
+          "corner": -2.295
+        }
+      },
+      {
+        "split": "taskB",
+        "leaf": "place_soap2_stand_center",
+        "gt": "center",
+        "pred": "corner",
+        "correct": 0,
+        "pred_cal": "corner",
+        "correct_pred_cal": 0,
+        "scores": {
+          "center": -3.872,
+          "corner": -2.275
+        }
+      },
+      {
+        "split": "taskB",
+        "leaf": "place_soap2_stand_center",
+        "gt": "center",
+        "pred": "corner",
+        "correct": 0,
+        "pred_cal": "corner",
+        "correct_pred_cal": 0,
+        "scores": {
+          "center": -3.689,
+          "corner": -2.432
+        }
+      },
+      {
+        "split": "taskB",
+        "leaf": "place_soap2_stand_center",
+        "gt": "center",
+        "pred": "corner",
+        "correct": 0,
+        "pred_cal": "corner",
+        "correct_pred_cal": 0,
+        "scores": {
+          "center": -3.815,
+          "corner": -2.434
+        }
+      },
+      {
+        "split": "taskB",
+        "leaf": "place_soap2_stand_center",
+        "gt": "center",
+        "pred": "corner",
+        "correct": 0,
+        "pred_cal": "center",
+        "correct_pred_cal": 1,
+        "scores": {
+          "center": -3.127,
+          "corner": -2.623
+        }
+      },
+      {
+        "split": "taskB",
+        "leaf": "place_soap2_stand_center",
+        "gt": "center",
+        "pred": "corner",
+        "correct": 0,
+        "pred_cal": "corner",
+        "correct_pred_cal": 0,
+        "scores": {
+          "center": -3.998,
+          "corner": -2.81
+        }
+      },
+      {
+        "split": "taskB",
+        "leaf": "place_soap2_stand_corner",
+        "gt": "corner",
+        "pred": "corner",
+        "correct": 1,
+        "pred_cal": "corner",
+        "correct_pred_cal": 1,
+        "scores": {
+          "center": -3.374,
+          "corner": -2.499
+        }
+      },
+      {
+        "split": "taskB",
+        "leaf": "place_soap2_stand_corner",
+        "gt": "corner",
+        "pred": "corner",
+        "correct": 1,
+        "pred_cal": "corner",
+        "correct_pred_cal": 1,
+        "scores": {
+          "center": -3.774,
+          "corner": -2.153
+        }
+      },
+      {
+        "split": "taskB",
+        "leaf": "place_soap2_stand_corner",
+        "gt": "corner",
+        "pred": "corner",
+        "correct": 1,
+        "pred_cal": "corner",
+        "correct_pred_cal": 1,
+        "scores": {
+          "center": -3.943,
+          "corner": -1.887
+        }
+      },
+      {
+        "split": "taskB",
+        "leaf": "place_soap2_stand_corner",
+        "gt": "corner",
+        "pred": "corner",
+        "correct": 1,
+        "pred_cal": "corner",
+        "correct_pred_cal": 1,
+        "scores": {
+          "center": -3.593,
+          "corner": -2.338
+        }
+      },
+      {
+        "split": "taskB",
+        "leaf": "place_soap2_stand_corner",
+        "gt": "corner",
+        "pred": "corner",
+        "correct": 1,
+        "pred_cal": "corner",
+        "correct_pred_cal": 1,
+        "scores": {
+          "center": -3.232,
+          "corner": -2.155
+        }
+      },
+      {
+        "split": "taskB",
+        "leaf": "place_soap2_stand_corner",
+        "gt": "corner",
+        "pred": "corner",
+        "correct": 1,
+        "pred_cal": "corner",
+        "correct_pred_cal": 1,
+        "scores": {
+          "center": -3.471,
+          "corner": -2.652
+        }
+      },
+      {
+        "split": "taskB",
+        "leaf": "place_soap2_stand_corner",
+        "gt": "corner",
+        "pred": "corner",
+        "correct": 1,
+        "pred_cal": "corner",
+        "correct_pred_cal": 1,
+        "scores": {
+          "center": -3.861,
+          "corner": -2.254
+        }
+      },
+      {
+        "split": "taskB",
+        "leaf": "place_soap2_stand_corner",
+        "gt": "corner",
+        "pred": "corner",
+        "correct": 1,
+        "pred_cal": "corner",
+        "correct_pred_cal": 1,
+        "scores": {
+          "center": -3.748,
+          "corner": -2.341
+        }
+      },
+      {
+        "split": "taskB",
+        "leaf": "place_soap2_stand_corner",
+        "gt": "corner",
+        "pred": "corner",
+        "correct": 1,
+        "pred_cal": "corner",
+        "correct_pred_cal": 1,
+        "scores": {
+          "center": -3.8,
+          "corner": -2.121
+        }
+      },
+      {
+        "split": "taskB",
+        "leaf": "place_soap2_stand_corner",
+        "gt": "corner",
+        "pred": "corner",
+        "correct": 1,
+        "pred_cal": "corner",
+        "correct_pred_cal": 1,
+        "scores": {
+          "center": -3.99,
+          "corner": -2.547
+        }
+      },
+      {
+        "split": "taskB",
+        "leaf": "place_soap2_stand_corner",
+        "gt": "corner",
+        "pred": "corner",
+        "correct": 1,
+        "pred_cal": "corner",
+        "correct_pred_cal": 1,
+        "scores": {
+          "center": -4.206,
+          "corner": -2.178
+        }
+      },
+      {
+        "split": "taskB",
+        "leaf": "place_soap2_stand_corner",
+        "gt": "corner",
+        "pred": "corner",
+        "correct": 1,
+        "pred_cal": "corner",
+        "correct_pred_cal": 1,
+        "scores": {
+          "center": -3.392,
+          "corner": -2.281
+        }
+      },
+      {
+        "split": "taskB",
+        "leaf": "place_soap2_stand_corner",
+        "gt": "corner",
+        "pred": "corner",
+        "correct": 1,
+        "pred_cal": "corner",
+        "correct_pred_cal": 1,
+        "scores": {
+          "center": -4.132,
+          "corner": -2.428
+        }
+      },
+      {
+        "split": "taskB",
+        "leaf": "place_soap2_stand_corner",
+        "gt": "corner",
+        "pred": "corner",
+        "correct": 1,
+        "pred_cal": "corner",
+        "correct_pred_cal": 1,
+        "scores": {
+          "center": -3.684,
+          "corner": -2.462
+        }
+      },
+      {
+        "split": "taskB",
+        "leaf": "place_soap2_stand_corner",
+        "gt": "corner",
+        "pred": "corner",
+        "correct": 1,
+        "pred_cal": "corner",
+        "correct_pred_cal": 1,
+        "scores": {
+          "center": -3.797,
+          "corner": -2.594
+        }
+      },
+      {
+        "split": "taskB",
+        "leaf": "place_soap2_stand_corner",
+        "gt": "corner",
+        "pred": "corner",
+        "correct": 1,
+        "pred_cal": "corner",
+        "correct_pred_cal": 1,
+        "scores": {
+          "center": -3.354,
+          "corner": -2.666
+        }
+      },
+      {
+        "split": "taskB",
+        "leaf": "place_soap2_stand_corner",
+        "gt": "corner",
+        "pred": "corner",
+        "correct": 1,
+        "pred_cal": "corner",
+        "correct_pred_cal": 1,
+        "scores": {
+          "center": -3.952,
+          "corner": -2.473
+        }
+      },
+      {
+        "split": "taskB",
+        "leaf": "place_soap2_stand_corner",
+        "gt": "corner",
+        "pred": "corner",
+        "correct": 1,
+        "pred_cal": "corner",
+        "correct_pred_cal": 1,
+        "scores": {
+          "center": -3.947,
+          "corner": -2.216
+        }
+      },
+      {
+        "split": "taskB",
+        "leaf": "place_soap2_stand_corner",
+        "gt": "corner",
+        "pred": "corner",
+        "correct": 1,
+        "pred_cal": "corner",
+        "correct_pred_cal": 1,
+        "scores": {
+          "center": -4.072,
+          "corner": -2.325
+        }
+      },
+      {
+        "split": "taskB",
+        "leaf": "place_soap2_stand_corner",
+        "gt": "corner",
+        "pred": "corner",
+        "correct": 1,
+        "pred_cal": "corner",
+        "correct_pred_cal": 1,
+        "scores": {
+          "center": -3.666,
+          "corner": -2.194
+        }
+      },
+      {
+        "split": "taskB",
+        "leaf": "place_soap2_stand_corner",
+        "gt": "corner",
+        "pred": "corner",
+        "correct": 1,
+        "pred_cal": "corner",
+        "correct_pred_cal": 1,
+        "scores": {
+          "center": -3.835,
+          "corner": -2.44
+        }
+      },
+      {
+        "split": "taskB",
+        "leaf": "place_soap2_stand_corner",
+        "gt": "corner",
+        "pred": "corner",
+        "correct": 1,
+        "pred_cal": "corner",
+        "correct_pred_cal": 1,
+        "scores": {
+          "center": -4.017,
+          "corner": -2.398
+        }
+      },
+      {
+        "split": "taskB",
+        "leaf": "place_soap2_stand_corner",
+        "gt": "corner",
+        "pred": "corner",
+        "correct": 1,
+        "pred_cal": "corner",
+        "correct_pred_cal": 1,
+        "scores": {
+          "center": -4.391,
+          "corner": -2.564
+        }
+      },
+      {
+        "split": "taskB",
+        "leaf": "place_soap2_stand_corner",
+        "gt": "corner",
+        "pred": "corner",
+        "correct": 1,
+        "pred_cal": "corner",
+        "correct_pred_cal": 1,
+        "scores": {
+          "center": -3.677,
+          "corner": -2.349
+        }
+      },
+      {
+        "split": "taskB",
+        "leaf": "place_soap2_stand_corner",
+        "gt": "corner",
+        "pred": "corner",
+        "correct": 1,
+        "pred_cal": "corner",
+        "correct_pred_cal": 1,
+        "scores": {
+          "center": -4.007,
+          "corner": -2.494
+        }
+      }
+    ]
+  },
+  "height": {
+    "raw": {
+      "taskA_acc": 0.531,
+      "taskA_n": 64,
+      "taskA_acc_gt_high": 0.219,
+      "taskA_acc_gt_low": 0.844,
+      "taskA_balanced_acc": 0.531,
+      "taskA_pred_dist": {
+        "high": 12,
+        "low": 52
+      },
+      "taskB_acc": 0.42,
+      "taskB_n": 50,
+      "taskB_acc_gt_high": 0.0,
+      "taskB_acc_gt_low": 0.84,
+      "taskB_balanced_acc": 0.42,
+      "taskB_pred_dist": {
+        "high": 4,
+        "low": 46
+      }
+    },
+    "calibrated": {
+      "taskA_acc": 0.516,
+      "taskA_n": 64,
+      "taskA_acc_gt_high": 0.312,
+      "taskA_acc_gt_low": 0.719,
+      "taskA_balanced_acc": 0.515,
+      "taskA_pred_dist": {
+        "high": 19,
+        "low": 45
+      },
+      "taskB_acc": 0.4,
+      "taskB_n": 50,
+      "taskB_acc_gt_high": 0.0,
+      "taskB_acc_gt_low": 0.8,
+      "taskB_balanced_acc": 0.4,
+      "taskB_pred_dist": {
+        "high": 5,
+        "low": 45
+      }
+    },
+    "prior": {
+      "high": -1.579,
+      "low": -1.329
+    },
+    "question": "We are placing an object onto a target. Are we dropping it from a high position or from a low position?",
+    "cand": {
+      "high": "From a high position.",
+      "low": "From a low position."
+    },
+    "rows": [
+      {
+        "split": "taskA",
+        "leaf": "move_mouse_pad_high",
+        "gt": "high",
+        "pred": "low",
+        "correct": 0,
+        "pred_cal": "low",
+        "correct_pred_cal": 0,
+        "scores": {
+          "high": -1.978,
+          "low": -1.516
+        }
+      },
+      {
+        "split": "taskA",
+        "leaf": "move_mouse_pad_high",
+        "gt": "high",
+        "pred": "low",
+        "correct": 0,
+        "pred_cal": "high",
+        "correct_pred_cal": 1,
+        "scores": {
+          "high": -2.335,
+          "low": -2.159
+        }
+      },
+      {
+        "split": "taskA",
+        "leaf": "move_mouse_pad_high",
+        "gt": "high",
+        "pred": "high",
+        "correct": 1,
+        "pred_cal": "high",
+        "correct_pred_cal": 1,
+        "scores": {
+          "high": -1.71,
+          "low": -1.771
+        }
+      },
+      {
+        "split": "taskA",
+        "leaf": "move_mouse_pad_high",
+        "gt": "high",
+        "pred": "low",
+        "correct": 0,
+        "pred_cal": "low",
+        "correct_pred_cal": 0,
+        "scores": {
+          "high": -2.67,
+          "low": -2.109
+        }
+      },
+      {
+        "split": "taskA",
+        "leaf": "move_mouse_pad_low",
+        "gt": "low",
+        "pred": "low",
+        "correct": 1,
+        "pred_cal": "low",
+        "correct_pred_cal": 1,
+        "scores": {
+          "high": -2.21,
+          "low": -1.792
+        }
+      },
+      {
+        "split": "taskA",
+        "leaf": "move_mouse_pad_low",
+        "gt": "low",
+        "pred": "low",
+        "correct": 1,
+        "pred_cal": "low",
+        "correct_pred_cal": 1,
+        "scores": {
+          "high": -2.953,
+          "low": -2.586
+        }
+      },
+      {
+        "split": "taskA",
+        "leaf": "move_mouse_pad_low",
+        "gt": "low",
+        "pred": "low",
+        "correct": 1,
+        "pred_cal": "low",
+        "correct_pred_cal": 1,
+        "scores": {
+          "high": -2.863,
+          "low": -1.851
+        }
+      },
+      {
+        "split": "taskA",
+        "leaf": "move_mouse_pad_low",
+        "gt": "low",
+        "pred": "high",
+        "correct": 0,
+        "pred_cal": "high",
+        "correct_pred_cal": 0,
+        "scores": {
+          "high": -1.854,
+          "low": -1.965
+        }
+      },
+      {
+        "split": "taskA",
+        "leaf": "move_pillbottle_pad_high",
+        "gt": "high",
+        "pred": "low",
+        "correct": 0,
+        "pred_cal": "low",
+        "correct_pred_cal": 0,
+        "scores": {
+          "high": -2.261,
+          "low": -1.648
+        }
+      },
+      {
+        "split": "taskA",
+        "leaf": "move_pillbottle_pad_high",
+        "gt": "high",
+        "pred": "low",
+        "correct": 0,
+        "pred_cal": "low",
+        "correct_pred_cal": 0,
+        "scores": {
+          "high": -2.406,
+          "low": -1.885
+        }
+      },
+      {
+        "split": "taskA",
+        "leaf": "move_pillbottle_pad_high",
+        "gt": "high",
+        "pred": "low",
+        "correct": 0,
+        "pred_cal": "low",
+        "correct_pred_cal": 0,
+        "scores": {
+          "high": -3.053,
+          "low": -1.915
+        }
+      },
+      {
+        "split": "taskA",
+        "leaf": "move_pillbottle_pad_high",
+        "gt": "high",
+        "pred": "low",
+        "correct": 0,
+        "pred_cal": "low",
+        "correct_pred_cal": 0,
+        "scores": {
+          "high": -1.57,
+          "low": -1.172
+        }
+      },
+      {
+        "split": "taskA",
+        "leaf": "move_pillbottle_pad_low",
+        "gt": "low",
+        "pred": "low",
+        "correct": 1,
+        "pred_cal": "low",
+        "correct_pred_cal": 1,
+        "scores": {
+          "high": -2.134,
+          "low": -1.851
+        }
+      },
+      {
+        "split": "taskA",
+        "leaf": "move_pillbottle_pad_low",
+        "gt": "low",
+        "pred": "low",
+        "correct": 1,
+        "pred_cal": "low",
+        "correct_pred_cal": 1,
+        "scores": {
+          "high": -2.698,
+          "low": -1.736
+        }
+      },
+      {
+        "split": "taskA",
+        "leaf": "move_pillbottle_pad_low",
+        "gt": "low",
+        "pred": "low",
+        "correct": 1,
+        "pred_cal": "low",
+        "correct_pred_cal": 1,
+        "scores": {
+          "high": -2.707,
+          "low": -1.946
+        }
+      },
+      {
+        "split": "taskA",
+        "leaf": "move_pillbottle_pad_low",
+        "gt": "low",
+        "pred": "low",
+        "correct": 1,
+        "pred_cal": "low",
+        "correct_pred_cal": 1,
+        "scores": {
+          "high": -2.692,
+          "low": -2.18
+        }
+      },
+      {
+        "split": "taskA",
+        "leaf": "move_playingcards_pad_high",
+        "gt": "high",
+        "pred": "low",
+        "correct": 0,
+        "pred_cal": "low",
+        "correct_pred_cal": 0,
+        "scores": {
+          "high": -2.605,
+          "low": -1.834
+        }
+      },
+      {
+        "split": "taskA",
+        "leaf": "move_playingcards_pad_high",
+        "gt": "high",
+        "pred": "low",
+        "correct": 0,
+        "pred_cal": "low",
+        "correct_pred_cal": 0,
+        "scores": {
+          "high": -2.743,
+          "low": -2.105
+        }
+      },
+      {
+        "split": "taskA",
+        "leaf": "move_playingcards_pad_high",
+        "gt": "high",
+        "pred": "high",
+        "correct": 1,
+        "pred_cal": "high",
+        "correct_pred_cal": 1,
+        "scores": {
+          "high": -1.259,
+          "low": -1.797
+        }
+      },
+      {
+        "split": "taskA",
+        "leaf": "move_playingcards_pad_high",
+        "gt": "high",
+        "pred": "low",
+        "correct": 0,
+        "pred_cal": "low",
+        "correct_pred_cal": 0,
+        "scores": {
+          "high": -2.592,
+          "low": -2.039
+        }
+      },
+      {
+        "split": "taskA",
+        "leaf": "move_playingcards_pad_low",
+        "gt": "low",
+        "pred": "low",
+        "correct": 1,
+        "pred_cal": "low",
+        "correct_pred_cal": 1,
+        "scores": {
+          "high": -2.284,
+          "low": -1.813
+        }
+      },
+      {
+        "split": "taskA",
+        "leaf": "move_playingcards_pad_low",
+        "gt": "low",
+        "pred": "low",
+        "correct": 1,
+        "pred_cal": "low",
+        "correct_pred_cal": 1,
+        "scores": {
+          "high": -3.215,
+          "low": -2.762
+        }
+      },
+      {
+        "split": "taskA",
+        "leaf": "move_playingcards_pad_low",
+        "gt": "low",
+        "pred": "low",
+        "correct": 1,
+        "pred_cal": "low",
+        "correct_pred_cal": 1,
+        "scores": {
+          "high": -2.793,
+          "low": -2.01
+        }
+      },
+      {
+        "split": "taskA",
+        "leaf": "move_playingcards_pad_low",
+        "gt": "low",
+        "pred": "low",
+        "correct": 1,
+        "pred_cal": "high",
+        "correct_pred_cal": 0,
+        "scores": {
+          "high": -1.862,
+          "low": -1.7
+        }
+      },
+      {
+        "split": "taskA",
+        "leaf": "move_soap_pad_high",
+        "gt": "high",
+        "pred": "low",
+        "correct": 0,
+        "pred_cal": "low",
+        "correct_pred_cal": 0,
+        "scores": {
+          "high": -2.431,
+          "low": -1.901
+        }
+      },
+      {
+        "split": "taskA",
+        "leaf": "move_soap_pad_high",
+        "gt": "high",
+        "pred": "low",
+        "correct": 0,
+        "pred_cal": "low",
+        "correct_pred_cal": 0,
+        "scores": {
+          "high": -3.138,
+          "low": -2.411
+        }
+      },
+      {
+        "split": "taskA",
+        "leaf": "move_soap_pad_high",
+        "gt": "high",
+        "pred": "low",
+        "correct": 0,
+        "pred_cal": "low",
+        "correct_pred_cal": 0,
+        "scores": {
+          "high": -2.304,
+          "low": -1.906
+        }
+      },
+      {
+        "split": "taskA",
+        "leaf": "move_soap_pad_high",
+        "gt": "high",
+        "pred": "low",
+        "correct": 0,
+        "pred_cal": "low",
+        "correct_pred_cal": 0,
+        "scores": {
+          "high": -2.782,
+          "low": -2.156
+        }
+      },
+      {
+        "split": "taskA",
+        "leaf": "move_soap_pad_low",
+        "gt": "low",
+        "pred": "low",
+        "correct": 1,
+        "pred_cal": "high",
+        "correct_pred_cal": 0,
+        "scores": {
+          "high": -2.614,
+          "low": -2.393
+        }
+      },
+      {
+        "split": "taskA",
+        "leaf": "move_soap_pad_low",
+        "gt": "low",
+        "pred": "low",
+        "correct": 1,
+        "pred_cal": "low",
+        "correct_pred_cal": 1,
+        "scores": {
+          "high": -2.904,
+          "low": -2.253
+        }
+      },
+      {
+        "split": "taskA",
+        "leaf": "move_soap_pad_low",
+        "gt": "low",
+        "pred": "low",
+        "correct": 1,
+        "pred_cal": "high",
+        "correct_pred_cal": 0,
+        "scores": {
+          "high": -1.559,
+          "low": -1.453
+        }
+      },
+      {
+        "split": "taskA",
+        "leaf": "move_soap_pad_low",
+        "gt": "low",
+        "pred": "low",
+        "correct": 1,
+        "pred_cal": "low",
+        "correct_pred_cal": 1,
+        "scores": {
+          "high": -3.183,
+          "low": -2.43
+        }
+      },
+      {
+        "split": "taskA",
+        "leaf": "place_mouse_stand_high",
+        "gt": "high",
+        "pred": "high",
+        "correct": 1,
+        "pred_cal": "high",
+        "correct_pred_cal": 1,
+        "scores": {
+          "high": -1.245,
+          "low": -1.545
+        }
+      },
+      {
+        "split": "taskA",
+        "leaf": "place_mouse_stand_high",
+        "gt": "high",
+        "pred": "low",
+        "correct": 0,
+        "pred_cal": "low",
+        "correct_pred_cal": 0,
+        "scores": {
+          "high": -2.161,
+          "low": -1.89
+        }
+      },
+      {
+        "split": "taskA",
+        "leaf": "place_mouse_stand_high",
+        "gt": "high",
+        "pred": "low",
+        "correct": 0,
+        "pred_cal": "low",
+        "correct_pred_cal": 0,
+        "scores": {
+          "high": -2.48,
+          "low": -1.83
+        }
+      },
+      {
+        "split": "taskA",
+        "leaf": "place_mouse_stand_high",
+        "gt": "high",
+        "pred": "high",
+        "correct": 1,
+        "pred_cal": "high",
+        "correct_pred_cal": 1,
+        "scores": {
+          "high": -1.631,
+          "low": -1.72
+        }
+      },
+      {
+        "split": "taskA",
+        "leaf": "place_mouse_stand_low",
+        "gt": "low",
+        "pred": "low",
+        "correct": 1,
+        "pred_cal": "low",
+        "correct_pred_cal": 1,
+        "scores": {
+          "high": -1.856,
+          "low": -1.476
+        }
+      },
+      {
+        "split": "taskA",
+        "leaf": "place_mouse_stand_low",
+        "gt": "low",
+        "pred": "low",
+        "correct": 1,
+        "pred_cal": "low",
+        "correct_pred_cal": 1,
+        "scores": {
+          "high": -1.753,
+          "low": -1.333
+        }
+      },
+      {
+        "split": "taskA",
+        "leaf": "place_mouse_stand_low",
+        "gt": "low",
+        "pred": "low",
+        "correct": 1,
+        "pred_cal": "low",
+        "correct_pred_cal": 1,
+        "scores": {
+          "high": -1.905,
+          "low": -1.392
+        }
+      },
+      {
+        "split": "taskA",
+        "leaf": "place_mouse_stand_low",
+        "gt": "low",
+        "pred": "high",
+        "correct": 0,
+        "pred_cal": "high",
+        "correct_pred_cal": 0,
+        "scores": {
+          "high": -1.279,
+          "low": -1.632
+        }
+      },
+      {
+        "split": "taskA",
+        "leaf": "place_pillbottle_stand_high",
+        "gt": "high",
+        "pred": "low",
+        "correct": 0,
+        "pred_cal": "high",
+        "correct_pred_cal": 1,
+        "scores": {
+          "high": -1.582,
+          "low": -1.386
+        }
+      },
+      {
+        "split": "taskA",
+        "leaf": "place_pillbottle_stand_high",
+        "gt": "high",
+        "pred": "high",
+        "correct": 1,
+        "pred_cal": "high",
+        "correct_pred_cal": 1,
+        "scores": {
+          "high": -1.269,
+          "low": -1.443
+        }
+      },
+      {
+        "split": "taskA",
+        "leaf": "place_pillbottle_stand_high",
+        "gt": "high",
+        "pred": "high",
+        "correct": 1,
+        "pred_cal": "high",
+        "correct_pred_cal": 1,
+        "scores": {
+          "high": -1.234,
+          "low": -1.41
+        }
+      },
+      {
+        "split": "taskA",
+        "leaf": "place_pillbottle_stand_high",
+        "gt": "high",
+        "pred": "low",
+        "correct": 0,
+        "pred_cal": "low",
+        "correct_pred_cal": 0,
+        "scores": {
+          "high": -1.906,
+          "low": -1.3
+        }
+      },
+      {
+        "split": "taskA",
+        "leaf": "place_pillbottle_stand_low",
+        "gt": "low",
+        "pred": "low",
+        "correct": 1,
+        "pred_cal": "low",
+        "correct_pred_cal": 1,
+        "scores": {
+          "high": -1.989,
+          "low": -1.633
+        }
+      },
+      {
+        "split": "taskA",
+        "leaf": "place_pillbottle_stand_low",
+        "gt": "low",
+        "pred": "high",
+        "correct": 0,
+        "pred_cal": "high",
+        "correct_pred_cal": 0,
+        "scores": {
+          "high": -1.482,
+          "low": -1.626
+        }
+      },
+      {
+        "split": "taskA",
+        "leaf": "place_pillbottle_stand_low",
+        "gt": "low",
+        "pred": "low",
+        "correct": 1,
+        "pred_cal": "high",
+        "correct_pred_cal": 0,
+        "scores": {
+          "high": -1.557,
+          "low": -1.395
+        }
+      },
+      {
+        "split": "taskA",
+        "leaf": "place_pillbottle_stand_low",
+        "gt": "low",
+        "pred": "low",
+        "correct": 1,
+        "pred_cal": "low",
+        "correct_pred_cal": 1,
+        "scores": {
+          "high": -1.793,
+          "low": -1.395
+        }
+      },
+      {
+        "split": "taskA",
+        "leaf": "place_playingcards_stand_high",
+        "gt": "high",
+        "pred": "high",
+        "correct": 1,
+        "pred_cal": "high",
+        "correct_pred_cal": 1,
+        "scores": {
+          "high": -1.391,
+          "low": -1.511
+        }
+      },
+      {
+        "split": "taskA",
+        "leaf": "place_playingcards_stand_high",
+        "gt": "high",
+        "pred": "low",
+        "correct": 0,
+        "pred_cal": "low",
+        "correct_pred_cal": 0,
+        "scores": {
+          "high": -2.652,
+          "low": -2.09
+        }
+      },
+      {
+        "split": "taskA",
+        "leaf": "place_playingcards_stand_high",
+        "gt": "high",
+        "pred": "low",
+        "correct": 0,
+        "pred_cal": "low",
+        "correct_pred_cal": 0,
+        "scores": {
+          "high": -2.386,
+          "low": -1.861
+        }
+      },
+      {
+        "split": "taskA",
+        "leaf": "place_playingcards_stand_high",
+        "gt": "high",
+        "pred": "low",
+        "correct": 0,
+        "pred_cal": "low",
+        "correct_pred_cal": 0,
+        "scores": {
+          "high": -2.228,
+          "low": -1.766
+        }
+      },
+      {
+        "split": "taskA",
+        "leaf": "place_playingcards_stand_low",
+        "gt": "low",
+        "pred": "high",
+        "correct": 0,
+        "pred_cal": "high",
+        "correct_pred_cal": 0,
+        "scores": {
+          "high": -1.573,
+          "low": -1.611
+        }
+      },
+      {
+        "split": "taskA",
+        "leaf": "place_playingcards_stand_low",
+        "gt": "low",
+        "pred": "low",
+        "correct": 1,
+        "pred_cal": "low",
+        "correct_pred_cal": 1,
+        "scores": {
+          "high": -2.474,
+          "low": -1.405
+        }
+      },
+      {
+        "split": "taskA",
+        "leaf": "place_playingcards_stand_low",
+        "gt": "low",
+        "pred": "low",
+        "correct": 1,
+        "pred_cal": "low",
+        "correct_pred_cal": 1,
+        "scores": {
+          "high": -2.275,
+          "low": -1.549
+        }
+      },
+      {
+        "split": "taskA",
+        "leaf": "place_playingcards_stand_low",
+        "gt": "low",
+        "pred": "high",
+        "correct": 0,
+        "pred_cal": "high",
+        "correct_pred_cal": 0,
+        "scores": {
+          "high": -1.427,
+          "low": -1.472
+        }
+      },
+      {
+        "split": "taskA",
+        "leaf": "place_soap_stand_high",
+        "gt": "high",
+        "pred": "low",
+        "correct": 0,
+        "pred_cal": "high",
+        "correct_pred_cal": 1,
+        "scores": {
+          "high": -2.014,
+          "low": -1.863
+        }
+      },
+      {
+        "split": "taskA",
+        "leaf": "place_soap_stand_high",
+        "gt": "high",
+        "pred": "low",
+        "correct": 0,
+        "pred_cal": "low",
+        "correct_pred_cal": 0,
+        "scores": {
+          "high": -2.922,
+          "low": -1.933
+        }
+      },
+      {
+        "split": "taskA",
+        "leaf": "place_soap_stand_high",
+        "gt": "high",
+        "pred": "low",
+        "correct": 0,
+        "pred_cal": "low",
+        "correct_pred_cal": 0,
+        "scores": {
+          "high": -2.883,
+          "low": -2.233
+        }
+      },
+      {
+        "split": "taskA",
+        "leaf": "place_soap_stand_high",
+        "gt": "high",
+        "pred": "low",
+        "correct": 0,
+        "pred_cal": "low",
+        "correct_pred_cal": 0,
+        "scores": {
+          "high": -2.74,
+          "low": -2.159
+        }
+      },
+      {
+        "split": "taskA",
+        "leaf": "place_soap_stand_low",
+        "gt": "low",
+        "pred": "low",
+        "correct": 1,
+        "pred_cal": "low",
+        "correct_pred_cal": 1,
+        "scores": {
+          "high": -1.854,
+          "low": -1.464
+        }
+      },
+      {
+        "split": "taskA",
+        "leaf": "place_soap_stand_low",
+        "gt": "low",
+        "pred": "low",
+        "correct": 1,
+        "pred_cal": "low",
+        "correct_pred_cal": 1,
+        "scores": {
+          "high": -2.546,
+          "low": -1.848
+        }
+      },
+      {
+        "split": "taskA",
+        "leaf": "place_soap_stand_low",
+        "gt": "low",
+        "pred": "low",
+        "correct": 1,
+        "pred_cal": "low",
+        "correct_pred_cal": 1,
+        "scores": {
+          "high": -2.55,
+          "low": -1.786
+        }
+      },
+      {
+        "split": "taskA",
+        "leaf": "place_soap_stand_low",
+        "gt": "low",
+        "pred": "low",
+        "correct": 1,
+        "pred_cal": "low",
+        "correct_pred_cal": 1,
+        "scores": {
+          "high": -2.439,
+          "low": -1.941
+        }
+      },
+      {
+        "split": "taskB",
+        "leaf": "place_playingcards1_box_high",
+        "gt": "high",
+        "pred": "low",
+        "correct": 0,
+        "pred_cal": "low",
+        "correct_pred_cal": 0,
+        "scores": {
+          "high": -2.457,
+          "low": -1.995
+        }
+      },
+      {
+        "split": "taskB",
+        "leaf": "place_playingcards1_box_high",
+        "gt": "high",
+        "pred": "low",
+        "correct": 0,
+        "pred_cal": "low",
+        "correct_pred_cal": 0,
+        "scores": {
+          "high": -2.226,
+          "low": -1.646
+        }
+      },
+      {
+        "split": "taskB",
+        "leaf": "place_playingcards1_box_high",
+        "gt": "high",
+        "pred": "low",
+        "correct": 0,
+        "pred_cal": "low",
+        "correct_pred_cal": 0,
+        "scores": {
+          "high": -1.887,
+          "low": -1.081
+        }
+      },
+      {
+        "split": "taskB",
+        "leaf": "place_playingcards1_box_high",
+        "gt": "high",
+        "pred": "low",
+        "correct": 0,
+        "pred_cal": "low",
+        "correct_pred_cal": 0,
+        "scores": {
+          "high": -2.172,
+          "low": -1.56
+        }
+      },
+      {
+        "split": "taskB",
+        "leaf": "place_playingcards1_box_high",
+        "gt": "high",
+        "pred": "low",
+        "correct": 0,
+        "pred_cal": "low",
+        "correct_pred_cal": 0,
+        "scores": {
+          "high": -2.335,
+          "low": -1.628
+        }
+      },
+      {
+        "split": "taskB",
+        "leaf": "place_playingcards1_box_high",
+        "gt": "high",
+        "pred": "low",
+        "correct": 0,
+        "pred_cal": "low",
+        "correct_pred_cal": 0,
+        "scores": {
+          "high": -2.72,
+          "low": -1.749
+        }
+      },
+      {
+        "split": "taskB",
+        "leaf": "place_playingcards1_box_high",
+        "gt": "high",
+        "pred": "low",
+        "correct": 0,
+        "pred_cal": "low",
+        "correct_pred_cal": 0,
+        "scores": {
+          "high": -2.503,
+          "low": -1.94
+        }
+      },
+      {
+        "split": "taskB",
+        "leaf": "place_playingcards1_box_high",
+        "gt": "high",
+        "pred": "low",
+        "correct": 0,
+        "pred_cal": "low",
+        "correct_pred_cal": 0,
+        "scores": {
+          "high": -2.277,
+          "low": -1.48
+        }
+      },
+      {
+        "split": "taskB",
+        "leaf": "place_playingcards1_box_high",
+        "gt": "high",
+        "pred": "low",
+        "correct": 0,
+        "pred_cal": "low",
+        "correct_pred_cal": 0,
+        "scores": {
+          "high": -1.57,
+          "low": -0.95
+        }
+      },
+      {
+        "split": "taskB",
+        "leaf": "place_playingcards1_box_high",
+        "gt": "high",
+        "pred": "low",
+        "correct": 0,
+        "pred_cal": "low",
+        "correct_pred_cal": 0,
+        "scores": {
+          "high": -1.982,
+          "low": -1.426
+        }
+      },
+      {
+        "split": "taskB",
+        "leaf": "place_playingcards1_box_high",
+        "gt": "high",
+        "pred": "low",
+        "correct": 0,
+        "pred_cal": "low",
+        "correct_pred_cal": 0,
+        "scores": {
+          "high": -2.718,
+          "low": -2.041
+        }
+      },
+      {
+        "split": "taskB",
+        "leaf": "place_playingcards1_box_high",
+        "gt": "high",
+        "pred": "low",
+        "correct": 0,
+        "pred_cal": "low",
+        "correct_pred_cal": 0,
+        "scores": {
+          "high": -2.69,
+          "low": -2.019
+        }
+      },
+      {
+        "split": "taskB",
+        "leaf": "place_playingcards1_box_high",
+        "gt": "high",
+        "pred": "low",
+        "correct": 0,
+        "pred_cal": "low",
+        "correct_pred_cal": 0,
+        "scores": {
+          "high": -2.579,
+          "low": -1.858
+        }
+      },
+      {
+        "split": "taskB",
+        "leaf": "place_playingcards1_box_high",
+        "gt": "high",
+        "pred": "low",
+        "correct": 0,
+        "pred_cal": "low",
+        "correct_pred_cal": 0,
+        "scores": {
+          "high": -1.977,
+          "low": -0.981
+        }
+      },
+      {
+        "split": "taskB",
+        "leaf": "place_playingcards1_box_high",
+        "gt": "high",
+        "pred": "low",
+        "correct": 0,
+        "pred_cal": "low",
+        "correct_pred_cal": 0,
+        "scores": {
+          "high": -2.048,
+          "low": -1.598
+        }
+      },
+      {
+        "split": "taskB",
+        "leaf": "place_playingcards1_box_high",
+        "gt": "high",
+        "pred": "low",
+        "correct": 0,
+        "pred_cal": "low",
+        "correct_pred_cal": 0,
+        "scores": {
+          "high": -2.731,
+          "low": -1.981
+        }
+      },
+      {
+        "split": "taskB",
+        "leaf": "place_playingcards1_box_high",
+        "gt": "high",
+        "pred": "low",
+        "correct": 0,
+        "pred_cal": "low",
+        "correct_pred_cal": 0,
+        "scores": {
+          "high": -2.312,
+          "low": -1.491
+        }
+      },
+      {
+        "split": "taskB",
+        "leaf": "place_playingcards1_box_high",
+        "gt": "high",
+        "pred": "low",
+        "correct": 0,
+        "pred_cal": "low",
+        "correct_pred_cal": 0,
+        "scores": {
+          "high": -1.553,
+          "low": -1.105
+        }
+      },
+      {
+        "split": "taskB",
+        "leaf": "place_playingcards1_box_high",
+        "gt": "high",
+        "pred": "low",
+        "correct": 0,
+        "pred_cal": "low",
+        "correct_pred_cal": 0,
+        "scores": {
+          "high": -2.783,
+          "low": -2.032
+        }
+      },
+      {
+        "split": "taskB",
+        "leaf": "place_playingcards1_box_high",
+        "gt": "high",
+        "pred": "low",
+        "correct": 0,
+        "pred_cal": "low",
+        "correct_pred_cal": 0,
+        "scores": {
+          "high": -2.021,
+          "low": -1.681
+        }
+      },
+      {
+        "split": "taskB",
+        "leaf": "place_playingcards1_box_high",
+        "gt": "high",
+        "pred": "low",
+        "correct": 0,
+        "pred_cal": "low",
+        "correct_pred_cal": 0,
+        "scores": {
+          "high": -2.529,
+          "low": -1.917
+        }
+      },
+      {
+        "split": "taskB",
+        "leaf": "place_playingcards1_box_high",
+        "gt": "high",
+        "pred": "low",
+        "correct": 0,
+        "pred_cal": "low",
+        "correct_pred_cal": 0,
+        "scores": {
+          "high": -1.856,
+          "low": -1.0
+        }
+      },
+      {
+        "split": "taskB",
+        "leaf": "place_playingcards1_box_high",
+        "gt": "high",
+        "pred": "low",
+        "correct": 0,
+        "pred_cal": "low",
+        "correct_pred_cal": 0,
+        "scores": {
+          "high": -1.88,
+          "low": -1.241
+        }
+      },
+      {
+        "split": "taskB",
+        "leaf": "place_playingcards1_box_high",
+        "gt": "high",
+        "pred": "low",
+        "correct": 0,
+        "pred_cal": "low",
+        "correct_pred_cal": 0,
+        "scores": {
+          "high": -2.576,
+          "low": -1.576
+        }
+      },
+      {
+        "split": "taskB",
+        "leaf": "place_playingcards1_box_high",
+        "gt": "high",
+        "pred": "low",
+        "correct": 0,
+        "pred_cal": "low",
+        "correct_pred_cal": 0,
+        "scores": {
+          "high": -1.757,
+          "low": -1.021
+        }
+      },
+      {
+        "split": "taskB",
+        "leaf": "place_playingcards1_box_low",
+        "gt": "low",
+        "pred": "low",
+        "correct": 1,
+        "pred_cal": "low",
+        "correct_pred_cal": 1,
+        "scores": {
+          "high": -1.568,
+          "low": -1.195
+        }
+      },
+      {
+        "split": "taskB",
+        "leaf": "place_playingcards1_box_low",
+        "gt": "low",
+        "pred": "high",
+        "correct": 0,
+        "pred_cal": "high",
+        "correct_pred_cal": 0,
+        "scores": {
+          "high": -1.234,
+          "low": -1.271
+        }
+      },
+      {
+        "split": "taskB",
+        "leaf": "place_playingcards1_box_low",
+        "gt": "low",
+        "pred": "low",
+        "correct": 1,
+        "pred_cal": "low",
+        "correct_pred_cal": 1,
+        "scores": {
+          "high": -2.749,
+          "low": -1.793
+        }
+      },
+      {
+        "split": "taskB",
+        "leaf": "place_playingcards1_box_low",
+        "gt": "low",
+        "pred": "low",
+        "correct": 1,
+        "pred_cal": "low",
+        "correct_pred_cal": 1,
+        "scores": {
+          "high": -2.768,
+          "low": -1.955
+        }
+      },
+      {
+        "split": "taskB",
+        "leaf": "place_playingcards1_box_low",
+        "gt": "low",
+        "pred": "high",
+        "correct": 0,
+        "pred_cal": "high",
+        "correct_pred_cal": 0,
+        "scores": {
+          "high": -1.555,
+          "low": -1.682
+        }
+      },
+      {
+        "split": "taskB",
+        "leaf": "place_playingcards1_box_low",
+        "gt": "low",
+        "pred": "low",
+        "correct": 1,
+        "pred_cal": "low",
+        "correct_pred_cal": 1,
+        "scores": {
+          "high": -2.533,
+          "low": -1.216
+        }
+      },
+      {
+        "split": "taskB",
+        "leaf": "place_playingcards1_box_low",
+        "gt": "low",
+        "pred": "low",
+        "correct": 1,
+        "pred_cal": "low",
+        "correct_pred_cal": 1,
+        "scores": {
+          "high": -1.457,
+          "low": -1.017
+        }
+      },
+      {
+        "split": "taskB",
+        "leaf": "place_playingcards1_box_low",
+        "gt": "low",
+        "pred": "high",
+        "correct": 0,
+        "pred_cal": "high",
+        "correct_pred_cal": 0,
+        "scores": {
+          "high": -1.439,
+          "low": -1.677
+        }
+      },
+      {
+        "split": "taskB",
+        "leaf": "place_playingcards1_box_low",
+        "gt": "low",
+        "pred": "low",
+        "correct": 1,
+        "pred_cal": "low",
+        "correct_pred_cal": 1,
+        "scores": {
+          "high": -1.798,
+          "low": -0.842
+        }
+      },
+      {
+        "split": "taskB",
+        "leaf": "place_playingcards1_box_low",
+        "gt": "low",
+        "pred": "low",
+        "correct": 1,
+        "pred_cal": "low",
+        "correct_pred_cal": 1,
+        "scores": {
+          "high": -2.543,
+          "low": -2.042
+        }
+      },
+      {
+        "split": "taskB",
+        "leaf": "place_playingcards1_box_low",
+        "gt": "low",
+        "pred": "low",
+        "correct": 1,
+        "pred_cal": "low",
+        "correct_pred_cal": 1,
+        "scores": {
+          "high": -2.961,
+          "low": -1.869
+        }
+      },
+      {
+        "split": "taskB",
+        "leaf": "place_playingcards1_box_low",
+        "gt": "low",
+        "pred": "low",
+        "correct": 1,
+        "pred_cal": "low",
+        "correct_pred_cal": 1,
+        "scores": {
+          "high": -2.278,
+          "low": -1.365
+        }
+      },
+      {
+        "split": "taskB",
+        "leaf": "place_playingcards1_box_low",
+        "gt": "low",
+        "pred": "low",
+        "correct": 1,
+        "pred_cal": "low",
+        "correct_pred_cal": 1,
+        "scores": {
+          "high": -2.564,
+          "low": -2.063
+        }
+      },
+      {
+        "split": "taskB",
+        "leaf": "place_playingcards1_box_low",
+        "gt": "low",
+        "pred": "low",
+        "correct": 1,
+        "pred_cal": "low",
+        "correct_pred_cal": 1,
+        "scores": {
+          "high": -1.782,
+          "low": -1.212
+        }
+      },
+      {
+        "split": "taskB",
+        "leaf": "place_playingcards1_box_low",
+        "gt": "low",
+        "pred": "high",
+        "correct": 0,
+        "pred_cal": "high",
+        "correct_pred_cal": 0,
+        "scores": {
+          "high": -1.296,
+          "low": -1.368
+        }
+      },
+      {
+        "split": "taskB",
+        "leaf": "place_playingcards1_box_low",
+        "gt": "low",
+        "pred": "low",
+        "correct": 1,
+        "pred_cal": "low",
+        "correct_pred_cal": 1,
+        "scores": {
+          "high": -2.406,
+          "low": -1.336
+        }
+      },
+      {
+        "split": "taskB",
+        "leaf": "place_playingcards1_box_low",
+        "gt": "low",
+        "pred": "low",
+        "correct": 1,
+        "pred_cal": "low",
+        "correct_pred_cal": 1,
+        "scores": {
+          "high": -2.421,
+          "low": -1.334
+        }
+      },
+      {
+        "split": "taskB",
+        "leaf": "place_playingcards1_box_low",
+        "gt": "low",
+        "pred": "low",
+        "correct": 1,
+        "pred_cal": "low",
+        "correct_pred_cal": 1,
+        "scores": {
+          "high": -2.359,
+          "low": -1.62
+        }
+      },
+      {
+        "split": "taskB",
+        "leaf": "place_playingcards1_box_low",
+        "gt": "low",
+        "pred": "low",
+        "correct": 1,
+        "pred_cal": "high",
+        "correct_pred_cal": 0,
+        "scores": {
+          "high": -1.491,
+          "low": -1.485
+        }
+      },
+      {
+        "split": "taskB",
+        "leaf": "place_playingcards1_box_low",
+        "gt": "low",
+        "pred": "low",
+        "correct": 1,
+        "pred_cal": "low",
+        "correct_pred_cal": 1,
+        "scores": {
+          "high": -3.009,
+          "low": -2.204
+        }
+      },
+      {
+        "split": "taskB",
+        "leaf": "place_playingcards1_box_low",
+        "gt": "low",
+        "pred": "low",
+        "correct": 1,
+        "pred_cal": "low",
+        "correct_pred_cal": 1,
+        "scores": {
+          "high": -1.879,
+          "low": -1.356
+        }
+      },
+      {
+        "split": "taskB",
+        "leaf": "place_playingcards1_box_low",
+        "gt": "low",
+        "pred": "low",
+        "correct": 1,
+        "pred_cal": "low",
+        "correct_pred_cal": 1,
+        "scores": {
+          "high": -2.485,
+          "low": -1.499
+        }
+      },
+      {
+        "split": "taskB",
+        "leaf": "place_playingcards1_box_low",
+        "gt": "low",
+        "pred": "low",
+        "correct": 1,
+        "pred_cal": "low",
+        "correct_pred_cal": 1,
+        "scores": {
+          "high": -2.895,
+          "low": -1.939
+        }
+      },
+      {
+        "split": "taskB",
+        "leaf": "place_playingcards1_box_low",
+        "gt": "low",
+        "pred": "low",
+        "correct": 1,
+        "pred_cal": "low",
+        "correct_pred_cal": 1,
+        "scores": {
+          "high": -2.172,
+          "low": -1.226
+        }
+      },
+      {
+        "split": "taskB",
+        "leaf": "place_playingcards1_box_low",
+        "gt": "low",
+        "pred": "low",
+        "correct": 1,
+        "pred_cal": "low",
+        "correct_pred_cal": 1,
+        "scores": {
+          "high": -1.615,
+          "low": -0.945
+        }
+      }
+    ]
+  }
+}

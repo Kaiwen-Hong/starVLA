@@ -1,0 +1,187 @@
+{
+  "args": {
+    "cat": "orient",
+    "steps": 1000,
+    "bs": 8,
+    "k": 3,
+    "lr": 0.001,
+    "readout": "lm_head",
+    "val_every": 200,
+    "n_val_per_leaf": 10,
+    "jitter": 5,
+    "mlp_baseline": true,
+    "tag": "orient_lmhead"
+  },
+  "pref_keys": [
+    "0",
+    "90"
+  ],
+  "question": "We are picking up an object. Are we grasping from the side (horizontal) or from the top (vertical)? Answer:",
+  "history": [
+    {
+      "step": 200,
+      "taskA": {
+        "acc": 1.0,
+        "bal_acc": 1.0,
+        "ce": 0.001,
+        "n": 160,
+        "pred_dist": {
+          "0": 80,
+          "90": 80
+        }
+      },
+      "taskB": {
+        "acc": 1.0,
+        "bal_acc": 1.0,
+        "ce": 0.0,
+        "n": 20,
+        "pred_dist": {
+          "0": 10,
+          "90": 10
+        }
+      },
+      "taskA_zeroed": {
+        "acc": 0.5,
+        "bal_acc": 0.5,
+        "ce": 3.078,
+        "n": 160,
+        "pred_dist": {
+          "0": 0,
+          "90": 160
+        }
+      }
+    },
+    {
+      "step": 400,
+      "taskA": {
+        "acc": 1.0,
+        "bal_acc": 1.0,
+        "ce": 0.0,
+        "n": 160,
+        "pred_dist": {
+          "0": 80,
+          "90": 80
+        }
+      },
+      "taskB": {
+        "acc": 1.0,
+        "bal_acc": 1.0,
+        "ce": 0.0,
+        "n": 20,
+        "pred_dist": {
+          "0": 10,
+          "90": 10
+        }
+      },
+      "taskA_zeroed": {
+        "acc": 0.5,
+        "bal_acc": 0.5,
+        "ce": 2.974,
+        "n": 160,
+        "pred_dist": {
+          "0": 0,
+          "90": 160
+        }
+      }
+    },
+    {
+      "step": 600,
+      "taskA": {
+        "acc": 1.0,
+        "bal_acc": 1.0,
+        "ce": 0.0,
+        "n": 160,
+        "pred_dist": {
+          "0": 80,
+          "90": 80
+        }
+      },
+      "taskB": {
+        "acc": 1.0,
+        "bal_acc": 1.0,
+        "ce": 0.0,
+        "n": 20,
+        "pred_dist": {
+          "0": 10,
+          "90": 10
+        }
+      },
+      "taskA_zeroed": {
+        "acc": 0.5,
+        "bal_acc": 0.5,
+        "ce": 2.976,
+        "n": 160,
+        "pred_dist": {
+          "0": 0,
+          "90": 160
+        }
+      }
+    },
+    {
+      "step": 800,
+      "taskA": {
+        "acc": 1.0,
+        "bal_acc": 1.0,
+        "ce": 0.0,
+        "n": 160,
+        "pred_dist": {
+          "0": 80,
+          "90": 80
+        }
+      },
+      "taskB": {
+        "acc": 1.0,
+        "bal_acc": 1.0,
+        "ce": 0.0,
+        "n": 20,
+        "pred_dist": {
+          "0": 10,
+          "90": 10
+        }
+      },
+      "taskA_zeroed": {
+        "acc": 0.5,
+        "bal_acc": 0.5,
+        "ce": 2.942,
+        "n": 160,
+        "pred_dist": {
+          "0": 0,
+          "90": 160
+        }
+      }
+    },
+    {
+      "step": 1000,
+      "taskA": {
+        "acc": 1.0,
+        "bal_acc": 1.0,
+        "ce": 0.0,
+        "n": 160,
+        "pred_dist": {
+          "0": 80,
+          "90": 80
+        }
+      },
+      "taskB": {
+        "acc": 1.0,
+        "bal_acc": 1.0,
+        "ce": 0.0,
+        "n": 20,
+        "pred_dist": {
+          "0": 10,
+          "90": 10
+        }
+      },
+      "taskA_zeroed": {
+        "acc": 0.5,
+        "bal_acc": 0.5,
+        "ce": 2.918,
+        "n": 160,
+        "pred_dist": {
+          "0": 0,
+          "90": 160
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,2483 @@
+{
+  "orient": {
+    "agg": {
+      "n": 114,
+      "overall_acc": 0.544,
+      "taskA_acc": 0.469,
+      "taskA_n": 64,
+      "taskA_acc_gt_0": 0.438,
+      "taskA_acc_gt_90": 0.5,
+      "taskA_pred_dist": {
+        "0": 30,
+        "90": 34
+      },
+      "taskB_acc": 0.64,
+      "taskB_n": 50,
+      "taskB_acc_gt_0": 0.92,
+      "taskB_acc_gt_90": 0.36,
+      "taskB_pred_dist": {
+        "0": 39,
+        "90": 11
+      }
+    },
+    "question": "We are picking up an object. Are we grasping it from the side (horizontal grasp) or from the top (vertical grasp)?",
+    "cand": {
+      "0": "From the side.",
+      "90": "From the top."
+    },
+    "rows": [
+      {
+        "split": "taskA",
+        "leaf": "place_bottle_box_0",
+        "gt": "0",
+        "pred": "90",
+        "correct": 0
+      },
+      {
+        "split": "taskA",
+        "leaf": "place_bottle_box_0",
+        "gt": "0",
+        "pred": "90",
+        "correct": 0
+      },
+      {
+        "split": "taskA",
+        "leaf": "place_bottle_box_0",
+        "gt": "0",
+        "pred": "90",
+        "correct": 0
+      },
+      {
+        "split": "taskA",
+        "leaf": "place_bottle_box_0",
+        "gt": "0",
+        "pred": "0",
+        "correct": 1
+      },
+      {
+        "split": "taskA",
+        "leaf": "place_bottle_box_90",
+        "gt": "90",
+        "pred": "0",
+        "correct": 0
+      },
+      {
+        "split": "taskA",
+        "leaf": "place_bottle_box_90",
+        "gt": "90",
+        "pred": "0",
+        "correct": 0
+      },
+      {
+        "split": "taskA",
+        "leaf": "place_bottle_box_90",
+        "gt": "90",
+        "pred": "0",
+        "correct": 0
+      },
+      {
+        "split": "taskA",
+        "leaf": "place_bottle_box_90",
+        "gt": "90",
+        "pred": "0",
+        "correct": 0
+      },
+      {
+        "split": "taskA",
+        "leaf": "place_bottle_left_0",
+        "gt": "0",
+        "pred": "0",
+        "correct": 1
+      },
+      {
+        "split": "taskA",
+        "leaf": "place_bottle_left_0",
+        "gt": "0",
+        "pred": "0",
+        "correct": 1
+      },
+      {
+        "split": "taskA",
+        "leaf": "place_bottle_left_0",
+        "gt": "0",
+        "pred": "90",
+        "correct": 0
+      },
+      {
+        "split": "taskA",
+        "leaf": "place_bottle_left_0",
+        "gt": "0",
+        "pred": "90",
+        "correct": 0
+      },
+      {
+        "split": "taskA",
+        "leaf": "place_bottle_left_90",
+        "gt": "90",
+        "pred": "0",
+        "correct": 0
+      },
+      {
+        "split": "taskA",
+        "leaf": "place_bottle_left_90",
+        "gt": "90",
+        "pred": "90",
+        "correct": 1
+      },
+      {
+        "split": "taskA",
+        "leaf": "place_bottle_left_90",
+        "gt": "90",
+        "pred": "0",
+        "correct": 0
+      },
+      {
+        "split": "taskA",
+        "leaf": "place_bottle_left_90",
+        "gt": "90",
+        "pred": "90",
+        "correct": 1
+      },
+      {
+        "split": "taskA",
+        "leaf": "place_callbell_box_0",
+        "gt": "0",
+        "pred": "0",
+        "correct": 1
+      },
+      {
+        "split": "taskA",
+        "leaf": "place_callbell_box_0",
+        "gt": "0",
+        "pred": "90",
+        "correct": 0
+      },
+      {
+        "split": "taskA",
+        "leaf": "place_callbell_box_0",
+        "gt": "0",
+        "pred": "90",
+        "correct": 0
+      },
+      {
+        "split": "taskA",
+        "leaf": "place_callbell_box_0",
+        "gt": "0",
+        "pred": "0",
+        "correct": 1
+      },
+      {
+        "split": "taskA",
+        "leaf": "place_callbell_box_90",
+        "gt": "90",
+        "pred": "0",
+        "correct": 0
+      },
+      {
+        "split": "taskA",
+        "leaf": "place_callbell_box_90",
+        "gt": "90",
+        "pred": "90",
+        "correct": 1
+      },
+      {
+        "split": "taskA",
+        "leaf": "place_callbell_box_90",
+        "gt": "90",
+        "pred": "90",
+        "correct": 1
+      },
+      {
+        "split": "taskA",
+        "leaf": "place_callbell_box_90",
+        "gt": "90",
+        "pred": "0",
+        "correct": 0
+      },
+      {
+        "split": "taskA",
+        "leaf": "place_callbell_left_0",
+        "gt": "0",
+        "pred": "0",
+        "correct": 1
+      },
+      {
+        "split": "taskA",
+        "leaf": "place_callbell_left_0",
+        "gt": "0",
+        "pred": "0",
+        "correct": 1
+      },
+      {
+        "split": "taskA",
+        "leaf": "place_callbell_left_0",
+        "gt": "0",
+        "pred": "0",
+        "correct": 1
+      },
+      {
+        "split": "taskA",
+        "leaf": "place_callbell_left_0",
+        "gt": "0",
+        "pred": "90",
+        "correct": 0
+      },
+      {
+        "split": "taskA",
+        "leaf": "place_callbell_left_90",
+        "gt": "90",
+        "pred": "90",
+        "correct": 1
+      },
+      {
+        "split": "taskA",
+        "leaf": "place_callbell_left_90",
+        "gt": "90",
+        "pred": "90",
+        "correct": 1
+      },
+      {
+        "split": "taskA",
+        "leaf": "place_callbell_left_90",
+        "gt": "90",
+        "pred": "0",
+        "correct": 0
+      },
+      {
+        "split": "taskA",
+        "leaf": "place_callbell_left_90",
+        "gt": "90",
+        "pred": "90",
+        "correct": 1
+      },
+      {
+        "split": "taskA",
+        "leaf": "place_can_box_0",
+        "gt": "0",
+        "pred": "0",
+        "correct": 1
+      },
+      {
+        "split": "taskA",
+        "leaf": "place_can_box_0",
+        "gt": "0",
+        "pred": "0",
+        "correct": 1
+      },
+      {
+        "split": "taskA",
+        "leaf": "place_can_box_0",
+        "gt": "0",
+        "pred": "0",
+        "correct": 1
+      },
+      {
+        "split": "taskA",
+        "leaf": "place_can_box_0",
+        "gt": "0",
+        "pred": "0",
+        "correct": 1
+      },
+      {
+        "split": "taskA",
+        "leaf": "place_can_box_90",
+        "gt": "90",
+        "pred": "0",
+        "correct": 0
+      },
+      {
+        "split": "taskA",
+        "leaf": "place_can_box_90",
+        "gt": "90",
+        "pred": "90",
+        "correct": 1
+      },
+      {
+        "split": "taskA",
+        "leaf": "place_can_box_90",
+        "gt": "90",
+        "pred": "90",
+        "correct": 1
+      },
+      {
+        "split": "taskA",
+        "leaf": "place_can_box_90",
+        "gt": "90",
+        "pred": "0",
+        "correct": 0
+      },
+      {
+        "split": "taskA",
+        "leaf": "place_can_left_0",
+        "gt": "0",
+        "pred": "90",
+        "correct": 0
+      },
+      {
+        "split": "taskA",
+        "leaf": "place_can_left_0",
+        "gt": "0",
+        "pred": "90",
+        "correct": 0
+      },
+      {
+        "split": "taskA",
+        "leaf": "place_can_left_0",
+        "gt": "0",
+        "pred": "90",
+        "correct": 0
+      },
+      {
+        "split": "taskA",
+        "leaf": "place_can_left_0",
+        "gt": "0",
+        "pred": "90",
+        "correct": 0
+      },
+      {
+        "split": "taskA",
+        "leaf": "place_can_left_90",
+        "gt": "90",
+        "pred": "90",
+        "correct": 1
+      },
+      {
+        "split": "taskA",
+        "leaf": "place_can_left_90",
+        "gt": "90",
+        "pred": "0",
+        "correct": 0
+      },
+      {
+        "split": "taskA",
+        "leaf": "place_can_left_90",
+        "gt": "90",
+        "pred": "0",
+        "correct": 0
+      },
+      {
+        "split": "taskA",
+        "leaf": "place_can_left_90",
+        "gt": "90",
+        "pred": "90",
+        "correct": 1
+      },
+      {
+        "split": "taskA",
+        "leaf": "place_chipstub_box_0",
+        "gt": "0",
+        "pred": "0",
+        "correct": 1
+      },
+      {
+        "split": "taskA",
+        "leaf": "place_chipstub_box_0",
+        "gt": "0",
+        "pred": "90",
+        "correct": 0
+      },
+      {
+        "split": "taskA",
+        "leaf": "place_chipstub_box_0",
+        "gt": "0",
+        "pred": "90",
+        "correct": 0
+      },
+      {
+        "split": "taskA",
+        "leaf": "place_chipstub_box_0",
+        "gt": "0",
+        "pred": "90",
+        "correct": 0
+      },
+      {
+        "split": "taskA",
+        "leaf": "place_chipstub_box_90",
+        "gt": "90",
+        "pred": "0",
+        "correct": 0
+      },
+      {
+        "split": "taskA",
+        "leaf": "place_chipstub_box_90",
+        "gt": "90",
+        "pred": "90",
+        "correct": 1
+      },
+      {
+        "split": "taskA",
+        "leaf": "place_chipstub_box_90",
+        "gt": "90",
+        "pred": "90",
+        "correct": 1
+      },
+      {
+        "split": "taskA",
+        "leaf": "place_chipstub_box_90",
+        "gt": "90",
+        "pred": "0",
+        "correct": 0
+      },
+      {
+        "split": "taskA",
+        "leaf": "place_chipstub_left_0",
+        "gt": "0",
+        "pred": "0",
+        "correct": 1
+      },
+      {
+        "split": "taskA",
+        "leaf": "place_chipstub_left_0",
+        "gt": "0",
+        "pred": "90",
+        "correct": 0
+      },
+      {
+        "split": "taskA",
+        "leaf": "place_chipstub_left_0",
+        "gt": "0",
+        "pred": "90",
+        "correct": 0
+      },
+      {
+        "split": "taskA",
+        "leaf": "place_chipstub_left_0",
+        "gt": "0",
+        "pred": "90",
+        "correct": 0
+      },
+      {
+        "split": "taskA",
+        "leaf": "place_chipstub_left_90",
+        "gt": "90",
+        "pred": "90",
+        "correct": 1
+      },
+      {
+        "split": "taskA",
+        "leaf": "place_chipstub_left_90",
+        "gt": "90",
+        "pred": "90",
+        "correct": 1
+      },
+      {
+        "split": "taskA",
+        "leaf": "place_chipstub_left_90",
+        "gt": "90",
+        "pred": "0",
+        "correct": 0
+      },
+      {
+        "split": "taskA",
+        "leaf": "place_chipstub_left_90",
+        "gt": "90",
+        "pred": "90",
+        "correct": 1
+      },
+      {
+        "split": "taskB",
+        "leaf": "move_can5_away_0",
+        "gt": "0",
+        "pred": "0",
+        "correct": 1
+      },
+      {
+        "split": "taskB",
+        "leaf": "move_can5_away_0",
+        "gt": "0",
+        "pred": "0",
+        "correct": 1
+      },
+      {
+        "split": "taskB",
+        "leaf": "move_can5_away_0",
+        "gt": "0",
+        "pred": "0",
+        "correct": 1
+      },
+      {
+        "split": "taskB",
+        "leaf": "move_can5_away_0",
+        "gt": "0",
+        "pred": "0",
+        "correct": 1
+      },
+      {
+        "split": "taskB",
+        "leaf": "move_can5_away_0",
+        "gt": "0",
+        "pred": "0",
+        "correct": 1
+      },
+      {
+        "split": "taskB",
+        "leaf": "move_can5_away_0",
+        "gt": "0",
+        "pred": "0",
+        "correct": 1
+      },
+      {
+        "split": "taskB",
+        "leaf": "move_can5_away_0",
+        "gt": "0",
+        "pred": "0",
+        "correct": 1
+      },
+      {
+        "split": "taskB",
+        "leaf": "move_can5_away_0",
+        "gt": "0",
+        "pred": "0",
+        "correct": 1
+      },
+      {
+        "split": "taskB",
+        "leaf": "move_can5_away_0",
+        "gt": "0",
+        "pred": "0",
+        "correct": 1
+      },
+      {
+        "split": "taskB",
+        "leaf": "move_can5_away_0",
+        "gt": "0",
+        "pred": "0",
+        "correct": 1
+      },
+      {
+        "split": "taskB",
+        "leaf": "move_can5_away_0",
+        "gt": "0",
+        "pred": "0",
+        "correct": 1
+      },
+      {
+        "split": "taskB",
+        "leaf": "move_can5_away_0",
+        "gt": "0",
+        "pred": "0",
+        "correct": 1
+      },
+      {
+        "split": "taskB",
+        "leaf": "move_can5_away_0",
+        "gt": "0",
+        "pred": "0",
+        "correct": 1
+      },
+      {
+        "split": "taskB",
+        "leaf": "move_can5_away_0",
+        "gt": "0",
+        "pred": "0",
+        "correct": 1
+      },
+      {
+        "split": "taskB",
+        "leaf": "move_can5_away_0",
+        "gt": "0",
+        "pred": "0",
+        "correct": 1
+      },
+      {
+        "split": "taskB",
+        "leaf": "move_can5_away_0",
+        "gt": "0",
+        "pred": "0",
+        "correct": 1
+      },
+      {
+        "split": "taskB",
+        "leaf": "move_can5_away_0",
+        "gt": "0",
+        "pred": "0",
+        "correct": 1
+      },
+      {
+        "split": "taskB",
+        "leaf": "move_can5_away_0",
+        "gt": "0",
+        "pred": "0",
+        "correct": 1
+      },
+      {
+        "split": "taskB",
+        "leaf": "move_can5_away_0",
+        "gt": "0",
+        "pred": "0",
+        "correct": 1
+      },
+      {
+        "split": "taskB",
+        "leaf": "move_can5_away_0",
+        "gt": "0",
+        "pred": "90",
+        "correct": 0
+      },
+      {
+        "split": "taskB",
+        "leaf": "move_can5_away_0",
+        "gt": "0",
+        "pred": "90",
+        "correct": 0
+      },
+      {
+        "split": "taskB",
+        "leaf": "move_can5_away_0",
+        "gt": "0",
+        "pred": "0",
+        "correct": 1
+      },
+      {
+        "split": "taskB",
+        "leaf": "move_can5_away_0",
+        "gt": "0",
+        "pred": "0",
+        "correct": 1
+      },
+      {
+        "split": "taskB",
+        "leaf": "move_can5_away_0",
+        "gt": "0",
+        "pred": "0",
+        "correct": 1
+      },
+      {
+        "split": "taskB",
+        "leaf": "move_can5_away_0",
+        "gt": "0",
+        "pred": "0",
+        "correct": 1
+      },
+      {
+        "split": "taskB",
+        "leaf": "move_can5_away_90",
+        "gt": "90",
+        "pred": "90",
+        "correct": 1
+      },
+      {
+        "split": "taskB",
+        "leaf": "move_can5_away_90",
+        "gt": "90",
+        "pred": "0",
+        "correct": 0
+      },
+      {
+        "split": "taskB",
+        "leaf": "move_can5_away_90",
+        "gt": "90",
+        "pred": "0",
+        "correct": 0
+      },
+      {
+        "split": "taskB",
+        "leaf": "move_can5_away_90",
+        "gt": "90",
+        "pred": "0",
+        "correct": 0
+      },
+      {
+        "split": "taskB",
+        "leaf": "move_can5_away_90",
+        "gt": "90",
+        "pred": "0",
+        "correct": 0
+      },
+      {
+        "split": "taskB",
+        "leaf": "move_can5_away_90",
+        "gt": "90",
+        "pred": "90",
+        "correct": 1
+      },
+      {
+        "split": "taskB",
+        "leaf": "move_can5_away_90",
+        "gt": "90",
+        "pred": "90",
+        "correct": 1
+      },
+      {
+        "split": "taskB",
+        "leaf": "move_can5_away_90",
+        "gt": "90",
+        "pred": "0",
+        "correct": 0
+      },
+      {
+        "split": "taskB",
+        "leaf": "move_can5_away_90",
+        "gt": "90",
+        "pred": "0",
+        "correct": 0
+      },
+      {
+        "split": "taskB",
+        "leaf": "move_can5_away_90",
+        "gt": "90",
+        "pred": "0",
+        "correct": 0
+      },
+      {
+        "split": "taskB",
+        "leaf": "move_can5_away_90",
+        "gt": "90",
+        "pred": "90",
+        "correct": 1
+      },
+      {
+        "split": "taskB",
+        "leaf": "move_can5_away_90",
+        "gt": "90",
+        "pred": "0",
+        "correct": 0
+      },
+      {
+        "split": "taskB",
+        "leaf": "move_can5_away_90",
+        "gt": "90",
+        "pred": "0",
+        "correct": 0
+      },
+      {
+        "split": "taskB",
+        "leaf": "move_can5_away_90",
+        "gt": "90",
+        "pred": "0",
+        "correct": 0
+      },
+      {
+        "split": "taskB",
+        "leaf": "move_can5_away_90",
+        "gt": "90",
+        "pred": "0",
+        "correct": 0
+      },
+      {
+        "split": "taskB",
+        "leaf": "move_can5_away_90",
+        "gt": "90",
+        "pred": "0",
+        "correct": 0
+      },
+      {
+        "split": "taskB",
+        "leaf": "move_can5_away_90",
+        "gt": "90",
+        "pred": "90",
+        "correct": 1
+      },
+      {
+        "split": "taskB",
+        "leaf": "move_can5_away_90",
+        "gt": "90",
+        "pred": "90",
+        "correct": 1
+      },
+      {
+        "split": "taskB",
+        "leaf": "move_can5_away_90",
+        "gt": "90",
+        "pred": "0",
+        "correct": 0
+      },
+      {
+        "split": "taskB",
+        "leaf": "move_can5_away_90",
+        "gt": "90",
+        "pred": "90",
+        "correct": 1
+      },
+      {
+        "split": "taskB",
+        "leaf": "move_can5_away_90",
+        "gt": "90",
+        "pred": "0",
+        "correct": 0
+      },
+      {
+        "split": "taskB",
+        "leaf": "move_can5_away_90",
+        "gt": "90",
+        "pred": "0",
+        "correct": 0
+      },
+      {
+        "split": "taskB",
+        "leaf": "move_can5_away_90",
+        "gt": "90",
+        "pred": "90",
+        "correct": 1
+      },
+      {
+        "split": "taskB",
+        "leaf": "move_can5_away_90",
+        "gt": "90",
+        "pred": "0",
+        "correct": 0
+      },
+      {
+        "split": "taskB",
+        "leaf": "move_can5_away_90",
+        "gt": "90",
+        "pred": "90",
+        "correct": 1
+      }
+    ]
+  },
+  "place": {
+    "agg": {
+      "n": 114,
+      "overall_acc": 0.518,
+      "taskA_acc": 0.531,
+      "taskA_n": 64,
+      "taskA_acc_gt_center": 0.062,
+      "taskA_acc_gt_corner": 1.0,
+      "taskA_pred_dist": {
+        "center": 2,
+        "corner": 62
+      },
+      "taskB_acc": 0.5,
+      "taskB_n": 50,
+      "taskB_acc_gt_center": 0.0,
+      "taskB_acc_gt_corner": 1.0,
+      "taskB_pred_dist": {
+        "center": 0,
+        "corner": 50
+      }
+    },
+    "question": "We are placing an object onto a target. Are we placing it in the middle or on the corner?",
+    "cand": {
+      "center": "In the middle.",
+      "corner": "On the corner."
+    },
+    "rows": [
+      {
+        "split": "taskA",
+        "leaf": "move_mouse_pad_center",
+        "gt": "center",
+        "pred": "corner",
+        "correct": 0
+      },
+      {
+        "split": "taskA",
+        "leaf": "move_mouse_pad_center",
+        "gt": "center",
+        "pred": "corner",
+        "correct": 0
+      },
+      {
+        "split": "taskA",
+        "leaf": "move_mouse_pad_center",
+        "gt": "center",
+        "pred": "corner",
+        "correct": 0
+      },
+      {
+        "split": "taskA",
+        "leaf": "move_mouse_pad_center",
+        "gt": "center",
+        "pred": "corner",
+        "correct": 0
+      },
+      {
+        "split": "taskA",
+        "leaf": "move_mouse_pad_corner",
+        "gt": "corner",
+        "pred": "corner",
+        "correct": 1
+      },
+      {
+        "split": "taskA",
+        "leaf": "move_mouse_pad_corner",
+        "gt": "corner",
+        "pred": "corner",
+        "correct": 1
+      },
+      {
+        "split": "taskA",
+        "leaf": "move_mouse_pad_corner",
+        "gt": "corner",
+        "pred": "corner",
+        "correct": 1
+      },
+      {
+        "split": "taskA",
+        "leaf": "move_mouse_pad_corner",
+        "gt": "corner",
+        "pred": "corner",
+        "correct": 1
+      },
+      {
+        "split": "taskA",
+        "leaf": "move_pillbottle_pad_center",
+        "gt": "center",
+        "pred": "corner",
+        "correct": 0
+      },
+      {
+        "split": "taskA",
+        "leaf": "move_pillbottle_pad_center",
+        "gt": "center",
+        "pred": "corner",
+        "correct": 0
+      },
+      {
+        "split": "taskA",
+        "leaf": "move_pillbottle_pad_center",
+        "gt": "center",
+        "pred": "center",
+        "correct": 1
+      },
+      {
+        "split": "taskA",
+        "leaf": "move_pillbottle_pad_center",
+        "gt": "center",
+        "pred": "corner",
+        "correct": 0
+      },
+      {
+        "split": "taskA",
+        "leaf": "move_pillbottle_pad_corner",
+        "gt": "corner",
+        "pred": "corner",
+        "correct": 1
+      },
+      {
+        "split": "taskA",
+        "leaf": "move_pillbottle_pad_corner",
+        "gt": "corner",
+        "pred": "corner",
+        "correct": 1
+      },
+      {
+        "split": "taskA",
+        "leaf": "move_pillbottle_pad_corner",
+        "gt": "corner",
+        "pred": "corner",
+        "correct": 1
+      },
+      {
+        "split": "taskA",
+        "leaf": "move_pillbottle_pad_corner",
+        "gt": "corner",
+        "pred": "corner",
+        "correct": 1
+      },
+      {
+        "split": "taskA",
+        "leaf": "move_playingcards_pad_center",
+        "gt": "center",
+        "pred": "corner",
+        "correct": 0
+      },
+      {
+        "split": "taskA",
+        "leaf": "move_playingcards_pad_center",
+        "gt": "center",
+        "pred": "corner",
+        "correct": 0
+      },
+      {
+        "split": "taskA",
+        "leaf": "move_playingcards_pad_center",
+        "gt": "center",
+        "pred": "corner",
+        "correct": 0
+      },
+      {
+        "split": "taskA",
+        "leaf": "move_playingcards_pad_center",
+        "gt": "center",
+        "pred": "corner",
+        "correct": 0
+      },
+      {
+        "split": "taskA",
+        "leaf": "move_playingcards_pad_corner",
+        "gt": "corner",
+        "pred": "corner",
+        "correct": 1
+      },
+      {
+        "split": "taskA",
+        "leaf": "move_playingcards_pad_corner",
+        "gt": "corner",
+        "pred": "corner",
+        "correct": 1
+      },
+      {
+        "split": "taskA",
+        "leaf": "move_playingcards_pad_corner",
+        "gt": "corner",
+        "pred": "corner",
+        "correct": 1
+      },
+      {
+        "split": "taskA",
+        "leaf": "move_playingcards_pad_corner",
+        "gt": "corner",
+        "pred": "corner",
+        "correct": 1
+      },
+      {
+        "split": "taskA",
+        "leaf": "move_soap_pad_center",
+        "gt": "center",
+        "pred": "corner",
+        "correct": 0
+      },
+      {
+        "split": "taskA",
+        "leaf": "move_soap_pad_center",
+        "gt": "center",
+        "pred": "corner",
+        "correct": 0
+      },
+      {
+        "split": "taskA",
+        "leaf": "move_soap_pad_center",
+        "gt": "center",
+        "pred": "corner",
+        "correct": 0
+      },
+      {
+        "split": "taskA",
+        "leaf": "move_soap_pad_center",
+        "gt": "center",
+        "pred": "corner",
+        "correct": 0
+      },
+      {
+        "split": "taskA",
+        "leaf": "move_soap_pad_corner",
+        "gt": "corner",
+        "pred": "corner",
+        "correct": 1
+      },
+      {
+        "split": "taskA",
+        "leaf": "move_soap_pad_corner",
+        "gt": "corner",
+        "pred": "corner",
+        "correct": 1
+      },
+      {
+        "split": "taskA",
+        "leaf": "move_soap_pad_corner",
+        "gt": "corner",
+        "pred": "corner",
+        "correct": 1
+      },
+      {
+        "split": "taskA",
+        "leaf": "move_soap_pad_corner",
+        "gt": "corner",
+        "pred": "corner",
+        "correct": 1
+      },
+      {
+        "split": "taskA",
+        "leaf": "place_mouse_tray_center",
+        "gt": "center",
+        "pred": "corner",
+        "correct": 0
+      },
+      {
+        "split": "taskA",
+        "leaf": "place_mouse_tray_center",
+        "gt": "center",
+        "pred": "corner",
+        "correct": 0
+      },
+      {
+        "split": "taskA",
+        "leaf": "place_mouse_tray_center",
+        "gt": "center",
+        "pred": "corner",
+        "correct": 0
+      },
+      {
+        "split": "taskA",
+        "leaf": "place_mouse_tray_center",
+        "gt": "center",
+        "pred": "corner",
+        "correct": 0
+      },
+      {
+        "split": "taskA",
+        "leaf": "place_mouse_tray_corner",
+        "gt": "corner",
+        "pred": "corner",
+        "correct": 1
+      },
+      {
+        "split": "taskA",
+        "leaf": "place_mouse_tray_corner",
+        "gt": "corner",
+        "pred": "corner",
+        "correct": 1
+      },
+      {
+        "split": "taskA",
+        "leaf": "place_mouse_tray_corner",
+        "gt": "corner",
+        "pred": "corner",
+        "correct": 1
+      },
+      {
+        "split": "taskA",
+        "leaf": "place_mouse_tray_corner",
+        "gt": "corner",
+        "pred": "corner",
+        "correct": 1
+      },
+      {
+        "split": "taskA",
+        "leaf": "place_pillbottle_tray_center",
+        "gt": "center",
+        "pred": "corner",
+        "correct": 0
+      },
+      {
+        "split": "taskA",
+        "leaf": "place_pillbottle_tray_center",
+        "gt": "center",
+        "pred": "center",
+        "correct": 1
+      },
+      {
+        "split": "taskA",
+        "leaf": "place_pillbottle_tray_center",
+        "gt": "center",
+        "pred": "corner",
+        "correct": 0
+      },
+      {
+        "split": "taskA",
+        "leaf": "place_pillbottle_tray_center",
+        "gt": "center",
+        "pred": "corner",
+        "correct": 0
+      },
+      {
+        "split": "taskA",
+        "leaf": "place_pillbottle_tray_corner",
+        "gt": "corner",
+        "pred": "corner",
+        "correct": 1
+      },
+      {
+        "split": "taskA",
+        "leaf": "place_pillbottle_tray_corner",
+        "gt": "corner",
+        "pred": "corner",
+        "correct": 1
+      },
+      {
+        "split": "taskA",
+        "leaf": "place_pillbottle_tray_corner",
+        "gt": "corner",
+        "pred": "corner",
+        "correct": 1
+      },
+      {
+        "split": "taskA",
+        "leaf": "place_pillbottle_tray_corner",
+        "gt": "corner",
+        "pred": "corner",
+        "correct": 1
+      },
+      {
+        "split": "taskA",
+        "leaf": "place_playingcards_tray_center",
+        "gt": "center",
+        "pred": "corner",
+        "correct": 0
+      },
+      {
+        "split": "taskA",
+        "leaf": "place_playingcards_tray_center",
+        "gt": "center",
+        "pred": "corner",
+        "correct": 0
+      },
+      {
+        "split": "taskA",
+        "leaf": "place_playingcards_tray_center",
+        "gt": "center",
+        "pred": "corner",
+        "correct": 0
+      },
+      {
+        "split": "taskA",
+        "leaf": "place_playingcards_tray_center",
+        "gt": "center",
+        "pred": "corner",
+        "correct": 0
+      },
+      {
+        "split": "taskA",
+        "leaf": "place_playingcards_tray_corner",
+        "gt": "corner",
+        "pred": "corner",
+        "correct": 1
+      },
+      {
+        "split": "taskA",
+        "leaf": "place_playingcards_tray_corner",
+        "gt": "corner",
+        "pred": "corner",
+        "correct": 1
+      },
+      {
+        "split": "taskA",
+        "leaf": "place_playingcards_tray_corner",
+        "gt": "corner",
+        "pred": "corner",
+        "correct": 1
+      },
+      {
+        "split": "taskA",
+        "leaf": "place_playingcards_tray_corner",
+        "gt": "corner",
+        "pred": "corner",
+        "correct": 1
+      },
+      {
+        "split": "taskA",
+        "leaf": "place_soap_tray_center",
+        "gt": "center",
+        "pred": "corner",
+        "correct": 0
+      },
+      {
+        "split": "taskA",
+        "leaf": "place_soap_tray_center",
+        "gt": "center",
+        "pred": "corner",
+        "correct": 0
+      },
+      {
+        "split": "taskA",
+        "leaf": "place_soap_tray_center",
+        "gt": "center",
+        "pred": "corner",
+        "correct": 0
+      },
+      {
+        "split": "taskA",
+        "leaf": "place_soap_tray_center",
+        "gt": "center",
+        "pred": "corner",
+        "correct": 0
+      },
+      {
+        "split": "taskA",
+        "leaf": "place_soap_tray_corner",
+        "gt": "corner",
+        "pred": "corner",
+        "correct": 1
+      },
+      {
+        "split": "taskA",
+        "leaf": "place_soap_tray_corner",
+        "gt": "corner",
+        "pred": "corner",
+        "correct": 1
+      },
+      {
+        "split": "taskA",
+        "leaf": "place_soap_tray_corner",
+        "gt": "corner",
+        "pred": "corner",
+        "correct": 1
+      },
+      {
+        "split": "taskA",
+        "leaf": "place_soap_tray_corner",
+        "gt": "corner",
+        "pred": "corner",
+        "correct": 1
+      },
+      {
+        "split": "taskB",
+        "leaf": "place_soap2_stand_center",
+        "gt": "center",
+        "pred": "corner",
+        "correct": 0
+      },
+      {
+        "split": "taskB",
+        "leaf": "place_soap2_stand_center",
+        "gt": "center",
+        "pred": "corner",
+        "correct": 0
+      },
+      {
+        "split": "taskB",
+        "leaf": "place_soap2_stand_center",
+        "gt": "center",
+        "pred": "corner",
+        "correct": 0
+      },
+      {
+        "split": "taskB",
+        "leaf": "place_soap2_stand_center",
+        "gt": "center",
+        "pred": "corner",
+        "correct": 0
+      },
+      {
+        "split": "taskB",
+        "leaf": "place_soap2_stand_center",
+        "gt": "center",
+        "pred": "corner",
+        "correct": 0
+      },
+      {
+        "split": "taskB",
+        "leaf": "place_soap2_stand_center",
+        "gt": "center",
+        "pred": "corner",
+        "correct": 0
+      },
+      {
+        "split": "taskB",
+        "leaf": "place_soap2_stand_center",
+        "gt": "center",
+        "pred": "corner",
+        "correct": 0
+      },
+      {
+        "split": "taskB",
+        "leaf": "place_soap2_stand_center",
+        "gt": "center",
+        "pred": "corner",
+        "correct": 0
+      },
+      {
+        "split": "taskB",
+        "leaf": "place_soap2_stand_center",
+        "gt": "center",
+        "pred": "corner",
+        "correct": 0
+      },
+      {
+        "split": "taskB",
+        "leaf": "place_soap2_stand_center",
+        "gt": "center",
+        "pred": "corner",
+        "correct": 0
+      },
+      {
+        "split": "taskB",
+        "leaf": "place_soap2_stand_center",
+        "gt": "center",
+        "pred": "corner",
+        "correct": 0
+      },
+      {
+        "split": "taskB",
+        "leaf": "place_soap2_stand_center",
+        "gt": "center",
+        "pred": "corner",
+        "correct": 0
+      },
+      {
+        "split": "taskB",
+        "leaf": "place_soap2_stand_center",
+        "gt": "center",
+        "pred": "corner",
+        "correct": 0
+      },
+      {
+        "split": "taskB",
+        "leaf": "place_soap2_stand_center",
+        "gt": "center",
+        "pred": "corner",
+        "correct": 0
+      },
+      {
+        "split": "taskB",
+        "leaf": "place_soap2_stand_center",
+        "gt": "center",
+        "pred": "corner",
+        "correct": 0
+      },
+      {
+        "split": "taskB",
+        "leaf": "place_soap2_stand_center",
+        "gt": "center",
+        "pred": "corner",
+        "correct": 0
+      },
+      {
+        "split": "taskB",
+        "leaf": "place_soap2_stand_center",
+        "gt": "center",
+        "pred": "corner",
+        "correct": 0
+      },
+      {
+        "split": "taskB",
+        "leaf": "place_soap2_stand_center",
+        "gt": "center",
+        "pred": "corner",
+        "correct": 0
+      },
+      {
+        "split": "taskB",
+        "leaf": "place_soap2_stand_center",
+        "gt": "center",
+        "pred": "corner",
+        "correct": 0
+      },
+      {
+        "split": "taskB",
+        "leaf": "place_soap2_stand_center",
+        "gt": "center",
+        "pred": "corner",
+        "correct": 0
+      },
+      {
+        "split": "taskB",
+        "leaf": "place_soap2_stand_center",
+        "gt": "center",
+        "pred": "corner",
+        "correct": 0
+      },
+      {
+        "split": "taskB",
+        "leaf": "place_soap2_stand_center",
+        "gt": "center",
+        "pred": "corner",
+        "correct": 0
+      },
+      {
+        "split": "taskB",
+        "leaf": "place_soap2_stand_center",
+        "gt": "center",
+        "pred": "corner",
+        "correct": 0
+      },
+      {
+        "split": "taskB",
+        "leaf": "place_soap2_stand_center",
+        "gt": "center",
+        "pred": "corner",
+        "correct": 0
+      },
+      {
+        "split": "taskB",
+        "leaf": "place_soap2_stand_center",
+        "gt": "center",
+        "pred": "corner",
+        "correct": 0
+      },
+      {
+        "split": "taskB",
+        "leaf": "place_soap2_stand_corner",
+        "gt": "corner",
+        "pred": "corner",
+        "correct": 1
+      },
+      {
+        "split": "taskB",
+        "leaf": "place_soap2_stand_corner",
+        "gt": "corner",
+        "pred": "corner",
+        "correct": 1
+      },
+      {
+        "split": "taskB",
+        "leaf": "place_soap2_stand_corner",
+        "gt": "corner",
+        "pred": "corner",
+        "correct": 1
+      },
+      {
+        "split": "taskB",
+        "leaf": "place_soap2_stand_corner",
+        "gt": "corner",
+        "pred": "corner",
+        "correct": 1
+      },
+      {
+        "split": "taskB",
+        "leaf": "place_soap2_stand_corner",
+        "gt": "corner",
+        "pred": "corner",
+        "correct": 1
+      },
+      {
+        "split": "taskB",
+        "leaf": "place_soap2_stand_corner",
+        "gt": "corner",
+        "pred": "corner",
+        "correct": 1
+      },
+      {
+        "split": "taskB",
+        "leaf": "place_soap2_stand_corner",
+        "gt": "corner",
+        "pred": "corner",
+        "correct": 1
+      },
+      {
+        "split": "taskB",
+        "leaf": "place_soap2_stand_corner",
+        "gt": "corner",
+        "pred": "corner",
+        "correct": 1
+      },
+      {
+        "split": "taskB",
+        "leaf": "place_soap2_stand_corner",
+        "gt": "corner",
+        "pred": "corner",
+        "correct": 1
+      },
+      {
+        "split": "taskB",
+        "leaf": "place_soap2_stand_corner",
+        "gt": "corner",
+        "pred": "corner",
+        "correct": 1
+      },
+      {
+        "split": "taskB",
+        "leaf": "place_soap2_stand_corner",
+        "gt": "corner",
+        "pred": "corner",
+        "correct": 1
+      },
+      {
+        "split": "taskB",
+        "leaf": "place_soap2_stand_corner",
+        "gt": "corner",
+        "pred": "corner",
+        "correct": 1
+      },
+      {
+        "split": "taskB",
+        "leaf": "place_soap2_stand_corner",
+        "gt": "corner",
+        "pred": "corner",
+        "correct": 1
+      },
+      {
+        "split": "taskB",
+        "leaf": "place_soap2_stand_corner",
+        "gt": "corner",
+        "pred": "corner",
+        "correct": 1
+      },
+      {
+        "split": "taskB",
+        "leaf": "place_soap2_stand_corner",
+        "gt": "corner",
+        "pred": "corner",
+        "correct": 1
+      },
+      {
+        "split": "taskB",
+        "leaf": "place_soap2_stand_corner",
+        "gt": "corner",
+        "pred": "corner",
+        "correct": 1
+      },
+      {
+        "split": "taskB",
+        "leaf": "place_soap2_stand_corner",
+        "gt": "corner",
+        "pred": "corner",
+        "correct": 1
+      },
+      {
+        "split": "taskB",
+        "leaf": "place_soap2_stand_corner",
+        "gt": "corner",
+        "pred": "corner",
+        "correct": 1
+      },
+      {
+        "split": "taskB",
+        "leaf": "place_soap2_stand_corner",
+        "gt": "corner",
+        "pred": "corner",
+        "correct": 1
+      },
+      {
+        "split": "taskB",
+        "leaf": "place_soap2_stand_corner",
+        "gt": "corner",
+        "pred": "corner",
+        "correct": 1
+      },
+      {
+        "split": "taskB",
+        "leaf": "place_soap2_stand_corner",
+        "gt": "corner",
+        "pred": "corner",
+        "correct": 1
+      },
+      {
+        "split": "taskB",
+        "leaf": "place_soap2_stand_corner",
+        "gt": "corner",
+        "pred": "corner",
+        "correct": 1
+      },
+      {
+        "split": "taskB",
+        "leaf": "place_soap2_stand_corner",
+        "gt": "corner",
+        "pred": "corner",
+        "correct": 1
+      },
+      {
+        "split": "taskB",
+        "leaf": "place_soap2_stand_corner",
+        "gt": "corner",
+        "pred": "corner",
+        "correct": 1
+      },
+      {
+        "split": "taskB",
+        "leaf": "place_soap2_stand_corner",
+        "gt": "corner",
+        "pred": "corner",
+        "correct": 1
+      }
+    ]
+  },
+  "height": {
+    "agg": {
+      "n": 114,
+      "overall_acc": 0.482,
+      "taskA_acc": 0.531,
+      "taskA_n": 64,
+      "taskA_acc_gt_high": 0.219,
+      "taskA_acc_gt_low": 0.844,
+      "taskA_pred_dist": {
+        "high": 12,
+        "low": 52
+      },
+      "taskB_acc": 0.42,
+      "taskB_n": 50,
+      "taskB_acc_gt_high": 0.0,
+      "taskB_acc_gt_low": 0.84,
+      "taskB_pred_dist": {
+        "high": 4,
+        "low": 46
+      }
+    },
+    "question": "We are placing an object onto a target. Are we dropping it from a high position or from a low position?",
+    "cand": {
+      "high": "From a high position.",
+      "low": "From a low position."
+    },
+    "rows": [
+      {
+        "split": "taskA",
+        "leaf": "move_mouse_pad_high",
+        "gt": "high",
+        "pred": "low",
+        "correct": 0
+      },
+      {
+        "split": "taskA",
+        "leaf": "move_mouse_pad_high",
+        "gt": "high",
+        "pred": "low",
+        "correct": 0
+      },
+      {
+        "split": "taskA",
+        "leaf": "move_mouse_pad_high",
+        "gt": "high",
+        "pred": "high",
+        "correct": 1
+      },
+      {
+        "split": "taskA",
+        "leaf": "move_mouse_pad_high",
+        "gt": "high",
+        "pred": "low",
+        "correct": 0
+      },
+      {
+        "split": "taskA",
+        "leaf": "move_mouse_pad_low",
+        "gt": "low",
+        "pred": "low",
+        "correct": 1
+      },
+      {
+        "split": "taskA",
+        "leaf": "move_mouse_pad_low",
+        "gt": "low",
+        "pred": "low",
+        "correct": 1
+      },
+      {
+        "split": "taskA",
+        "leaf": "move_mouse_pad_low",
+        "gt": "low",
+        "pred": "low",
+        "correct": 1
+      },
+      {
+        "split": "taskA",
+        "leaf": "move_mouse_pad_low",
+        "gt": "low",
+        "pred": "high",
+        "correct": 0
+      },
+      {
+        "split": "taskA",
+        "leaf": "move_pillbottle_pad_high",
+        "gt": "high",
+        "pred": "low",
+        "correct": 0
+      },
+      {
+        "split": "taskA",
+        "leaf": "move_pillbottle_pad_high",
+        "gt": "high",
+        "pred": "low",
+        "correct": 0
+      },
+      {
+        "split": "taskA",
+        "leaf": "move_pillbottle_pad_high",
+        "gt": "high",
+        "pred": "low",
+        "correct": 0
+      },
+      {
+        "split": "taskA",
+        "leaf": "move_pillbottle_pad_high",
+        "gt": "high",
+        "pred": "low",
+        "correct": 0
+      },
+      {
+        "split": "taskA",
+        "leaf": "move_pillbottle_pad_low",
+        "gt": "low",
+        "pred": "low",
+        "correct": 1
+      },
+      {
+        "split": "taskA",
+        "leaf": "move_pillbottle_pad_low",
+        "gt": "low",
+        "pred": "low",
+        "correct": 1
+      },
+      {
+        "split": "taskA",
+        "leaf": "move_pillbottle_pad_low",
+        "gt": "low",
+        "pred": "low",
+        "correct": 1
+      },
+      {
+        "split": "taskA",
+        "leaf": "move_pillbottle_pad_low",
+        "gt": "low",
+        "pred": "low",
+        "correct": 1
+      },
+      {
+        "split": "taskA",
+        "leaf": "move_playingcards_pad_high",
+        "gt": "high",
+        "pred": "low",
+        "correct": 0
+      },
+      {
+        "split": "taskA",
+        "leaf": "move_playingcards_pad_high",
+        "gt": "high",
+        "pred": "low",
+        "correct": 0
+      },
+      {
+        "split": "taskA",
+        "leaf": "move_playingcards_pad_high",
+        "gt": "high",
+        "pred": "high",
+        "correct": 1
+      },
+      {
+        "split": "taskA",
+        "leaf": "move_playingcards_pad_high",
+        "gt": "high",
+        "pred": "low",
+        "correct": 0
+      },
+      {
+        "split": "taskA",
+        "leaf": "move_playingcards_pad_low",
+        "gt": "low",
+        "pred": "low",
+        "correct": 1
+      },
+      {
+        "split": "taskA",
+        "leaf": "move_playingcards_pad_low",
+        "gt": "low",
+        "pred": "low",
+        "correct": 1
+      },
+      {
+        "split": "taskA",
+        "leaf": "move_playingcards_pad_low",
+        "gt": "low",
+        "pred": "low",
+        "correct": 1
+      },
+      {
+        "split": "taskA",
+        "leaf": "move_playingcards_pad_low",
+        "gt": "low",
+        "pred": "low",
+        "correct": 1
+      },
+      {
+        "split": "taskA",
+        "leaf": "move_soap_pad_high",
+        "gt": "high",
+        "pred": "low",
+        "correct": 0
+      },
+      {
+        "split": "taskA",
+        "leaf": "move_soap_pad_high",
+        "gt": "high",
+        "pred": "low",
+        "correct": 0
+      },
+      {
+        "split": "taskA",
+        "leaf": "move_soap_pad_high",
+        "gt": "high",
+        "pred": "low",
+        "correct": 0
+      },
+      {
+        "split": "taskA",
+        "leaf": "move_soap_pad_high",
+        "gt": "high",
+        "pred": "low",
+        "correct": 0
+      },
+      {
+        "split": "taskA",
+        "leaf": "move_soap_pad_low",
+        "gt": "low",
+        "pred": "low",
+        "correct": 1
+      },
+      {
+        "split": "taskA",
+        "leaf": "move_soap_pad_low",
+        "gt": "low",
+        "pred": "low",
+        "correct": 1
+      },
+      {
+        "split": "taskA",
+        "leaf": "move_soap_pad_low",
+        "gt": "low",
+        "pred": "low",
+        "correct": 1
+      },
+      {
+        "split": "taskA",
+        "leaf": "move_soap_pad_low",
+        "gt": "low",
+        "pred": "low",
+        "correct": 1
+      },
+      {
+        "split": "taskA",
+        "leaf": "place_mouse_stand_high",
+        "gt": "high",
+        "pred": "high",
+        "correct": 1
+      },
+      {
+        "split": "taskA",
+        "leaf": "place_mouse_stand_high",
+        "gt": "high",
+        "pred": "low",
+        "correct": 0
+      },
+      {
+        "split": "taskA",
+        "leaf": "place_mouse_stand_high",
+        "gt": "high",
+        "pred": "low",
+        "correct": 0
+      },
+      {
+        "split": "taskA",
+        "leaf": "place_mouse_stand_high",
+        "gt": "high",
+        "pred": "high",
+        "correct": 1
+      },
+      {
+        "split": "taskA",
+        "leaf": "place_mouse_stand_low",
+        "gt": "low",
+        "pred": "low",
+        "correct": 1
+      },
+      {
+        "split": "taskA",
+        "leaf": "place_mouse_stand_low",
+        "gt": "low",
+        "pred": "low",
+        "correct": 1
+      },
+      {
+        "split": "taskA",
+        "leaf": "place_mouse_stand_low",
+        "gt": "low",
+        "pred": "low",
+        "correct": 1
+      },
+      {
+        "split": "taskA",
+        "leaf": "place_mouse_stand_low",
+        "gt": "low",
+        "pred": "high",
+        "correct": 0
+      },
+      {
+        "split": "taskA",
+        "leaf": "place_pillbottle_stand_high",
+        "gt": "high",
+        "pred": "low",
+        "correct": 0
+      },
+      {
+        "split": "taskA",
+        "leaf": "place_pillbottle_stand_high",
+        "gt": "high",
+        "pred": "high",
+        "correct": 1
+      },
+      {
+        "split": "taskA",
+        "leaf": "place_pillbottle_stand_high",
+        "gt": "high",
+        "pred": "high",
+        "correct": 1
+      },
+      {
+        "split": "taskA",
+        "leaf": "place_pillbottle_stand_high",
+        "gt": "high",
+        "pred": "low",
+        "correct": 0
+      },
+      {
+        "split": "taskA",
+        "leaf": "place_pillbottle_stand_low",
+        "gt": "low",
+        "pred": "low",
+        "correct": 1
+      },
+      {
+        "split": "taskA",
+        "leaf": "place_pillbottle_stand_low",
+        "gt": "low",
+        "pred": "high",
+        "correct": 0
+      },
+      {
+        "split": "taskA",
+        "leaf": "place_pillbottle_stand_low",
+        "gt": "low",
+        "pred": "low",
+        "correct": 1
+      },
+      {
+        "split": "taskA",
+        "leaf": "place_pillbottle_stand_low",
+        "gt": "low",
+        "pred": "low",
+        "correct": 1
+      },
+      {
+        "split": "taskA",
+        "leaf": "place_playingcards_stand_high",
+        "gt": "high",
+        "pred": "high",
+        "correct": 1
+      },
+      {
+        "split": "taskA",
+        "leaf": "place_playingcards_stand_high",
+        "gt": "high",
+        "pred": "low",
+        "correct": 0
+      },
+      {
+        "split": "taskA",
+        "leaf": "place_playingcards_stand_high",
+        "gt": "high",
+        "pred": "low",
+        "correct": 0
+      },
+      {
+        "split": "taskA",
+        "leaf": "place_playingcards_stand_high",
+        "gt": "high",
+        "pred": "low",
+        "correct": 0
+      },
+      {
+        "split": "taskA",
+        "leaf": "place_playingcards_stand_low",
+        "gt": "low",
+        "pred": "high",
+        "correct": 0
+      },
+      {
+        "split": "taskA",
+        "leaf": "place_playingcards_stand_low",
+        "gt": "low",
+        "pred": "low",
+        "correct": 1
+      },
+      {
+        "split": "taskA",
+        "leaf": "place_playingcards_stand_low",
+        "gt": "low",
+        "pred": "low",
+        "correct": 1
+      },
+      {
+        "split": "taskA",
+        "leaf": "place_playingcards_stand_low",
+        "gt": "low",
+        "pred": "high",
+        "correct": 0
+      },
+      {
+        "split": "taskA",
+        "leaf": "place_soap_stand_high",
+        "gt": "high",
+        "pred": "low",
+        "correct": 0
+      },
+      {
+        "split": "taskA",
+        "leaf": "place_soap_stand_high",
+        "gt": "high",
+        "pred": "low",
+        "correct": 0
+      },
+      {
+        "split": "taskA",
+        "leaf": "place_soap_stand_high",
+        "gt": "high",
+        "pred": "low",
+        "correct": 0
+      },
+      {
+        "split": "taskA",
+        "leaf": "place_soap_stand_high",
+        "gt": "high",
+        "pred": "low",
+        "correct": 0
+      },
+      {
+        "split": "taskA",
+        "leaf": "place_soap_stand_low",
+        "gt": "low",
+        "pred": "low",
+        "correct": 1
+      },
+      {
+        "split": "taskA",
+        "leaf": "place_soap_stand_low",
+        "gt": "low",
+        "pred": "low",
+        "correct": 1
+      },
+      {
+        "split": "taskA",
+        "leaf": "place_soap_stand_low",
+        "gt": "low",
+        "pred": "low",
+        "correct": 1
+      },
+      {
+        "split": "taskA",
+        "leaf": "place_soap_stand_low",
+        "gt": "low",
+        "pred": "low",
+        "correct": 1
+      },
+      {
+        "split": "taskB",
+        "leaf": "place_playingcards1_box_high",
+        "gt": "high",
+        "pred": "low",
+        "correct": 0
+      },
+      {
+        "split": "taskB",
+        "leaf": "place_playingcards1_box_high",
+        "gt": "high",
+        "pred": "low",
+        "correct": 0
+      },
+      {
+        "split": "taskB",
+        "leaf": "place_playingcards1_box_high",
+        "gt": "high",
+        "pred": "low",
+        "correct": 0
+      },
+      {
+        "split": "taskB",
+        "leaf": "place_playingcards1_box_high",
+        "gt": "high",
+        "pred": "low",
+        "correct": 0
+      },
+      {
+        "split": "taskB",
+        "leaf": "place_playingcards1_box_high",
+        "gt": "high",
+        "pred": "low",
+        "correct": 0
+      },
+      {
+        "split": "taskB",
+        "leaf": "place_playingcards1_box_high",
+        "gt": "high",
+        "pred": "low",
+        "correct": 0
+      },
+      {
+        "split": "taskB",
+        "leaf": "place_playingcards1_box_high",
+        "gt": "high",
+        "pred": "low",
+        "correct": 0
+      },
+      {
+        "split": "taskB",
+        "leaf": "place_playingcards1_box_high",
+        "gt": "high",
+        "pred": "low",
+        "correct": 0
+      },
+      {
+        "split": "taskB",
+        "leaf": "place_playingcards1_box_high",
+        "gt": "high",
+        "pred": "low",
+        "correct": 0
+      },
+      {
+        "split": "taskB",
+        "leaf": "place_playingcards1_box_high",
+        "gt": "high",
+        "pred": "low",
+        "correct": 0
+      },
+      {
+        "split": "taskB",
+        "leaf": "place_playingcards1_box_high",
+        "gt": "high",
+        "pred": "low",
+        "correct": 0
+      },
+      {
+        "split": "taskB",
+        "leaf": "place_playingcards1_box_high",
+        "gt": "high",
+        "pred": "low",
+        "correct": 0
+      },
+      {
+        "split": "taskB",
+        "leaf": "place_playingcards1_box_high",
+        "gt": "high",
+        "pred": "low",
+        "correct": 0
+      },
+      {
+        "split": "taskB",
+        "leaf": "place_playingcards1_box_high",
+        "gt": "high",
+        "pred": "low",
+        "correct": 0
+      },
+      {
+        "split": "taskB",
+        "leaf": "place_playingcards1_box_high",
+        "gt": "high",
+        "pred": "low",
+        "correct": 0
+      },
+      {
+        "split": "taskB",
+        "leaf": "place_playingcards1_box_high",
+        "gt": "high",
+        "pred": "low",
+        "correct": 0
+      },
+      {
+        "split": "taskB",
+        "leaf": "place_playingcards1_box_high",
+        "gt": "high",
+        "pred": "low",
+        "correct": 0
+      },
+      {
+        "split": "taskB",
+        "leaf": "place_playingcards1_box_high",
+        "gt": "high",
+        "pred": "low",
+        "correct": 0
+      },
+      {
+        "split": "taskB",
+        "leaf": "place_playingcards1_box_high",
+        "gt": "high",
+        "pred": "low",
+        "correct": 0
+      },
+      {
+        "split": "taskB",
+        "leaf": "place_playingcards1_box_high",
+        "gt": "high",
+        "pred": "low",
+        "correct": 0
+      },
+      {
+        "split": "taskB",
+        "leaf": "place_playingcards1_box_high",
+        "gt": "high",
+        "pred": "low",
+        "correct": 0
+      },
+      {
+        "split": "taskB",
+        "leaf": "place_playingcards1_box_high",
+        "gt": "high",
+        "pred": "low",
+        "correct": 0
+      },
+      {
+        "split": "taskB",
+        "leaf": "place_playingcards1_box_high",
+        "gt": "high",
+        "pred": "low",
+        "correct": 0
+      },
+      {
+        "split": "taskB",
+        "leaf": "place_playingcards1_box_high",
+        "gt": "high",
+        "pred": "low",
+        "correct": 0
+      },
+      {
+        "split": "taskB",
+        "leaf": "place_playingcards1_box_high",
+        "gt": "high",
+        "pred": "low",
+        "correct": 0
+      },
+      {
+        "split": "taskB",
+        "leaf": "place_playingcards1_box_low",
+        "gt": "low",
+        "pred": "low",
+        "correct": 1
+      },
+      {
+        "split": "taskB",
+        "leaf": "place_playingcards1_box_low",
+        "gt": "low",
+        "pred": "high",
+        "correct": 0
+      },
+      {
+        "split": "taskB",
+        "leaf": "place_playingcards1_box_low",
+        "gt": "low",
+        "pred": "low",
+        "correct": 1
+      },
+      {
+        "split": "taskB",
+        "leaf": "place_playingcards1_box_low",
+        "gt": "low",
+        "pred": "low",
+        "correct": 1
+      },
+      {
+        "split": "taskB",
+        "leaf": "place_playingcards1_box_low",
+        "gt": "low",
+        "pred": "high",
+        "correct": 0
+      },
+      {
+        "split": "taskB",
+        "leaf": "place_playingcards1_box_low",
+        "gt": "low",
+        "pred": "low",
+        "correct": 1
+      },
+      {
+        "split": "taskB",
+        "leaf": "place_playingcards1_box_low",
+        "gt": "low",
+        "pred": "low",
+        "correct": 1
+      },
+      {
+        "split": "taskB",
+        "leaf": "place_playingcards1_box_low",
+        "gt": "low",
+        "pred": "high",
+        "correct": 0
+      },
+      {
+        "split": "taskB",
+        "leaf": "place_playingcards1_box_low",
+        "gt": "low",
+        "pred": "low",
+        "correct": 1
+      },
+      {
+        "split": "taskB",
+        "leaf": "place_playingcards1_box_low",
+        "gt": "low",
+        "pred": "low",
+        "correct": 1
+      },
+      {
+        "split": "taskB",
+        "leaf": "place_playingcards1_box_low",
+        "gt": "low",
+        "pred": "low",
+        "correct": 1
+      },
+      {
+        "split": "taskB",
+        "leaf": "place_playingcards1_box_low",
+        "gt": "low",
+        "pred": "low",
+        "correct": 1
+      },
+      {
+        "split": "taskB",
+        "leaf": "place_playingcards1_box_low",
+        "gt": "low",
+        "pred": "low",
+        "correct": 1
+      },
+      {
+        "split": "taskB",
+        "leaf": "place_playingcards1_box_low",
+        "gt": "low",
+        "pred": "low",
+        "correct": 1
+      },
+      {
+        "split": "taskB",
+        "leaf": "place_playingcards1_box_low",
+        "gt": "low",
+        "pred": "high",
+        "correct": 0
+      },
+      {
+        "split": "taskB",
+        "leaf": "place_playingcards1_box_low",
+        "gt": "low",
+        "pred": "low",
+        "correct": 1
+      },
+      {
+        "split": "taskB",
+        "leaf": "place_playingcards1_box_low",
+        "gt": "low",
+        "pred": "low",
+        "correct": 1
+      },
+      {
+        "split": "taskB",
+        "leaf": "place_playingcards1_box_low",
+        "gt": "low",
+        "pred": "low",
+        "correct": 1
+      },
+      {
+        "split": "taskB",
+        "leaf": "place_playingcards1_box_low",
+        "gt": "low",
+        "pred": "low",
+        "correct": 1
+      },
+      {
+        "split": "taskB",
+        "leaf": "place_playingcards1_box_low",
+        "gt": "low",
+        "pred": "low",
+        "correct": 1
+      },
+      {
+        "split": "taskB",
+        "leaf": "place_playingcards1_box_low",
+        "gt": "low",
+        "pred": "low",
+        "correct": 1
+      },
+      {
+        "split": "taskB",
+        "leaf": "place_playingcards1_box_low",
+        "gt": "low",
+        "pred": "low",
+        "correct": 1
+      },
+      {
+        "split": "taskB",
+        "leaf": "place_playingcards1_box_low",
+        "gt": "low",
+        "pred": "low",
+        "correct": 1
+      },
+      {
+        "split": "taskB",
+        "leaf": "place_playingcards1_box_low",
+        "gt": "low",
+        "pred": "low",
+        "correct": 1
+      },
+      {
+        "split": "taskB",
+        "leaf": "place_playingcards1_box_low",
+        "gt": "low",
+        "pred": "low",
+        "correct": 1
+      }
+    ]
+  }
+}

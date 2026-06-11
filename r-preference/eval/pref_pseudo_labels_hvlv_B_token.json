@@ -1,0 +1,902 @@
+{
+  "stamp_seal6_hv/episode0": {
+    "action_prompt_label": "wide detour",
+    "pref_key": "hv",
+    "decision": "keep",
+    "gt_pref_key": "hv",
+    "gt_match": true,
+    "conf": 1.0,
+    "logit_gap": 16.0
+  },
+  "stamp_seal6_hv/episode1": {
+    "action_prompt_label": "wide detour",
+    "pref_key": "hv",
+    "decision": "keep",
+    "gt_pref_key": "hv",
+    "gt_match": true,
+    "conf": 1.0,
+    "logit_gap": 12.875
+  },
+  "stamp_seal6_hv/episode10": {
+    "action_prompt_label": "wide detour",
+    "pref_key": "hv",
+    "decision": "keep",
+    "gt_pref_key": "hv",
+    "gt_match": true,
+    "conf": 1.0,
+    "logit_gap": 12.75
+  },
+  "stamp_seal6_hv/episode11": {
+    "action_prompt_label": "wide detour",
+    "pref_key": "hv",
+    "decision": "keep",
+    "gt_pref_key": "hv",
+    "gt_match": true,
+    "conf": 1.0,
+    "logit_gap": 19.5
+  },
+  "stamp_seal6_hv/episode12": {
+    "action_prompt_label": "wide detour",
+    "pref_key": "hv",
+    "decision": "keep",
+    "gt_pref_key": "hv",
+    "gt_match": true,
+    "conf": 1.0,
+    "logit_gap": 15.75
+  },
+  "stamp_seal6_hv/episode13": {
+    "action_prompt_label": "wide detour",
+    "pref_key": "hv",
+    "decision": "keep",
+    "gt_pref_key": "hv",
+    "gt_match": true,
+    "conf": 1.0,
+    "logit_gap": 10.875
+  },
+  "stamp_seal6_hv/episode14": {
+    "action_prompt_label": "wide detour",
+    "pref_key": "hv",
+    "decision": "keep",
+    "gt_pref_key": "hv",
+    "gt_match": true,
+    "conf": 1.0,
+    "logit_gap": 18.5
+  },
+  "stamp_seal6_hv/episode15": {
+    "action_prompt_label": "wide detour",
+    "pref_key": "hv",
+    "decision": "keep",
+    "gt_pref_key": "hv",
+    "gt_match": true,
+    "conf": 1.0,
+    "logit_gap": 17.625
+  },
+  "stamp_seal6_hv/episode16": {
+    "action_prompt_label": "wide detour",
+    "pref_key": "hv",
+    "decision": "keep",
+    "gt_pref_key": "hv",
+    "gt_match": true,
+    "conf": 1.0,
+    "logit_gap": 14.125
+  },
+  "stamp_seal6_hv/episode17": {
+    "action_prompt_label": "wide detour",
+    "pref_key": "hv",
+    "decision": "keep",
+    "gt_pref_key": "hv",
+    "gt_match": true,
+    "conf": 0.9999,
+    "logit_gap": 9.625
+  },
+  "stamp_seal6_hv/episode18": {
+    "action_prompt_label": "wide detour",
+    "pref_key": "hv",
+    "decision": "keep",
+    "gt_pref_key": "hv",
+    "gt_match": true,
+    "conf": 1.0,
+    "logit_gap": 16.5
+  },
+  "stamp_seal6_hv/episode19": {
+    "action_prompt_label": "wide detour",
+    "pref_key": "hv",
+    "decision": "keep",
+    "gt_pref_key": "hv",
+    "gt_match": true,
+    "conf": 1.0,
+    "logit_gap": 16.5
+  },
+  "stamp_seal6_hv/episode2": {
+    "action_prompt_label": "wide detour",
+    "pref_key": "hv",
+    "decision": "keep",
+    "gt_pref_key": "hv",
+    "gt_match": true,
+    "conf": 1.0,
+    "logit_gap": 14.5
+  },
+  "stamp_seal6_hv/episode20": {
+    "action_prompt_label": "wide detour",
+    "pref_key": "hv",
+    "decision": "keep",
+    "gt_pref_key": "hv",
+    "gt_match": true,
+    "conf": 1.0,
+    "logit_gap": 11.375
+  },
+  "stamp_seal6_hv/episode21": {
+    "action_prompt_label": "wide detour",
+    "pref_key": "hv",
+    "decision": "keep",
+    "gt_pref_key": "hv",
+    "gt_match": true,
+    "conf": 1.0,
+    "logit_gap": 12.625
+  },
+  "stamp_seal6_hv/episode22": {
+    "action_prompt_label": "wide detour",
+    "pref_key": "hv",
+    "decision": "keep",
+    "gt_pref_key": "hv",
+    "gt_match": true,
+    "conf": 1.0,
+    "logit_gap": 12.625
+  },
+  "stamp_seal6_hv/episode23": {
+    "action_prompt_label": "wide detour",
+    "pref_key": "hv",
+    "decision": "keep",
+    "gt_pref_key": "hv",
+    "gt_match": true,
+    "conf": 1.0,
+    "logit_gap": 17.75
+  },
+  "stamp_seal6_hv/episode24": {
+    "action_prompt_label": "wide detour",
+    "pref_key": "hv",
+    "decision": "keep",
+    "gt_pref_key": "hv",
+    "gt_match": true,
+    "conf": 1.0,
+    "logit_gap": 14.125
+  },
+  "stamp_seal6_hv/episode25": {
+    "action_prompt_label": "wide detour",
+    "pref_key": "hv",
+    "decision": "keep",
+    "gt_pref_key": "hv",
+    "gt_match": true,
+    "conf": 1.0,
+    "logit_gap": 11.75
+  },
+  "stamp_seal6_hv/episode26": {
+    "action_prompt_label": "wide detour",
+    "pref_key": "hv",
+    "decision": "keep",
+    "gt_pref_key": "hv",
+    "gt_match": true,
+    "conf": 1.0,
+    "logit_gap": 17.5
+  },
+  "stamp_seal6_hv/episode27": {
+    "action_prompt_label": "wide detour",
+    "pref_key": "hv",
+    "decision": "keep",
+    "gt_pref_key": "hv",
+    "gt_match": true,
+    "conf": 1.0,
+    "logit_gap": 12.5
+  },
+  "stamp_seal6_hv/episode28": {
+    "action_prompt_label": "wide detour",
+    "pref_key": "hv",
+    "decision": "keep",
+    "gt_pref_key": "hv",
+    "gt_match": true,
+    "conf": 1.0,
+    "logit_gap": 16.625
+  },
+  "stamp_seal6_hv/episode29": {
+    "action_prompt_label": "wide detour",
+    "pref_key": "hv",
+    "decision": "keep",
+    "gt_pref_key": "hv",
+    "gt_match": true,
+    "conf": 1.0,
+    "logit_gap": 13.125
+  },
+  "stamp_seal6_hv/episode3": {
+    "action_prompt_label": "wide detour",
+    "pref_key": "hv",
+    "decision": "keep",
+    "gt_pref_key": "hv",
+    "gt_match": true,
+    "conf": 1.0,
+    "logit_gap": 16.5
+  },
+  "stamp_seal6_hv/episode30": {
+    "action_prompt_label": "wide detour",
+    "pref_key": "hv",
+    "decision": "keep",
+    "gt_pref_key": "hv",
+    "gt_match": true,
+    "conf": 1.0,
+    "logit_gap": 16.375
+  },
+  "stamp_seal6_hv/episode31": {
+    "action_prompt_label": "wide detour",
+    "pref_key": "hv",
+    "decision": "keep",
+    "gt_pref_key": "hv",
+    "gt_match": true,
+    "conf": 1.0,
+    "logit_gap": 11.375
+  },
+  "stamp_seal6_hv/episode32": {
+    "action_prompt_label": "wide detour",
+    "pref_key": "hv",
+    "decision": "keep",
+    "gt_pref_key": "hv",
+    "gt_match": true,
+    "conf": 1.0,
+    "logit_gap": 16.625
+  },
+  "stamp_seal6_hv/episode33": {
+    "action_prompt_label": "wide detour",
+    "pref_key": "hv",
+    "decision": "keep",
+    "gt_pref_key": "hv",
+    "gt_match": true,
+    "conf": 1.0,
+    "logit_gap": 16.5
+  },
+  "stamp_seal6_hv/episode34": {
+    "action_prompt_label": "wide detour",
+    "pref_key": "hv",
+    "decision": "keep",
+    "gt_pref_key": "hv",
+    "gt_match": true,
+    "conf": 1.0,
+    "logit_gap": 17.875
+  },
+  "stamp_seal6_hv/episode35": {
+    "action_prompt_label": "wide detour",
+    "pref_key": "hv",
+    "decision": "keep",
+    "gt_pref_key": "hv",
+    "gt_match": true,
+    "conf": 1.0,
+    "logit_gap": 17.437
+  },
+  "stamp_seal6_hv/episode36": {
+    "action_prompt_label": "wide detour",
+    "pref_key": "hv",
+    "decision": "keep",
+    "gt_pref_key": "hv",
+    "gt_match": true,
+    "conf": 1.0,
+    "logit_gap": 13.125
+  },
+  "stamp_seal6_hv/episode37": {
+    "action_prompt_label": "wide detour",
+    "pref_key": "hv",
+    "decision": "keep",
+    "gt_pref_key": "hv",
+    "gt_match": true,
+    "conf": 1.0,
+    "logit_gap": 14.375
+  },
+  "stamp_seal6_hv/episode38": {
+    "action_prompt_label": "wide detour",
+    "pref_key": "hv",
+    "decision": "keep",
+    "gt_pref_key": "hv",
+    "gt_match": true,
+    "conf": 1.0,
+    "logit_gap": 17.75
+  },
+  "stamp_seal6_hv/episode39": {
+    "action_prompt_label": "wide detour",
+    "pref_key": "hv",
+    "decision": "keep",
+    "gt_pref_key": "hv",
+    "gt_match": true,
+    "conf": 1.0,
+    "logit_gap": 18.5
+  },
+  "stamp_seal6_hv/episode4": {
+    "action_prompt_label": "wide detour",
+    "pref_key": "hv",
+    "decision": "keep",
+    "gt_pref_key": "hv",
+    "gt_match": true,
+    "conf": 1.0,
+    "logit_gap": 18.875
+  },
+  "stamp_seal6_hv/episode40": {
+    "action_prompt_label": "wide detour",
+    "pref_key": "hv",
+    "decision": "keep",
+    "gt_pref_key": "hv",
+    "gt_match": true,
+    "conf": 1.0,
+    "logit_gap": 14.5
+  },
+  "stamp_seal6_hv/episode41": {
+    "action_prompt_label": "wide detour",
+    "pref_key": "hv",
+    "decision": "keep",
+    "gt_pref_key": "hv",
+    "gt_match": true,
+    "conf": 1.0,
+    "logit_gap": 17.875
+  },
+  "stamp_seal6_hv/episode42": {
+    "action_prompt_label": "wide detour",
+    "pref_key": "hv",
+    "decision": "keep",
+    "gt_pref_key": "hv",
+    "gt_match": true,
+    "conf": 1.0,
+    "logit_gap": 20.0
+  },
+  "stamp_seal6_hv/episode43": {
+    "action_prompt_label": "wide detour",
+    "pref_key": "hv",
+    "decision": "keep",
+    "gt_pref_key": "hv",
+    "gt_match": true,
+    "conf": 1.0,
+    "logit_gap": 17.375
+  },
+  "stamp_seal6_hv/episode44": {
+    "action_prompt_label": "wide detour",
+    "pref_key": "hv",
+    "decision": "keep",
+    "gt_pref_key": "hv",
+    "gt_match": true,
+    "conf": 1.0,
+    "logit_gap": 13.25
+  },
+  "stamp_seal6_hv/episode45": {
+    "action_prompt_label": "wide detour",
+    "pref_key": "hv",
+    "decision": "keep",
+    "gt_pref_key": "hv",
+    "gt_match": true,
+    "conf": 1.0,
+    "logit_gap": 17.375
+  },
+  "stamp_seal6_hv/episode46": {
+    "action_prompt_label": "wide detour",
+    "pref_key": "hv",
+    "decision": "keep",
+    "gt_pref_key": "hv",
+    "gt_match": true,
+    "conf": 1.0,
+    "logit_gap": 13.75
+  },
+  "stamp_seal6_hv/episode47": {
+    "action_prompt_label": "wide detour",
+    "pref_key": "hv",
+    "decision": "keep",
+    "gt_pref_key": "hv",
+    "gt_match": true,
+    "conf": 1.0,
+    "logit_gap": 17.313
+  },
+  "stamp_seal6_hv/episode48": {
+    "action_prompt_label": "wide detour",
+    "pref_key": "hv",
+    "decision": "keep",
+    "gt_pref_key": "hv",
+    "gt_match": true,
+    "conf": 1.0,
+    "logit_gap": 18.875
+  },
+  "stamp_seal6_hv/episode49": {
+    "action_prompt_label": "wide detour",
+    "pref_key": "hv",
+    "decision": "keep",
+    "gt_pref_key": "hv",
+    "gt_match": true,
+    "conf": 1.0,
+    "logit_gap": 13.875
+  },
+  "stamp_seal6_hv/episode5": {
+    "action_prompt_label": "wide detour",
+    "pref_key": "hv",
+    "decision": "keep",
+    "gt_pref_key": "hv",
+    "gt_match": true,
+    "conf": 1.0,
+    "logit_gap": 12.875
+  },
+  "stamp_seal6_hv/episode6": {
+    "action_prompt_label": "wide detour",
+    "pref_key": "hv",
+    "decision": "keep",
+    "gt_pref_key": "hv",
+    "gt_match": true,
+    "conf": 1.0,
+    "logit_gap": 16.75
+  },
+  "stamp_seal6_hv/episode7": {
+    "action_prompt_label": "wide detour",
+    "pref_key": "hv",
+    "decision": "keep",
+    "gt_pref_key": "hv",
+    "gt_match": true,
+    "conf": 1.0,
+    "logit_gap": 18.875
+  },
+  "stamp_seal6_hv/episode8": {
+    "action_prompt_label": "wide detour",
+    "pref_key": "hv",
+    "decision": "keep",
+    "gt_pref_key": "hv",
+    "gt_match": true,
+    "conf": 1.0,
+    "logit_gap": 17.375
+  },
+  "stamp_seal6_hv/episode9": {
+    "action_prompt_label": "wide detour",
+    "pref_key": "hv",
+    "decision": "keep",
+    "gt_pref_key": "hv",
+    "gt_match": true,
+    "conf": 1.0,
+    "logit_gap": 13.25
+  },
+  "stamp_seal6_lv/episode0": {
+    "action_prompt_label": "wide detour",
+    "pref_key": "hv",
+    "decision": "keep",
+    "gt_pref_key": "lv",
+    "gt_match": false,
+    "conf": 1.0,
+    "logit_gap": 13.375
+  },
+  "stamp_seal6_lv/episode1": {
+    "action_prompt_label": "wide detour",
+    "pref_key": "hv",
+    "decision": "keep",
+    "gt_pref_key": "lv",
+    "gt_match": false,
+    "conf": 1.0,
+    "logit_gap": 12.5
+  },
+  "stamp_seal6_lv/episode10": {
+    "action_prompt_label": "wide detour",
+    "pref_key": "hv",
+    "decision": "keep",
+    "gt_pref_key": "lv",
+    "gt_match": false,
+    "conf": 1.0,
+    "logit_gap": 15.125
+  },
+  "stamp_seal6_lv/episode11": {
+    "action_prompt_label": "wide detour",
+    "pref_key": "hv",
+    "decision": "keep",
+    "gt_pref_key": "lv",
+    "gt_match": false,
+    "conf": 1.0,
+    "logit_gap": 12.875
+  },
+  "stamp_seal6_lv/episode12": {
+    "action_prompt_label": "wide detour",
+    "pref_key": "hv",
+    "decision": "keep",
+    "gt_pref_key": "lv",
+    "gt_match": false,
+    "conf": 1.0,
+    "logit_gap": 12.75
+  },
+  "stamp_seal6_lv/episode13": {
+    "action_prompt_label": "wide detour",
+    "pref_key": "hv",
+    "decision": "keep",
+    "gt_pref_key": "lv",
+    "gt_match": false,
+    "conf": 1.0,
+    "logit_gap": 10.875
+  },
+  "stamp_seal6_lv/episode14": {
+    "action_prompt_label": "wide detour",
+    "pref_key": "hv",
+    "decision": "keep",
+    "gt_pref_key": "lv",
+    "gt_match": false,
+    "conf": 1.0,
+    "logit_gap": 12.625
+  },
+  "stamp_seal6_lv/episode15": {
+    "action_prompt_label": "wide detour",
+    "pref_key": "hv",
+    "decision": "keep",
+    "gt_pref_key": "lv",
+    "gt_match": false,
+    "conf": 1.0,
+    "logit_gap": 13.5
+  },
+  "stamp_seal6_lv/episode16": {
+    "action_prompt_label": "wide detour",
+    "pref_key": "hv",
+    "decision": "keep",
+    "gt_pref_key": "lv",
+    "gt_match": false,
+    "conf": 1.0,
+    "logit_gap": 11.75
+  },
+  "stamp_seal6_lv/episode17": {
+    "action_prompt_label": "wide detour",
+    "pref_key": "hv",
+    "decision": "keep",
+    "gt_pref_key": "lv",
+    "gt_match": false,
+    "conf": 1.0,
+    "logit_gap": 12.0
+  },
+  "stamp_seal6_lv/episode18": {
+    "action_prompt_label": "wide detour",
+    "pref_key": "hv",
+    "decision": "keep",
+    "gt_pref_key": "lv",
+    "gt_match": false,
+    "conf": 1.0,
+    "logit_gap": 16.75
+  },
+  "stamp_seal6_lv/episode19": {
+    "action_prompt_label": "wide detour",
+    "pref_key": "hv",
+    "decision": "keep",
+    "gt_pref_key": "lv",
+    "gt_match": false,
+    "conf": 1.0,
+    "logit_gap": 14.5
+  },
+  "stamp_seal6_lv/episode2": {
+    "action_prompt_label": "wide detour",
+    "pref_key": "hv",
+    "decision": "keep",
+    "gt_pref_key": "lv",
+    "gt_match": false,
+    "conf": 1.0,
+    "logit_gap": 14.5
+  },
+  "stamp_seal6_lv/episode20": {
+    "action_prompt_label": "wide detour",
+    "pref_key": "hv",
+    "decision": "keep",
+    "gt_pref_key": "lv",
+    "gt_match": false,
+    "conf": 1.0,
+    "logit_gap": 14.0
+  },
+  "stamp_seal6_lv/episode21": {
+    "action_prompt_label": "wide detour",
+    "pref_key": "hv",
+    "decision": "keep",
+    "gt_pref_key": "lv",
+    "gt_match": false,
+    "conf": 1.0,
+    "logit_gap": 11.125
+  },
+  "stamp_seal6_lv/episode22": {
+    "action_prompt_label": "wide detour",
+    "pref_key": "hv",
+    "decision": "keep",
+    "gt_pref_key": "lv",
+    "gt_match": false,
+    "conf": 1.0,
+    "logit_gap": 11.75
+  },
+  "stamp_seal6_lv/episode23": {
+    "action_prompt_label": "wide detour",
+    "pref_key": "hv",
+    "decision": "keep",
+    "gt_pref_key": "lv",
+    "gt_match": false,
+    "conf": 1.0,
+    "logit_gap": 13.125
+  },
+  "stamp_seal6_lv/episode24": {
+    "action_prompt_label": "wide detour",
+    "pref_key": "hv",
+    "decision": "keep",
+    "gt_pref_key": "lv",
+    "gt_match": false,
+    "conf": 1.0,
+    "logit_gap": 11.625
+  },
+  "stamp_seal6_lv/episode25": {
+    "action_prompt_label": "wide detour",
+    "pref_key": "hv",
+    "decision": "keep",
+    "gt_pref_key": "lv",
+    "gt_match": false,
+    "conf": 1.0,
+    "logit_gap": 16.5
+  },
+  "stamp_seal6_lv/episode26": {
+    "action_prompt_label": "wide detour",
+    "pref_key": "hv",
+    "decision": "keep",
+    "gt_pref_key": "lv",
+    "gt_match": false,
+    "conf": 1.0,
+    "logit_gap": 13.125
+  },
+  "stamp_seal6_lv/episode27": {
+    "action_prompt_label": "wide detour",
+    "pref_key": "hv",
+    "decision": "keep",
+    "gt_pref_key": "lv",
+    "gt_match": false,
+    "conf": 1.0,
+    "logit_gap": 12.875
+  },
+  "stamp_seal6_lv/episode28": {
+    "action_prompt_label": "wide detour",
+    "pref_key": "hv",
+    "decision": "keep",
+    "gt_pref_key": "lv",
+    "gt_match": false,
+    "conf": 1.0,
+    "logit_gap": 12.75
+  },
+  "stamp_seal6_lv/episode29": {
+    "action_prompt_label": "wide detour",
+    "pref_key": "hv",
+    "decision": "keep",
+    "gt_pref_key": "lv",
+    "gt_match": false,
+    "conf": 1.0,
+    "logit_gap": 13.5
+  },
+  "stamp_seal6_lv/episode3": {
+    "action_prompt_label": "wide detour",
+    "pref_key": "hv",
+    "decision": "keep",
+    "gt_pref_key": "lv",
+    "gt_match": false,
+    "conf": 1.0,
+    "logit_gap": 15.125
+  },
+  "stamp_seal6_lv/episode30": {
+    "action_prompt_label": "wide detour",
+    "pref_key": "hv",
+    "decision": "keep",
+    "gt_pref_key": "lv",
+    "gt_match": false,
+    "conf": 1.0,
+    "logit_gap": 13.5
+  },
+  "stamp_seal6_lv/episode31": {
+    "action_prompt_label": "wide detour",
+    "pref_key": "hv",
+    "decision": "keep",
+    "gt_pref_key": "lv",
+    "gt_match": false,
+    "conf": 1.0,
+    "logit_gap": 13.5
+  },
+  "stamp_seal6_lv/episode32": {
+    "action_prompt_label": "wide detour",
+    "pref_key": "hv",
+    "decision": "keep",
+    "gt_pref_key": "lv",
+    "gt_match": false,
+    "conf": 1.0,
+    "logit_gap": 12.875
+  },
+  "stamp_seal6_lv/episode33": {
+    "action_prompt_label": "wide detour",
+    "pref_key": "hv",
+    "decision": "keep",
+    "gt_pref_key": "lv",
+    "gt_match": false,
+    "conf": 1.0,
+    "logit_gap": 10.125
+  },
+  "stamp_seal6_lv/episode34": {
+    "action_prompt_label": "wide detour",
+    "pref_key": "hv",
+    "decision": "keep",
+    "gt_pref_key": "lv",
+    "gt_match": false,
+    "conf": 1.0,
+    "logit_gap": 13.625
+  },
+  "stamp_seal6_lv/episode35": {
+    "action_prompt_label": "wide detour",
+    "pref_key": "hv",
+    "decision": "keep",
+    "gt_pref_key": "lv",
+    "gt_match": false,
+    "conf": 1.0,
+    "logit_gap": 11.75
+  },
+  "stamp_seal6_lv/episode36": {
+    "action_prompt_label": "wide detour",
+    "pref_key": "hv",
+    "decision": "keep",
+    "gt_pref_key": "lv",
+    "gt_match": false,
+    "conf": 1.0,
+    "logit_gap": 13.625
+  },
+  "stamp_seal6_lv/episode37": {
+    "action_prompt_label": "wide detour",
+    "pref_key": "hv",
+    "decision": "keep",
+    "gt_pref_key": "lv",
+    "gt_match": false,
+    "conf": 1.0,
+    "logit_gap": 13.75
+  },
+  "stamp_seal6_lv/episode38": {
+    "action_prompt_label": "wide detour",
+    "pref_key": "hv",
+    "decision": "keep",
+    "gt_pref_key": "lv",
+    "gt_match": false,
+    "conf": 1.0,
+    "logit_gap": 15.5
+  },
+  "stamp_seal6_lv/episode39": {
+    "action_prompt_label": "wide detour",
+    "pref_key": "hv",
+    "decision": "keep",
+    "gt_pref_key": "lv",
+    "gt_match": false,
+    "conf": 1.0,
+    "logit_gap": 10.625
+  },
+  "stamp_seal6_lv/episode4": {
+    "action_prompt_label": "wide detour",
+    "pref_key": "hv",
+    "decision": "keep",
+    "gt_pref_key": "lv",
+    "gt_match": false,
+    "conf": 1.0,
+    "logit_gap": 12.0
+  },
+  "stamp_seal6_lv/episode40": {
+    "action_prompt_label": "wide detour",
+    "pref_key": "hv",
+    "decision": "keep",
+    "gt_pref_key": "lv",
+    "gt_match": false,
+    "conf": 1.0,
+    "logit_gap": 11.375
+  },
+  "stamp_seal6_lv/episode41": {
+    "action_prompt_label": "wide detour",
+    "pref_key": "hv",
+    "decision": "keep",
+    "gt_pref_key": "lv",
+    "gt_match": false,
+    "conf": 1.0,
+    "logit_gap": 14.125
+  },
+  "stamp_seal6_lv/episode42": {
+    "action_prompt_label": "wide detour",
+    "pref_key": "hv",
+    "decision": "keep",
+    "gt_pref_key": "lv",
+    "gt_match": false,
+    "conf": 1.0,
+    "logit_gap": 15.0
+  },
+  "stamp_seal6_lv/episode43": {
+    "action_prompt_label": "wide detour",
+    "pref_key": "hv",
+    "decision": "keep",
+    "gt_pref_key": "lv",
+    "gt_match": false,
+    "conf": 1.0,
+    "logit_gap": 12.375
+  },
+  "stamp_seal6_lv/episode44": {
+    "action_prompt_label": "wide detour",
+    "pref_key": "hv",
+    "decision": "keep",
+    "gt_pref_key": "lv",
+    "gt_match": false,
+    "conf": 1.0,
+    "logit_gap": 13.125
+  },
+  "stamp_seal6_lv/episode45": {
+    "action_prompt_label": "wide detour",
+    "pref_key": "hv",
+    "decision": "keep",
+    "gt_pref_key": "lv",
+    "gt_match": false,
+    "conf": 1.0,
+    "logit_gap": 13.875
+  },
+  "stamp_seal6_lv/episode46": {
+    "action_prompt_label": "wide detour",
+    "pref_key": "hv",
+    "decision": "keep",
+    "gt_pref_key": "lv",
+    "gt_match": false,
+    "conf": 1.0,
+    "logit_gap": 16.125
+  },
+  "stamp_seal6_lv/episode47": {
+    "action_prompt_label": "wide detour",
+    "pref_key": "hv",
+    "decision": "keep",
+    "gt_pref_key": "lv",
+    "gt_match": false,
+    "conf": 1.0,
+    "logit_gap": 12.375
+  },
+  "stamp_seal6_lv/episode48": {
+    "action_prompt_label": "wide detour",
+    "pref_key": "hv",
+    "decision": "keep",
+    "gt_pref_key": "lv",
+    "gt_match": false,
+    "conf": 1.0,
+    "logit_gap": 12.25
+  },
+  "stamp_seal6_lv/episode49": {
+    "action_prompt_label": "wide detour",
+    "pref_key": "hv",
+    "decision": "keep",
+    "gt_pref_key": "lv",
+    "gt_match": false,
+    "conf": 1.0,
+    "logit_gap": 15.0
+  },
+  "stamp_seal6_lv/episode5": {
+    "action_prompt_label": "wide detour",
+    "pref_key": "hv",
+    "decision": "keep",
+    "gt_pref_key": "lv",
+    "gt_match": false,
+    "conf": 1.0,
+    "logit_gap": 16.0
+  },
+  "stamp_seal6_lv/episode6": {
+    "action_prompt_label": "wide detour",
+    "pref_key": "hv",
+    "decision": "keep",
+    "gt_pref_key": "lv",
+    "gt_match": false,
+    "conf": 1.0,
+    "logit_gap": 12.625
+  },
+  "stamp_seal6_lv/episode7": {
+    "action_prompt_label": "wide detour",
+    "pref_key": "hv",
+    "decision": "keep",
+    "gt_pref_key": "lv",
+    "gt_match": false,
+    "conf": 1.0,
+    "logit_gap": 13.5
+  },
+  "stamp_seal6_lv/episode8": {
+    "action_prompt_label": "wide detour",
+    "pref_key": "hv",
+    "decision": "keep",
+    "gt_pref_key": "lv",
+    "gt_match": false,
+    "conf": 1.0,
+    "logit_gap": 12.375
+  },
+  "stamp_seal6_lv/episode9": {
+    "action_prompt_label": "wide detour",
+    "pref_key": "hv",
+    "decision": "keep",
+    "gt_pref_key": "lv",
+    "gt_match": false,
+    "conf": 1.0,
+    "logit_gap": 15.625
+  }
+}

@@ -1,0 +1,902 @@
+{
+  "put_boxdrink3_plate_25/episode0": {
+    "action_prompt_label": "low contact",
+    "pref_key": "25",
+    "decision": "keep",
+    "gt_pref_key": "25",
+    "gt_match": true,
+    "conf": 0.9924,
+    "logit_gap": 4.875
+  },
+  "put_boxdrink3_plate_25/episode1": {
+    "action_prompt_label": "high contact",
+    "pref_key": "75",
+    "decision": "keep",
+    "gt_pref_key": "25",
+    "gt_match": false,
+    "conf": 0.982,
+    "logit_gap": -4.0
+  },
+  "put_boxdrink3_plate_25/episode10": {
+    "action_prompt_label": "high contact",
+    "pref_key": "75",
+    "decision": "keep",
+    "gt_pref_key": "25",
+    "gt_match": false,
+    "conf": 0.989,
+    "logit_gap": -4.5
+  },
+  "put_boxdrink3_plate_25/episode11": {
+    "action_prompt_label": "high contact",
+    "pref_key": "75",
+    "decision": "keep",
+    "gt_pref_key": "25",
+    "gt_match": false,
+    "conf": 0.9977,
+    "logit_gap": -6.063
+  },
+  "put_boxdrink3_plate_25/episode12": {
+    "action_prompt_label": "low contact",
+    "pref_key": "25",
+    "decision": "keep",
+    "gt_pref_key": "25",
+    "gt_match": true,
+    "conf": 0.852,
+    "logit_gap": 1.75
+  },
+  "put_boxdrink3_plate_25/episode13": {
+    "action_prompt_label": "low contact",
+    "pref_key": "25",
+    "decision": "keep",
+    "gt_pref_key": "25",
+    "gt_match": true,
+    "conf": 0.6792,
+    "logit_gap": 0.75
+  },
+  "put_boxdrink3_plate_25/episode14": {
+    "action_prompt_label": "high contact",
+    "pref_key": "75",
+    "decision": "keep",
+    "gt_pref_key": "25",
+    "gt_match": false,
+    "conf": 0.9149,
+    "logit_gap": -2.375
+  },
+  "put_boxdrink3_plate_25/episode15": {
+    "action_prompt_label": "high contact",
+    "pref_key": "75",
+    "decision": "keep",
+    "gt_pref_key": "25",
+    "gt_match": false,
+    "conf": 0.8176,
+    "logit_gap": -1.5
+  },
+  "put_boxdrink3_plate_25/episode16": {
+    "action_prompt_label": "high contact",
+    "pref_key": "75",
+    "decision": "keep",
+    "gt_pref_key": "25",
+    "gt_match": false,
+    "conf": 0.9999,
+    "logit_gap": -9.562
+  },
+  "put_boxdrink3_plate_25/episode17": {
+    "action_prompt_label": "low contact",
+    "pref_key": "25",
+    "decision": "keep",
+    "gt_pref_key": "25",
+    "gt_match": true,
+    "conf": 0.9859,
+    "logit_gap": 4.25
+  },
+  "put_boxdrink3_plate_25/episode18": {
+    "action_prompt_label": "high contact",
+    "pref_key": "75",
+    "decision": "keep",
+    "gt_pref_key": "25",
+    "gt_match": false,
+    "conf": 0.9999,
+    "logit_gap": -9.5
+  },
+  "put_boxdrink3_plate_25/episode19": {
+    "action_prompt_label": "low contact",
+    "pref_key": "25",
+    "decision": "keep",
+    "gt_pref_key": "25",
+    "gt_match": true,
+    "conf": 0.9914,
+    "logit_gap": 4.75
+  },
+  "put_boxdrink3_plate_25/episode2": {
+    "action_prompt_label": "high contact",
+    "pref_key": "75",
+    "decision": "keep",
+    "gt_pref_key": "25",
+    "gt_match": false,
+    "conf": 0.9999,
+    "logit_gap": -9.688
+  },
+  "put_boxdrink3_plate_25/episode20": {
+    "action_prompt_label": "high contact",
+    "pref_key": "75",
+    "decision": "keep",
+    "gt_pref_key": "25",
+    "gt_match": false,
+    "conf": 0.9325,
+    "logit_gap": -2.625
+  },
+  "put_boxdrink3_plate_25/episode21": {
+    "action_prompt_label": "high contact",
+    "pref_key": "75",
+    "decision": "keep",
+    "gt_pref_key": "25",
+    "gt_match": false,
+    "conf": 0.9999,
+    "logit_gap": -9.562
+  },
+  "put_boxdrink3_plate_25/episode22": {
+    "action_prompt_label": "high contact",
+    "pref_key": "75",
+    "decision": "keep",
+    "gt_pref_key": "25",
+    "gt_match": false,
+    "conf": 0.9399,
+    "logit_gap": -2.75
+  },
+  "put_boxdrink3_plate_25/episode23": {
+    "action_prompt_label": "high contact",
+    "pref_key": "75",
+    "decision": "keep",
+    "gt_pref_key": "25",
+    "gt_match": false,
+    "conf": 0.8355,
+    "logit_gap": -1.625
+  },
+  "put_boxdrink3_plate_25/episode24": {
+    "action_prompt_label": "high contact",
+    "pref_key": "75",
+    "decision": "keep",
+    "gt_pref_key": "25",
+    "gt_match": false,
+    "conf": 0.6792,
+    "logit_gap": -0.75
+  },
+  "put_boxdrink3_plate_25/episode25": {
+    "action_prompt_label": "high contact",
+    "pref_key": "75",
+    "decision": "keep",
+    "gt_pref_key": "25",
+    "gt_match": false,
+    "conf": 0.5622,
+    "logit_gap": -0.25
+  },
+  "put_boxdrink3_plate_25/episode26": {
+    "action_prompt_label": "low contact",
+    "pref_key": "25",
+    "decision": "keep",
+    "gt_pref_key": "25",
+    "gt_match": true,
+    "conf": 0.9933,
+    "logit_gap": 5.0
+  },
+  "put_boxdrink3_plate_25/episode27": {
+    "action_prompt_label": "high contact",
+    "pref_key": "75",
+    "decision": "keep",
+    "gt_pref_key": "25",
+    "gt_match": false,
+    "conf": 0.9047,
+    "logit_gap": -2.25
+  },
+  "put_boxdrink3_plate_25/episode28": {
+    "action_prompt_label": "high contact",
+    "pref_key": "75",
+    "decision": "keep",
+    "gt_pref_key": "25",
+    "gt_match": false,
+    "conf": 0.9526,
+    "logit_gap": -3.0
+  },
+  "put_boxdrink3_plate_25/episode29": {
+    "action_prompt_label": "high contact",
+    "pref_key": "75",
+    "decision": "keep",
+    "gt_pref_key": "25",
+    "gt_match": false,
+    "conf": 1.0,
+    "logit_gap": -10.125
+  },
+  "put_boxdrink3_plate_25/episode3": {
+    "action_prompt_label": "high contact",
+    "pref_key": "75",
+    "decision": "keep",
+    "gt_pref_key": "25",
+    "gt_match": false,
+    "conf": 0.9991,
+    "logit_gap": -7.062
+  },
+  "put_boxdrink3_plate_25/episode30": {
+    "action_prompt_label": "high contact",
+    "pref_key": "75",
+    "decision": "keep",
+    "gt_pref_key": "25",
+    "gt_match": false,
+    "conf": 0.9999,
+    "logit_gap": -9.0
+  },
+  "put_boxdrink3_plate_25/episode31": {
+    "action_prompt_label": "high contact",
+    "pref_key": "75",
+    "decision": "keep",
+    "gt_pref_key": "25",
+    "gt_match": false,
+    "conf": 0.6514,
+    "logit_gap": -0.625
+  },
+  "put_boxdrink3_plate_25/episode32": {
+    "action_prompt_label": "low contact",
+    "pref_key": "25",
+    "decision": "keep",
+    "gt_pref_key": "25",
+    "gt_match": true,
+    "conf": 0.9841,
+    "logit_gap": 4.125
+  },
+  "put_boxdrink3_plate_25/episode33": {
+    "action_prompt_label": "high contact",
+    "pref_key": "75",
+    "decision": "keep",
+    "gt_pref_key": "25",
+    "gt_match": false,
+    "conf": 0.9999,
+    "logit_gap": -9.375
+  },
+  "put_boxdrink3_plate_25/episode34": {
+    "action_prompt_label": "high contact",
+    "pref_key": "75",
+    "decision": "keep",
+    "gt_pref_key": "25",
+    "gt_match": false,
+    "conf": 0.9914,
+    "logit_gap": -4.75
+  },
+  "put_boxdrink3_plate_25/episode35": {
+    "action_prompt_label": "high contact",
+    "pref_key": "75",
+    "decision": "keep",
+    "gt_pref_key": "25",
+    "gt_match": false,
+    "conf": 0.852,
+    "logit_gap": -1.75
+  },
+  "put_boxdrink3_plate_25/episode36": {
+    "action_prompt_label": "high contact",
+    "pref_key": "75",
+    "decision": "keep",
+    "gt_pref_key": "25",
+    "gt_match": false,
+    "conf": 0.9998,
+    "logit_gap": -8.75
+  },
+  "put_boxdrink3_plate_25/episode37": {
+    "action_prompt_label": "high contact",
+    "pref_key": "75",
+    "decision": "keep",
+    "gt_pref_key": "25",
+    "gt_match": false,
+    "conf": 0.9841,
+    "logit_gap": -4.125
+  },
+  "put_boxdrink3_plate_25/episode38": {
+    "action_prompt_label": "high contact",
+    "pref_key": "75",
+    "decision": "keep",
+    "gt_pref_key": "25",
+    "gt_match": false,
+    "conf": 0.982,
+    "logit_gap": -4.0
+  },
+  "put_boxdrink3_plate_25/episode39": {
+    "action_prompt_label": "low contact",
+    "pref_key": "25",
+    "decision": "reject:low_conf_0.531",
+    "gt_pref_key": "25",
+    "gt_match": true,
+    "conf": 0.5312,
+    "logit_gap": 0.125
+  },
+  "put_boxdrink3_plate_25/episode4": {
+    "action_prompt_label": "high contact",
+    "pref_key": "75",
+    "decision": "keep",
+    "gt_pref_key": "25",
+    "gt_match": false,
+    "conf": 0.7549,
+    "logit_gap": -1.125
+  },
+  "put_boxdrink3_plate_25/episode40": {
+    "action_prompt_label": "low contact",
+    "pref_key": "25",
+    "decision": "keep",
+    "gt_pref_key": "25",
+    "gt_match": true,
+    "conf": 0.989,
+    "logit_gap": 4.5
+  },
+  "put_boxdrink3_plate_25/episode41": {
+    "action_prompt_label": "high contact",
+    "pref_key": "75",
+    "decision": "keep",
+    "gt_pref_key": "25",
+    "gt_match": false,
+    "conf": 0.9941,
+    "logit_gap": -5.125
+  },
+  "put_boxdrink3_plate_25/episode42": {
+    "action_prompt_label": "high contact",
+    "pref_key": "75",
+    "decision": "keep",
+    "gt_pref_key": "25",
+    "gt_match": false,
+    "conf": 0.9914,
+    "logit_gap": -4.75
+  },
+  "put_boxdrink3_plate_25/episode43": {
+    "action_prompt_label": "high contact",
+    "pref_key": "75",
+    "decision": "keep",
+    "gt_pref_key": "25",
+    "gt_match": false,
+    "conf": 0.7311,
+    "logit_gap": -1.0
+  },
+  "put_boxdrink3_plate_25/episode44": {
+    "action_prompt_label": "high contact",
+    "pref_key": "75",
+    "decision": "keep",
+    "gt_pref_key": "25",
+    "gt_match": false,
+    "conf": 0.9979,
+    "logit_gap": -6.188
+  },
+  "put_boxdrink3_plate_25/episode45": {
+    "action_prompt_label": "high contact",
+    "pref_key": "75",
+    "decision": "keep",
+    "gt_pref_key": "25",
+    "gt_match": false,
+    "conf": 0.9998,
+    "logit_gap": -8.438
+  },
+  "put_boxdrink3_plate_25/episode46": {
+    "action_prompt_label": "low contact",
+    "pref_key": "25",
+    "decision": "keep",
+    "gt_pref_key": "25",
+    "gt_match": true,
+    "conf": 0.9526,
+    "logit_gap": 3.0
+  },
+  "put_boxdrink3_plate_25/episode47": {
+    "action_prompt_label": "low contact",
+    "pref_key": "25",
+    "decision": "keep",
+    "gt_pref_key": "25",
+    "gt_match": true,
+    "conf": 0.9876,
+    "logit_gap": 4.375
+  },
+  "put_boxdrink3_plate_25/episode48": {
+    "action_prompt_label": "high contact",
+    "pref_key": "75",
+    "decision": "keep",
+    "gt_pref_key": "25",
+    "gt_match": false,
+    "conf": 0.9526,
+    "logit_gap": -3.0
+  },
+  "put_boxdrink3_plate_25/episode49": {
+    "action_prompt_label": "low contact",
+    "pref_key": "25",
+    "decision": "keep",
+    "gt_pref_key": "25",
+    "gt_match": true,
+    "conf": 0.9859,
+    "logit_gap": 4.25
+  },
+  "put_boxdrink3_plate_25/episode5": {
+    "action_prompt_label": "high contact",
+    "pref_key": "75",
+    "decision": "keep",
+    "gt_pref_key": "25",
+    "gt_match": false,
+    "conf": 0.9948,
+    "logit_gap": -5.25
+  },
+  "put_boxdrink3_plate_25/episode6": {
+    "action_prompt_label": "low contact",
+    "pref_key": "25",
+    "decision": "keep",
+    "gt_pref_key": "25",
+    "gt_match": true,
+    "conf": 0.867,
+    "logit_gap": 1.875
+  },
+  "put_boxdrink3_plate_25/episode7": {
+    "action_prompt_label": "high contact",
+    "pref_key": "75",
+    "decision": "keep",
+    "gt_pref_key": "25",
+    "gt_match": false,
+    "conf": 0.9995,
+    "logit_gap": -7.688
+  },
+  "put_boxdrink3_plate_25/episode8": {
+    "action_prompt_label": "high contact",
+    "pref_key": "75",
+    "decision": "keep",
+    "gt_pref_key": "25",
+    "gt_match": false,
+    "conf": 0.9996,
+    "logit_gap": -7.938
+  },
+  "put_boxdrink3_plate_25/episode9": {
+    "action_prompt_label": "high contact",
+    "pref_key": "75",
+    "decision": "keep",
+    "gt_pref_key": "25",
+    "gt_match": false,
+    "conf": 0.9996,
+    "logit_gap": -7.938
+  },
+  "put_boxdrink3_plate_75/episode0": {
+    "action_prompt_label": "high contact",
+    "pref_key": "75",
+    "decision": "keep",
+    "gt_pref_key": "75",
+    "gt_match": true,
+    "conf": 0.9997,
+    "logit_gap": -8.062
+  },
+  "put_boxdrink3_plate_75/episode1": {
+    "action_prompt_label": "high contact",
+    "pref_key": "75",
+    "decision": "keep",
+    "gt_pref_key": "75",
+    "gt_match": true,
+    "conf": 0.9998,
+    "logit_gap": -8.438
+  },
+  "put_boxdrink3_plate_75/episode10": {
+    "action_prompt_label": "high contact",
+    "pref_key": "75",
+    "decision": "keep",
+    "gt_pref_key": "75",
+    "gt_match": true,
+    "conf": 0.9998,
+    "logit_gap": -8.687
+  },
+  "put_boxdrink3_plate_75/episode11": {
+    "action_prompt_label": "high contact",
+    "pref_key": "75",
+    "decision": "keep",
+    "gt_pref_key": "75",
+    "gt_match": true,
+    "conf": 0.9999,
+    "logit_gap": -9.188
+  },
+  "put_boxdrink3_plate_75/episode12": {
+    "action_prompt_label": "high contact",
+    "pref_key": "75",
+    "decision": "keep",
+    "gt_pref_key": "75",
+    "gt_match": true,
+    "conf": 0.9999,
+    "logit_gap": -9.188
+  },
+  "put_boxdrink3_plate_75/episode13": {
+    "action_prompt_label": "high contact",
+    "pref_key": "75",
+    "decision": "keep",
+    "gt_pref_key": "75",
+    "gt_match": true,
+    "conf": 0.9999,
+    "logit_gap": -9.5
+  },
+  "put_boxdrink3_plate_75/episode14": {
+    "action_prompt_label": "high contact",
+    "pref_key": "75",
+    "decision": "keep",
+    "gt_pref_key": "75",
+    "gt_match": true,
+    "conf": 0.9998,
+    "logit_gap": -8.75
+  },
+  "put_boxdrink3_plate_75/episode15": {
+    "action_prompt_label": "high contact",
+    "pref_key": "75",
+    "decision": "keep",
+    "gt_pref_key": "75",
+    "gt_match": true,
+    "conf": 0.9998,
+    "logit_gap": -8.625
+  },
+  "put_boxdrink3_plate_75/episode16": {
+    "action_prompt_label": "high contact",
+    "pref_key": "75",
+    "decision": "keep",
+    "gt_pref_key": "75",
+    "gt_match": true,
+    "conf": 0.9999,
+    "logit_gap": -9.375
+  },
+  "put_boxdrink3_plate_75/episode17": {
+    "action_prompt_label": "high contact",
+    "pref_key": "75",
+    "decision": "keep",
+    "gt_pref_key": "75",
+    "gt_match": true,
+    "conf": 0.9999,
+    "logit_gap": -9.125
+  },
+  "put_boxdrink3_plate_75/episode18": {
+    "action_prompt_label": "high contact",
+    "pref_key": "75",
+    "decision": "keep",
+    "gt_pref_key": "75",
+    "gt_match": true,
+    "conf": 0.9999,
+    "logit_gap": -9.375
+  },
+  "put_boxdrink3_plate_75/episode19": {
+    "action_prompt_label": "high contact",
+    "pref_key": "75",
+    "decision": "keep",
+    "gt_pref_key": "75",
+    "gt_match": true,
+    "conf": 0.9999,
+    "logit_gap": -9.125
+  },
+  "put_boxdrink3_plate_75/episode2": {
+    "action_prompt_label": "high contact",
+    "pref_key": "75",
+    "decision": "keep",
+    "gt_pref_key": "75",
+    "gt_match": true,
+    "conf": 0.9999,
+    "logit_gap": -9.625
+  },
+  "put_boxdrink3_plate_75/episode20": {
+    "action_prompt_label": "high contact",
+    "pref_key": "75",
+    "decision": "keep",
+    "gt_pref_key": "75",
+    "gt_match": true,
+    "conf": 0.9999,
+    "logit_gap": -9.562
+  },
+  "put_boxdrink3_plate_75/episode21": {
+    "action_prompt_label": "high contact",
+    "pref_key": "75",
+    "decision": "keep",
+    "gt_pref_key": "75",
+    "gt_match": true,
+    "conf": 0.9999,
+    "logit_gap": -9.25
+  },
+  "put_boxdrink3_plate_75/episode22": {
+    "action_prompt_label": "high contact",
+    "pref_key": "75",
+    "decision": "keep",
+    "gt_pref_key": "75",
+    "gt_match": true,
+    "conf": 0.9999,
+    "logit_gap": -9.562
+  },
+  "put_boxdrink3_plate_75/episode23": {
+    "action_prompt_label": "high contact",
+    "pref_key": "75",
+    "decision": "keep",
+    "gt_pref_key": "75",
+    "gt_match": true,
+    "conf": 0.9998,
+    "logit_gap": -8.75
+  },
+  "put_boxdrink3_plate_75/episode24": {
+    "action_prompt_label": "high contact",
+    "pref_key": "75",
+    "decision": "keep",
+    "gt_pref_key": "75",
+    "gt_match": true,
+    "conf": 0.9988,
+    "logit_gap": -6.687
+  },
+  "put_boxdrink3_plate_75/episode25": {
+    "action_prompt_label": "high contact",
+    "pref_key": "75",
+    "decision": "keep",
+    "gt_pref_key": "75",
+    "gt_match": true,
+    "conf": 0.9998,
+    "logit_gap": -8.687
+  },
+  "put_boxdrink3_plate_75/episode26": {
+    "action_prompt_label": "high contact",
+    "pref_key": "75",
+    "decision": "keep",
+    "gt_pref_key": "75",
+    "gt_match": true,
+    "conf": 0.9999,
+    "logit_gap": -9.188
+  },
+  "put_boxdrink3_plate_75/episode27": {
+    "action_prompt_label": "high contact",
+    "pref_key": "75",
+    "decision": "keep",
+    "gt_pref_key": "75",
+    "gt_match": true,
+    "conf": 0.9998,
+    "logit_gap": -8.75
+  },
+  "put_boxdrink3_plate_75/episode28": {
+    "action_prompt_label": "high contact",
+    "pref_key": "75",
+    "decision": "keep",
+    "gt_pref_key": "75",
+    "gt_match": true,
+    "conf": 0.9999,
+    "logit_gap": -9.312
+  },
+  "put_boxdrink3_plate_75/episode29": {
+    "action_prompt_label": "high contact",
+    "pref_key": "75",
+    "decision": "keep",
+    "gt_pref_key": "75",
+    "gt_match": true,
+    "conf": 0.9997,
+    "logit_gap": -8.125
+  },
+  "put_boxdrink3_plate_75/episode3": {
+    "action_prompt_label": "high contact",
+    "pref_key": "75",
+    "decision": "keep",
+    "gt_pref_key": "75",
+    "gt_match": true,
+    "conf": 0.9999,
+    "logit_gap": -9.375
+  },
+  "put_boxdrink3_plate_75/episode30": {
+    "action_prompt_label": "high contact",
+    "pref_key": "75",
+    "decision": "keep",
+    "gt_pref_key": "75",
+    "gt_match": true,
+    "conf": 0.9999,
+    "logit_gap": -9.5
+  },
+  "put_boxdrink3_plate_75/episode31": {
+    "action_prompt_label": "high contact",
+    "pref_key": "75",
+    "decision": "keep",
+    "gt_pref_key": "75",
+    "gt_match": true,
+    "conf": 0.9999,
+    "logit_gap": -9.188
+  },
+  "put_boxdrink3_plate_75/episode32": {
+    "action_prompt_label": "high contact",
+    "pref_key": "75",
+    "decision": "keep",
+    "gt_pref_key": "75",
+    "gt_match": true,
+    "conf": 0.9998,
+    "logit_gap": -8.312
+  },
+  "put_boxdrink3_plate_75/episode33": {
+    "action_prompt_label": "high contact",
+    "pref_key": "75",
+    "decision": "keep",
+    "gt_pref_key": "75",
+    "gt_match": true,
+    "conf": 0.9999,
+    "logit_gap": -9.5
+  },
+  "put_boxdrink3_plate_75/episode34": {
+    "action_prompt_label": "high contact",
+    "pref_key": "75",
+    "decision": "keep",
+    "gt_pref_key": "75",
+    "gt_match": true,
+    "conf": 0.9999,
+    "logit_gap": -9.5
+  },
+  "put_boxdrink3_plate_75/episode35": {
+    "action_prompt_label": "high contact",
+    "pref_key": "75",
+    "decision": "keep",
+    "gt_pref_key": "75",
+    "gt_match": true,
+    "conf": 0.9999,
+    "logit_gap": -9.0
+  },
+  "put_boxdrink3_plate_75/episode36": {
+    "action_prompt_label": "high contact",
+    "pref_key": "75",
+    "decision": "keep",
+    "gt_pref_key": "75",
+    "gt_match": true,
+    "conf": 0.9999,
+    "logit_gap": -9.5
+  },
+  "put_boxdrink3_plate_75/episode37": {
+    "action_prompt_label": "high contact",
+    "pref_key": "75",
+    "decision": "keep",
+    "gt_pref_key": "75",
+    "gt_match": true,
+    "conf": 0.9999,
+    "logit_gap": -9.0
+  },
+  "put_boxdrink3_plate_75/episode38": {
+    "action_prompt_label": "high contact",
+    "pref_key": "75",
+    "decision": "keep",
+    "gt_pref_key": "75",
+    "gt_match": true,
+    "conf": 0.9995,
+    "logit_gap": -7.563
+  },
+  "put_boxdrink3_plate_75/episode39": {
+    "action_prompt_label": "high contact",
+    "pref_key": "75",
+    "decision": "keep",
+    "gt_pref_key": "75",
+    "gt_match": true,
+    "conf": 0.9999,
+    "logit_gap": -9.625
+  },
+  "put_boxdrink3_plate_75/episode4": {
+    "action_prompt_label": "high contact",
+    "pref_key": "75",
+    "decision": "keep",
+    "gt_pref_key": "75",
+    "gt_match": true,
+    "conf": 0.9999,
+    "logit_gap": -9.25
+  },
+  "put_boxdrink3_plate_75/episode40": {
+    "action_prompt_label": "high contact",
+    "pref_key": "75",
+    "decision": "keep",
+    "gt_pref_key": "75",
+    "gt_match": true,
+    "conf": 0.9999,
+    "logit_gap": -9.062
+  },
+  "put_boxdrink3_plate_75/episode41": {
+    "action_prompt_label": "high contact",
+    "pref_key": "75",
+    "decision": "keep",
+    "gt_pref_key": "75",
+    "gt_match": true,
+    "conf": 0.9998,
+    "logit_gap": -8.312
+  },
+  "put_boxdrink3_plate_75/episode42": {
+    "action_prompt_label": "high contact",
+    "pref_key": "75",
+    "decision": "keep",
+    "gt_pref_key": "75",
+    "gt_match": true,
+    "conf": 0.9997,
+    "logit_gap": -8.25
+  },
+  "put_boxdrink3_plate_75/episode43": {
+    "action_prompt_label": "high contact",
+    "pref_key": "75",
+    "decision": "keep",
+    "gt_pref_key": "75",
+    "gt_match": true,
+    "conf": 0.9999,
+    "logit_gap": -9.125
+  },
+  "put_boxdrink3_plate_75/episode44": {
+    "action_prompt_label": "high contact",
+    "pref_key": "75",
+    "decision": "keep",
+    "gt_pref_key": "75",
+    "gt_match": true,
+    "conf": 0.9999,
+    "logit_gap": -9.25
+  },
+  "put_boxdrink3_plate_75/episode45": {
+    "action_prompt_label": "high contact",
+    "pref_key": "75",
+    "decision": "keep",
+    "gt_pref_key": "75",
+    "gt_match": true,
+    "conf": 0.9999,
+    "logit_gap": -9.562
+  },
+  "put_boxdrink3_plate_75/episode46": {
+    "action_prompt_label": "high contact",
+    "pref_key": "75",
+    "decision": "keep",
+    "gt_pref_key": "75",
+    "gt_match": true,
+    "conf": 0.9999,
+    "logit_gap": -9.5
+  },
+  "put_boxdrink3_plate_75/episode47": {
+    "action_prompt_label": "high contact",
+    "pref_key": "75",
+    "decision": "keep",
+    "gt_pref_key": "75",
+    "gt_match": true,
+    "conf": 0.9999,
+    "logit_gap": -9.375
+  },
+  "put_boxdrink3_plate_75/episode48": {
+    "action_prompt_label": "high contact",
+    "pref_key": "75",
+    "decision": "keep",
+    "gt_pref_key": "75",
+    "gt_match": true,
+    "conf": 0.9999,
+    "logit_gap": -9.688
+  },
+  "put_boxdrink3_plate_75/episode49": {
+    "action_prompt_label": "high contact",
+    "pref_key": "75",
+    "decision": "keep",
+    "gt_pref_key": "75",
+    "gt_match": true,
+    "conf": 0.9999,
+    "logit_gap": -9.813
+  },
+  "put_boxdrink3_plate_75/episode5": {
+    "action_prompt_label": "high contact",
+    "pref_key": "75",
+    "decision": "keep",
+    "gt_pref_key": "75",
+    "gt_match": true,
+    "conf": 0.9999,
+    "logit_gap": -9.562
+  },
+  "put_boxdrink3_plate_75/episode6": {
+    "action_prompt_label": "high contact",
+    "pref_key": "75",
+    "decision": "keep",
+    "gt_pref_key": "75",
+    "gt_match": true,
+    "conf": 0.9999,
+    "logit_gap": -9.0
+  },
+  "put_boxdrink3_plate_75/episode7": {
+    "action_prompt_label": "high contact",
+    "pref_key": "75",
+    "decision": "keep",
+    "gt_pref_key": "75",
+    "gt_match": true,
+    "conf": 0.9999,
+    "logit_gap": -9.25
+  },
+  "put_boxdrink3_plate_75/episode8": {
+    "action_prompt_label": "high contact",
+    "pref_key": "75",
+    "decision": "keep",
+    "gt_pref_key": "75",
+    "gt_match": true,
+    "conf": 0.9999,
+    "logit_gap": -9.312
+  },
+  "put_boxdrink3_plate_75/episode9": {
+    "action_prompt_label": "high contact",
+    "pref_key": "75",
+    "decision": "keep",
+    "gt_pref_key": "75",
+    "gt_match": true,
+    "conf": 0.9999,
+    "logit_gap": -8.813
+  }
+}

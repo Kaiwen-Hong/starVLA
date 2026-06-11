@@ -1,0 +1,31 @@
+{
+  "cat": "height",
+  "ckpt": "results/Checkpoints/pref_oft_baseline_height_10k/checkpoints/steps_10000_pytorch_model.pt",
+  "question": "We are placing an object onto a target. Are we dropping it from high or from low? Answer:",
+  "answers": {
+    "high": "high",
+    "low": "low"
+  },
+  "taskA": {
+    "n": 80,
+    "acc": 0.5,
+    "acc_gt_high": 0.0,
+    "acc_gt_low": 1.0,
+    "balanced_acc": 0.5,
+    "pred_dist": {
+      "high": 0,
+      "low": 80
+    }
+  },
+  "taskB": {
+    "n": 100,
+    "acc": 0.5,
+    "acc_gt_high": 0.0,
+    "acc_gt_low": 1.0,
+    "balanced_acc": 0.5,
+    "pred_dist": {
+      "high": 0,
+      "low": 100
+    }
+  }
+}

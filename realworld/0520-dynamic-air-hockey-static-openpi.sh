@@ -13,7 +13,7 @@ accelerate launch \
   --framework.action_model.past_action_window_size 0 \
   --framework.action_model.action_hidden_dim 1024 \
   --framework.action_model.hidden_size 1024 \
-  --framework.action_model.action_model_type DiT-S \
+  --framework.action_model.action_model_type DiT-B \
   --framework.action_model.add_pos_embed True \
   --framework.action_model.max_seq_len 1024 \
   --framework.action_model.noise_beta_alpha 1.5 \

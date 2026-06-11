@@ -1,0 +1,55 @@
+{
+  "args": {
+    "cat": "height",
+    "steps": 2,
+    "bs": 4,
+    "k": 3,
+    "lr": 0.001,
+    "readout": "lm_head",
+    "val_every": 2,
+    "n_val_per_leaf": 1,
+    "jitter": 5,
+    "mlp_baseline": false,
+    "tag": "smoke"
+  },
+  "pref_keys": [
+    "high",
+    "low"
+  ],
+  "question": "We are placing an object onto a target. Are we dropping it from high or from low? Answer:",
+  "history": [
+    {
+      "step": 2,
+      "taskA": {
+        "acc": 0.5,
+        "bal_acc": 0.5,
+        "ce": 4.313,
+        "n": 16,
+        "pred_dist": {
+          "high": 0,
+          "low": 16
+        }
+      },
+      "taskB": {
+        "acc": 0.5,
+        "bal_acc": 0.5,
+        "ce": 5.0,
+        "n": 2,
+        "pred_dist": {
+          "high": 0,
+          "low": 2
+        }
+      },
+      "taskA_zeroed": {
+        "acc": 0.5,
+        "bal_acc": 0.5,
+        "ce": 4.406,
+        "n": 16,
+        "pred_dist": {
+          "high": 0,
+          "low": 16
+        }
+      }
+    }
+  ]
+}

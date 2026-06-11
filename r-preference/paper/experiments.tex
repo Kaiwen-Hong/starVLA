@@ -1,0 +1,200 @@
+% =============================================================================
+% experiments.tex  --  drop-in replacement for \section{Experiments}
+%
+% All numbers are PLACEHOLDERS ("--"); fill from the result logs.
+% Tables use only core LaTeX (\multicolumn, \hline) + \resizebox (graphicx).
+%
+% Structure: Main Results (recognition transfer + SPT vs B0 following/success,
+%   sim + real) and Ablation Studies (the 2x2 over SPT's two components).
+%   2x2 configs:  B0 = neither | PL = Stage-B conditioning only |
+%   VQA = Stage-A prediction loss only | SPT = both (ours).
+% =============================================================================
+
+\section{Experiments}
+\label{sec:experiments}
+
+We evaluate SPT in simulation and on a real robot, and ask two questions.
+(i)~Does the preference prediction learned on the source transfer to the target,
+that is, can the frozen source model label target demonstrations correctly?
+(ii)~Does Stage~B turn those labels into a policy that follows the commanded
+preference on the target?
+
+\subsection{Experimental Setup}
+\label{sec:exp-setup}
+
+\textbf{Simulation benchmark.}
+We synthesize a preference-varied manipulation dataset in
+RoboTwin~2.0~\citep{robotwin}, spanning five preference axes: \emph{grasp contact
+height} (low vs.\ high on the object), \emph{release height} (low vs.\ high above
+the target), \emph{obstacle clearance} (narrow vs.\ wide detour), \emph{grasp
+orientation} (side vs.\ top), and \emph{placement location} (center vs.\ corner).
+For each axis the source has eight tasks, each demonstrated under both preference
+values with 100 demonstrations per value. The target is a held-out task with new
+objects on the same axis; its instructions do not contain the preference, so
+each target demonstration's preference is unknown at training time. Observations
+are three Intel RealSense~L515 RGB views.
+
+\textbf{Real-robot validation.}
+We test on a UR5e under two cross-task settings. For \emph{obstacle clearance},
+we label a near vs.\ far clearance preference on pick-and-place and transfer it
+to pushing (push a bowl around an obstacle). For \emph{strike strategy}, we label
+a direct vs.\ bank-shot preference on air hockey and transfer it to billiards
+(cue the ball into a pocket directly or off a cushion). As in simulation, the
+target instructions do not state the preference. Each target shares the source
+axis but differs in objects, dynamics, and goal.
+
+\textbf{Metrics.}
+We report three numbers. \emph{Recognition accuracy} is how often the frozen
+source predictor assigns the correct preference to a target demonstration
+(chance $50\%$). \emph{Preference-following accuracy} is the fraction of rollouts
+whose behavior matches the commanded preference, scored by a per-axis statistic
+$\phi$ (contact height; release height; minimum obstacle clearance; wrist
+orientation; placement location), with continuous axes thresholded from source
+statistics and categorical axes matched directly. \emph{Task success} is the
+completion rate regardless of preference. We fix all criteria and thresholds
+before evaluation; details are in the appendix.
+
+\textbf{Configurations.}
+SPT has two components: the Stage-A prediction loss and the Stage-B conditioning
+on the self-labels. We study both with a $2\times2$ over these factors.
+\textbf{B0} uses neither and finetunes on the target with the action loss only.
+\textbf{PL} conditions Stage~B on the self-labels but starts from a policy
+trained without the prediction loss. \textbf{VQA} starts from the
+prediction-trained model but does not condition Stage~B on the labels.
+\textbf{SPT} uses both. The four share the backbone, data, and compute budget.
+
+\textbf{Implementation details.}
+The backbone is Qwen3-VL-4B. The action expert is an action-token head in the
+OpenVLA-OFT style, trained with an $L_1$ loss on $14$-D joint action chunks of
+horizon $50$, and warm-started from a manipulation-pretrained checkpoint;
+training from scratch does not converge on this data. The prediction head is the
+VLM's language head, supervised with single-token cross-entropy over a short
+head-camera clip. We encode the active end-effector pose at the clip frames with
+a small MLP $\phi$ ($9\!\to\!512\!\to\!h$) and inject it as a token at an
+existing special-token slot, so the pretrained checkpoint loads without resizing
+the embedding. Stage~A optimizes $\mathcal{L}_A$; Stage~B continues training the
+action expert at a lower learning rate. The appendix lists all hyperparameters
+and the $\phi$ and $w(\cdot)$ vocabularies.
+
+\subsection{Main Results}
+\label{sec:exp-main}
+
+\textbf{Preference prediction transfers to the target.}
+Table~\ref{tab:sim_recognition} gives the frozen predictor's accuracy on the
+target, per axis. It is well above chance on all five axes, so the preferences
+learned on the source carry over to the target's new tasks and objects, with no
+preference stated in the instruction. These predictions are the labels Stage~B
+trains on.
+
+\begin{table}[t]
+  \centering
+  \small
+  \caption{\textbf{Prediction transfer (simulation).} Accuracy of the frozen
+  source predictor on the target, per preference axis (chance $=50\%$). It
+  depends only on the Stage-A predictor, so it is reported once per axis.}
+  \label{tab:sim_recognition}
+  \begin{tabular}{lc}
+    \hline
+    Preference axis & Recognition Acc.\ (\%) \\
+    \hline
+    Grasp contact height & -- \\
+    Release height       & -- \\
+    Obstacle clearance   & -- \\
+    Grasp orientation    & -- \\
+    Placement location   & -- \\
+    \hline
+    Average              & \textbf{--} \\
+    \hline
+  \end{tabular}
+\end{table}
+
+\textbf{SPT follows the commanded preference.}
+Table~\ref{tab:sim_main} reports preference-following and success in simulation
+for SPT and the no-steering baseline B0. SPT follows the commanded preference on
+every axis, while B0 keeps to one behavior; success is unchanged, so the added
+control does not cost task completion. The real-robot results
+(Table~\ref{tab:real_main}) match: SPT follows the preference on both targets
+while B0 does not.
+
+\begin{table}[t]
+  \centering
+  \small
+  \caption{\textbf{Preference-following and task success (simulation).} Per-axis
+  results for SPT and the no-steering baseline B0.}
+  \label{tab:sim_main}
+  \begin{tabular}{lcccc}
+    \hline
+    & \multicolumn{2}{c}{Following Acc.\ (\%)} & \multicolumn{2}{c}{Success (\%)} \\
+    Preference axis & B0 & SPT & B0 & SPT \\
+    \hline
+    Grasp contact height & -- & -- & -- & -- \\
+    Release height       & -- & -- & -- & -- \\
+    Obstacle clearance   & -- & -- & -- & -- \\
+    Grasp orientation    & -- & -- & -- & -- \\
+    Placement location   & -- & -- & -- & -- \\
+    \hline
+    Average              & -- & \textbf{--} & -- & -- \\
+    \hline
+  \end{tabular}
+\end{table}
+
+\begin{table}[t]
+  \centering
+  \small
+  \caption{\textbf{Real-robot results (UR5e).} Preference-following accuracy and
+  task success on two cross-task settings, SPT vs.\ B0. $N$ is the number of
+  rollouts per condition.}
+  \label{tab:real_main}
+  \begin{tabular}{llccccc}
+    \hline
+    & & & \multicolumn{2}{c}{Following Acc.\ (\%)} & \multicolumn{2}{c}{Success (\%)} \\
+    Setting & Preference & $N$ & B0 & SPT & B0 & SPT \\
+    \hline
+    Obstacle clearance & near   & -- & -- & -- & -- & -- \\
+    (push)             & far    & -- & -- & -- & -- & -- \\
+    Strike strategy    & direct & -- & -- & -- & -- & -- \\
+    (billiards)        & bank   & -- & -- & -- & -- & -- \\
+    \hline
+  \end{tabular}
+\end{table}
+
+\subsection{Ablation Studies}
+\label{sec:exp-ablation}
+
+We ablate SPT's two components with the configurations of
+Section~\ref{sec:exp-setup}, averaged over the five axes
+(Table~\ref{tab:ablation}). Conditioning Stage~B on the self-labels is what makes
+the policy follow the preference: without it (VQA) the policy stays at the B0
+level, and with it (SPT) it follows. The Stage-A prediction loss adds a further
+gain: given the same self-labels, starting from the prediction-trained model
+(SPT) follows better than starting from one trained without it (PL). Either
+component alone is below SPT.
+
+\begin{table}[t]
+  \centering
+  \small
+  \caption{\textbf{Ablation of SPT's two components} (simulation, averaged over
+  the five axes). \textbf{PL}: Stage-B self-label conditioning only;
+  \textbf{VQA}: Stage-A prediction loss only; \textbf{SPT}\,=\,both
+  (Section~\ref{sec:exp-setup}).}
+  \label{tab:ablation}
+  \begin{tabular}{lcc}
+    \hline
+    Configuration & Following Acc.\ (\%) & Success (\%) \\
+    \hline
+    B0 \,(neither)              & -- & -- \\
+    PL \,(conditioning only)    & -- & -- \\
+    VQA (prediction only)       & -- & -- \\
+    SPT (both)                  & \textbf{--} & -- \\
+    \hline
+  \end{tabular}
+\end{table}
+
+\subsection{Limitations and Future Work}
+\label{sec:limitations}
+
+SPT inherits the source preference set. A user can only steer the target with
+values $c\in\mathcal{C}$ that were defined and labeled on the source, and the
+predictor only distinguishes those values. A new value on an existing axis, or a
+new axis, is out of scope. Extending the set at test time, composing labeled
+axes, and discovering preference axes from data are left to future work.

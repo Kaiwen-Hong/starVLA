@@ -524,6 +524,14 @@ DATASET_NAMED_MIXTURES = {
         ("dynamic-0409-0-pick_to_moved-filtered", 1.0, "fastumi"),
     ],
 
+    # ── Pool pocket-wall (real FastUMI, single wrist cam, 10D EEF + rot6d) — 0520 ──
+    "pool_pocket_wall_kick": [
+        ("pool_pocket_wall_kick", 1.0, "fastumi"),
+    ],
+    "pool_pocket_wall_direct": [
+        ("pool_pocket_wall_direct", 1.0, "fastumi"),
+    ],
+
     # Debug subset: just 1 FastUMI task
     "fastumi_task1": [
         ("pickandplace_vla", 1.0, "fastumi"),

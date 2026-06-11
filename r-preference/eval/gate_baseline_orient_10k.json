@@ -1,0 +1,31 @@
+{
+  "cat": "orient",
+  "ckpt": "results/Checkpoints/pref_oft_baseline_orient_10k/checkpoints/steps_10000_pytorch_model.pt",
+  "question": "We are picking up an object. Are we grasping from the side (horizontal) or from the top (vertical)? Answer:",
+  "answers": {
+    "0": "side",
+    "90": "top"
+  },
+  "taskA": {
+    "n": 80,
+    "acc": 0.362,
+    "acc_gt_0": 0.7,
+    "acc_gt_90": 0.025,
+    "balanced_acc": 0.362,
+    "pred_dist": {
+      "0": 67,
+      "90": 13
+    }
+  },
+  "taskB": {
+    "n": 100,
+    "acc": 0.43,
+    "acc_gt_0": 0.86,
+    "acc_gt_90": 0.0,
+    "balanced_acc": 0.43,
+    "pred_dist": {
+      "0": 93,
+      "90": 7
+    }
+  }
+}

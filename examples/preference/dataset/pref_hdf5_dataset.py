@@ -108,10 +108,13 @@ class PrefHDF5Dataset(Dataset):
         split_seed: int = 42,
         paraphrase_seed: int = 42,
         data_cfg: Optional[Any] = None,
+        action_space: str = "ee",
     ):
         super().__init__()
         if split not in ("train", "val"):
             raise ValueError(f"split must be 'train' or 'val', got {split!r}")
+        if action_space not in ("ee", "joint"):
+            raise ValueError(f"action_space must be 'ee' or 'joint', got {action_space!r}")
         if past_window != 0:
             raise NotImplementedError(
                 f"past_window > 0 not supported in v1; got {past_window}"
@@ -136,6 +139,7 @@ class PrefHDF5Dataset(Dataset):
         self.image_size = tuple(image_size)
         self.data_cfg = data_cfg
         self.category = category
+        self.action_space = action_space  # "ee" (20D EE+6D) or "joint" (14D qpos vector)
         self._task_groups = eff_task_groups
         self._pref_keys = eff_pref_keys
 
@@ -270,21 +274,30 @@ class PrefHDF5Dataset(Dataset):
 
         with h5py.File(h5_path, "r") as h5:
             end_idx = frame_idx + self.chunk_size
-            l_ee = h5["endpose/left_endpose"][frame_idx:end_idx]
-            r_ee = h5["endpose/right_endpose"][frame_idx:end_idx]
-            l_gr = h5["endpose/left_gripper"][frame_idx:end_idx]
-            r_gr = h5["endpose/right_gripper"][frame_idx:end_idx]
-            action_raw = self._build_ee_20d(l_ee, l_gr, r_ee, r_gr)
-
-            if self.include_state:
-                state_raw = self._build_ee_20d(
-                    h5["endpose/left_endpose"][frame_idx:frame_idx + 1],
-                    h5["endpose/left_gripper"][frame_idx:frame_idx + 1],
-                    h5["endpose/right_endpose"][frame_idx:frame_idx + 1],
-                    h5["endpose/right_gripper"][frame_idx:frame_idx + 1],
+            if self.action_space == "joint":
+                # 14D qpos: [left_arm(6), left_gripper(1), right_arm(6), right_gripper(1)]
+                vec = h5["joint_action/vector"]
+                action_raw = np.asarray(vec[frame_idx:end_idx], dtype=np.float32)  # (chunk, 14)
+                state_raw = (
+                    np.asarray(vec[frame_idx:frame_idx + 1], dtype=np.float32)
+                    if self.include_state else None
                 )
             else:
-                state_raw = None
+                l_ee = h5["endpose/left_endpose"][frame_idx:end_idx]
+                r_ee = h5["endpose/right_endpose"][frame_idx:end_idx]
+                l_gr = h5["endpose/left_gripper"][frame_idx:end_idx]
+                r_gr = h5["endpose/right_gripper"][frame_idx:end_idx]
+                action_raw = self._build_ee_20d(l_ee, l_gr, r_ee, r_gr)
+
+                if self.include_state:
+                    state_raw = self._build_ee_20d(
+                        h5["endpose/left_endpose"][frame_idx:frame_idx + 1],
+                        h5["endpose/left_gripper"][frame_idx:frame_idx + 1],
+                        h5["endpose/right_endpose"][frame_idx:frame_idx + 1],
+                        h5["endpose/right_gripper"][frame_idx:frame_idx + 1],
+                    )
+                else:
+                    state_raw = None
 
             images = self._load_images(h5, frame_idx)
 
@@ -334,6 +347,7 @@ def get_pref_dataset(data_cfg, mode: str = "train", **kwargs) -> PrefHDF5Dataset
         stats_json_path=_g("stats_json_path", None),
         category=str(_g("pref_category", DEFAULT_CATEGORY)),
         data_cfg=data_cfg,
+        action_space=str(_g("action_space", "ee")),
         **kwargs,
     )
 

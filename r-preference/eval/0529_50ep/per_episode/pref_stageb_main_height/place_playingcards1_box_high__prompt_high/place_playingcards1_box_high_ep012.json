@@ -1,0 +1,16 @@
+{
+  "preference": "high",
+  "env_pref": "high",
+  "axis": "drop_height",
+  "n_steps": 141,
+  "grasp_step": 50,
+  "release_step": 140,
+  "value": 0.06343865394592285,
+  "grasp_z": 0.7408547401428223,
+  "release_z": 0.8042933940887451,
+  "release_idx": 139,
+  "peak_z": 0.9201332330703735,
+  "peak_lift": 0.17927849292755127,
+  "task_name": "place_playingcards1_box_high",
+  "episode": 12
+}

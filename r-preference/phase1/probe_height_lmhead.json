@@ -1,0 +1,187 @@
+{
+  "args": {
+    "cat": "height",
+    "steps": 1000,
+    "bs": 8,
+    "k": 3,
+    "lr": 0.001,
+    "readout": "lm_head",
+    "val_every": 200,
+    "n_val_per_leaf": 10,
+    "jitter": 5,
+    "mlp_baseline": true,
+    "tag": "height_lmhead"
+  },
+  "pref_keys": [
+    "high",
+    "low"
+  ],
+  "question": "We are placing an object onto a target. Are we dropping it from high or from low? Answer:",
+  "history": [
+    {
+      "step": 200,
+      "taskA": {
+        "acc": 0.95,
+        "bal_acc": 0.95,
+        "ce": 0.274,
+        "n": 160,
+        "pred_dist": {
+          "high": 88,
+          "low": 72
+        }
+      },
+      "taskB": {
+        "acc": 1.0,
+        "bal_acc": 1.0,
+        "ce": 0.0,
+        "n": 20,
+        "pred_dist": {
+          "high": 10,
+          "low": 10
+        }
+      },
+      "taskA_zeroed": {
+        "acc": 0.5,
+        "bal_acc": 0.5,
+        "ce": 2.295,
+        "n": 160,
+        "pred_dist": {
+          "high": 0,
+          "low": 160
+        }
+      }
+    },
+    {
+      "step": 400,
+      "taskA": {
+        "acc": 0.994,
+        "bal_acc": 0.994,
+        "ce": 0.011,
+        "n": 160,
+        "pred_dist": {
+          "high": 81,
+          "low": 79
+        }
+      },
+      "taskB": {
+        "acc": 1.0,
+        "bal_acc": 1.0,
+        "ce": 0.0,
+        "n": 20,
+        "pred_dist": {
+          "high": 10,
+          "low": 10
+        }
+      },
+      "taskA_zeroed": {
+        "acc": 0.5,
+        "bal_acc": 0.5,
+        "ce": 3.631,
+        "n": 160,
+        "pred_dist": {
+          "high": 0,
+          "low": 160
+        }
+      }
+    },
+    {
+      "step": 600,
+      "taskA": {
+        "acc": 1.0,
+        "bal_acc": 1.0,
+        "ce": 0.0,
+        "n": 160,
+        "pred_dist": {
+          "high": 80,
+          "low": 80
+        }
+      },
+      "taskB": {
+        "acc": 1.0,
+        "bal_acc": 1.0,
+        "ce": 0.001,
+        "n": 20,
+        "pred_dist": {
+          "high": 10,
+          "low": 10
+        }
+      },
+      "taskA_zeroed": {
+        "acc": 0.5,
+        "bal_acc": 0.5,
+        "ce": 4.37,
+        "n": 160,
+        "pred_dist": {
+          "high": 0,
+          "low": 160
+        }
+      }
+    },
+    {
+      "step": 800,
+      "taskA": {
+        "acc": 1.0,
+        "bal_acc": 1.0,
+        "ce": 0.0,
+        "n": 160,
+        "pred_dist": {
+          "high": 80,
+          "low": 80
+        }
+      },
+      "taskB": {
+        "acc": 1.0,
+        "bal_acc": 1.0,
+        "ce": 0.0,
+        "n": 20,
+        "pred_dist": {
+          "high": 10,
+          "low": 10
+        }
+      },
+      "taskA_zeroed": {
+        "acc": 0.5,
+        "bal_acc": 0.5,
+        "ce": 4.569,
+        "n": 160,
+        "pred_dist": {
+          "high": 0,
+          "low": 160
+        }
+      }
+    },
+    {
+      "step": 1000,
+      "taskA": {
+        "acc": 1.0,
+        "bal_acc": 1.0,
+        "ce": 0.0,
+        "n": 160,
+        "pred_dist": {
+          "high": 80,
+          "low": 80
+        }
+      },
+      "taskB": {
+        "acc": 1.0,
+        "bal_acc": 1.0,
+        "ce": 0.0,
+        "n": 20,
+        "pred_dist": {
+          "high": 10,
+          "low": 10
+        }
+      },
+      "taskA_zeroed": {
+        "acc": 0.5,
+        "bal_acc": 0.5,
+        "ce": 4.709,
+        "n": 160,
+        "pred_dist": {
+          "high": 0,
+          "low": 160
+        }
+      }
+    }
+  ]
+}
