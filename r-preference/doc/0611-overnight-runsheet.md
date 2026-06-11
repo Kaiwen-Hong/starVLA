@@ -52,3 +52,7 @@
   — contact conditioning solved offline by EF + longer schedule. ef_lr3 training 579/2500 (probe will follow).
   ef5k@5000 ckpt shipping to box (background). Box queue updated: hvlv50 (running, ep001+) -> contact ef5k
   closed-loop paired (test_num 11 first) -> orient 50ep -> place 50ep. Disk: H100 40%, box 68%.
+- 11:38Z pass (event): ladder final — eflr3 HURT (0.0082/0.625), winner ef5k@5000 (0.1064/0.958); lever =
+  early-frame weighting x schedule length, NOT LR. ef5k ckpt on box md5-verified (d79fbac1). hvlv early-frame
+  probe @2500/@1500/b0 all ~chance — probe structurally blind to trajectory-shape prefs (detour accumulates
+  across chunks); hvlv arbitration = closed-loop only (50ep in flight, ep001+). H100 GPUs free.
