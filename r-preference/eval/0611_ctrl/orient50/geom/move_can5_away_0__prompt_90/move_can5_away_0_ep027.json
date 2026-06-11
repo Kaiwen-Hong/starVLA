@@ -1,0 +1,21 @@
+{
+  "preference": "90",
+  "env_pref": "None",
+  "axis": "grasp_tilt_deg",
+  "n_steps": 151,
+  "grasp_step": 63,
+  "release_step": 150,
+  "value": 2.9820619560029273,
+  "obj_tilt_deg": 89.9649671215884,
+  "ee_x_tilt": 2.9820619560029273,
+  "ee_y_tilt": 87.56323418105929,
+  "ee_z_tilt": 88.28206445413959,
+  "ee_quat_at_grasp": [
+    0.6307517980790772,
+    -0.3422597534154663,
+    0.5974353045448815,
+    0.35788474023819344
+  ],
+  "task_name": "move_can5_away_0",
+  "episode": 27
+}

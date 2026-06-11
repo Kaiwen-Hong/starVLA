@@ -272,6 +272,13 @@ paired protocol, same first-10 seed walk (archive `eval/0611_ctrl/pref_stageb_ma
 | **SPT geom-1.00 labels** | 81.6° all side | **10/10 flip (3.5° mean, max 9.0°)** | 1.00 / 1.00 → **1.00** | 11/11, 9/11 |
 | b0 (Naive FT) | 81.8° all side | 10/10 flip (4.1°) | 1.00 / 1.00 → **1.00** | 10/11, 10/11 |
 
+**orient 50ep OFFICIAL (geom labels, 14:23Z; archive `eval/0611_ctrl/orient50/geom/`):**
+ee_x_tilt 0-arm 81.4° / 90-arm 2.5°, **follow 1.00/1.00 at fixed 41.2° (n=50/arm; 90-arm
+50/50 flipped top-down, zero stayed side)**; success **50/51 = 98.0% / 49/51 = 96.1%**.
+The token-label ckpt's 0.81 (19/49 stayed side) is fully cured by the 1.00 labels at
+n=50 — the label-quality causal chain holds at scale. b0 50ep arm pending (its ckpt had
+been pruned from the box; reshipped + queued after place50; b0@10ep was 1.00/1.00).
+
 Conclusions:
 1. **Label quality → controllability is now a measured causal chain on orient**: labels
    0.95 → 1.00 lifts closed-loop follow 0.75 → 1.00 on identical spawns. The 5 wrong

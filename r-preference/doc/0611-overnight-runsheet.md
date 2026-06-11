@@ -74,3 +74,10 @@
 - 13:42Z pass (event): contact ef5k closed-loop DONE in 8min post-asset-fix — succ 81.8%/81.8%, BUT
   sep +0.0157m / midpoint-follow 0.65 (~geom@1500): plan-level EF conditioning does not survive
   per-chunk re-query execution. Gap doc §4c.4. orient50 LAUNCHED (geom then b0, watcher b2i69xxsi).
+- 13:59Z pass: orient50 geom 0-arm 37/50 (fast, full done ~14:45 est). place ckpt pair shipping via GCS
+  (background) + place50 driver staged (geom then b0, 51eps each). Box 32G — monitor when place lands (+19.6G).
+- 14:31Z pass: orient50 GEOM arm DONE — succ 98.0%/96.1% (50/51, 49/51), 50 metric eps/arm; b0 arm running.
+  place pair on box md5-verified. Box disk pruned (4 evaluated ckpts freed) 14G->50G. place50 fires after orient b0.
+- 14:38Z pass (event): orient50 GEOM OFFICIAL — follow 1.00/1.00 @n=50 (90-arm 50/50 flipped), succ 98.0%/96.1%.
+  b0 arm failed to start (ckpt pruned by Agent A) — reshipping (bg) + b0orient50 driver staged for after place50.
+  place50 LAUNCHED (geom then b0). Box 50G.
