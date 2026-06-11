@@ -278,6 +278,29 @@ Conclusions:
    label-quality ablation. Use `pref_stageb_main_orient_geom` as the SPT-orient ckpt
    going forward either way.
 
+## 4d. OFFICIAL follow numbers locked (2026-06-11 night, user-approved convention D4)
+
+Fixed source(taskA)-statistics thresholds computed (`eval/source_follow_thresholds.json`):
+drop_height **0.1245** (high 0.1795±.006 / low 0.0694±.031), ee_x_tilt **41.2°**,
+height_fraction **0.484**, place_offset **0.0536 m**, detour **0.1501 m**.
+`build_summary.py` now emits BOTH conventions and scans `eval/0611_ctrl/` too. Official table:
+
+| ckpt | n/prompt | follow (midpoint) | **follow (FIXED src-thr)** | success |
+|---|---|---|---|---|
+| SPT height | 49 | 0.81 | **0.84** | 50/50, 41/50 |
+| Naive-FT height | 10 | 0.80 | **0.55** | 11/11, 11/11 |
+| SPT orient (token labels) | 49 | 0.81 | **0.81** | 48/50, 43/50 |
+| SPT orient (geom labels) | 10 | 1.00 | **1.00** | 11/11, 9/11 |
+| Naive-FT orient | 10 | 1.00 | **1.00** | 10/11, 10/11 |
+| SPT hvlv (geom) | 4 | 0.50 | **0.50** | 0/5, 0/5 |
+| SPT contact (geom) | 4 | 0.75 | n/a† | 4/5, 4/5 |
+
+† contact closed-loop records used the meters fallback (EE.z−obj.z; contact points
+unavailable on the old box) while the source threshold is a height_fraction — re-run
+contact closed-loop with working contact-point span (or add an EE-fallback source thr).
+
+**Height row vs paper Table 2: measured FT 0.55 / SPT 0.84 ↔ claimed 53 / 81. Match.**
+
 ## 5. Launched today (H100)
 
 - `ctrl_{height,orient}_1500.json`, `ctrl_b0{height,orient}_1500.json` — Tier-1 proxy (§2).
