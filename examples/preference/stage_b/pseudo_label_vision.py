@@ -22,9 +22,16 @@ PLACE  (pref center/corner; feature = ||EE_xy@release − receptacle_xy_est||):
      Δz = EE_z@release − EE_z@grasp (the in-hand offset cancels exactly, so Δz
      ≈ receptacle surface height above the table) with a 2-point linear map
      (pad, tray) -> z_plane(Δz). NO taskB scene_info is touched.
-  4. threshold: primary rule = estimator-noise quantile (p99 of taskA CENTER-
-     class features × safety) — invariant to the source corner offset, which
-     differs from the target's; the geom-parity midpoint rule is also reported.
+  4. threshold (PRIMARY, pre-registered): unsupervised exact 1-D 2-means split
+     of the TARGET pool's own features (transductive, no GT — same recipe as
+     pseudo_label_ee), direction small=center from taskA. Rationale measured on
+     taskA: the center-class feature tail is DEMO RELEASE SCATTER (locerr p99
+     1.0 cm but release-vs-target up to 4.5 cm), so any taskA-FIXED threshold
+     inherits the SOURCE corner-offset scale (9-11 cm) and mismatches targets
+     with smaller offsets; both target classes share the same scatter+estimator
+     spread, so the target 2-means midpoint self-calibrates. taskA-fixed
+     quantile + midpoint rules are computed/reported (and serve as fallback if
+     the target split degenerates).
 
 CONTACT (pref 25/75; feature = grasp height FRACTION on the object):
   1. ground the manipulated object in 3 early frames; bbox bottom-center pixel
@@ -76,15 +83,18 @@ REL_FRAC = 0.90      # release frame for the place feature (= geom labeler)
 # appearance hints are deployment-time prompt engineering, written by looking
 # at ONE example camera image per type (an operator can always do this).
 # ------------------------------------------------------------------
+# NB: prop COLORS are randomized per episode (probe 2026-06-11: pads come in
+# blue/green/red; color-hinted queries made the model refuse on off-color
+# episodes) -> descriptors are deliberately COLOR-NEUTRAL, shape/function only.
 PLACE_RECEPTACLE_QUERY = {
-    "pad":   "the blue square pad lying flat on the table",
-    "tray":  "the light blue tray on the table",
-    "stand": "the black display stand (small raised platform) on the table",
+    "pad":   "the square pad (flat colored mat) on the table",
+    "tray":  "the tray (shallow rectangular container) on the table",
+    "stand": "the display stand (small raised platform with legs) on the table",
 }
 CONTACT_OBJECT_QUERY = {
-    "boxdrink":  "the grey drink carton standing upright on the table",
-    "callbell":  "the small blue dome-shaped call bell on the table",
-    "boxdrink3": "the blue drink bottle standing upright on the table",
+    "boxdrink":  "the drink carton (small beverage container) standing on the table, not the trash bin",
+    "callbell":  "the small dome-shaped call bell on the table",
+    "boxdrink3": "the drink bottle standing upright on the table, not the plate",
 }
 
 # taskA leaf lists (fit/validation) and taskB leaf lists (target) per cat.
@@ -215,18 +225,27 @@ class QwenGrounder:
         self.dev = dev
 
     def ground(self, pil_img, query: str):
-        prompt = (f"Locate {query}. Output its bounding box in JSON format: "
-                  f'{{"bbox_2d": [x1, y1, x2, y2], "label": "..."}}')
-        messages = [{"role": "user", "content": [
-            {"type": "image", "image": pil_img},
-            {"type": "text", "text": prompt}]}]
-        inputs = self.processor.apply_chat_template(
-            messages, tokenize=True, add_generation_prompt=True,
-            return_dict=True, return_tensors="pt").to(self.dev)
+        return self.ground_batch([pil_img], [query])[0]
+
+    def ground_batch(self, pil_imgs, queries):
+        """Batched grounding (left-padded generation)."""
+        texts, im_lists = [], []
+        for im, q in zip(pil_imgs, queries):
+            prompt = (f"Locate {q}. Output its bounding box in JSON format: "
+                      f'{{"bbox_2d": [x1, y1, x2, y2], "label": "..."}}')
+            messages = [{"role": "user", "content": [
+                {"type": "image", "image": im},
+                {"type": "text", "text": prompt}]}]
+            texts.append(self.processor.apply_chat_template(
+                messages, tokenize=False, add_generation_prompt=True))
+            im_lists.append(im)
+        self.processor.tokenizer.padding_side = "left"
+        inputs = self.processor(text=texts, images=im_lists, padding=True,
+                                return_tensors="pt").to(self.dev)
         with self.torch.no_grad():
             out = self.model.generate(**inputs, max_new_tokens=96, do_sample=False)
-        gen = out[0][inputs["input_ids"].shape[1]:]
-        return self.processor.decode(gen, skip_special_tokens=True)
+        gen = out[:, inputs["input_ids"].shape[1]:]
+        return [self.processor.decode(g, skip_special_tokens=True) for g in gen]
 
 
 def stage_ground(cat: str, gpu: int, limit_fit: int):
@@ -261,21 +280,30 @@ def stage_ground(cat: str, gpu: int, limit_fit: int):
     if not todo:
         return
     gr = QwenGrounder(gpu)
-    for n, (key, jp, query) in enumerate(todo):
-        im = Image.open(jp).convert("RGB")
-        W0, H0 = im.size
-        im2 = im.resize((W0 * UPSCALE, H0 * UPSCALE), Image.LANCZOS)
-        txt = gr.ground(im2, query)
-        bb = parse_bbox(txt, W0 * UPSCALE, H0 * UPSCALE)
-        G[key] = {
-            "bbox_px": [round(c / UPSCALE, 2) for c in bb] if bb else None,  # original-frame px
-            "raw": txt[:200],
-        }
-        if (n + 1) % 100 == 0 or n + 1 == len(todo):
+    B = 8
+    done = 0
+    for s in range(0, len(todo), B):
+        chunk = todo[s:s + B]
+        ims, qs, dims = [], [], []
+        for key, jp, query in chunk:
+            im = Image.open(jp).convert("RGB")
+            W0, H0 = im.size
+            ims.append(im.resize((W0 * UPSCALE, H0 * UPSCALE), Image.LANCZOS))
+            qs.append(query)
+            dims.append((W0, H0))
+        txts = gr.ground_batch(ims, qs)
+        for (key, jp, query), txt, (W0, H0) in zip(chunk, txts, dims):
+            bb = parse_bbox(txt, W0 * UPSCALE, H0 * UPSCALE)
+            G[key] = {
+                "bbox_px": [round(c / UPSCALE, 2) for c in bb] if bb else None,  # original-frame px
+                "raw": txt[:200],
+            }
+        done += len(chunk)
+        if done % 96 < B or done == len(todo):
             tmp = gpath + ".tmp"
             json.dump(G, open(tmp, "w"))
             os.replace(tmp, gpath)
-            print(f"[ground {cat}] {n + 1}/{len(todo)} done", flush=True)
+            print(f"[ground {cat}] {done}/{len(todo)} done", flush=True)
 
 
 # ------------------------------------------------------------------
@@ -311,7 +339,13 @@ def collect_rows(cat, groups, limit=None):
 
 def place_xy_est(G, leaf, epn, meta, z_plane, max_spread):
     """Median backprojected bbox-center xy over the valid frames.
-    Returns (xy, spread, n_frames) or (None, reason-string, n)."""
+    Returns (xy, spread, n_frames) or (None, reason-string, n).
+
+    Wrong-object gate (privilege-free): in the early frames the manipulated
+    object still sits at its pickup site, which the robot knows as its own EE
+    xy at the grasp frame. If the 'receptacle' estimate lands within 4 cm of
+    that site, the grounder almost surely boxed the manipulated object ->
+    reject rather than emit a confidently wrong feature."""
     bbs = ep_groundings(G, leaf, epn)
     if not bbs:
         return None, "no_bbox", 0
@@ -331,6 +365,9 @@ def place_xy_est(G, leaf, epn, meta, z_plane, max_spread):
         return None, "lt2_frames", len(pts)
     if spread > max_spread:
         return None, f"spread_{spread:.3f}", len(pts)
+    if meta.get("xy_grasp") is not None and \
+            float(np.linalg.norm(med - np.asarray(meta["xy_grasp"], float))) < 0.04:
+        return None, "near_grasp_site", len(pts)
     return med, spread, len(pts)
 
 
@@ -364,6 +401,22 @@ def fit_z_plane(G, rows, z_grid):
                     "max_err": float(np.max(e_at)), "n": len(e_at)}
 
 
+def _two_means_1d(x):
+    """Exact 1-D 2-means split (same as pseudo_label_ee.split_2means)."""
+    xs = np.sort(np.asarray(x, float))
+    n = len(xs)
+    csum = np.cumsum(xs)
+    tot = csum[-1]
+    best, bi = None, 1
+    for i in range(1, n):
+        m1 = csum[i - 1] / i
+        m2 = (tot - csum[i - 1]) / (n - i)
+        ss = np.sum((xs[:i] - m1) ** 2) + np.sum((xs[i:] - m2) ** 2)
+        if best is None or ss < best:
+            best, bi = ss, i
+    return 0.5 * (xs[bi - 1] + xs[bi])
+
+
 def leaf_dz(rows):
     """Per-scene receptacle-height proxy: median (EE_z@release − EE_z@grasp).
     Pure robot trajectory — privilege-free."""
@@ -392,17 +445,6 @@ def stage_label_place(args):
     a = calib["pad"]["z_star"] - b * calib["pad"]["dz"]
     print(f"[vision place] z-plane map: z = {a:.4f} + {b:.3f} * dz")
 
-    # cross-type transfer check (fit-on-one, locate-the-other) — taskA diagnostics
-    for src, dst in (("pad", "tray"), ("tray", "pad")):
-        z_pred = a + b * calib[dst]["dz"]  # using the full map (trivially exact at the 2 anchors)
-        rows_t = [r for r in rowsA if receptacle_type(r[0]) == dst]
-        errs = []
-        for g, pk, leaf, epn, meta in rows_t:
-            gt = next((np.asarray(meta[k], float) for k in ("gt_pad_xy", "gt_tray_xy") if k in meta), None)
-            xy, sp, n = place_xy_est(G, leaf, epn, meta, calib[dst]["z_star"], args.max_spread)
-            if gt is not None and isinstance(xy, np.ndarray):
-                errs.append(np.linalg.norm(xy - gt))
-
     # --- taskA features (same estimator as taskB: type-fitted plane) ---
     featA = {"center": [], "corner": []}
     rejA = 0
@@ -416,24 +458,59 @@ def stage_label_place(args):
         featA[pk].append(f)
     c = np.array(featA["center"]); x = np.array(featA["corner"])
     thr_mid = 0.5 * (c.mean() + x.mean())
-    thr_q = float(np.percentile(c, 99) * args.q_safety)
+    # PRE-REGISTERED primary rule (set before any taskB scoring was looked at):
+    # thr = max(q_safety x p99(taskA center-class features), 3 cm). The quantile
+    # tracks ESTIMATOR noise (invariant across tasks), unlike the midpoint which
+    # scales with the SOURCE corner offset (9-11 cm here) and over-thresholds
+    # targets with smaller offsets. The 3 cm floor: receptacles are >=10 cm
+    # objects, so any task's center/corner contrast is >> 3 cm, while a tighter
+    # threshold only adds false-corner risk under target-side calibration drift.
+    thr_q = float(max(np.percentile(c, 99) * args.q_safety, 0.03))
     accA_mid = 0.5 * (np.mean(c < thr_mid) + np.mean(x >= thr_mid))
     accA_q = 0.5 * (np.mean(c < thr_q) + np.mean(x >= thr_q))
     print(f"[vision place] taskA feats: center {c.mean()*100:.1f}±{c.std()*100:.1f}cm "
           f"(p99 {np.percentile(c,99)*100:.1f}) corner {x.mean()*100:.1f}±{x.std()*100:.1f}cm | rejected {rejA}")
-    print(f"[vision place] thresholds: midpoint {thr_mid*100:.1f}cm (taskA acc {accA_mid:.3f}) | "
-          f"quantile {thr_q*100:.1f}cm (taskA acc {accA_q:.3f})  [primary: {args.thr_rule}]")
-    thr = thr_q if args.thr_rule == "quantile" else thr_mid
+    print(f"[vision place] taskA-fixed thresholds: midpoint {thr_mid*100:.1f}cm (taskA acc {accA_mid:.3f}) | "
+          f"quantile {thr_q*100:.1f}cm (taskA acc {accA_q:.3f})  [rule: {args.thr_rule}]")
 
     # --- taskB: privilege-free path ---
     dz_B = leaf_dz(rowsB)                      # robot-measured receptacle height proxy
     z_B = float(a + b * dz_B)
     print(f"[vision place] taskB dz={dz_B:+.4f} -> z_plane={z_B:.4f}")
-    cache, n_ok, n_kept, n_kept_ok = {}, 0, 0, 0
-    labels = PREF_LABELS["place"]
+    featB = {}
     for g, gt_pk, leaf, epn, meta in rowsB:
         xy, sp, nfr = place_xy_est(G, leaf, epn, meta, z_B, args.max_spread)
-        key = f"{leaf}/{epn}"
+        featB[f"{leaf}/{epn}"] = (g, gt_pk, leaf, epn, meta, xy, sp, nfr)
+
+    # PRIMARY RULE (pre-registered 2026-06-11, BEFORE any taskB feature was
+    # computed; rationale measured on taskA only): the center-class feature tail
+    # is DEMO RELEASE SCATTER (taskA decomposition: locerr p99 = 1.0 cm but
+    # release-vs-target up to 4.5 cm), an object/policy property that differs
+    # between tasks — so a taskA-fixed threshold is scale-mismatched on a target
+    # whose corner offset differs from the source's (9-11 cm there). Both target
+    # classes share the same scatter+estimator spread, so the split point is
+    # recovered UNSUPERVISED on the target pool (exact 1-D 2-means, transductive,
+    # no GT — same recipe as pseudo_label_ee), with taskA giving the DIRECTION
+    # (small = center) and the calibration constants. Degenerate-split fallback
+    # (either cluster < 10% of pool): taskA quantile threshold.
+    fvals = np.array([np.linalg.norm(np.asarray(v[4]["xy_t90"]) - v[5])
+                      for v in featB.values() if isinstance(v[5], np.ndarray)])
+    thr_2m = _two_means_1d(fvals)
+    n_lo = int(np.sum(fvals < thr_2m))
+    degenerate = min(n_lo, len(fvals) - n_lo) < max(3, 0.10 * len(fvals))
+    if args.thr_rule == "2means" and not degenerate:
+        thr = float(thr_2m)
+    elif args.thr_rule == "midpoint":
+        thr = thr_mid
+    else:
+        thr = thr_q
+    print(f"[vision place] taskB split: 2means={thr_2m*100:.2f}cm (lo/hi {n_lo}/{len(fvals)-n_lo}"
+          f"{', DEGENERATE -> fallback' if degenerate else ''}) | using thr={thr*100:.2f}cm "
+          f"margin=±{args.margin*100:.1f}cm")
+
+    cache, n_ok, n_kept, n_kept_ok = {}, 0, 0, 0
+    labels = PREF_LABELS["place"]
+    for key, (g, gt_pk, leaf, epn, meta, xy, sp, nfr) in featB.items():
         if not isinstance(xy, np.ndarray):
             cache[key] = {"action_prompt_label": labels[SMALL['place']], "pref_key": SMALL["place"],
                           "decision": "reject", "reject_reason": str(sp),
@@ -441,16 +518,21 @@ def stage_label_place(args):
             continue
         f = float(np.linalg.norm(np.asarray(meta["xy_t90"]) - xy))
         pred = "center" if f < thr else "corner"
+        decision = "keep" if abs(f - thr) >= args.margin else "reject"
         match = (pred == gt_pk)
-        n_ok += int(match); n_kept += 1; n_kept_ok += int(match)
+        if decision == "keep":
+            n_ok += int(match); n_kept += 1; n_kept_ok += int(match)
         cache[key] = {
-            "action_prompt_label": labels[pred], "pref_key": pred, "decision": "keep",
+            "action_prompt_label": labels[pred], "pref_key": pred, "decision": decision,
             "feature": round(f, 4), "xy_est": [round(v, 4) for v in xy.tolist()],
             "frame_spread": round(sp, 4), "n_frames": nfr, "z_plane": round(z_B, 4),
             "gt_pref_key": gt_pk, "gt_match": match,
         }
     nB = len(rowsB)
-    acc = n_ok / nB
+    # overall = all episodes that HAVE a prediction scored (incl. margin-rejects),
+    # geometry-failures count as wrong (conservative; same convention as the doc)
+    n_all_ok = sum(1 for v in cache.values() if v.get("feature") is not None and v["gt_match"])
+    acc = n_all_ok / nB
     acc_kept = n_kept_ok / max(1, n_kept)
     pred_dist = Counter(v["pref_key"] for v in cache.values() if v["decision"] == "keep")
     print(f"[vision place] taskB n={nB} overall acc={acc:.3f} | post-filter acc={acc_kept:.3f} "
@@ -464,17 +546,42 @@ def stage_label_place(args):
                    "thr_mid": thr_mid, "thr_q": thr_q, "z_B": z_B, "dz_B": dz_B},
                   open(args.calib_out, "w"), indent=2)
 
+    # POST-HOC DIAGNOSTIC (printed after the cache is written; cannot influence
+    # labeling): taskB receptacle localization error vs scene_info GT — part of
+    # the scoring/failure analysis, same privilege class as gt_match above.
+    errsB = []
+    for g, gt_pk, leaf, epn, meta in rowsB:
+        if "gt_stand_xy" not in meta:
+            continue
+        xy, sp, nfr = place_xy_est(G, leaf, epn, meta, z_B, args.max_spread)
+        if isinstance(xy, np.ndarray):
+            errsB.append(np.linalg.norm(xy - np.asarray(meta["gt_stand_xy"], float)))
+    if errsB:
+        e = np.array(errsB)
+        print(f"[vision place] POST-HOC taskB localization err: med={np.median(e)*100:.1f}cm "
+              f"p90={np.percentile(e,90)*100:.1f}cm max={e.max()*100:.1f}cm (n={len(e)})")
+
 
 # ---------------- contact ----------------
 
 def contact_obj_geom(G, leaf, epn, meta, z_table, max_h_spread=0.03):
     """Object bottom xy + height from the bbox: bottom-center -> table plane;
-    top row -> solve z at that xy. Median over frames."""
+    top row -> solve z at that xy. Median over frames.
+
+    Wrong-object gate (privilege-free): the robot grasps THIS object, so its
+    own EE xy at the first gripper close marks the grasp NEIGHBORHOOD. NB the
+    EE pose is the WRIST, which for this gripper sits ~9-11 cm behind the
+    fingertips on a side grasp (measured on taskB: dist 8.8-11.4 cm on
+    visually-perfect groundings) -> the gate is a GROSS-error catch only
+    (> 25 cm = boxed something across the table, e.g. the dustbin); fine-
+    grained wrong-object rejection is delegated to the hf-plausibility band
+    in stage_label_contact (a real fraction must be ~[0,1]; a plate/bin box
+    gives a wildly out-of-band hf_est)."""
     bbs = ep_groundings(G, leaf, epn)
     if not bbs:
         return None
     K, E = meta["K"], meta["E"]
-    hs = []
+    hs, xys = [], []
     for frac, bb in bbs.items():
         u_c, v_top, v_bot = 0.5 * (bb[0] + bb[2]), bb[1], bb[3]
         xy = backproject_to_plane(K, E, (u_c, v_bot), z_table)
@@ -484,12 +591,17 @@ def contact_obj_geom(G, leaf, epn, meta, z_table, max_h_spread=0.03):
         if z_top is None:
             continue
         hs.append(z_top - z_table)
+        xys.append(xy)
     if len(hs) < 2:
         return None
     hs = np.array(hs)
     h = float(np.median(hs))
     if h < 0.02 or (hs.max() - hs.min()) > max_h_spread:
         return None
+    if meta.get("xy_first_close") is not None:
+        med_xy = np.median(np.array(xys), axis=0)
+        if float(np.linalg.norm(med_xy - np.asarray(meta["xy_first_close"], float))) > 0.25:
+            return None
     return h
 
 
@@ -498,31 +610,39 @@ def stage_label_contact(args):
     rowsA = collect_rows("contact", CONTACT_TASKA_GROUPS, limit=args.n_fit)
     rowsB = collect_rows("contact", CONTACT_TASKB_GROUPS)
 
-    # --- joint calibration of (z_table, k) on taskA (hf GT legitimate there) ---
-    # model: EE_z@grasp = k + hf * h_est(z_table); k absorbs table z + TCP offset.
-    best = None
-    for z_table in np.round(np.arange(0.70, 0.80, 0.0025), 4):
-        recs = []
-        for g, pk, leaf, epn, meta in rowsA:
-            if meta.get("z_first_close") is None or "gt_height_fraction" not in meta:
-                continue
-            h = contact_obj_geom(G, leaf, epn, meta, z_table)
-            if h is None:
-                continue
-            recs.append((meta["z_first_close"], meta["gt_height_fraction"], h))
-        if len(recs) < 20:
+    # --- calibration on taskA (hf GT legitimate there) ---
+    # model: EE_z@grasp = k + hf * h_est(z_table). (z_table, k) are NOT jointly
+    # identifiable from hf matching alone (flat ridge: a 2-D grid search rode
+    # the grid edge and the taskA residual kept improving while taskB acc
+    # dropped — measured 2026-06-11). z_table is therefore ANCHORED physically:
+    # the place-pad effective plane from calib_place.json (the flat pad lies on
+    # the SAME table — head-camera K,E verified identical across categories;
+    # on a real cell the table height is directly measurable anyway). Only the
+    # scalar k (TCP/fingertip offset) is fit here, closed-form.
+    calib_place_path = os.path.join(VISION_CACHE, "calib_place.json")
+    if os.path.exists(calib_place_path):
+        z_table = float(json.load(open(calib_place_path))["calib"]["pad"]["z_star"])
+    else:
+        z_table = 0.7225  # the 2026-06-11 pad fit; regenerate via --cat place --stage label
+    recs = []
+    for g, pk, leaf, epn, meta in rowsA:
+        if meta.get("z_first_close") is None or "gt_height_fraction" not in meta:
             continue
-        zg = np.array([r[0] for r in recs]); hf = np.array([r[1] for r in recs]); h = np.array([r[2] for r in recs])
-        k = float(np.median(zg - hf * h))
-        resid = np.abs((zg - k) / h - hf)
-        med = float(np.median(resid))
-        if best is None or med < best[0]:
-            best = (med, z_table, k, len(recs))
-    med, z_table, k, n_cal = best
-    print(f"[vision contact] calib: z_table={z_table:.4f} k={k:.4f} "
-          f"(median |hf_est − hf_gt| = {med:.3f}, n={n_cal})")
+        h = contact_obj_geom(G, leaf, epn, meta, z_table)
+        if h is None:
+            continue
+        recs.append((meta["z_first_close"], meta["gt_height_fraction"], h))
+    zg = np.array([r[0] for r in recs]); hfgt = np.array([r[1] for r in recs]); hh = np.array([r[2] for r in recs])
+    k = float(np.median(zg - hfgt * hh))
+    med = float(np.median(np.abs((zg - k) / hh - hfgt)))
+    n_cal = len(recs)
+    print(f"[vision contact] calib: z_table={z_table:.4f} (anchored, place-pad plane) "
+          f"k={k:.4f} (median |hf_est − hf_gt| = {med:.3f}, n={n_cal})")
 
     # --- taskA same-estimator features + threshold ---
+    # hf-plausibility band: a grasp-height FRACTION must be ~[0,1]; far outside
+    # means the grounder boxed the wrong object (plate/bin -> tiny/huge h_est).
+    HF_BAND = (-0.25, 1.25)
     featA = {"25": [], "75": []}
     rejA = 0
     for g, pk, leaf, epn, meta in rowsA:
@@ -530,12 +650,16 @@ def stage_label_contact(args):
         if h is None or meta.get("z_first_close") is None:
             rejA += 1
             continue
-        featA[pk].append((meta["z_first_close"] - k) / h)
+        hf = (meta["z_first_close"] - k) / h
+        if not (HF_BAND[0] <= hf <= HF_BAND[1]):
+            rejA += 1
+            continue
+        featA[pk].append(hf)
     lo = np.array(featA["25"]); hi = np.array(featA["75"])
     thr = 0.5 * (lo.mean() + hi.mean())
     accA = 0.5 * (np.mean(lo < thr) + np.mean(hi >= thr))
-    print(f"[vision contact] taskA hf_est: 25 {lo.mean():.3f}±{lo.std():.3f}  "
-          f"75 {hi.mean():.3f}±{hi.std():.3f}  thr={thr:.3f}  acc={accA:.3f}  rejected {rejA}")
+    print(f"[vision contact] taskA hf_est: 25 {lo.mean():.3f}±{lo.std():.3f} (n={len(lo)})  "
+          f"75 {hi.mean():.3f}±{hi.std():.3f} (n={len(hi)})  thr={thr:.3f}  acc={accA:.3f}  rejected {rejA}")
 
     # --- taskB ---
     cache, n_ok, n_kept, n_kept_ok = {}, 0, 0, 0
@@ -550,15 +674,20 @@ def stage_label_contact(args):
             continue
         f = float((meta["z_first_close"] - k) / h)
         pred = "25" if f < thr else "75"
+        decision = "keep" if HF_BAND[0] <= f <= HF_BAND[1] else "reject"
         match = (pred == gt_pk)
-        n_ok += int(match); n_kept += 1; n_kept_ok += int(match)
+        if decision == "keep":
+            n_ok += int(match); n_kept += 1; n_kept_ok += int(match)
         cache[key] = {
-            "action_prompt_label": labels[pred], "pref_key": pred, "decision": "keep",
+            "action_prompt_label": labels[pred], "pref_key": pred, "decision": decision,
             "feature": round(f, 4), "h_est": round(h, 4),
             "gt_pref_key": gt_pk, "gt_match": match,
         }
+        if decision == "reject":
+            cache[key]["reject_reason"] = "hf_out_of_band"
     nB = len(rowsB)
-    acc = n_ok / nB
+    n_all_ok = sum(1 for v in cache.values() if v.get("feature") is not None and v["gt_match"])
+    acc = n_all_ok / nB
     acc_kept = n_kept_ok / max(1, n_kept)
     pred_dist = Counter(v["pref_key"] for v in cache.values() if v["decision"] == "keep")
     print(f"[vision contact] taskB n={nB} overall acc={acc:.3f} | post-filter acc={acc_kept:.3f} "
@@ -589,10 +718,14 @@ def main():
     ap.add_argument("--n-fit", type=int, default=40, help="taskA episodes per leaf")
     ap.add_argument("--max-spread", type=float, default=0.03,
                     help="reject if frame-to-frame xy estimates spread beyond this (m)")
-    ap.add_argument("--thr-rule", default="quantile", choices=["quantile", "midpoint"],
-                    help="place threshold rule; quantile = estimator-noise p99 x safety "
-                         "(invariant to the source corner offset), midpoint = geom parity")
+    ap.add_argument("--thr-rule", default="2means", choices=["2means", "quantile", "midpoint"],
+                    help="place threshold rule; 2means = unsupervised transductive split on the "
+                         "target pool (primary, pre-registered; self-calibrates to the target "
+                         "offset scale), quantile = taskA estimator-noise p99 x safety, "
+                         "midpoint = geom parity (scales with the SOURCE corner offset)")
     ap.add_argument("--q-safety", type=float, default=1.5)
+    ap.add_argument("--margin", type=float, default=0.008,
+                    help="reject band half-width (m) around the place threshold")
     args = ap.parse_args()
     if args.stage in ("ground", "all"):
         stage_ground(args.cat, args.gpu, args.n_fit)

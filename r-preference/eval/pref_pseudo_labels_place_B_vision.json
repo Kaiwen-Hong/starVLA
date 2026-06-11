@@ -1,0 +1,1502 @@
+{
+  "place_soap2_stand_center/episode0": {
+    "action_prompt_label": "center placement",
+    "pref_key": "center",
+    "decision": "keep",
+    "feature": 0.0027,
+    "xy_est": [
+      -0.0457,
+      -0.1505
+    ],
+    "frame_spread": 0.0018,
+    "n_frames": 3,
+    "z_plane": 0.7703,
+    "gt_pref_key": "center",
+    "gt_match": true
+  },
+  "place_soap2_stand_center/episode1": {
+    "action_prompt_label": "center placement",
+    "pref_key": "center",
+    "decision": "keep",
+    "feature": 0.0127,
+    "xy_est": [
+      -0.0345,
+      -0.1119
+    ],
+    "frame_spread": 0.0006,
+    "n_frames": 3,
+    "z_plane": 0.7703,
+    "gt_pref_key": "center",
+    "gt_match": true
+  },
+  "place_soap2_stand_center/episode2": {
+    "action_prompt_label": "center placement",
+    "pref_key": "center",
+    "decision": "keep",
+    "feature": 0.0035,
+    "xy_est": [
+      -0.0113,
+      -0.109
+    ],
+    "frame_spread": 0.0023,
+    "n_frames": 3,
+    "z_plane": 0.7703,
+    "gt_pref_key": "center",
+    "gt_match": true
+  },
+  "place_soap2_stand_center/episode3": {
+    "action_prompt_label": "center placement",
+    "pref_key": "center",
+    "decision": "keep",
+    "feature": 0.0038,
+    "xy_est": [
+      -0.0258,
+      -0.1463
+    ],
+    "frame_spread": 0.0014,
+    "n_frames": 3,
+    "z_plane": 0.7703,
+    "gt_pref_key": "center",
+    "gt_match": true
+  },
+  "place_soap2_stand_center/episode4": {
+    "action_prompt_label": "center placement",
+    "pref_key": "center",
+    "decision": "keep",
+    "feature": 0.0034,
+    "xy_est": [
+      -0.0329,
+      -0.1505
+    ],
+    "frame_spread": 0.0009,
+    "n_frames": 3,
+    "z_plane": 0.7703,
+    "gt_pref_key": "center",
+    "gt_match": true
+  },
+  "place_soap2_stand_center/episode5": {
+    "action_prompt_label": "center placement",
+    "pref_key": "center",
+    "decision": "keep",
+    "feature": 0.0034,
+    "xy_est": [
+      -0.033,
+      -0.1254
+    ],
+    "frame_spread": 0.0016,
+    "n_frames": 3,
+    "z_plane": 0.7703,
+    "gt_pref_key": "center",
+    "gt_match": true
+  },
+  "place_soap2_stand_center/episode6": {
+    "action_prompt_label": "center placement",
+    "pref_key": "center",
+    "decision": "keep",
+    "feature": 0.0054,
+    "xy_est": [
+      -0.0256,
+      -0.1049
+    ],
+    "frame_spread": 0.0026,
+    "n_frames": 3,
+    "z_plane": 0.7703,
+    "gt_pref_key": "center",
+    "gt_match": true
+  },
+  "place_soap2_stand_center/episode7": {
+    "action_prompt_label": "center placement",
+    "pref_key": "center",
+    "decision": "keep",
+    "feature": 0.0016,
+    "xy_est": [
+      -0.028,
+      -0.1036
+    ],
+    "frame_spread": 0.0035,
+    "n_frames": 3,
+    "z_plane": 0.7703,
+    "gt_pref_key": "center",
+    "gt_match": true
+  },
+  "place_soap2_stand_center/episode8": {
+    "action_prompt_label": "center placement",
+    "pref_key": "center",
+    "decision": "keep",
+    "feature": 0.0053,
+    "xy_est": [
+      -0.0008,
+      -0.1367
+    ],
+    "frame_spread": 0.0026,
+    "n_frames": 3,
+    "z_plane": 0.7703,
+    "gt_pref_key": "center",
+    "gt_match": true
+  },
+  "place_soap2_stand_center/episode9": {
+    "action_prompt_label": "center placement",
+    "pref_key": "center",
+    "decision": "keep",
+    "feature": 0.006,
+    "xy_est": [
+      -0.013,
+      -0.1201
+    ],
+    "frame_spread": 0.0011,
+    "n_frames": 3,
+    "z_plane": 0.7703,
+    "gt_pref_key": "center",
+    "gt_match": true
+  },
+  "place_soap2_stand_center/episode10": {
+    "action_prompt_label": "center placement",
+    "pref_key": "center",
+    "decision": "keep",
+    "feature": 0.0069,
+    "xy_est": [
+      -0.0148,
+      -0.1119
+    ],
+    "frame_spread": 0.0015,
+    "n_frames": 3,
+    "z_plane": 0.7703,
+    "gt_pref_key": "center",
+    "gt_match": true
+  },
+  "place_soap2_stand_center/episode11": {
+    "action_prompt_label": "center placement",
+    "pref_key": "center",
+    "decision": "keep",
+    "feature": 0.0025,
+    "xy_est": [
+      -0.0225,
+      -0.1511
+    ],
+    "frame_spread": 0.0019,
+    "n_frames": 3,
+    "z_plane": 0.7703,
+    "gt_pref_key": "center",
+    "gt_match": true
+  },
+  "place_soap2_stand_center/episode12": {
+    "action_prompt_label": "center placement",
+    "pref_key": "center",
+    "decision": "keep",
+    "feature": 0.014,
+    "xy_est": [
+      -0.0458,
+      -0.1122
+    ],
+    "frame_spread": 0.0025,
+    "n_frames": 3,
+    "z_plane": 0.7703,
+    "gt_pref_key": "center",
+    "gt_match": true
+  },
+  "place_soap2_stand_center/episode13": {
+    "action_prompt_label": "center placement",
+    "pref_key": "center",
+    "decision": "keep",
+    "feature": 0.0034,
+    "xy_est": [
+      -0.0377,
+      -0.1505
+    ],
+    "frame_spread": 0.0003,
+    "n_frames": 3,
+    "z_plane": 0.7703,
+    "gt_pref_key": "center",
+    "gt_match": true
+  },
+  "place_soap2_stand_center/episode14": {
+    "action_prompt_label": "center placement",
+    "pref_key": "center",
+    "decision": "keep",
+    "feature": 0.0067,
+    "xy_est": [
+      -0.034,
+      -0.1144
+    ],
+    "frame_spread": 0.0016,
+    "n_frames": 3,
+    "z_plane": 0.7703,
+    "gt_pref_key": "center",
+    "gt_match": true
+  },
+  "place_soap2_stand_center/episode15": {
+    "action_prompt_label": "center placement",
+    "pref_key": "center",
+    "decision": "keep",
+    "feature": 0.0084,
+    "xy_est": [
+      -0.0558,
+      -0.1469
+    ],
+    "frame_spread": 0.0006,
+    "n_frames": 3,
+    "z_plane": 0.7703,
+    "gt_pref_key": "center",
+    "gt_match": true
+  },
+  "place_soap2_stand_center/episode16": {
+    "action_prompt_label": "center placement",
+    "pref_key": "center",
+    "decision": "keep",
+    "feature": 0.0063,
+    "xy_est": [
+      -0.0408,
+      -0.1119
+    ],
+    "frame_spread": 0.0014,
+    "n_frames": 3,
+    "z_plane": 0.7703,
+    "gt_pref_key": "center",
+    "gt_match": true
+  },
+  "place_soap2_stand_center/episode17": {
+    "action_prompt_label": "center placement",
+    "pref_key": "center",
+    "decision": "keep",
+    "feature": 0.0031,
+    "xy_est": [
+      -0.0174,
+      -0.122
+    ],
+    "frame_spread": 0.0016,
+    "n_frames": 3,
+    "z_plane": 0.7703,
+    "gt_pref_key": "center",
+    "gt_match": true
+  },
+  "place_soap2_stand_center/episode18": {
+    "action_prompt_label": "center placement",
+    "pref_key": "center",
+    "decision": "keep",
+    "feature": 0.0036,
+    "xy_est": [
+      -0.0163,
+      -0.1154
+    ],
+    "frame_spread": 0.0019,
+    "n_frames": 3,
+    "z_plane": 0.7703,
+    "gt_pref_key": "center",
+    "gt_match": true
+  },
+  "place_soap2_stand_center/episode19": {
+    "action_prompt_label": "center placement",
+    "pref_key": "center",
+    "decision": "keep",
+    "feature": 0.0054,
+    "xy_est": [
+      -0.022,
+      -0.1419
+    ],
+    "frame_spread": 0.0009,
+    "n_frames": 3,
+    "z_plane": 0.7703,
+    "gt_pref_key": "center",
+    "gt_match": true
+  },
+  "place_soap2_stand_center/episode20": {
+    "action_prompt_label": "center placement",
+    "pref_key": "center",
+    "decision": "keep",
+    "feature": 0.0046,
+    "xy_est": [
+      -0.0419,
+      -0.1052
+    ],
+    "frame_spread": 0.0013,
+    "n_frames": 3,
+    "z_plane": 0.7703,
+    "gt_pref_key": "center",
+    "gt_match": true
+  },
+  "place_soap2_stand_center/episode21": {
+    "action_prompt_label": "center placement",
+    "pref_key": "center",
+    "decision": "keep",
+    "feature": 0.0025,
+    "xy_est": [
+      0.0024,
+      -0.11
+    ],
+    "frame_spread": 0.0021,
+    "n_frames": 3,
+    "z_plane": 0.7703,
+    "gt_pref_key": "center",
+    "gt_match": true
+  },
+  "place_soap2_stand_center/episode22": {
+    "action_prompt_label": "center placement",
+    "pref_key": "center",
+    "decision": "reject",
+    "feature": 0.0327,
+    "xy_est": [
+      -0.0571,
+      -0.1093
+    ],
+    "frame_spread": 0.002,
+    "n_frames": 3,
+    "z_plane": 0.7703,
+    "gt_pref_key": "center",
+    "gt_match": true
+  },
+  "place_soap2_stand_center/episode23": {
+    "action_prompt_label": "center placement",
+    "pref_key": "center",
+    "decision": "keep",
+    "feature": 0.0043,
+    "xy_est": [
+      -0.0436,
+      -0.1318
+    ],
+    "frame_spread": 0.001,
+    "n_frames": 3,
+    "z_plane": 0.7703,
+    "gt_pref_key": "center",
+    "gt_match": true
+  },
+  "place_soap2_stand_center/episode24": {
+    "action_prompt_label": "center placement",
+    "pref_key": "center",
+    "decision": "keep",
+    "feature": 0.0072,
+    "xy_est": [
+      -0.0009,
+      -0.1071
+    ],
+    "frame_spread": 0.0016,
+    "n_frames": 3,
+    "z_plane": 0.7703,
+    "gt_pref_key": "center",
+    "gt_match": true
+  },
+  "place_soap2_stand_center/episode25": {
+    "action_prompt_label": "center placement",
+    "pref_key": "center",
+    "decision": "keep",
+    "feature": 0.0035,
+    "xy_est": [
+      -0.0238,
+      -0.1349
+    ],
+    "frame_spread": 0.0011,
+    "n_frames": 3,
+    "z_plane": 0.7703,
+    "gt_pref_key": "center",
+    "gt_match": true
+  },
+  "place_soap2_stand_center/episode26": {
+    "action_prompt_label": "center placement",
+    "pref_key": "center",
+    "decision": "keep",
+    "feature": 0.0038,
+    "xy_est": [
+      -0.0385,
+      -0.0984
+    ],
+    "frame_spread": 0.0016,
+    "n_frames": 3,
+    "z_plane": 0.7703,
+    "gt_pref_key": "center",
+    "gt_match": true
+  },
+  "place_soap2_stand_center/episode27": {
+    "action_prompt_label": "center placement",
+    "pref_key": "center",
+    "decision": "keep",
+    "feature": 0.0023,
+    "xy_est": [
+      -0.0368,
+      -0.1337
+    ],
+    "frame_spread": 0.0011,
+    "n_frames": 3,
+    "z_plane": 0.7703,
+    "gt_pref_key": "center",
+    "gt_match": true
+  },
+  "place_soap2_stand_center/episode28": {
+    "action_prompt_label": "center placement",
+    "pref_key": "center",
+    "decision": "keep",
+    "feature": 0.0022,
+    "xy_est": [
+      -0.0016,
+      -0.1318
+    ],
+    "frame_spread": 0.0014,
+    "n_frames": 3,
+    "z_plane": 0.7703,
+    "gt_pref_key": "center",
+    "gt_match": true
+  },
+  "place_soap2_stand_center/episode29": {
+    "action_prompt_label": "center placement",
+    "pref_key": "center",
+    "decision": "keep",
+    "feature": 0.0033,
+    "xy_est": [
+      -0.0358,
+      -0.1367
+    ],
+    "frame_spread": 0.0011,
+    "n_frames": 3,
+    "z_plane": 0.7703,
+    "gt_pref_key": "center",
+    "gt_match": true
+  },
+  "place_soap2_stand_center/episode30": {
+    "action_prompt_label": "center placement",
+    "pref_key": "center",
+    "decision": "keep",
+    "feature": 0.0029,
+    "xy_est": [
+      -0.0388,
+      -0.1207
+    ],
+    "frame_spread": 0.0015,
+    "n_frames": 3,
+    "z_plane": 0.7703,
+    "gt_pref_key": "center",
+    "gt_match": true
+  },
+  "place_soap2_stand_center/episode31": {
+    "action_prompt_label": "center placement",
+    "pref_key": "center",
+    "decision": "keep",
+    "feature": 0.0205,
+    "xy_est": [
+      -0.0421,
+      -0.1318
+    ],
+    "frame_spread": 0.0012,
+    "n_frames": 3,
+    "z_plane": 0.7703,
+    "gt_pref_key": "center",
+    "gt_match": true
+  },
+  "place_soap2_stand_center/episode32": {
+    "action_prompt_label": "center placement",
+    "pref_key": "center",
+    "decision": "keep",
+    "feature": 0.0027,
+    "xy_est": [
+      -0.0136,
+      -0.1016
+    ],
+    "frame_spread": 0.0013,
+    "n_frames": 3,
+    "z_plane": 0.7703,
+    "gt_pref_key": "center",
+    "gt_match": true
+  },
+  "place_soap2_stand_center/episode33": {
+    "action_prompt_label": "center placement",
+    "pref_key": "center",
+    "decision": "keep",
+    "feature": 0.0041,
+    "xy_est": [
+      -0.0301,
+      -0.13
+    ],
+    "frame_spread": 0.001,
+    "n_frames": 3,
+    "z_plane": 0.7703,
+    "gt_pref_key": "center",
+    "gt_match": true
+  },
+  "place_soap2_stand_center/episode34": {
+    "action_prompt_label": "center placement",
+    "pref_key": "center",
+    "decision": "keep",
+    "feature": 0.0069,
+    "xy_est": [
+      -0.0089,
+      -0.1325
+    ],
+    "frame_spread": 0.0018,
+    "n_frames": 3,
+    "z_plane": 0.7703,
+    "gt_pref_key": "center",
+    "gt_match": true
+  },
+  "place_soap2_stand_center/episode35": {
+    "action_prompt_label": "center placement",
+    "pref_key": "center",
+    "decision": "keep",
+    "feature": 0.0069,
+    "xy_est": [
+      -0.0034,
+      -0.1434
+    ],
+    "frame_spread": 0.001,
+    "n_frames": 3,
+    "z_plane": 0.7703,
+    "gt_pref_key": "center",
+    "gt_match": true
+  },
+  "place_soap2_stand_center/episode36": {
+    "action_prompt_label": "center placement",
+    "pref_key": "center",
+    "decision": "keep",
+    "feature": 0.0063,
+    "xy_est": [
+      -0.0559,
+      -0.1394
+    ],
+    "frame_spread": 0.0018,
+    "n_frames": 3,
+    "z_plane": 0.7703,
+    "gt_pref_key": "center",
+    "gt_match": true
+  },
+  "place_soap2_stand_center/episode37": {
+    "action_prompt_label": "center placement",
+    "pref_key": "center",
+    "decision": "keep",
+    "feature": 0.0019,
+    "xy_est": [
+      -0.0417,
+      -0.1226
+    ],
+    "frame_spread": 0.0015,
+    "n_frames": 3,
+    "z_plane": 0.7703,
+    "gt_pref_key": "center",
+    "gt_match": true
+  },
+  "place_soap2_stand_center/episode38": {
+    "action_prompt_label": "center placement",
+    "pref_key": "center",
+    "decision": "keep",
+    "feature": 0.0049,
+    "xy_est": [
+      -0.0141,
+      -0.1282
+    ],
+    "frame_spread": 0.0014,
+    "n_frames": 3,
+    "z_plane": 0.7703,
+    "gt_pref_key": "center",
+    "gt_match": true
+  },
+  "place_soap2_stand_center/episode39": {
+    "action_prompt_label": "center placement",
+    "pref_key": "center",
+    "decision": "keep",
+    "feature": 0.0057,
+    "xy_est": [
+      0.0002,
+      -0.1201
+    ],
+    "frame_spread": 0.0006,
+    "n_frames": 3,
+    "z_plane": 0.7703,
+    "gt_pref_key": "center",
+    "gt_match": true
+  },
+  "place_soap2_stand_center/episode40": {
+    "action_prompt_label": "center placement",
+    "pref_key": "center",
+    "decision": "keep",
+    "feature": 0.0048,
+    "xy_est": [
+      -0.0488,
+      -0.1055
+    ],
+    "frame_spread": 0.0013,
+    "n_frames": 3,
+    "z_plane": 0.7703,
+    "gt_pref_key": "center",
+    "gt_match": true
+  },
+  "place_soap2_stand_center/episode41": {
+    "action_prompt_label": "center placement",
+    "pref_key": "center",
+    "decision": "keep",
+    "feature": 0.0043,
+    "xy_est": [
+      -0.031,
+      -0.1113
+    ],
+    "frame_spread": 0.0019,
+    "n_frames": 3,
+    "z_plane": 0.7703,
+    "gt_pref_key": "center",
+    "gt_match": true
+  },
+  "place_soap2_stand_center/episode42": {
+    "action_prompt_label": "center placement",
+    "pref_key": "center",
+    "decision": "keep",
+    "feature": 0.0038,
+    "xy_est": [
+      -0.0426,
+      -0.1355
+    ],
+    "frame_spread": 0.0024,
+    "n_frames": 3,
+    "z_plane": 0.7703,
+    "gt_pref_key": "center",
+    "gt_match": true
+  },
+  "place_soap2_stand_center/episode43": {
+    "action_prompt_label": "center placement",
+    "pref_key": "center",
+    "decision": "keep",
+    "feature": 0.0111,
+    "xy_est": [
+      -0.0378,
+      -0.1331
+    ],
+    "frame_spread": 0.001,
+    "n_frames": 3,
+    "z_plane": 0.7703,
+    "gt_pref_key": "center",
+    "gt_match": true
+  },
+  "place_soap2_stand_center/episode44": {
+    "action_prompt_label": "center placement",
+    "pref_key": "center",
+    "decision": "keep",
+    "feature": 0.0032,
+    "xy_est": [
+      -0.0052,
+      -0.0997
+    ],
+    "frame_spread": 0.0016,
+    "n_frames": 3,
+    "z_plane": 0.7703,
+    "gt_pref_key": "center",
+    "gt_match": true
+  },
+  "place_soap2_stand_center/episode45": {
+    "action_prompt_label": "center placement",
+    "pref_key": "center",
+    "decision": "keep",
+    "feature": 0.004,
+    "xy_est": [
+      -0.0195,
+      -0.1312
+    ],
+    "frame_spread": 0.0016,
+    "n_frames": 3,
+    "z_plane": 0.7703,
+    "gt_pref_key": "center",
+    "gt_match": true
+  },
+  "place_soap2_stand_center/episode46": {
+    "action_prompt_label": "center placement",
+    "pref_key": "center",
+    "decision": "keep",
+    "feature": 0.006,
+    "xy_est": [
+      -0.0301,
+      -0.1437
+    ],
+    "frame_spread": 0.0023,
+    "n_frames": 3,
+    "z_plane": 0.7703,
+    "gt_pref_key": "center",
+    "gt_match": true
+  },
+  "place_soap2_stand_center/episode47": {
+    "action_prompt_label": "center placement",
+    "pref_key": "center",
+    "decision": "keep",
+    "feature": 0.0049,
+    "xy_est": [
+      -0.0057,
+      -0.1404
+    ],
+    "frame_spread": 0.001,
+    "n_frames": 3,
+    "z_plane": 0.7703,
+    "gt_pref_key": "center",
+    "gt_match": true
+  },
+  "place_soap2_stand_center/episode48": {
+    "action_prompt_label": "center placement",
+    "pref_key": "center",
+    "decision": "keep",
+    "feature": 0.006,
+    "xy_est": [
+      -0.0257,
+      -0.1306
+    ],
+    "frame_spread": 0.0014,
+    "n_frames": 3,
+    "z_plane": 0.7703,
+    "gt_pref_key": "center",
+    "gt_match": true
+  },
+  "place_soap2_stand_center/episode49": {
+    "action_prompt_label": "center placement",
+    "pref_key": "center",
+    "decision": "keep",
+    "feature": 0.0138,
+    "xy_est": [
+      -0.0444,
+      -0.101
+    ],
+    "frame_spread": 0.0006,
+    "n_frames": 3,
+    "z_plane": 0.7703,
+    "gt_pref_key": "center",
+    "gt_match": true
+  },
+  "place_soap2_stand_corner/episode0": {
+    "action_prompt_label": "corner placement",
+    "pref_key": "corner",
+    "decision": "keep",
+    "feature": 0.0669,
+    "xy_est": [
+      -0.0457,
+      -0.1511
+    ],
+    "frame_spread": 0.0014,
+    "n_frames": 3,
+    "z_plane": 0.7703,
+    "gt_pref_key": "corner",
+    "gt_match": true
+  },
+  "place_soap2_stand_corner/episode1": {
+    "action_prompt_label": "corner placement",
+    "pref_key": "corner",
+    "decision": "keep",
+    "feature": 0.0614,
+    "xy_est": [
+      -0.0345,
+      -0.1125
+    ],
+    "frame_spread": 0.001,
+    "n_frames": 3,
+    "z_plane": 0.7703,
+    "gt_pref_key": "corner",
+    "gt_match": true
+  },
+  "place_soap2_stand_corner/episode2": {
+    "action_prompt_label": "corner placement",
+    "pref_key": "corner",
+    "decision": "keep",
+    "feature": 0.0674,
+    "xy_est": [
+      -0.0109,
+      -0.1081
+    ],
+    "frame_spread": 0.0026,
+    "n_frames": 3,
+    "z_plane": 0.7703,
+    "gt_pref_key": "corner",
+    "gt_match": true
+  },
+  "place_soap2_stand_corner/episode3": {
+    "action_prompt_label": "corner placement",
+    "pref_key": "corner",
+    "decision": "keep",
+    "feature": 0.0627,
+    "xy_est": [
+      -0.0253,
+      -0.1463
+    ],
+    "frame_spread": 0.0012,
+    "n_frames": 3,
+    "z_plane": 0.7703,
+    "gt_pref_key": "corner",
+    "gt_match": true
+  },
+  "place_soap2_stand_corner/episode4": {
+    "action_prompt_label": "corner placement",
+    "pref_key": "corner",
+    "decision": "keep",
+    "feature": 0.0634,
+    "xy_est": [
+      -0.0329,
+      -0.1505
+    ],
+    "frame_spread": 0.0009,
+    "n_frames": 3,
+    "z_plane": 0.7703,
+    "gt_pref_key": "corner",
+    "gt_match": true
+  },
+  "place_soap2_stand_corner/episode5": {
+    "action_prompt_label": "corner placement",
+    "pref_key": "corner",
+    "decision": "keep",
+    "feature": 0.0654,
+    "xy_est": [
+      -0.033,
+      -0.1254
+    ],
+    "frame_spread": 0.0016,
+    "n_frames": 3,
+    "z_plane": 0.7703,
+    "gt_pref_key": "corner",
+    "gt_match": true
+  },
+  "place_soap2_stand_corner/episode6": {
+    "action_prompt_label": "corner placement",
+    "pref_key": "corner",
+    "decision": "keep",
+    "feature": 0.0698,
+    "xy_est": [
+      -0.0261,
+      -0.1052
+    ],
+    "frame_spread": 0.0011,
+    "n_frames": 3,
+    "z_plane": 0.7703,
+    "gt_pref_key": "corner",
+    "gt_match": true
+  },
+  "place_soap2_stand_corner/episode7": {
+    "action_prompt_label": "corner placement",
+    "pref_key": "corner",
+    "decision": "keep",
+    "feature": 0.0661,
+    "xy_est": [
+      -0.028,
+      -0.1042
+    ],
+    "frame_spread": 0.0035,
+    "n_frames": 3,
+    "z_plane": 0.7703,
+    "gt_pref_key": "corner",
+    "gt_match": true
+  },
+  "place_soap2_stand_corner/episode8": {
+    "action_prompt_label": "corner placement",
+    "pref_key": "corner",
+    "decision": "keep",
+    "feature": 0.0668,
+    "xy_est": [
+      -0.0009,
+      -0.1385
+    ],
+    "frame_spread": 0.0011,
+    "n_frames": 3,
+    "z_plane": 0.7703,
+    "gt_pref_key": "corner",
+    "gt_match": true
+  },
+  "place_soap2_stand_corner/episode9": {
+    "action_prompt_label": "corner placement",
+    "pref_key": "corner",
+    "decision": "keep",
+    "feature": 0.0692,
+    "xy_est": [
+      -0.013,
+      -0.1207
+    ],
+    "frame_spread": 0.0008,
+    "n_frames": 3,
+    "z_plane": 0.7703,
+    "gt_pref_key": "corner",
+    "gt_match": true
+  },
+  "place_soap2_stand_corner/episode10": {
+    "action_prompt_label": "corner placement",
+    "pref_key": "corner",
+    "decision": "keep",
+    "feature": 0.0701,
+    "xy_est": [
+      -0.0168,
+      -0.1125
+    ],
+    "frame_spread": 0.0016,
+    "n_frames": 3,
+    "z_plane": 0.7703,
+    "gt_pref_key": "corner",
+    "gt_match": true
+  },
+  "place_soap2_stand_corner/episode11": {
+    "action_prompt_label": "corner placement",
+    "pref_key": "corner",
+    "decision": "keep",
+    "feature": 0.0648,
+    "xy_est": [
+      -0.0225,
+      -0.1514
+    ],
+    "frame_spread": 0.0019,
+    "n_frames": 3,
+    "z_plane": 0.7703,
+    "gt_pref_key": "corner",
+    "gt_match": true
+  },
+  "place_soap2_stand_corner/episode12": {
+    "action_prompt_label": "corner placement",
+    "pref_key": "corner",
+    "decision": "keep",
+    "feature": 0.0616,
+    "xy_est": [
+      -0.0458,
+      -0.1113
+    ],
+    "frame_spread": 0.0025,
+    "n_frames": 3,
+    "z_plane": 0.7703,
+    "gt_pref_key": "corner",
+    "gt_match": true
+  },
+  "place_soap2_stand_corner/episode13": {
+    "action_prompt_label": "corner placement",
+    "pref_key": "corner",
+    "decision": "keep",
+    "feature": 0.0625,
+    "xy_est": [
+      -0.0377,
+      -0.1505
+    ],
+    "frame_spread": 0.0006,
+    "n_frames": 3,
+    "z_plane": 0.7703,
+    "gt_pref_key": "corner",
+    "gt_match": true
+  },
+  "place_soap2_stand_corner/episode14": {
+    "action_prompt_label": "corner placement",
+    "pref_key": "corner",
+    "decision": "keep",
+    "feature": 0.0633,
+    "xy_est": [
+      -0.034,
+      -0.1138
+    ],
+    "frame_spread": 0.0013,
+    "n_frames": 3,
+    "z_plane": 0.7703,
+    "gt_pref_key": "corner",
+    "gt_match": true
+  },
+  "place_soap2_stand_corner/episode15": {
+    "action_prompt_label": "corner placement",
+    "pref_key": "corner",
+    "decision": "keep",
+    "feature": 0.0579,
+    "xy_est": [
+      -0.0557,
+      -0.1472
+    ],
+    "frame_spread": 0.0014,
+    "n_frames": 3,
+    "z_plane": 0.7703,
+    "gt_pref_key": "corner",
+    "gt_match": true
+  },
+  "place_soap2_stand_corner/episode16": {
+    "action_prompt_label": "corner placement",
+    "pref_key": "corner",
+    "decision": "keep",
+    "feature": 0.0587,
+    "xy_est": [
+      -0.0399,
+      -0.1119
+    ],
+    "frame_spread": 0.0014,
+    "n_frames": 3,
+    "z_plane": 0.7703,
+    "gt_pref_key": "corner",
+    "gt_match": true
+  },
+  "place_soap2_stand_corner/episode17": {
+    "action_prompt_label": "corner placement",
+    "pref_key": "corner",
+    "decision": "keep",
+    "feature": 0.0629,
+    "xy_est": [
+      -0.0174,
+      -0.121
+    ],
+    "frame_spread": 0.0014,
+    "n_frames": 3,
+    "z_plane": 0.7703,
+    "gt_pref_key": "corner",
+    "gt_match": true
+  },
+  "place_soap2_stand_corner/episode18": {
+    "action_prompt_label": "corner placement",
+    "pref_key": "corner",
+    "decision": "keep",
+    "feature": 0.0682,
+    "xy_est": [
+      -0.0163,
+      -0.1154
+    ],
+    "frame_spread": 0.0013,
+    "n_frames": 3,
+    "z_plane": 0.7703,
+    "gt_pref_key": "corner",
+    "gt_match": true
+  },
+  "place_soap2_stand_corner/episode19": {
+    "action_prompt_label": "corner placement",
+    "pref_key": "corner",
+    "decision": "keep",
+    "feature": 0.0713,
+    "xy_est": [
+      -0.021,
+      -0.1416
+    ],
+    "frame_spread": 0.0009,
+    "n_frames": 3,
+    "z_plane": 0.7703,
+    "gt_pref_key": "corner",
+    "gt_match": true
+  },
+  "place_soap2_stand_corner/episode20": {
+    "action_prompt_label": "corner placement",
+    "pref_key": "corner",
+    "decision": "keep",
+    "feature": 0.062,
+    "xy_est": [
+      -0.0419,
+      -0.1065
+    ],
+    "frame_spread": 0.0016,
+    "n_frames": 3,
+    "z_plane": 0.7703,
+    "gt_pref_key": "corner",
+    "gt_match": true
+  },
+  "place_soap2_stand_corner/episode21": {
+    "action_prompt_label": "corner placement",
+    "pref_key": "corner",
+    "decision": "keep",
+    "feature": 0.068,
+    "xy_est": [
+      0.0029,
+      -0.11
+    ],
+    "frame_spread": 0.0015,
+    "n_frames": 3,
+    "z_plane": 0.7703,
+    "gt_pref_key": "corner",
+    "gt_match": true
+  },
+  "place_soap2_stand_corner/episode22": {
+    "action_prompt_label": "center placement",
+    "pref_key": "center",
+    "decision": "reject",
+    "feature": 0.0325,
+    "xy_est": [
+      -0.0556,
+      -0.1087
+    ],
+    "frame_spread": 0.0023,
+    "n_frames": 3,
+    "z_plane": 0.7703,
+    "gt_pref_key": "corner",
+    "gt_match": false
+  },
+  "place_soap2_stand_corner/episode23": {
+    "action_prompt_label": "corner placement",
+    "pref_key": "corner",
+    "decision": "keep",
+    "feature": 0.0682,
+    "xy_est": [
+      -0.0436,
+      -0.1318
+    ],
+    "frame_spread": 0.0006,
+    "n_frames": 3,
+    "z_plane": 0.7703,
+    "gt_pref_key": "corner",
+    "gt_match": true
+  },
+  "place_soap2_stand_corner/episode24": {
+    "action_prompt_label": "corner placement",
+    "pref_key": "corner",
+    "decision": "keep",
+    "feature": 0.0702,
+    "xy_est": [
+      -0.0009,
+      -0.1055
+    ],
+    "frame_spread": 0.0017,
+    "n_frames": 3,
+    "z_plane": 0.7703,
+    "gt_pref_key": "corner",
+    "gt_match": true
+  },
+  "place_soap2_stand_corner/episode25": {
+    "action_prompt_label": "corner placement",
+    "pref_key": "corner",
+    "decision": "keep",
+    "feature": 0.0669,
+    "xy_est": [
+      -0.0234,
+      -0.1349
+    ],
+    "frame_spread": 0.001,
+    "n_frames": 3,
+    "z_plane": 0.7703,
+    "gt_pref_key": "corner",
+    "gt_match": true
+  },
+  "place_soap2_stand_corner/episode26": {
+    "action_prompt_label": "corner placement",
+    "pref_key": "corner",
+    "decision": "keep",
+    "feature": 0.0614,
+    "xy_est": [
+      -0.038,
+      -0.0981
+    ],
+    "frame_spread": 0.0006,
+    "n_frames": 3,
+    "z_plane": 0.7703,
+    "gt_pref_key": "corner",
+    "gt_match": true
+  },
+  "place_soap2_stand_corner/episode27": {
+    "action_prompt_label": "corner placement",
+    "pref_key": "corner",
+    "decision": "keep",
+    "feature": 0.0641,
+    "xy_est": [
+      -0.0368,
+      -0.1343
+    ],
+    "frame_spread": 0.001,
+    "n_frames": 3,
+    "z_plane": 0.7703,
+    "gt_pref_key": "corner",
+    "gt_match": true
+  },
+  "place_soap2_stand_corner/episode28": {
+    "action_prompt_label": "corner placement",
+    "pref_key": "corner",
+    "decision": "keep",
+    "feature": 0.0639,
+    "xy_est": [
+      -0.0017,
+      -0.1325
+    ],
+    "frame_spread": 0.0018,
+    "n_frames": 3,
+    "z_plane": 0.7703,
+    "gt_pref_key": "corner",
+    "gt_match": true
+  },
+  "place_soap2_stand_corner/episode29": {
+    "action_prompt_label": "corner placement",
+    "pref_key": "corner",
+    "decision": "keep",
+    "feature": 0.0675,
+    "xy_est": [
+      -0.0358,
+      -0.1367
+    ],
+    "frame_spread": 0.0012,
+    "n_frames": 3,
+    "z_plane": 0.7703,
+    "gt_pref_key": "corner",
+    "gt_match": true
+  },
+  "place_soap2_stand_corner/episode30": {
+    "action_prompt_label": "corner placement",
+    "pref_key": "corner",
+    "decision": "keep",
+    "feature": 0.0653,
+    "xy_est": [
+      -0.0388,
+      -0.1207
+    ],
+    "frame_spread": 0.0012,
+    "n_frames": 3,
+    "z_plane": 0.7703,
+    "gt_pref_key": "corner",
+    "gt_match": true
+  },
+  "place_soap2_stand_corner/episode31": {
+    "action_prompt_label": "corner placement",
+    "pref_key": "corner",
+    "decision": "reject",
+    "feature": 0.0471,
+    "xy_est": [
+      -0.0426,
+      -0.1318
+    ],
+    "frame_spread": 0.0012,
+    "n_frames": 3,
+    "z_plane": 0.7703,
+    "gt_pref_key": "corner",
+    "gt_match": true
+  },
+  "place_soap2_stand_corner/episode32": {
+    "action_prompt_label": "corner placement",
+    "pref_key": "corner",
+    "decision": "keep",
+    "feature": 0.0618,
+    "xy_est": [
+      -0.0137,
+      -0.101
+    ],
+    "frame_spread": 0.0015,
+    "n_frames": 3,
+    "z_plane": 0.7703,
+    "gt_pref_key": "corner",
+    "gt_match": true
+  },
+  "place_soap2_stand_corner/episode33": {
+    "action_prompt_label": "corner placement",
+    "pref_key": "corner",
+    "decision": "keep",
+    "feature": 0.0624,
+    "xy_est": [
+      -0.0301,
+      -0.1297
+    ],
+    "frame_spread": 0.001,
+    "n_frames": 3,
+    "z_plane": 0.7703,
+    "gt_pref_key": "corner",
+    "gt_match": true
+  },
+  "place_soap2_stand_corner/episode34": {
+    "action_prompt_label": "corner placement",
+    "pref_key": "corner",
+    "decision": "keep",
+    "feature": 0.0637,
+    "xy_est": [
+      -0.0089,
+      -0.1325
+    ],
+    "frame_spread": 0.0016,
+    "n_frames": 3,
+    "z_plane": 0.7703,
+    "gt_pref_key": "corner",
+    "gt_match": true
+  },
+  "place_soap2_stand_corner/episode35": {
+    "action_prompt_label": "corner placement",
+    "pref_key": "corner",
+    "decision": "keep",
+    "feature": 0.0648,
+    "xy_est": [
+      -0.0033,
+      -0.1422
+    ],
+    "frame_spread": 0.0006,
+    "n_frames": 3,
+    "z_plane": 0.7703,
+    "gt_pref_key": "corner",
+    "gt_match": true
+  },
+  "place_soap2_stand_corner/episode36": {
+    "action_prompt_label": "corner placement",
+    "pref_key": "corner",
+    "decision": "keep",
+    "feature": 0.0622,
+    "xy_est": [
+      -0.0559,
+      -0.1404
+    ],
+    "frame_spread": 0.0,
+    "n_frames": 3,
+    "z_plane": 0.7703,
+    "gt_pref_key": "corner",
+    "gt_match": true
+  },
+  "place_soap2_stand_corner/episode37": {
+    "action_prompt_label": "corner placement",
+    "pref_key": "corner",
+    "decision": "keep",
+    "feature": 0.0654,
+    "xy_est": [
+      -0.0412,
+      -0.1229
+    ],
+    "frame_spread": 0.0005,
+    "n_frames": 3,
+    "z_plane": 0.7703,
+    "gt_pref_key": "corner",
+    "gt_match": true
+  },
+  "place_soap2_stand_corner/episode38": {
+    "action_prompt_label": "corner placement",
+    "pref_key": "corner",
+    "decision": "keep",
+    "feature": 0.0691,
+    "xy_est": [
+      -0.0141,
+      -0.1272
+    ],
+    "frame_spread": 0.0015,
+    "n_frames": 3,
+    "z_plane": 0.7703,
+    "gt_pref_key": "corner",
+    "gt_match": true
+  },
+  "place_soap2_stand_corner/episode39": {
+    "action_prompt_label": "corner placement",
+    "pref_key": "corner",
+    "decision": "keep",
+    "feature": 0.069,
+    "xy_est": [
+      0.0002,
+      -0.1201
+    ],
+    "frame_spread": 0.0006,
+    "n_frames": 3,
+    "z_plane": 0.7703,
+    "gt_pref_key": "corner",
+    "gt_match": true
+  },
+  "place_soap2_stand_corner/episode40": {
+    "action_prompt_label": "corner placement",
+    "pref_key": "corner",
+    "decision": "keep",
+    "feature": 0.0607,
+    "xy_est": [
+      -0.0488,
+      -0.1055
+    ],
+    "frame_spread": 0.0,
+    "n_frames": 3,
+    "z_plane": 0.7703,
+    "gt_pref_key": "corner",
+    "gt_match": true
+  },
+  "place_soap2_stand_corner/episode41": {
+    "action_prompt_label": "corner placement",
+    "pref_key": "corner",
+    "decision": "keep",
+    "feature": 0.0624,
+    "xy_est": [
+      -0.031,
+      -0.1109
+    ],
+    "frame_spread": 0.001,
+    "n_frames": 3,
+    "z_plane": 0.7703,
+    "gt_pref_key": "corner",
+    "gt_match": true
+  },
+  "place_soap2_stand_corner/episode42": {
+    "action_prompt_label": "corner placement",
+    "pref_key": "corner",
+    "decision": "keep",
+    "feature": 0.0688,
+    "xy_est": [
+      -0.0421,
+      -0.1361
+    ],
+    "frame_spread": 0.0008,
+    "n_frames": 3,
+    "z_plane": 0.7703,
+    "gt_pref_key": "corner",
+    "gt_match": true
+  },
+  "place_soap2_stand_corner/episode43": {
+    "action_prompt_label": "corner placement",
+    "pref_key": "corner",
+    "decision": "keep",
+    "feature": 0.0649,
+    "xy_est": [
+      -0.0378,
+      -0.1321
+    ],
+    "frame_spread": 0.001,
+    "n_frames": 3,
+    "z_plane": 0.7703,
+    "gt_pref_key": "corner",
+    "gt_match": true
+  },
+  "place_soap2_stand_corner/episode44": {
+    "action_prompt_label": "corner placement",
+    "pref_key": "corner",
+    "decision": "keep",
+    "feature": 0.0617,
+    "xy_est": [
+      -0.0052,
+      -0.1003
+    ],
+    "frame_spread": 0.002,
+    "n_frames": 3,
+    "z_plane": 0.7703,
+    "gt_pref_key": "corner",
+    "gt_match": true
+  },
+  "place_soap2_stand_corner/episode45": {
+    "action_prompt_label": "corner placement",
+    "pref_key": "corner",
+    "decision": "keep",
+    "feature": 0.0667,
+    "xy_est": [
+      -0.0195,
+      -0.1315
+    ],
+    "frame_spread": 0.001,
+    "n_frames": 3,
+    "z_plane": 0.7703,
+    "gt_pref_key": "corner",
+    "gt_match": true
+  },
+  "place_soap2_stand_corner/episode46": {
+    "action_prompt_label": "corner placement",
+    "pref_key": "corner",
+    "decision": "keep",
+    "feature": 0.0692,
+    "xy_est": [
+      -0.0301,
+      -0.1428
+    ],
+    "frame_spread": 0.0014,
+    "n_frames": 3,
+    "z_plane": 0.7703,
+    "gt_pref_key": "corner",
+    "gt_match": true
+  },
+  "place_soap2_stand_corner/episode47": {
+    "action_prompt_label": "corner placement",
+    "pref_key": "corner",
+    "decision": "keep",
+    "feature": 0.063,
+    "xy_est": [
+      -0.0062,
+      -0.14
+    ],
+    "frame_spread": 0.0008,
+    "n_frames": 3,
+    "z_plane": 0.7703,
+    "gt_pref_key": "corner",
+    "gt_match": true
+  },
+  "place_soap2_stand_corner/episode48": {
+    "action_prompt_label": "corner placement",
+    "pref_key": "corner",
+    "decision": "keep",
+    "feature": 0.0605,
+    "xy_est": [
+      -0.0248,
+      -0.1306
+    ],
+    "frame_spread": 0.0006,
+    "n_frames": 3,
+    "z_plane": 0.7703,
+    "gt_pref_key": "corner",
+    "gt_match": true
+  },
+  "place_soap2_stand_corner/episode49": {
+    "action_prompt_label": "corner placement",
+    "pref_key": "corner",
+    "decision": "reject",
+    "feature": 0.0463,
+    "xy_est": [
+      -0.0444,
+      -0.102
+    ],
+    "frame_spread": 0.001,
+    "n_frames": 3,
+    "z_plane": 0.7703,
+    "gt_pref_key": "corner",
+    "gt_match": true
+  }
+}

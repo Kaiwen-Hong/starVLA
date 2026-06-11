@@ -1,0 +1,901 @@
+{
+  "put_boxdrink3_plate_25/episode0": {
+    "action_prompt_label": "low contact",
+    "pref_key": "25",
+    "decision": "keep",
+    "feature": 0.2992,
+    "h_est": 0.2452,
+    "gt_pref_key": "25",
+    "gt_match": true
+  },
+  "put_boxdrink3_plate_25/episode1": {
+    "action_prompt_label": "low contact",
+    "pref_key": "25",
+    "decision": "keep",
+    "feature": 0.3523,
+    "h_est": 0.253,
+    "gt_pref_key": "25",
+    "gt_match": true
+  },
+  "put_boxdrink3_plate_25/episode2": {
+    "action_prompt_label": "low contact",
+    "pref_key": "25",
+    "decision": "keep",
+    "feature": 0.4748,
+    "h_est": 0.2481,
+    "gt_pref_key": "25",
+    "gt_match": true
+  },
+  "put_boxdrink3_plate_25/episode3": {
+    "action_prompt_label": "low contact",
+    "pref_key": "25",
+    "decision": "keep",
+    "feature": 0.3965,
+    "h_est": 0.2403,
+    "gt_pref_key": "25",
+    "gt_match": true
+  },
+  "put_boxdrink3_plate_25/episode4": {
+    "action_prompt_label": "low contact",
+    "pref_key": "25",
+    "decision": "keep",
+    "feature": 0.3408,
+    "h_est": 0.2545,
+    "gt_pref_key": "25",
+    "gt_match": true
+  },
+  "put_boxdrink3_plate_25/episode5": {
+    "action_prompt_label": "low contact",
+    "pref_key": "25",
+    "decision": "keep",
+    "feature": 0.4099,
+    "h_est": 0.261,
+    "gt_pref_key": "25",
+    "gt_match": true
+  },
+  "put_boxdrink3_plate_25/episode6": {
+    "action_prompt_label": "low contact",
+    "pref_key": "25",
+    "decision": "keep",
+    "feature": 0.3763,
+    "h_est": 0.2476,
+    "gt_pref_key": "25",
+    "gt_match": true
+  },
+  "put_boxdrink3_plate_25/episode7": {
+    "action_prompt_label": "low contact",
+    "pref_key": "25",
+    "decision": "keep",
+    "feature": 0.3898,
+    "h_est": 0.2564,
+    "gt_pref_key": "25",
+    "gt_match": true
+  },
+  "put_boxdrink3_plate_25/episode8": {
+    "action_prompt_label": "low contact",
+    "pref_key": "25",
+    "decision": "keep",
+    "feature": 0.4462,
+    "h_est": 0.2369,
+    "gt_pref_key": "25",
+    "gt_match": true
+  },
+  "put_boxdrink3_plate_25/episode9": {
+    "action_prompt_label": "low contact",
+    "pref_key": "25",
+    "decision": "keep",
+    "feature": 0.4485,
+    "h_est": 0.2381,
+    "gt_pref_key": "25",
+    "gt_match": true
+  },
+  "put_boxdrink3_plate_25/episode10": {
+    "action_prompt_label": "low contact",
+    "pref_key": "25",
+    "decision": "keep",
+    "feature": 0.3784,
+    "h_est": 0.2283,
+    "gt_pref_key": "25",
+    "gt_match": true
+  },
+  "put_boxdrink3_plate_25/episode11": {
+    "action_prompt_label": "low contact",
+    "pref_key": "25",
+    "decision": "keep",
+    "feature": 0.3741,
+    "h_est": 0.2557,
+    "gt_pref_key": "25",
+    "gt_match": true
+  },
+  "put_boxdrink3_plate_25/episode12": {
+    "action_prompt_label": "low contact",
+    "pref_key": "25",
+    "decision": "keep",
+    "feature": 0.3736,
+    "h_est": 0.2446,
+    "gt_pref_key": "25",
+    "gt_match": true
+  },
+  "put_boxdrink3_plate_25/episode13": {
+    "action_prompt_label": "low contact",
+    "pref_key": "25",
+    "decision": "keep",
+    "feature": 0.3067,
+    "h_est": 0.2505,
+    "gt_pref_key": "25",
+    "gt_match": true
+  },
+  "put_boxdrink3_plate_25/episode14": {
+    "action_prompt_label": "low contact",
+    "pref_key": "25",
+    "decision": "keep",
+    "feature": 0.4518,
+    "h_est": 0.2493,
+    "gt_pref_key": "25",
+    "gt_match": true
+  },
+  "put_boxdrink3_plate_25/episode15": {
+    "action_prompt_label": "low contact",
+    "pref_key": "25",
+    "decision": "keep",
+    "feature": 0.4059,
+    "h_est": 0.2269,
+    "gt_pref_key": "25",
+    "gt_match": true
+  },
+  "put_boxdrink3_plate_25/episode16": {
+    "action_prompt_label": "low contact",
+    "pref_key": "25",
+    "decision": "keep",
+    "feature": 0.438,
+    "h_est": 0.2601,
+    "gt_pref_key": "25",
+    "gt_match": true
+  },
+  "put_boxdrink3_plate_25/episode17": {
+    "action_prompt_label": "low contact",
+    "pref_key": "25",
+    "decision": "keep",
+    "feature": 0.3308,
+    "h_est": 0.2691,
+    "gt_pref_key": "25",
+    "gt_match": true
+  },
+  "put_boxdrink3_plate_25/episode18": {
+    "action_prompt_label": "high contact",
+    "pref_key": "75",
+    "decision": "keep",
+    "feature": 0.5263,
+    "h_est": 0.2641,
+    "gt_pref_key": "25",
+    "gt_match": false
+  },
+  "put_boxdrink3_plate_25/episode19": {
+    "action_prompt_label": "low contact",
+    "pref_key": "25",
+    "decision": "keep",
+    "feature": 0.3096,
+    "h_est": 0.2537,
+    "gt_pref_key": "25",
+    "gt_match": true
+  },
+  "put_boxdrink3_plate_25/episode20": {
+    "action_prompt_label": "low contact",
+    "pref_key": "25",
+    "decision": "keep",
+    "feature": 0.4059,
+    "h_est": 0.2627,
+    "gt_pref_key": "25",
+    "gt_match": true
+  },
+  "put_boxdrink3_plate_25/episode21": {
+    "action_prompt_label": "low contact",
+    "pref_key": "25",
+    "decision": "keep",
+    "feature": 0.4733,
+    "h_est": 0.2511,
+    "gt_pref_key": "25",
+    "gt_match": true
+  },
+  "put_boxdrink3_plate_25/episode22": {
+    "action_prompt_label": "low contact",
+    "pref_key": "25",
+    "decision": "keep",
+    "feature": 0.3815,
+    "h_est": 0.2623,
+    "gt_pref_key": "25",
+    "gt_match": true
+  },
+  "put_boxdrink3_plate_25/episode23": {
+    "action_prompt_label": "low contact",
+    "pref_key": "25",
+    "decision": "keep",
+    "feature": 0.4108,
+    "h_est": 0.2402,
+    "gt_pref_key": "25",
+    "gt_match": true
+  },
+  "put_boxdrink3_plate_25/episode24": {
+    "action_prompt_label": "low contact",
+    "pref_key": "25",
+    "decision": "keep",
+    "feature": 0.3667,
+    "h_est": 0.2554,
+    "gt_pref_key": "25",
+    "gt_match": true
+  },
+  "put_boxdrink3_plate_25/episode25": {
+    "action_prompt_label": "low contact",
+    "pref_key": "25",
+    "decision": "keep",
+    "feature": 0.3698,
+    "h_est": 0.2651,
+    "gt_pref_key": "25",
+    "gt_match": true
+  },
+  "put_boxdrink3_plate_25/episode26": {
+    "action_prompt_label": "low contact",
+    "pref_key": "25",
+    "decision": "keep",
+    "feature": 0.2817,
+    "h_est": 0.2381,
+    "gt_pref_key": "25",
+    "gt_match": true
+  },
+  "put_boxdrink3_plate_25/episode27": {
+    "action_prompt_label": "low contact",
+    "pref_key": "25",
+    "decision": "keep",
+    "feature": 0.3878,
+    "h_est": 0.2569,
+    "gt_pref_key": "25",
+    "gt_match": true
+  },
+  "put_boxdrink3_plate_25/episode28": {
+    "action_prompt_label": "low contact",
+    "pref_key": "25",
+    "decision": "keep",
+    "feature": 0.4088,
+    "h_est": 0.2556,
+    "gt_pref_key": "25",
+    "gt_match": true
+  },
+  "put_boxdrink3_plate_25/episode29": {
+    "action_prompt_label": "low contact",
+    "pref_key": "25",
+    "decision": "keep",
+    "feature": 0.4797,
+    "h_est": 0.2562,
+    "gt_pref_key": "25",
+    "gt_match": true
+  },
+  "put_boxdrink3_plate_25/episode30": {
+    "action_prompt_label": "low contact",
+    "pref_key": "25",
+    "decision": "keep",
+    "feature": 0.4183,
+    "h_est": 0.253,
+    "gt_pref_key": "25",
+    "gt_match": true
+  },
+  "put_boxdrink3_plate_25/episode31": {
+    "action_prompt_label": "low contact",
+    "pref_key": "25",
+    "decision": "keep",
+    "feature": 0.4361,
+    "h_est": 0.2363,
+    "gt_pref_key": "25",
+    "gt_match": true
+  },
+  "put_boxdrink3_plate_25/episode32": {
+    "action_prompt_label": "low contact",
+    "pref_key": "25",
+    "decision": "keep",
+    "feature": 0.3764,
+    "h_est": 0.243,
+    "gt_pref_key": "25",
+    "gt_match": true
+  },
+  "put_boxdrink3_plate_25/episode33": {
+    "action_prompt_label": "high contact",
+    "pref_key": "75",
+    "decision": "keep",
+    "feature": 0.553,
+    "h_est": 0.2667,
+    "gt_pref_key": "25",
+    "gt_match": false
+  },
+  "put_boxdrink3_plate_25/episode34": {
+    "action_prompt_label": "low contact",
+    "pref_key": "25",
+    "decision": "keep",
+    "feature": 0.4034,
+    "h_est": 0.2512,
+    "gt_pref_key": "25",
+    "gt_match": true
+  },
+  "put_boxdrink3_plate_25/episode35": {
+    "action_prompt_label": "low contact",
+    "pref_key": "25",
+    "decision": "keep",
+    "feature": 0.3484,
+    "h_est": 0.2604,
+    "gt_pref_key": "25",
+    "gt_match": true
+  },
+  "put_boxdrink3_plate_25/episode36": {
+    "action_prompt_label": "low contact",
+    "pref_key": "25",
+    "decision": "keep",
+    "feature": 0.3999,
+    "h_est": 0.2561,
+    "gt_pref_key": "25",
+    "gt_match": true
+  },
+  "put_boxdrink3_plate_25/episode37": {
+    "action_prompt_label": "low contact",
+    "pref_key": "25",
+    "decision": "keep",
+    "feature": 0.3499,
+    "h_est": 0.2336,
+    "gt_pref_key": "25",
+    "gt_match": true
+  },
+  "put_boxdrink3_plate_25/episode38": {
+    "action_prompt_label": "low contact",
+    "pref_key": "25",
+    "decision": "keep",
+    "feature": 0.4492,
+    "h_est": 0.2422,
+    "gt_pref_key": "25",
+    "gt_match": true
+  },
+  "put_boxdrink3_plate_25/episode39": {
+    "action_prompt_label": "low contact",
+    "pref_key": "25",
+    "decision": "keep",
+    "feature": 0.4202,
+    "h_est": 0.2493,
+    "gt_pref_key": "25",
+    "gt_match": true
+  },
+  "put_boxdrink3_plate_25/episode40": {
+    "action_prompt_label": "low contact",
+    "pref_key": "25",
+    "decision": "keep",
+    "feature": 0.3279,
+    "h_est": 0.2377,
+    "gt_pref_key": "25",
+    "gt_match": true
+  },
+  "put_boxdrink3_plate_25/episode41": {
+    "action_prompt_label": "low contact",
+    "pref_key": "25",
+    "decision": "keep",
+    "feature": 0.3993,
+    "h_est": 0.2481,
+    "gt_pref_key": "25",
+    "gt_match": true
+  },
+  "put_boxdrink3_plate_25/episode42": {
+    "action_prompt_label": "low contact",
+    "pref_key": "25",
+    "decision": "keep",
+    "feature": 0.3514,
+    "h_est": 0.2518,
+    "gt_pref_key": "25",
+    "gt_match": true
+  },
+  "put_boxdrink3_plate_25/episode43": {
+    "action_prompt_label": "low contact",
+    "pref_key": "25",
+    "decision": "keep",
+    "feature": 0.3905,
+    "h_est": 0.2345,
+    "gt_pref_key": "25",
+    "gt_match": true
+  },
+  "put_boxdrink3_plate_25/episode44": {
+    "action_prompt_label": "low contact",
+    "pref_key": "25",
+    "decision": "keep",
+    "feature": 0.445,
+    "h_est": 0.2619,
+    "gt_pref_key": "25",
+    "gt_match": true
+  },
+  "put_boxdrink3_plate_25/episode45": {
+    "action_prompt_label": "low contact",
+    "pref_key": "25",
+    "decision": "keep",
+    "feature": 0.4305,
+    "h_est": 0.2435,
+    "gt_pref_key": "25",
+    "gt_match": true
+  },
+  "put_boxdrink3_plate_25/episode46": {
+    "action_prompt_label": "low contact",
+    "pref_key": "25",
+    "decision": "keep",
+    "feature": 0.3697,
+    "h_est": 0.2784,
+    "gt_pref_key": "25",
+    "gt_match": true
+  },
+  "put_boxdrink3_plate_25/episode47": {
+    "action_prompt_label": "low contact",
+    "pref_key": "25",
+    "decision": "keep",
+    "feature": 0.2924,
+    "h_est": 0.2482,
+    "gt_pref_key": "25",
+    "gt_match": true
+  },
+  "put_boxdrink3_plate_25/episode48": {
+    "action_prompt_label": "low contact",
+    "pref_key": "25",
+    "decision": "keep",
+    "feature": 0.4477,
+    "h_est": 0.2377,
+    "gt_pref_key": "25",
+    "gt_match": true
+  },
+  "put_boxdrink3_plate_25/episode49": {
+    "action_prompt_label": "low contact",
+    "pref_key": "25",
+    "decision": "keep",
+    "feature": 0.3131,
+    "h_est": 0.2755,
+    "gt_pref_key": "25",
+    "gt_match": true
+  },
+  "put_boxdrink3_plate_75/episode0": {
+    "action_prompt_label": "high contact",
+    "pref_key": "75",
+    "decision": "keep",
+    "feature": 0.7259,
+    "h_est": 0.2449,
+    "gt_pref_key": "75",
+    "gt_match": true
+  },
+  "put_boxdrink3_plate_75/episode1": {
+    "action_prompt_label": "high contact",
+    "pref_key": "75",
+    "decision": "keep",
+    "feature": 0.6969,
+    "h_est": 0.2834,
+    "gt_pref_key": "75",
+    "gt_match": true
+  },
+  "put_boxdrink3_plate_75/episode2": {
+    "action_prompt_label": "high contact",
+    "pref_key": "75",
+    "decision": "keep",
+    "feature": 0.7803,
+    "h_est": 0.2481,
+    "gt_pref_key": "75",
+    "gt_match": true
+  },
+  "put_boxdrink3_plate_75/episode3": {
+    "action_prompt_label": "high contact",
+    "pref_key": "75",
+    "decision": "keep",
+    "feature": 0.6831,
+    "h_est": 0.2557,
+    "gt_pref_key": "75",
+    "gt_match": true
+  },
+  "put_boxdrink3_plate_75/episode4": {
+    "action_prompt_label": "high contact",
+    "pref_key": "75",
+    "decision": "keep",
+    "feature": 0.707,
+    "h_est": 0.2564,
+    "gt_pref_key": "75",
+    "gt_match": true
+  },
+  "put_boxdrink3_plate_75/episode5": {
+    "action_prompt_label": "high contact",
+    "pref_key": "75",
+    "decision": "keep",
+    "feature": 0.7128,
+    "h_est": 0.2899,
+    "gt_pref_key": "75",
+    "gt_match": true
+  },
+  "put_boxdrink3_plate_75/episode6": {
+    "action_prompt_label": "high contact",
+    "pref_key": "75",
+    "decision": "keep",
+    "feature": 0.7234,
+    "h_est": 0.2465,
+    "gt_pref_key": "75",
+    "gt_match": true
+  },
+  "put_boxdrink3_plate_75/episode7": {
+    "action_prompt_label": "high contact",
+    "pref_key": "75",
+    "decision": "keep",
+    "feature": 0.6953,
+    "h_est": 0.2431,
+    "gt_pref_key": "75",
+    "gt_match": true
+  },
+  "put_boxdrink3_plate_75/episode8": {
+    "action_prompt_label": "high contact",
+    "pref_key": "75",
+    "decision": "keep",
+    "feature": 0.6943,
+    "h_est": 0.2557,
+    "gt_pref_key": "75",
+    "gt_match": true
+  },
+  "put_boxdrink3_plate_75/episode9": {
+    "action_prompt_label": "high contact",
+    "pref_key": "75",
+    "decision": "keep",
+    "feature": 0.7343,
+    "h_est": 0.2641,
+    "gt_pref_key": "75",
+    "gt_match": true
+  },
+  "put_boxdrink3_plate_75/episode10": {
+    "action_prompt_label": "high contact",
+    "pref_key": "75",
+    "decision": "keep",
+    "feature": 0.616,
+    "h_est": 0.2633,
+    "gt_pref_key": "75",
+    "gt_match": true
+  },
+  "put_boxdrink3_plate_75/episode11": {
+    "action_prompt_label": "high contact",
+    "pref_key": "75",
+    "decision": "keep",
+    "feature": 0.7131,
+    "h_est": 0.2601,
+    "gt_pref_key": "75",
+    "gt_match": true
+  },
+  "put_boxdrink3_plate_75/episode12": {
+    "action_prompt_label": "high contact",
+    "pref_key": "75",
+    "decision": "keep",
+    "feature": 0.7358,
+    "h_est": 0.2412,
+    "gt_pref_key": "75",
+    "gt_match": true
+  },
+  "put_boxdrink3_plate_75/episode13": {
+    "action_prompt_label": "high contact",
+    "pref_key": "75",
+    "decision": "keep",
+    "feature": 0.6933,
+    "h_est": 0.2608,
+    "gt_pref_key": "75",
+    "gt_match": true
+  },
+  "put_boxdrink3_plate_75/episode14": {
+    "action_prompt_label": "high contact",
+    "pref_key": "75",
+    "decision": "keep",
+    "feature": 0.6862,
+    "h_est": 0.255,
+    "gt_pref_key": "75",
+    "gt_match": true
+  },
+  "put_boxdrink3_plate_75/episode15": {
+    "action_prompt_label": "high contact",
+    "pref_key": "75",
+    "decision": "keep",
+    "feature": 0.7404,
+    "h_est": 0.236,
+    "gt_pref_key": "75",
+    "gt_match": true
+  },
+  "put_boxdrink3_plate_75/episode16": {
+    "action_prompt_label": "high contact",
+    "pref_key": "75",
+    "decision": "keep",
+    "feature": 0.6814,
+    "h_est": 0.2614,
+    "gt_pref_key": "75",
+    "gt_match": true
+  },
+  "put_boxdrink3_plate_75/episode17": {
+    "action_prompt_label": "high contact",
+    "pref_key": "75",
+    "decision": "keep",
+    "feature": 0.6954,
+    "h_est": 0.2556,
+    "gt_pref_key": "75",
+    "gt_match": true
+  },
+  "put_boxdrink3_plate_75/episode18": {
+    "action_prompt_label": "high contact",
+    "pref_key": "75",
+    "decision": "keep",
+    "feature": 0.7501,
+    "h_est": 0.2598,
+    "gt_pref_key": "75",
+    "gt_match": true
+  },
+  "put_boxdrink3_plate_75/episode19": {
+    "action_prompt_label": "high contact",
+    "pref_key": "75",
+    "decision": "keep",
+    "feature": 0.745,
+    "h_est": 0.2708,
+    "gt_pref_key": "75",
+    "gt_match": true
+  },
+  "put_boxdrink3_plate_75/episode20": {
+    "action_prompt_label": "high contact",
+    "pref_key": "75",
+    "decision": "keep",
+    "feature": 0.729,
+    "h_est": 0.2512,
+    "gt_pref_key": "75",
+    "gt_match": true
+  },
+  "put_boxdrink3_plate_75/episode21": {
+    "action_prompt_label": "high contact",
+    "pref_key": "75",
+    "decision": "keep",
+    "feature": 0.6783,
+    "h_est": 0.2616,
+    "gt_pref_key": "75",
+    "gt_match": true
+  },
+  "put_boxdrink3_plate_75/episode22": {
+    "action_prompt_label": "high contact",
+    "pref_key": "75",
+    "decision": "keep",
+    "feature": 0.7685,
+    "h_est": 0.2377,
+    "gt_pref_key": "75",
+    "gt_match": true
+  },
+  "put_boxdrink3_plate_75/episode23": {
+    "action_prompt_label": "high contact",
+    "pref_key": "75",
+    "decision": "keep",
+    "feature": 0.7001,
+    "h_est": 0.2555,
+    "gt_pref_key": "75",
+    "gt_match": true
+  },
+  "put_boxdrink3_plate_75/episode24": {
+    "action_prompt_label": "high contact",
+    "pref_key": "75",
+    "decision": "keep",
+    "feature": 0.7627,
+    "h_est": 0.2858,
+    "gt_pref_key": "75",
+    "gt_match": true
+  },
+  "put_boxdrink3_plate_75/episode25": {
+    "action_prompt_label": "high contact",
+    "pref_key": "75",
+    "decision": "keep",
+    "feature": 0.7002,
+    "h_est": 0.2758,
+    "gt_pref_key": "75",
+    "gt_match": true
+  },
+  "put_boxdrink3_plate_75/episode26": {
+    "action_prompt_label": "high contact",
+    "pref_key": "75",
+    "decision": "keep",
+    "feature": 0.6836,
+    "h_est": 0.2575,
+    "gt_pref_key": "75",
+    "gt_match": true
+  },
+  "put_boxdrink3_plate_75/episode27": {
+    "action_prompt_label": "high contact",
+    "pref_key": "75",
+    "decision": "keep",
+    "feature": 0.7073,
+    "h_est": 0.2693,
+    "gt_pref_key": "75",
+    "gt_match": true
+  },
+  "put_boxdrink3_plate_75/episode28": {
+    "action_prompt_label": "high contact",
+    "pref_key": "75",
+    "decision": "keep",
+    "feature": 0.7236,
+    "h_est": 0.2422,
+    "gt_pref_key": "75",
+    "gt_match": true
+  },
+  "put_boxdrink3_plate_75/episode29": {
+    "action_prompt_label": "high contact",
+    "pref_key": "75",
+    "decision": "keep",
+    "feature": 0.726,
+    "h_est": 0.2606,
+    "gt_pref_key": "75",
+    "gt_match": true
+  },
+  "put_boxdrink3_plate_75/episode30": {
+    "action_prompt_label": "high contact",
+    "pref_key": "75",
+    "decision": "keep",
+    "feature": 0.7071,
+    "h_est": 0.2497,
+    "gt_pref_key": "75",
+    "gt_match": true
+  },
+  "put_boxdrink3_plate_75/episode31": {
+    "action_prompt_label": "high contact",
+    "pref_key": "75",
+    "decision": "keep",
+    "feature": 0.7288,
+    "h_est": 0.2493,
+    "gt_pref_key": "75",
+    "gt_match": true
+  },
+  "put_boxdrink3_plate_75/episode32": {
+    "action_prompt_label": "high contact",
+    "pref_key": "75",
+    "decision": "keep",
+    "feature": 0.6199,
+    "h_est": 0.2704,
+    "gt_pref_key": "75",
+    "gt_match": true
+  },
+  "put_boxdrink3_plate_75/episode33": {
+    "action_prompt_label": "high contact",
+    "pref_key": "75",
+    "decision": "keep",
+    "feature": 0.743,
+    "h_est": 0.2639,
+    "gt_pref_key": "75",
+    "gt_match": true
+  },
+  "put_boxdrink3_plate_75/episode34": {
+    "action_prompt_label": "high contact",
+    "pref_key": "75",
+    "decision": "keep",
+    "feature": 0.6742,
+    "h_est": 0.2648,
+    "gt_pref_key": "75",
+    "gt_match": true
+  },
+  "put_boxdrink3_plate_75/episode35": {
+    "action_prompt_label": "high contact",
+    "pref_key": "75",
+    "decision": "keep",
+    "feature": 0.7196,
+    "h_est": 0.2353,
+    "gt_pref_key": "75",
+    "gt_match": true
+  },
+  "put_boxdrink3_plate_75/episode36": {
+    "action_prompt_label": "high contact",
+    "pref_key": "75",
+    "decision": "keep",
+    "feature": 0.7818,
+    "h_est": 0.2303,
+    "gt_pref_key": "75",
+    "gt_match": true
+  },
+  "put_boxdrink3_plate_75/episode37": {
+    "action_prompt_label": "high contact",
+    "pref_key": "75",
+    "decision": "keep",
+    "feature": 0.6636,
+    "h_est": 0.2661,
+    "gt_pref_key": "75",
+    "gt_match": true
+  },
+  "put_boxdrink3_plate_75/episode38": {
+    "action_prompt_label": "low contact",
+    "pref_key": "25",
+    "decision": "reject",
+    "reject_reason": "geom_fail",
+    "gt_pref_key": "75",
+    "gt_match": false
+  },
+  "put_boxdrink3_plate_75/episode39": {
+    "action_prompt_label": "high contact",
+    "pref_key": "75",
+    "decision": "keep",
+    "feature": 0.7212,
+    "h_est": 0.2424,
+    "gt_pref_key": "75",
+    "gt_match": true
+  },
+  "put_boxdrink3_plate_75/episode40": {
+    "action_prompt_label": "high contact",
+    "pref_key": "75",
+    "decision": "keep",
+    "feature": 0.7176,
+    "h_est": 0.2784,
+    "gt_pref_key": "75",
+    "gt_match": true
+  },
+  "put_boxdrink3_plate_75/episode41": {
+    "action_prompt_label": "high contact",
+    "pref_key": "75",
+    "decision": "keep",
+    "feature": 0.759,
+    "h_est": 0.2318,
+    "gt_pref_key": "75",
+    "gt_match": true
+  },
+  "put_boxdrink3_plate_75/episode42": {
+    "action_prompt_label": "high contact",
+    "pref_key": "75",
+    "decision": "keep",
+    "feature": 0.7022,
+    "h_est": 0.274,
+    "gt_pref_key": "75",
+    "gt_match": true
+  },
+  "put_boxdrink3_plate_75/episode43": {
+    "action_prompt_label": "high contact",
+    "pref_key": "75",
+    "decision": "keep",
+    "feature": 0.7507,
+    "h_est": 0.2593,
+    "gt_pref_key": "75",
+    "gt_match": true
+  },
+  "put_boxdrink3_plate_75/episode44": {
+    "action_prompt_label": "high contact",
+    "pref_key": "75",
+    "decision": "keep",
+    "feature": 0.6595,
+    "h_est": 0.262,
+    "gt_pref_key": "75",
+    "gt_match": true
+  },
+  "put_boxdrink3_plate_75/episode45": {
+    "action_prompt_label": "high contact",
+    "pref_key": "75",
+    "decision": "keep",
+    "feature": 0.6626,
+    "h_est": 0.2648,
+    "gt_pref_key": "75",
+    "gt_match": true
+  },
+  "put_boxdrink3_plate_75/episode46": {
+    "action_prompt_label": "high contact",
+    "pref_key": "75",
+    "decision": "keep",
+    "feature": 0.7437,
+    "h_est": 0.2414,
+    "gt_pref_key": "75",
+    "gt_match": true
+  },
+  "put_boxdrink3_plate_75/episode47": {
+    "action_prompt_label": "high contact",
+    "pref_key": "75",
+    "decision": "keep",
+    "feature": 0.6655,
+    "h_est": 0.267,
+    "gt_pref_key": "75",
+    "gt_match": true
+  },
+  "put_boxdrink3_plate_75/episode48": {
+    "action_prompt_label": "high contact",
+    "pref_key": "75",
+    "decision": "keep",
+    "feature": 0.7255,
+    "h_est": 0.2507,
+    "gt_pref_key": "75",
+    "gt_match": true
+  },
+  "put_boxdrink3_plate_75/episode49": {
+    "action_prompt_label": "high contact",
+    "pref_key": "75",
+    "decision": "keep",
+    "feature": 0.6928,
+    "h_est": 0.2718,
+    "gt_pref_key": "75",
+    "gt_match": true
+  }
+}
