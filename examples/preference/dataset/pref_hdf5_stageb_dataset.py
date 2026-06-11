@@ -69,6 +69,8 @@ class PrefHDF5StageBDataset(PrefHDF5Dataset):
         *args,
         pseudo_label_cache: Optional[str | Path] = None,
         with_pref_suffix: bool = True,
+        early_frame_boost_frac: float = 0.0,
+        early_frame_boost_mult: int = 1,
         **kwargs,
     ):
         # Force a deterministic "placeholder" pref_key path. We need
@@ -115,6 +117,36 @@ class PrefHDF5StageBDataset(PrefHDF5Dataset):
         # Now filter _index based on cache `decision` (main) or keep all (B0).
         if self.with_pref_suffix:
             self._filter_index_by_cache()
+
+        # Early-frame boost (2026-06-11, contact conditioning experiment): duplicate
+        # index entries whose frame_idx falls in the first `early_frame_boost_frac`
+        # of the episode, `early_frame_boost_mult`-fold. Rationale: at mid/late frames
+        # the image already visually commits the preference and the uniform L1 teaches
+        # the policy to ignore the prompt (early-frame probe evidence, doc
+        # 0611-paper-gap-analysis §4b); over-weighting pre-commitment frames puts
+        # gradient where only the prompt can disambiguate. Default off (frac=0).
+        self.early_frame_boost_frac = float(early_frame_boost_frac)
+        self.early_frame_boost_mult = int(early_frame_boost_mult)
+        if self.early_frame_boost_frac > 0 and self.early_frame_boost_mult > 1:
+            last_per_ep: Dict[Tuple[str, int], int] = {}
+            for td, _tg, _pk, ep, t in self._index:
+                k = (td, ep)
+                if t > last_per_ep.get(k, -1):
+                    last_per_ep[k] = t
+            extra = []
+            n_early = 0
+            for entry in self._index:
+                td, _tg, _pk, ep, t = entry
+                last = max(last_per_ep[(td, ep)], 1)
+                if t / last <= self.early_frame_boost_frac:
+                    n_early += 1
+                    extra.extend([entry] * (self.early_frame_boost_mult - 1))
+            self._index.extend(extra)
+            print(
+                f"[PrefHDF5StageBDataset/{self.split}] early_frame_boost: "
+                f"frac<={self.early_frame_boost_frac} x{self.early_frame_boost_mult} | "
+                f"early_samples={n_early} duplicated +{len(extra)} -> total {len(self._index)}"
+            )
 
         # Re-derive bookkeeping
         self._summarize_index()
@@ -294,6 +326,8 @@ def get_pref_stageb_dataset(data_cfg, mode: str = "train", **kwargs) -> PrefHDF5
         # Stage B specific
         pseudo_label_cache=_g("pseudo_label_cache", None),
         with_pref_suffix=bool(_g("with_pref_suffix", True)),
+        early_frame_boost_frac=float(_g("early_frame_boost_frac", 0.0)),
+        early_frame_boost_mult=int(_g("early_frame_boost_mult", 1)),
         data_cfg=data_cfg,
         **kwargs,
     )
