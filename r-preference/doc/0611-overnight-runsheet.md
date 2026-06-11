@@ -89,3 +89,7 @@
   disambiguates). b0_place center 44/50; then corner, then b0orient50. Chain ETA ~17:00. Box 41G.
 - 16:37Z pass: b0_place center arm DONE succ 49.0% (25/51) vs geom 88.2% — FT weaker even on success for place.
   corner arm + b0orient50 remain (~50min). One more cycle then 晨报.
+- 17:09Z pass: place50 OFFICIAL folded+committed — SPT 0.94 vs FT 0.48 (n=50, showcase axis). b0orient50
+  90-arm finishing (~10min); 晨报 on chain completion.
+- 17:32Z FINAL: b0orient50 DONE (follow 1.00/1.00 n=50, succ 98.0/84.3). ALL QUEUE ITEMS COMPLETE.
+  晨报 written to gap doc §6. NIGHT CLOSED — no further wakeups will reschedule.

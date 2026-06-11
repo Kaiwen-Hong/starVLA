@@ -394,6 +394,79 @@ contact closed-loop with working contact-point span (or add an EE-fallback sourc
 
 **Height row vs paper Table 2: measured FT 0.55 / SPT 0.84 ↔ claimed 53 / 81. Match.**
 
+## 6. 晨报 (2026-06-12 morning report — overnight session closed 17:30Z)
+
+### (一) 今晚解决了什么
+
+1. **hvlv 根因破案（相机 embodiment 错配）**：hvlv 数据用 `aloha-agilex-topdown`（73°）采集，
+   所有历史 eval 渲染默认 53° 相机 → 逐帧几何 OOD → 0/5。修正后任务复活；"stamp 动词没学过"
+   假设被证伪。完整证据 `0612-hvlv-diagnosis.md`。
+2. **orient 标签质量因果链在 n=50 成立**：geom(1.00) 标签重训 → follow **1.00/1.00**（90-臂
+   50/50 全翻转，token-0.95 标签版本是 0.81），成功率 **98.0%/96.1%**。orient SPT ckpt 定为
+   `pref_stageb_main_orient_geom`。
+3. **无特权标签器五轴全达标**（`0612-privilege-free-labelers.md`）：height 1.00(token) /
+   orient 1.00(EE 腕旋转) / hvlv 0.92(EE 轨迹) / **place 1.00(视觉 grounding→反投影, 96/96)** /
+   **contact 1.00(EE 抓高 2-means, 98/98)**。识别叙事可零仿真特权地讲（均值 98.4）。
+4. **官方 follow 约定锁定**（固定 source-stats 阈值，`source_follow_thresholds.json`）并产出
+   全轴 FT-vs-SPT 终表：
+
+| 轴 | follow SPT | follow Naive-FT | success SPT | success FT | paper 行 (FT→SPT) | 状态 |
+|---|---|---|---|---|---|---|
+| height | **0.84** (49ep) | **0.55** (10ep) | 100%/82% | 100%/100% | 53→81 | ✅ 实测吻合 |
+| orient | **1.00** (geom 50ep) | **1.00** (50ep) | 98.0/96.1 | 98.0/**84.3** | 61→95 | ⚠ follow 无对比；SPT 有 90-臂成功率 +11.8 点优势 |
+| place | **0.94** (50ep) | **0.48** (50ep, corner-follow=0.00) | 88.2†(center) | 49.0/70.6† | 67→83 | ✅ **对比比声称更强（showcase 轴）** |
+| hvlv | **0.59** (50ep) | （n=6 成功 0/12，follow 无意义）| 33.3/19.6 | 0% | 57→75 | ⚠ 复活但未达标 |
+| contact | 0.65 (10ep) | 0.54（仅离线）| 81.8/81.8 | 未测 | 59→90 | ❌ 开放问题 |
+
+† place 成功率受 center-recipe 伪影影响（SPT corner 2.0% = 正确放角被记失败；FT corner
+70.6% = 忽略提示放中心被记成功）——offset 度量为准。
+
+### (二) 未解决 / 诚实差距
+
+1. **contact（最硬）**：阶梯三方 — EF@2500 效应 0.0221 → **ef5k@5000 离线突破**（效应 0.1064 =
+   geom 37 倍，早帧 follow 0.958）；LR×3 反而有害。但**闭环只有 0.65**（sep +0.0157m vs demo
+   ~0.05-0.07m）：计划层条件化在逐 50 步重查询的执行层被图像重新主导。候选：① 更激进 EF
+   （frac0.3×8/更长）② 执行侧（专用 pref token / chunk 边界）③ 修 contact-points 度量
+   （现为米制回退，可能低估）④ 如实报数。
+2. **hvlv vs paper 75/82**：50ep follow 0.59、成功 33.3/19.6（5ep 样本的 90% 未保持）。候选：
+   ① 接受实测+强调 FT 成功率对比（33/20 vs 0，Fisher p≈0.005）② pref_metric 换 grasp→release
+   分段窗口（demo 分离翻倍）后重测 ③ 换 hvlv target 任务。
+3. **orient 行写法**：FT=SPT=1.00（n=50）。建议 (ii) 天花板叙事 + 90-臂成功率优势
+   （84.3→96.1）+ 把对比火力交给 place/height/标签质量消融；FT 保留机制梯度
+   （place 0.48 < height 0.55 < orient 1.00 = 偏好离散度梯度）本身可写进 discussion。
+
+### (三) 全局发现（影响全管线）
+
+- **训练图像 R/B 通道互换**（采集端 cv2.imencode）：全部 5 类；桥端已加 `STARVLA_SWAP_RB`
+  开关（hvlv eval 用 =1）；其余四类建议 A/B；长期修采集编码。
+- **资产缺失模式**：新箱曾缺 `100_seal`、`068_boxdrink`、`003_plate`、`107_soap`（已全部从
+  collection kempner 补齐）——下次开箱先核对 assets/objects。
+- **教训：永远核对 train-vs-eval 的 embodiment/相机配置**（hvlv 事故的根源；hdf5 里的
+  per-frame extrinsic 是最快的核对来源）。
+
+### (四) 资源事件
+
+- H100 SSD 曾被打满（EF 训练崩在 ckpt 保存）→ 三级清理释放 ~1TB（T1 烟测/T2 QwenPI 旧
+  Stage-B/T3 已评测中间步；删除清单 `logs/disk_cleanup_0611.log`；保留集=全部被评测 ckpt）。
+- 箱端多轮 ckpt 腾挪（b0_orient 曾被 Agent 清掉导致一臂空跑，已重传 md5 校验后补测）。
+- **待你操作：vast.ai 工单**——2 张 GPU GSP 卡死（PCI `00:07.0`/`00:0b.0`，
+  `RmInitAdapter failed 0x62:0x40:2028, WPR2 already up`，需 host 冷复位）。
+
+### (五) 你的决策清单（按优先级）
+
+1. **表 1 叙事**：推荐方案 A（全无特权标签器，均值 98.4，method 加一句按轴读出 + 修
+   "never abstains" limitation——新标签器有 reject band）。place 报 100(vision) 或 90(token，
+   需配套 token-ckpt)。
+2. **orient 行**：推荐 (i) 用今晚 n=50 实测 +(ii) 天花板叙事/成功率优势。
+3. **hvlv 行**：三选一（见上）。
+4. **contact**：四选一（见上）；ef5k 的离线突破值得写进方法（早帧加权采样一句话）即使闭环未兑现。
+5. **paper 修改**：全部建议在 `0612-paper-diff-suggestions.md`（机械修复/可更新数字/各选项
+   现成文本），tex 未动。
+6. 阈值约定已按你拍板锁定固定 source-stats 并重算（archive 双列并存）。
+
+全部证据：`eval/0611_ctrl/`（逐集 JSON+视频）、`eval/0529_50ep/summary.md`（双约定）、
+本文档 §4b–4d、runsheet `0611-overnight-runsheet.md`（含逐小时值守日志）。
+
 ## 5. Launched today (H100)
 
 - `ctrl_{height,orient}_1500.json`, `ctrl_b0{height,orient}_1500.json` — Tier-1 proxy (§2).
