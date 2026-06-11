@@ -43,11 +43,9 @@ mkdir -p $SSD/starVLA_runs/results && ln -s $SSD/starVLA_runs/results results
 hf download kaiwen2/robotwin-prefvla-0526 --repo-type dataset --local-dir $SSD/pref/data/_zips
 # unzip each <cat>-0526/<sub>/<leaf>.zip into $SSD/pref/data/0526/<cat>/[taskB/]<leaf>/
 # (zips already contain instructions/ + instructions_base/ — no re-mount needed)
-# LAYOUT QUIRK — contact: on the H100, 0526/contact was FLAT (no taskB/ subdir;
-# put_boxdrink3_plate_{25,75} sat next to the taskA leaves). The repo stores them
-# under contact-0526/taskA/ — when restoring, unzip ALL contact leaves directly
-# into 0526/contact/ (flat) to reproduce the working layout.
-# Upstream (no instructions, hvlv incomplete): kaiwen2/robotwin-prefvla-ours-new.
+# All 5 cats share one layout: taskA leaves at 0526/<cat>/, taskB under
+# 0526/<cat>/taskB/. Upstream collection zips (no instructions, hvlv
+# incomplete): kaiwen2/robotwin-prefvla-ours-new.
 
 # 4. ckpts (pick what you need)
 hf download kaiwen2/prefvla-ckpts-stageb --local-dir results/Checkpoints_hf
