@@ -48,3 +48,7 @@
   vs default 53° eval); fixed: SPT succ 6/12 vs FT 0/12 (p~.005); @2500 FOLLOWS pref (sep +0.075). Also
   global R/B-swap finding (STARVLA_SWAP_RB toggle). hvlv@2500 topdown 50ep launched on box (watcher b84aih80l,
   ~4-5h). Gap doc §4c.3 added. Next box slot after 50ep: orient 50ep.
+- 11:14Z pass: **ef5k@5000 early-frame BREAKTHROUGH: peak_eff 0.1064 (37x geom), follow 0.958 (25:0.917/75:1.0)**
+  — contact conditioning solved offline by EF + longer schedule. ef_lr3 training 579/2500 (probe will follow).
+  ef5k@5000 ckpt shipping to box (background). Box queue updated: hvlv50 (running, ep001+) -> contact ef5k
+  closed-loop paired (test_num 11 first) -> orient 50ep -> place 50ep. Disk: H100 40%, box 68%.
